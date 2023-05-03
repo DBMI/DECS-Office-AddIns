@@ -1,0 +1,20 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<customUI xmlns="http://schemas.microsoft.com/office/2009/07/customui" onLoad="Ribbon_Load">
+  <ribbon>
+    <tabs>
+      <tab id="DecsTab" label="DECS Tools">
+        <group id="DecsGroup"
+               label="DECS">
+			<button id="extractIcdButton" 
+					getImage="icdExtractButton_GetImage" 
+					label="Extract ICD"
+					onAction="OnExtractICD"
+					screentip="Extract ICD Codes"
+					size="large"
+					supertip="Extract ICD Codes to SQL code" />
+        </group>
+      </tab>
+    </tabs>
+  </ribbon>
+</customUI>
+
