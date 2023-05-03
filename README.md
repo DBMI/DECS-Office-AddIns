@@ -1,4 +1,4 @@
-# ICD Extractor ![image info](./ICDextractor/Resources/icd_to_sql.png) 
+# ICD Extractor ![image info](./ICDextractor/Resources/icd_to_sql_mini.png) 
 
 ![Last Commit Date](./ICDextractor/.github/badges/last-commit-badge.svg?dummy=8484744)
 
