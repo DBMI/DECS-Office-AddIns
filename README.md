@@ -1,4 +1,4 @@
-# DECS Word Add-Ins ![image info](./DECS%20Word%20Add-Ins/pictures/icd_to_sql_mini.png) 
+# DECS Word Add-Ins ![image info](./DECS%20Word%20Add-Ins/pictures/combined.png) 
 
 ![Last Commit Date](./DECS%20Word%20Add-Ins/.github/badges/last-commit-badge.svg?dummy=8484744)
 
