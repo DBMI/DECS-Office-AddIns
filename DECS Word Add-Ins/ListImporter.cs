@@ -13,6 +13,7 @@ namespace DecsWordAddIns
 {
     internal class ListImporter
     {
+        private readonly string[] IGNORED_WORDS = { "MRN" };
         private const int MAX_LINES_PER_IMPORT = 1000;
         private const string PREAMBLE = "USE [REL_CLARITY];\r\n\r\n";
         private const string SEGMENT_START = "INSERT INTO #MRN_LIST (MRN)\r\nVALUES\r\n";
@@ -38,6 +39,9 @@ namespace DecsWordAddIns
                 string line = para.Range.Text.ToString().Trim();
 
                 if (line == null) continue;
+
+                // If the line is just "MRN", ignore it.
+                if (IGNORED_WORDS.Contains(line)) continue;
 
                 string line_ending;
 
