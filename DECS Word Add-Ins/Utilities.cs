@@ -19,7 +19,6 @@ namespace DecsWordAddIns
             string text_cleaned = text.Trim();
             text_cleaned = text_cleaned.Replace(@"–", "-"); // Replace Windows dash with simple hyphen.
             text_cleaned = text_cleaned.Replace(@"’", "'"); // Replace Windows apostrophe with simple apostrophe.
-
             return text_cleaned;
         }
 
@@ -30,6 +29,11 @@ namespace DecsWordAddIns
             string column_name = condition_name.Trim().Replace(' ', '_');
             column_name = column_name.Replace(',', '_');
             column_name = column_name.Replace("__", "_");
+
+            // Double up apostrophes so SQL correctly interprets them.
+            column_name = column_name.Replace(@"'", "''");
+
+            // Shift To Title Case.
             var textinfo = CultureInfo.CurrentCulture.TextInfo;
             return textinfo.ToTitleCase(column_name);
         }
