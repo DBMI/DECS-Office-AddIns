@@ -1,6 +1,7 @@
 ﻿using Microsoft.Office.Interop.Word;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -13,8 +14,8 @@ namespace DecsWordAddIns
     internal class ListImporter
     {
         private const int MAX_LINES_PER_IMPORT = 1000;
-        private const string PREAMBLE = "INSERT INTO MRN_LIST (MRN)\r\nVALUES(\r\n";
-        private const string SUFFIX = ");";
+        private const string PREAMBLE = "USE [REL_CLARITY];\r\n\r\n";
+        private const string SEGMENT_START = "INSERT INTO #MRN_LIST (MRN)\r\nVALUES\r\n";
 
         public ListImporter() 
         {
@@ -23,52 +24,49 @@ namespace DecsWordAddIns
         public void Scan(Document doc)
         {
             // Initialize the output .SQL file.
-            string output_filename = Utilities.FormOutputFilename(filename: doc.FullName, filetype: ".sql");
+            (StreamWriter writer, string output_filename) = Utilities.OpenOutput(input_filename: doc.FullName, filetype: ".sql");
 
-            using (StreamWriter writer = new StreamWriter(output_filename))
+            writer.Write(PREAMBLE + SEGMENT_START);
+            int num_lines = doc.Paragraphs.Count;
+            int lines_written = 0;
+            int lines_written_this_chunk = 0;
+
+            foreach (Paragraph para in doc.Paragraphs)
             {
-                writer.Write(PREAMBLE);
-                int num_lines = doc.Paragraphs.Count;
-                int lines_written = 0;
-                int lines_written_this_chunk = 0;
+                if (para == null) continue;
 
-                foreach (Paragraph para in doc.Paragraphs)
+                string line = para.Range.Text.ToString().Trim();
+
+                if (line == null) continue;
+
+                string line_ending;
+
+                writer.Write("('" + line + "')");
+                lines_written++;
+                lines_written_this_chunk++;
+
+                if (lines_written < num_lines)
                 {
-                    if (para == null) continue;
-
-                    string line = para.Range.Text.ToString().Trim();
-
-                    if (line == null) continue;
-
-                    string line_ending;
-
-                    writer.Write("'" + line + "'");
-                    lines_written++;
-                    lines_written_this_chunk++;
-
-                    if (lines_written < num_lines)
+                    if (lines_written_this_chunk < MAX_LINES_PER_IMPORT)
                     {
-                        if (lines_written_this_chunk < MAX_LINES_PER_IMPORT)
-                        {
-                            line_ending = ",\r\n";
-                        }
-                        else
-                        {
-                            line_ending = SUFFIX + "\r\n" + PREAMBLE;
-                            lines_written_this_chunk = 0;
-                        }
+                        line_ending = ",\r\n";
                     }
                     else
                     {
-                        line_ending = SUFFIX + "\r\n";
+                        line_ending = ";\r\n\r\n" + SEGMENT_START;
+                        lines_written_this_chunk = 0;
                     }
-                    
-                    writer.Write(line_ending);
                 }
+                else
+                {
+                    line_ending = ";\r\n";
+                }
+
+                writer.Write(line_ending);
             }
 
-            string message = "Created file '" + output_filename + "'.";
-            MessageBox.Show(message, "Success");
+            writer.Close();
+            Utilities.ShowResults(output_filename);
         }
-    }
+}
 }

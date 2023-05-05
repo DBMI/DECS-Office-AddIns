@@ -24,9 +24,9 @@ namespace DecsWordAddIns
         // These strings may be present in the Statement of Work documents, but aren't ICD codes.
         private readonly string[] FALSE_CODES = { "A1C", "L1T", "R001442" };
 
-        // Accommodate both name - code ("-	Alzheimer’s disease – G30") and code = name ("F12 = cannabis") formats.
-        private readonly string[] LINE_PATTERNS = { @"(?<name>[\w ',]+) +[-=:]? *(?<code>[A-Z]\d+[A-Z]?\.?\d*)",
-                                                    @"(?<code>[A-Z]\d+[A-Z]?\.?\d*) +[-=:]? *(?<name>[\w ',]+)" };
+        // Accommodate both condition - code ("Alzheimer’s disease – G30") and code = condition ("F12 = cannabis") formats.
+        private readonly string[] LINE_PATTERNS = { @"(?<condition>[\w ',]+) +[-=:]? *(?<code>[A-Z]\d+[A-Z]?\.?\d*)",
+                                                    @"(?<code>[A-Z]\d+[A-Z]?\.?\d*) +[-=:]? *(?<condition>[\w ',]+)" };
 
         // The numerical part of an ICD-10 code.
         private const string NUMBER_PATTERN = @"\d+\.?\d*";
@@ -121,14 +121,16 @@ namespace DecsWordAddIns
                 foreach (Regex line_regex in line_regexes)
                 {
                     Match line_match = line_regex.Match(text);
-                    string code_name = "";
+                    string condition_name = "";
 
                     if (line_match.Success)
                     {
                         bool first_match = true;
-                        code_name = line_match.Groups["name"].Value;
+                        condition_name = line_match.Groups["condition"].Value;
 
-                        if (code_name == null) continue;
+                        if (condition_name == null) continue;
+
+                        if (Utilities.IsJustListOfCodes(name: condition_name, matches: code_matches)) continue;
 
                         foreach (Match code_match in code_matches)
                         {
@@ -151,16 +153,16 @@ namespace DecsWordAddIns
                             }
 
                             // Remove code values ("J42") from the code name.
-                            code_name = code_name.Replace(code_value, "");
-                            code_name = code_name.Replace(",", "");
-                            code_name = code_name.Trim();
+                            condition_name = condition_name.Replace(code_value, "");
+                            condition_name = condition_name.Replace(",", "");
+                            condition_name = condition_name.Trim();
                         }
                     }
 
                     if (found_match)
                     {
-                        writer.WriteLine(") -- " + code_name);
-                        writer.WriteLine(SUFFIX + Utilities.CleanNameForSql(code_name));
+                        writer.WriteLine(") -- " + condition_name);
+                        writer.WriteLine(SUFFIX + Utilities.CleanNameForSql(condition_name));
                         break;
                     }
                 }
@@ -170,29 +172,27 @@ namespace DecsWordAddIns
         // Main method. Accepts a Document object & writes out the .sql file.
         internal void Scan(Document doc)
         {
-            string output_filename = Utilities.FormOutputFilename(filename: doc.FullName, filetype: ".sql");
+            (StreamWriter writer, string output_filename) = Utilities.OpenOutput(input_filename: doc.FullName, filetype: ".sql");
 
-            using (StreamWriter writer = new StreamWriter(output_filename))
+            writer.WriteLine(PREAMBLE);
+
+            foreach (Paragraph para in doc.Paragraphs)
             {
-                writer.WriteLine(PREAMBLE);
+                if (para == null) continue;
 
-                foreach (Paragraph para in doc.Paragraphs)
-                {
-                    if (para == null) continue;
+                string text = para.Range.Text.ToString().Trim();
 
-                    string text = para.Range.Text.ToString().Trim();
+                if (text == null) continue;
 
-                    if (text == null) continue;
-                    
-                    text = Utilities.CleanText(text);
+                text = Utilities.CleanText(text);
 
-                    string text_expanded = ExpandSeries(text);
+                string text_expanded = ExpandSeries(text);
 
-                    ProcessParagraph(text_expanded, writer);
-                }
+                ProcessParagraph(text_expanded, writer);
             }
-            string message = "Created file '" + output_filename + "'.";
-            MessageBox.Show(message, "Success");
+            
+            writer.Close();
+            Utilities.ShowResults(output_filename);
         }
     }
 }
