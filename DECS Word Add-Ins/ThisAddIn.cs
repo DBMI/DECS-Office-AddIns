@@ -14,7 +14,7 @@ namespace DecsWordAddIns
         //  https://learn.microsoft.com/en-us/visualstudio/vsto/walkthrough-creating-a-custom-tab-by-using-ribbon-xml?view=vs-2022&tabs=csharp
         protected override Microsoft.Office.Core.IRibbonExtensibility CreateRibbonExtensibilityObject()
         {
-            return new DecsRibbon();
+            return new DecsWordRibbon();
         }
 
         private void ThisAddIn_Startup(object sender, System.EventArgs e)

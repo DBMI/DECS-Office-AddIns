@@ -4,7 +4,7 @@
     <tabs>
       <tab id="DecsTab" label="DECS Tools">
         <group id="DecsGroup"
-               label="DECS">
+               label="SQL">
 			<button id="extractIcdButton" 
 					getImage="icdExtractButton_GetImage" 
 					label="Extract ICD"

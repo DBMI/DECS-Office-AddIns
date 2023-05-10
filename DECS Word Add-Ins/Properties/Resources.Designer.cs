@@ -63,9 +63,9 @@ namespace DecsWordAddIns.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
-        internal static System.Drawing.Bitmap icd_to_sql {
+        internal static System.Drawing.Bitmap clipboard {
             get {
-                object obj = ResourceManager.GetObject("icd_to_sql", resourceCulture);
+                object obj = ResourceManager.GetObject("clipboard", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }
@@ -73,9 +73,9 @@ namespace DecsWordAddIns.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
-        internal static System.Drawing.Bitmap mrn_list {
+        internal static System.Drawing.Bitmap icd_10_zoom {
             get {
-                object obj = ResourceManager.GetObject("mrn_list", resourceCulture);
+                object obj = ResourceManager.GetObject("icd_10_zoom", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }

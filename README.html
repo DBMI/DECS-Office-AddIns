@@ -1,22 +1,29 @@
-<html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8" /><title></title></head><body><h1>DECS Word Add-Ins <img src="./DECS%20Word%20Add-Ins/pictures/toolbar_mini.png" alt="image info" /></h1>
-<p><img src="./DECS%20Word%20Add-Ins/.github/badges/last-commit-badge.svg?dummy=8484744" alt="Last Commit Date" /></p>
-<p>Creates a custom buttons in Microsoft Word that allows user to:</p>
+<html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8" /><title></title></head><body><h1>DECS Office Add-Ins</h1>
+<p><img src="./.github/badges/last-commit-badge.svg?dummy=8484744" alt="Last Commit Date" /></p>
+<p>Creates a custom buttons in Microsoft Excel &amp; Word that allows user to:</p>
+<h3>Excel:</h3>
+<p><img src="./DECS%20Excel%20Add-Ins/pictures/toolbar.png" alt="image info" /></p>
+<ul>
+<li>Scan <code>Notes</code> fields for keywords, creating new columns.</li>
+</ul>
+<h3>Word:</h3>
+<p><img src="./DECS%20Word%20Add-Ins/pictures/toolbar.png" alt="image info" /></p>
 <ul>
 <li>Scan a statement of work file &amp; create SQL code that searches for the ICD-10 codes and names listed in the SoW.</li>
 <li>Turn a list of MRNs into a SQL snippet that imports the list into a query.</li>
 </ul>
 <h2>Installation</h2>
 <ul>
-<li>Download the <code>Word Add-Ins</code> folder from <a href="https://ucsdhs.sharepoint.com/:f:/t/ACTRI-BMI-DECSPrivate/EhFYD_9zfX9GsNRN9enCMzABFKg6wmPh13zY_ps2qRJHSg?e=KYFZeG">Sharepoint.</a></li>
+<li>Download the <code>Office Add-Ins</code> folder from <a href="https://ucsdhs.sharepoint.com/:f:/t/ACTRI-BMI-DECSPrivate/EhFYD_9zfX9GsNRN9enCMzABFKg6wmPh13zY_ps2qRJHSg?e=KYFZeG">Sharepoint.</a></li>
 <li>Run <code>setup.exe</code>.</li>
 </ul>
 <h2>Operation</h2>
-<h3>Extract ICD codes</h3>
+<h3>Word: Extract ICD codes</h3>
 <p>Sometimes Statements of Work (SoW) contain lists of medical conditions and ICD-10 codes to be reported on.
 Pressing the <code>Extract ICD</code> button causes the app to scan the open Word document for lines that look like medical conditions and their associated ICD-10 codes. SQL code is generated that searches the <code>problem_list</code> table for the associated codes, as shown here:<img src="./DECS%20Word%20Add-Ins/pictures/ICD%20to%20sql%20basic.png" alt="image info" /></p>
 <p>Series of ICD codes (such as <code>M30 - M36</code>) are automatically expanded into multi-code SQL statements:<img src="./DECS%20Word%20Add-Ins/pictures/series%20expansion%20sql.png" alt="image info" /></p>
-<h3>Build MRN Import</h3>
-<p>When researchers provide lists of Medical Record Numbers (MRNs) to be used in a report, those MRNs need to be imported into SQL. Pressing the <code>Build MRN Import</code> button converts a list of numbers into SQL code which can be referenced in a query to import these MRNs:<img src="./DECS%20Word%20Add-Ins/pictures/MRN%20list%20to%20sql%20top.png" alt="image info" />
-Since there is a limit on the number of values (1000) that can be inserted in one statement, the app automatically breaks up the insertion into multiple statements:</p>
+<h3>Word: Build MRN Import</h3>
+<p>When researchers provide lists of Medical Record Numbers (MRNs) to be used in a report, those MRNs need to be imported into SQL. Pressing the <code>Build MRN Import</code> button converts a list of numbers into SQL code which can be referenced in a query to import these MRNs:<img src="./DECS%20Word%20Add-Ins/pictures/MRN%20list%20to%20sql%20top.png" alt="image info" /></p>
+<p>Since there is a limit on the number of values (1000) that can be inserted in one statement, the app automatically breaks up the insertion into multiple statements:</p>
 <p><img src="./DECS%20Word%20Add-Ins/pictures/MRN%20list%20break.png" alt="image info" /></p>
 </body></html>
