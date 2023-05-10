@@ -1,0 +1,27 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<customUI xmlns="http://schemas.microsoft.com/office/2009/07/customui" onLoad="Ribbon_Load">
+	<ribbon>
+		<tabs>
+			<tab id="DecsTab" label="DECS Tools">
+				<group id="NotesGroup"
+					   label="Notes">
+					<button id="searchButton"
+							getImage="notesSearchButton_GetImage"
+							label="Search Notes"
+							onAction="OnSearchNotes"
+							screentip="Search Notes"
+							size="large"
+							supertip="Search notes using existing config file." />
+					<button id="setupButton"
+							getImage="notesConfigButton_GetImage"
+							label="Setup Config"
+							onAction="OnSearchConfig"
+							screentip="Configure Search"
+							size="large"
+							supertip="Configure search of notes." />
+				</group>
+			</tab>
+		</tabs>
+	</ribbon>
+</customUI>
+
