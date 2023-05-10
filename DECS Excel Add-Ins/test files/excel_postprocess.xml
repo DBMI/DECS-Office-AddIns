@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<NotesConfig>
+	<SourceColumn>REPORT</SourceColumn>
+	<CleaningRules>
+		<CleaningRule>
+			<pattern>Date performed:?\s*(\d{1,2}/\d{1,2}/\d{4})</pattern>
+			<replace>Date of Exam: $1</replace>
+		</CleaningRule>
+		<CleaningRule>
+			<pattern>temparature</pattern>
+			<replace>temperature</replace>
+		</CleaningRule>
+	</CleaningRules>
+	<ExtractRules>
+		<ExtractRule>
+			<Patterns>
+				<Pattern>
+					<pattern>Date of Exam:\s*(\d{1,2}/\d{1,2}/\d{4})</pattern>
+				</Pattern>
+				<Pattern>
+					<pattern>Date of Exam:\s*(\d{1,2}-\d{1,2}-\d{4})</pattern>
+				</Pattern>
+			</Patterns>
+			<new_column>Date of Exam</new_column>
+		</ExtractRule>
+		<ExtractRule>
+			<Patterns>
+				<Pattern>
+					<pattern>Air temperature:\s*(\d+\.?\d*)\s*(?: deg|°)F</pattern>
+				</Pattern>
+			</Patterns>
+			<new_column>Air Temp (°F)</new_column>
+		</ExtractRule>
+		<ExtractRule>
+			<Patterns>
+				<Pattern>
+					<pattern>Air pressure:\s*(\d+\.?\d*)\s*mBar</pattern>
+				</Pattern>
+			</Patterns>
+			<new_column>Air Pressure (mBar)</new_column>
+			</ExtractRule>
+	</ExtractRules>
+</NotesConfig>
