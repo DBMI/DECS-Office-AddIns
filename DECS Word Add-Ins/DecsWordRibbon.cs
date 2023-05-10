@@ -16,7 +16,7 @@ using Office = Microsoft.Office.Core;
 
 //  protected override Microsoft.Office.Core.IRibbonExtensibility CreateRibbonExtensibilityObject()
 //  {
-//      return new DecsRibbon();
+//      return new DecsWordRibbon();
 //  }
 
 // 2. Create callback methods in the "Ribbon Callbacks" region of this class to handle user
@@ -33,11 +33,11 @@ using Word = Microsoft.Office.Interop.Word;
 namespace DecsWordAddIns
 {
     [ComVisible(true)]
-    public class DecsRibbon : Office.IRibbonExtensibility
+    public class DecsWordRibbon : Office.IRibbonExtensibility
     {
         private Office.IRibbonUI ribbon;
 
-        public DecsRibbon()
+        public DecsWordRibbon()
         {
         }
         public void OnBuildMRN(Office.IRibbonControl control)
@@ -52,17 +52,17 @@ namespace DecsWordAddIns
         }
         public Bitmap buildMrnsButton_GetImage(IRibbonControl control)
         {
-            return Resources.mrn_list;
+            return Resources.clipboard;
         }
         public Bitmap icdExtractButton_GetImage(IRibbonControl control)
         {
-            return Resources.icd_to_sql;
+            return Resources.icd_10_zoom;
         }
         #region IRibbonExtensibility Members
 
         public string GetCustomUI(string ribbonID)
         {
-            return GetResourceText("DecsWordAddIns.DecsRibbon.xml");
+            return GetResourceText("DecsWordAddIns.DecsWordRibbon.xml");
         }
 
         #endregion

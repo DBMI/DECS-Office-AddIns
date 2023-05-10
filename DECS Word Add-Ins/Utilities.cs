@@ -88,7 +88,10 @@ namespace DecsWordAddIns
             {
                 writer_obj = new StreamWriter(output_filename);
             }
-            catch (System.IO.PathTooLongException)
+            // https://stackoverflow.com/a/19329123/18749636
+            catch (Exception ex) when (
+                ex is System.IO.PathTooLongException
+                || ex is System.NotSupportedException)
             {
                 output_filename = Utilities.FormOutputFilename(filename: input_filename, filetype: filetype, short_version: true);
                 writer_obj = new StreamWriter(output_filename);

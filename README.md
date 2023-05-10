@@ -1,5 +1,5 @@
 # DECS Office Add-Ins
-![Last Commit Date](./DECS%20Word%20Add-Ins/.github/badges/last-commit-badge.svg?dummy=8484744)
+![Last Commit Date](./.github/badges/last-commit-badge.svg?dummy=8484744)
 
 Creates a custom buttons in Microsoft Excel & Word that allows user to:
 ### Excel:
@@ -7,12 +7,12 @@ Creates a custom buttons in Microsoft Excel & Word that allows user to:
 
 - Scan `Notes` fields for keywords, creating new columns.
 ### Word: 
-![image info](./DECS%20Word%20Add-Ins/pictures/toolbar_mini.png)
+![image info](./DECS%20Word%20Add-Ins/pictures/toolbar.png)
 - Scan a statement of work file & create SQL code that searches for the ICD-10 codes and names listed in the SoW.
 - Turn a list of MRNs into a SQL snippet that imports the list into a query.
 
 ## Installation
-* Download the `Word Add-Ins` folder from [Sharepoint.](https://ucsdhs.sharepoint.com/:f:/t/ACTRI-BMI-DECSPrivate/EhFYD_9zfX9GsNRN9enCMzABFKg6wmPh13zY_ps2qRJHSg?e=KYFZeG)
+* Download the `Office Add-Ins` folder from [Sharepoint.](https://ucsdhs.sharepoint.com/:f:/t/ACTRI-BMI-DECSPrivate/EhFYD_9zfX9GsNRN9enCMzABFKg6wmPh13zY_ps2qRJHSg?e=KYFZeG)
 * Run `setup.exe`.
 
 ## Operation
