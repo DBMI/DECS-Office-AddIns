@@ -44,51 +44,51 @@ namespace DECS_Excel_Add_Ins
             CleaningRules = new List<CleaningRule>();
             ExtractRules = new List<ExtractRule>();
         }
-        public void AddCleaningRule()
+        internal void AddCleaningRule()
         {
             CleaningRules.Add(new CleaningRule());
         }
-        public void AddCleaningRule(CleaningRule cleaningRule)
+        internal void AddCleaningRule(CleaningRule cleaningRule)
         {
             CleaningRules.Add(cleaningRule);
         }
-        public void AddExtractRule()
+        internal void AddExtractRule()
         {
             ExtractRules.Add(new ExtractRule());
         }
-        public void AddExtractRule(ExtractRule extractRule)
+        internal void AddExtractRule(ExtractRule extractRule)
         {
             ExtractRules.Add(extractRule);
         }
-        public void ChangeCleaningRulePattern(int index, string pattern)
+        internal void ChangeCleaningRulePattern(int index, string pattern)
         {
             if (CleaningRules.Count - 1 >= index)
             {
                 CleaningRules[index].pattern = pattern;
             }
         }
-        public void ChangeCleaningRuleReplace(int index, string replace)
+        internal void ChangeCleaningRuleReplace(int index, string replace)
         {
             if (CleaningRules.Count - 1 >= index)
             {
                 CleaningRules[index].replace = replace;
             }
         }
-        public void ChangeExtractRulePattern(int index, string pattern)
+        internal void ChangeExtractRulePattern(int index, string pattern)
         {
             if (ExtractRules.Count - 1 >= index)
             {
                 ExtractRules[index].pattern = pattern;
             }
         }
-        public void ChangeExtractRulenewColumn(int index, string newColumn)
+        internal void ChangeExtractRulenewColumn(int index, string newColumn)
         {
             if (ExtractRules.Count - 1 >= index)
             {
                 ExtractRules[index].newColumn = newColumn;
             }
         }
-        public static string ChooseConfigFile()
+        internal static string ChooseConfigFile()
         {
             string filePath = string.Empty;
 
@@ -108,21 +108,25 @@ namespace DECS_Excel_Add_Ins
 
             return filePath;
         }
-        public void DeleteCleaningRule(int index)
+        internal void DeleteCleaningRule(int index)
         {
             if (index > 0 && index < CleaningRules.Count)
             {
                 CleaningRules.RemoveAt(index);
             }
         }
-        public void DeleteExtractRule(int index)
+        internal void DeleteExtractRule(int index)
         {
             if (index > 0 && index < ExtractRules.Count)
             {
                 ExtractRules.RemoveAt(index);
             }
         }
-        public static NotesConfig ReadConfigFile(string filePath)
+        internal bool IsEmpty()
+        {
+            return CleaningRules.Count == 0 && ExtractRules.Count == 0;
+        }
+        internal static NotesConfig ReadConfigFile(string filePath)
         {
             // Declare this outside the 'using' block so we can access it later
             NotesConfig config = null;

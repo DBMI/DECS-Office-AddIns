@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
-using GroupBox = System.Windows.Forms.GroupBox;
+using Panel = System.Windows.Forms.Panel;
 using TextBox = System.Windows.Forms.TextBox;
 
 namespace DECS_Excel_Add_Ins
@@ -14,9 +14,10 @@ namespace DECS_Excel_Add_Ins
     {
         private NotesConfig config;
         private Action parentDeleteAction;
+        private Action parentRuleChangedAction;
         private bool textChangedCallbackEnabled = true;
 
-        public ExtractRulePanel(int x, int y, int index, GroupBox parent, NotesConfig notesConfig, bool updateConfig = true) : base(x, y, index, parent, "extractRules")
+        public ExtractRulePanel(int x, int y, int index, Panel parent, NotesConfig notesConfig, bool updateConfig = true) : base(x, y, index, parent, "extractRules")
         {
             config = notesConfig;
             leftHandTextBox.TextChanged += extractRulesPatternTextBox_TextChanged;
@@ -37,6 +38,10 @@ namespace DECS_Excel_Add_Ins
         public void AssignExternalDelete(Action deleteAction)
         {
             parentDeleteAction = deleteAction;
+        }
+        public void AssignExternalRuleChanged(Action ruleChangedAction)
+        {
+            parentRuleChangedAction = ruleChangedAction;
         }
         public override void Clear()
         {
@@ -69,6 +74,9 @@ namespace DECS_Excel_Add_Ins
 
                 // Insert or update Nth extract rule with this pattern.
                 config.ChangeExtractRulePattern(index: index, pattern: textBox.Text);
+
+                // Alert upper-level GUI.
+                parentRuleChangedAction();
             }
             catch (ArgumentException)
             {
@@ -94,6 +102,9 @@ namespace DECS_Excel_Add_Ins
 
                 // Insert or update Nth extract rule with this pattern.
                 config.ChangeExtractRulenewColumn(index: index, newColumn: textBox.Text);
+
+                // Alert upper-level GUI.
+                parentRuleChangedAction();
             }
             catch (ArgumentException)
             {

@@ -9,7 +9,6 @@ using System.Windows.Forms;
 using static System.Windows.Forms.VisualStyles.VisualStyleElement.TextBox;
 using Button = System.Windows.Forms.Button;
 using Font = System.Drawing.Font;
-using GroupBox = System.Windows.Forms.GroupBox;
 using Point = System.Drawing.Point;
 using TextBox = System.Windows.Forms.TextBox;
 
@@ -33,7 +32,7 @@ namespace DECS_Excel_Add_Ins
         private readonly int boxY = (int) BOX_HEIGHT/2;
 
         private Panel panel;
-        private GroupBox parent;
+        private Panel parent;
         protected TextBox leftHandTextBox;
         protected TextBox rightHandTextBox;
         private Button deleteButton;
@@ -46,7 +45,7 @@ namespace DECS_Excel_Add_Ins
 
         private System.Action inheritedClassDeleteAction;
 
-        public RulePanel(int x, int y, int index, GroupBox parentObj, string ruleType)
+        public RulePanel(int x, int y, int index, Panel parentObj, string ruleType)
         {
             this.index = index;
             parent = parentObj;

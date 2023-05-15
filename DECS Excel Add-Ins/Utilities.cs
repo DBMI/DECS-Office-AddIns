@@ -48,6 +48,11 @@ namespace DECS_Excel_Add_Ins
 
             return names;
         }
+        // https://stackoverflow.com/q/21219797/18749636
+        internal static string GetTimestamp()
+        {
+            return DateTime.Now.ToString("yyyyMMddHHmmss");
+        }
         internal static Range InsertnewColumn(Range range, string newColumnName)
         {
             int columnNumber = range.Column;

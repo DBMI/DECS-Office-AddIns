@@ -48,10 +48,14 @@
             this.loadToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.saveToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.saveAsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.cleaningRulesPanel = new System.Windows.Forms.Panel();
+            this.extractRulesPanel = new System.Windows.Forms.Panel();
             this.sourceColumnGroupBox.SuspendLayout();
             this.cleaningRulesGroupBox.SuspendLayout();
             this.extractRulesGroupBox.SuspendLayout();
             this.menuStrip1.SuspendLayout();
+            this.cleaningRulesPanel.SuspendLayout();
+            this.extractRulesPanel.SuspendLayout();
             this.SuspendLayout();
             // 
             // headline
@@ -89,7 +93,7 @@
             // 
             // cleaningRulesGroupBox
             // 
-            this.cleaningRulesGroupBox.Controls.Add(this.cleaningRulesAddButton);
+            this.cleaningRulesGroupBox.Controls.Add(this.cleaningRulesPanel);
             this.cleaningRulesGroupBox.Controls.Add(this.cleaningRulesReplaceLabel);
             this.cleaningRulesGroupBox.Controls.Add(this.cleaningRulesPatternsLabel);
             this.cleaningRulesGroupBox.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
@@ -103,7 +107,7 @@
             // cleaningRulesAddButton
             // 
             this.cleaningRulesAddButton.Font = new System.Drawing.Font("Microsoft Sans Serif", 14.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.cleaningRulesAddButton.Location = new System.Drawing.Point(711, 96);
+            this.cleaningRulesAddButton.Location = new System.Drawing.Point(705, 21);
             this.cleaningRulesAddButton.Name = "cleaningRulesAddButton";
             this.cleaningRulesAddButton.Size = new System.Drawing.Size(40, 30);
             this.cleaningRulesAddButton.TabIndex = 5;
@@ -131,13 +135,13 @@
             // 
             // extractRulesGroupBox
             // 
-            this.extractRulesGroupBox.Controls.Add(this.extractRulesAddButton);
+            this.extractRulesGroupBox.Controls.Add(this.extractRulesPanel);
             this.extractRulesGroupBox.Controls.Add(this.extractRulesnewColumnLabel);
             this.extractRulesGroupBox.Controls.Add(this.extractRulesPatternLabel);
             this.extractRulesGroupBox.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.extractRulesGroupBox.Location = new System.Drawing.Point(31, 404);
             this.extractRulesGroupBox.Name = "extractRulesGroupBox";
-            this.extractRulesGroupBox.Size = new System.Drawing.Size(895, 216);
+            this.extractRulesGroupBox.Size = new System.Drawing.Size(896, 236);
             this.extractRulesGroupBox.TabIndex = 3;
             this.extractRulesGroupBox.TabStop = false;
             this.extractRulesGroupBox.Text = "Extract Rules";
@@ -145,7 +149,7 @@
             // extractRulesAddButton
             // 
             this.extractRulesAddButton.Font = new System.Drawing.Font("Microsoft Sans Serif", 14.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.extractRulesAddButton.Location = new System.Drawing.Point(711, 96);
+            this.extractRulesAddButton.Location = new System.Drawing.Point(705, 21);
             this.extractRulesAddButton.Name = "extractRulesAddButton";
             this.extractRulesAddButton.Size = new System.Drawing.Size(40, 30);
             this.extractRulesAddButton.TabIndex = 8;
@@ -246,6 +250,24 @@
             this.saveAsToolStripMenuItem.Text = "SaveAs";
             this.saveAsToolStripMenuItem.Click += new System.EventHandler(this.saveAsToolStripMenuItem_Click);
             // 
+            // cleaningRulesPanel
+            // 
+            this.cleaningRulesPanel.AutoScroll = true;
+            this.cleaningRulesPanel.Controls.Add(this.cleaningRulesAddButton);
+            this.cleaningRulesPanel.Location = new System.Drawing.Point(6, 45);
+            this.cleaningRulesPanel.Name = "cleaningRulesPanel";
+            this.cleaningRulesPanel.Size = new System.Drawing.Size(884, 185);
+            this.cleaningRulesPanel.TabIndex = 6;
+            // 
+            // extractRulesPanel
+            // 
+            this.extractRulesPanel.AutoScroll = true;
+            this.extractRulesPanel.Controls.Add(this.extractRulesAddButton);
+            this.extractRulesPanel.Location = new System.Drawing.Point(6, 45);
+            this.extractRulesPanel.Name = "extractRulesPanel";
+            this.extractRulesPanel.Size = new System.Drawing.Size(884, 185);
+            this.extractRulesPanel.TabIndex = 4;
+            // 
             // DefineRules
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -271,6 +293,8 @@
             this.extractRulesGroupBox.PerformLayout();
             this.menuStrip1.ResumeLayout(false);
             this.menuStrip1.PerformLayout();
+            this.cleaningRulesPanel.ResumeLayout(false);
+            this.extractRulesPanel.ResumeLayout(false);
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -297,5 +321,7 @@
         private System.Windows.Forms.ToolStripMenuItem loadToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem saveToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem saveAsToolStripMenuItem;
+        private System.Windows.Forms.Panel cleaningRulesPanel;
+        private System.Windows.Forms.Panel extractRulesPanel;
     }
 }

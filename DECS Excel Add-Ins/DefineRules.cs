@@ -15,7 +15,7 @@ using Excel = Microsoft.Office.Interop.Excel;
 
 namespace DECS_Excel_Add_Ins
 {
-    public partial class DefineRules : Form
+    internal partial class DefineRules : Form
     {
         private NotesConfig config = new NotesConfig();
         private string configFilename = string.Empty;
@@ -27,11 +27,14 @@ namespace DECS_Excel_Add_Ins
         private readonly int BUTTON_Y_OFFSET = (int)(RulePanel.Height() - BUTTON_HEIGHT) / 2;
 
         private const int PANEL_X = 50;
-        private const int PANEL_Y = 46;
+        private const int PANEL_Y = 10;
         private readonly int Y_STEP = RulePanel.Height();
 
-        public DefineRules()
+        private NotesParser parser;
+
+        internal DefineRules(NotesParser parser)
         {
+            this.parser = parser;
             InitializeComponent();
             PopulateSourceColumnListBox();
             AddCleaningRule();
@@ -40,7 +43,7 @@ namespace DECS_Excel_Add_Ins
         private void AddCleaningRule(CleaningRule rule = null, bool updateConfig = true)
         {
             // How many do we have now?
-            List<Panel> cleaningRulePanels = FindPanelsNamed(parent: cleaningRulesGroupBox, keyword: "cleaningRules");
+            List<Panel> cleaningRulePanels = FindPanelsNamed(parent: cleaningRulesPanel, keyword: "cleaningRules");
             int nextIndex = cleaningRulePanels.Count;
             int panelY = PANEL_Y + (Y_STEP * nextIndex);
 
@@ -48,13 +51,17 @@ namespace DECS_Excel_Add_Ins
                 x: PANEL_X, 
                 y: panelY, 
                 index: nextIndex, 
-                parent: cleaningRulesGroupBox,
+                parent: cleaningRulesPanel,
                 notesConfig: config,
                 updateConfig: updateConfig);
 
             // Tell the cleaning rule panel to let us know when ITS parent (RulePanel)'s
             // Delete button is pressed.
             cleaningRulePanel.AssignExternalDelete(BumpUpCleaningAddButton);
+
+            // Have the cleaning rule panel tell us when text changes so
+            // we can invoke the ShowCleaningResult method.
+            cleaningRulePanel.AssignExternalRuleChanged(ShowCleaningResult);
             cleaningRulePanel.Populate(rule);
 
             // Add bump the Add button to line up below the new panel.
@@ -64,7 +71,7 @@ namespace DECS_Excel_Add_Ins
         private void AddExtractRule(ExtractRule rule = null, bool updateConfig = true)
         {
             // How many do we have now?
-            List<Panel> extractRulePanels = FindPanelsNamed(parent: extractRulesGroupBox, keyword: "extractRules");
+            List<Panel> extractRulePanels = FindPanelsNamed(parent: extractRulesPanel, keyword: "extractRules");
             int nextIndex = extractRulePanels.Count;
             int panelY = PANEL_Y + (Y_STEP * nextIndex);
 
@@ -72,13 +79,17 @@ namespace DECS_Excel_Add_Ins
                 x: PANEL_X,
                 y: panelY,
                 index: nextIndex,
-                parent: extractRulesGroupBox,
+                parent: extractRulesPanel,
                 notesConfig: config,
                 updateConfig: updateConfig);
 
             // Tell the cleaning rule panel to let us know when ITS parent (RulePanel)'s
             // Delete button is pressed.
             extractRulePanel.AssignExternalDelete(BumpUpExtractAddButton);
+
+            // Have the extract rule panel tell us when text changes so
+            // we can invoke the ShowExtractResult method.
+            extractRulePanel.AssignExternalRuleChanged(ShowExtractResult);
             extractRulePanel.Populate(rule);
 
             // Add bump the Add button to line up below the new panel.
@@ -91,13 +102,13 @@ namespace DECS_Excel_Add_Ins
             rules.AddRange(ExtractRules());
             return rules;
         }
-        public void BumpUpCleaningAddButton()
+        internal void BumpUpCleaningAddButton()
         {
             Point addButtonPosit = cleaningRulesAddButton.Location;
             addButtonPosit.Y -= Y_STEP;
             cleaningRulesAddButton.Location = addButtonPosit;
         }
-        public void BumpUpExtractAddButton()
+        internal void BumpUpExtractAddButton()
         {
             Point addButtonPosit = extractRulesAddButton.Location;
             addButtonPosit.Y -= Y_STEP;
@@ -105,7 +116,7 @@ namespace DECS_Excel_Add_Ins
         }
         private List<RulePanel> CleaningRules()
         {
-            List<Panel> cleaningRulePanels = cleaningRulesGroupBox.Controls.OfType<Panel>().ToList();
+            List<Panel> cleaningRulePanels = cleaningRulesPanel.Controls.OfType<Panel>().ToList();
 
             // Assemble the list of RulePanel objects to which these Panels belong
             // and invoke their Clear() method.
@@ -119,16 +130,14 @@ namespace DECS_Excel_Add_Ins
 
         private void clearButton_Click(object sender, EventArgs e)
         {
-            ClearConfigGui();
             DeleteAllRules();
 
             // Wipe out the accumulated object.
-            config = new NotesConfig();
-        }
-        private void ClearConfigGui()
-        {
-            List <RulePanel> rules = AllRules();
-            rules.ForEach(r => r.Clear());
+            this.config = new NotesConfig();
+            this.parser.UpdateConfig(this.config);
+
+            // Restore any cleaning/extraction done.
+            this.parser.ResetWorksheet();
         }
         private void DeleteAllRules()
         {
@@ -144,7 +153,7 @@ namespace DECS_Excel_Add_Ins
         }
         private List<RulePanel> ExtractRules()
         {
-            List<Panel> extractRulePanels = extractRulesGroupBox.Controls.OfType<Panel>().ToList();
+            List<Panel> extractRulePanels = extractRulesPanel.Controls.OfType<Panel>().ToList();
 
             // Assemble the list of RulePanel objects to which these Panels belong.
             List<RulePanel> rules = extractRulePanels.Select(o => (RulePanel)o.Tag).ToList();
@@ -154,7 +163,7 @@ namespace DECS_Excel_Add_Ins
         {
             AddExtractRule();
         }
-        private List<Panel> FindPanelsNamed(GroupBox parent, string keyword)
+        private List<Panel> FindPanelsNamed(Panel parent, string keyword)
         {
             List<Panel> panels = parent.Controls.OfType<Panel>().ToList();
             List<Panel> matchingPanels = panels.Where(b => b.Name.Contains(keyword)).ToList();
@@ -167,31 +176,50 @@ namespace DECS_Excel_Add_Ins
             columnNames.Sort();
             return columnNames;
         }
+        // We created a NotesParser object without a config object.
+        // Now that we're defining a NotesConfig object, let the NotesParser know about it.
+        private void InitializeConfig()
+        {
+            if (config.IsEmpty()) return;
+
+            if (this.parser.HasConfig()) return;
+
+            this.parser.UpdateConfig(this.config);
+        }
         private void loadToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            configFilename = NotesConfig.ChooseConfigFile();
-            NotesConfig configLoaded = NotesConfig.ReadConfigFile(configFilename);
+            this.configFilename = NotesConfig.ChooseConfigFile();
+            NotesConfig configLoaded = NotesConfig.ReadConfigFile(this.configFilename);
 
             if (configLoaded != null)
             {
                 // Initialize the NotesConfig object.
-                config = configLoaded;
+                this.config = configLoaded;
+
+                // Link it to the Parser.
+                this.parser.UpdateConfig(this.config);
 
                 // Clear what's already here.
-                ClearConfigGui();
                 DeleteAllRules();
 
-                // Create & populate boxes.
-                foreach(CleaningRule rule in config.CleaningRules)
+                // Create & populate boxes, but without changing the config variable,
+                // because that's already set.
+                foreach(CleaningRule rule in this.config.CleaningRules)
                 {
                     AddCleaningRule(rule: rule, updateConfig: false);
                 }
 
-                foreach (ExtractRule rule in config.ExtractRules)
+                foreach (ExtractRule rule in this.config.ExtractRules)
                 {
                     AddExtractRule(rule: rule, updateConfig: false);
                 }
+
+                // Roll the source column listbox to the proper column name.
+                SetSourceColumn(this.config.SourceColumn);
             }
+
+            ShowCleaningResult();
+            ShowExtractResult();
         }
         private void PopulateSourceColumnListBox()
         {
@@ -202,21 +230,14 @@ namespace DECS_Excel_Add_Ins
         private void PopulateSourceColumnListBox(string sourceColumn)
         {
             PopulateSourceColumnListBox();
-
-            try
-            {
-                sourceColumnListBox.SelectedItem = config.SourceColumn;
-            }
-            catch (Exception)
-            {
-            }
+            SetSourceColumn(sourceColumn);
         }
         private void Save()
         {
             using (var writer = new System.IO.StreamWriter(configFilename))
             {
                 var serializer = new XmlSerializer(typeof(NotesConfig));
-                serializer.Serialize(writer, config);
+                serializer.Serialize(writer, this.config);
                 writer.Flush();
             }
         }
@@ -232,9 +253,39 @@ namespace DECS_Excel_Add_Ins
                 using (var writer = new System.IO.StreamWriter(dialog.FileName))
                 {
                     var serializer = new XmlSerializer(typeof(NotesConfig));
-                    serializer.Serialize(writer, config);
+                    serializer.Serialize(writer, this.config);
                     writer.Flush();
                 }
+            }
+        }
+        private void SetSourceColumn(string sourceColumn)
+        {
+            try
+            {
+                sourceColumnListBox.SelectedItem = sourceColumn;
+            }
+            catch (Exception)
+            {
+            }
+        }
+        private void ShowCleaningResult()
+        {
+            // Need to tell the parser object that the rules have changed.
+            this.parser.UpdateConfig(configObj: this.config, updateOriginalSourceColumn: false);
+
+            if (this.config.CleaningRules.Count > 0)
+            {
+                this.parser.Clean();
+            }            
+        }
+        private void ShowExtractResult()
+        {
+            // Need to tell the parser object that the rules have changed.
+            this.parser.UpdateConfig(configObj: this.config, updateOriginalSourceColumn: false);
+
+            if (this.config.ExtractRules.Count > 0)
+            {
+                this.parser.Extract();
             }
         }
         private void saveAsToolStripMenuItem_Click(object sender, EventArgs e)
@@ -251,8 +302,20 @@ namespace DECS_Excel_Add_Ins
         }
         private void sourceColumnListBox_Selected(object sender, EventArgs e)
         {
-            string selectedColumn = sender.ToString();
-            config.SourceColumn = selectedColumn;
+            // Restore what was in the source column BEFORE we change the column.
+            this.parser.ResetWorksheet();
+
+            // Change the source column...
+            string selectedColumn = sourceColumnListBox.SelectedValue.ToString();
+            this.config.SourceColumn = selectedColumn;
+            this.parser.UpdateConfig(this.config);
+
+            // ...then save its original entries.
+            this.parser.SaveOriginalSourceColumn();
+
+            // Show results of rules on NEW source column.
+            ShowCleaningResult();
+            ShowExtractResult();
         }
     }
 }
