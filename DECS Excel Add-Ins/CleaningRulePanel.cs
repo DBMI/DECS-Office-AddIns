@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
-using GroupBox = System.Windows.Forms.GroupBox;
+using Panel = System.Windows.Forms.Panel;
 using TextBox = System.Windows.Forms.TextBox;
 
 namespace DECS_Excel_Add_Ins
@@ -14,9 +14,10 @@ namespace DECS_Excel_Add_Ins
     {
         private NotesConfig config;
         private Action parentDeleteAction;
+        private Action parentRuleChangedAction;
         private bool textChangedCallbackEnabled = true;
 
-        public CleaningRulePanel(int x, int y, int index, GroupBox parent, NotesConfig notesConfig, bool updateConfig = true) : base(x, y, index, parent, "cleaningRules") 
+        public CleaningRulePanel(int x, int y, int index, Panel parent, NotesConfig notesConfig, bool updateConfig = true) : base(x, y, index, parent, "cleaningRules") 
         {
             config = notesConfig;
             leftHandTextBox.TextChanged += cleaningRulesPatternTextBox_TextChanged;
@@ -38,8 +39,12 @@ namespace DECS_Excel_Add_Ins
         {
             parentDeleteAction = deleteAction;
         }
+        public void AssignExternalRuleChanged(Action ruleChangedAction)
+        {
+            parentRuleChangedAction = ruleChangedAction;
+        }
         // Extract the text & add to this cleaning rule.
-        public void cleaningRulesPatternTextBox_TextChanged(object sender, EventArgs e)
+        private void cleaningRulesPatternTextBox_TextChanged(object sender, EventArgs e)
         {
             if (!textChangedCallbackEnabled) return;
 
@@ -54,6 +59,9 @@ namespace DECS_Excel_Add_Ins
 
                 // Insert or update Nth cleaning rule with this pattern.
                 config.ChangeCleaningRulePattern(index: index, pattern: textBox.Text);
+
+                // Alert upper-level GUI.
+                parentRuleChangedAction();
             }
             catch (ArgumentException)
             {
@@ -80,6 +88,9 @@ namespace DECS_Excel_Add_Ins
 
                 // Insert or update Nth cleaning rule with this replace string.
                 config.ChangeCleaningRuleReplace(index: index, replace: textBox.Text);
+
+                // Alert upper-level GUI.
+                parentRuleChangedAction();
             }
             catch (ArgumentException)
             {

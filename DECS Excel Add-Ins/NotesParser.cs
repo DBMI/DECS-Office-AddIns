@@ -15,55 +15,63 @@ namespace DECS_Excel_Add_Ins
     internal class NotesParser
     {
         private NotesConfig config;
+        private int lastCol;
         private int lastRow;
+        private List<string> originalColumnNames;
+        private List<string> originalSourceColumnEntries;
         private Range sourceColumn;
         private Worksheet worksheet;
 
-        public NotesParser(Worksheet worksheet)
+        public NotesParser(Worksheet worksheet, bool withConfigFile = true)
         {
             this.worksheet = worksheet;
 
-            string configFilename = NotesConfig.ChooseConfigFile();
-            this.config = NotesConfig.ReadConfigFile(configFilename);
-
-            // If no config already defined, we probably should offer to start defining a config file.
-            if (this.config == null) { return; }
-
-            // Find the top of the source column.
-            Range rng = Utilities.TopOfNamedColumn(sheet: worksheet, columnName: this.config.SourceColumn);
-
-            if (rng == null)
-            {
-                Utilities.WarnColumnNotFound(this.config.SourceColumn);
-                return; 
-            }
-
-            this.sourceColumn = rng;
-
-            // Identify last row.
+            // Identify last row, column.
+            this.lastCol = Utilities.FindLastCol(sheet: worksheet);
             this.lastRow = Utilities.FindLastRow(sheet: worksheet);
+
+            // Remember what it looked like before any additional extracted columns were added.
+            this.originalColumnNames = Utilities.GetColumnNames(worksheet);
+
+            if (withConfigFile)
+            {
+                string configFilename = NotesConfig.ChooseConfigFile();
+                NotesConfig configObj = NotesConfig.ReadConfigFile(configFilename);
+                UpdateConfig(configObj);
+            }
         }
         // Apply cleaning rules.
-        private void Clean()
+        internal void Clean()
         {
+            if (!HasConfig()) return;
+
+            RestoreOriginalSourceColumn();
             Range thisCell;
 
             // Run down the source column (skipping the header row), applying each cleaning rule.
             for (int row_offset = 1; row_offset < this.lastRow; row_offset++)
             {
                 thisCell = this.sourceColumn.Offset[row_offset, 0];
-                string cell_contents = thisCell.Value2;
+                string cell_contents = thisCell.Value2.ToString();
 
                 foreach (CleaningRule rule in config.CleaningRules)
                 {
-                    cell_contents = Regex.Replace(cell_contents, rule.pattern, rule.replace);
+                    try
+                    {
+                        cell_contents = Regex.Replace(cell_contents, rule.pattern, rule.replace);
+                    }
+                    catch (System.ArgumentNullException)
+                    {
+                    }
                 }
 
                 thisCell.Value2 = cell_contents;
             }
         }
-        private void Extract()
+        internal void Extract()
         {
+            if (!HasConfig()) return;
+
             Range thisCell;
 
             // Run down the source column (skipping the header row),
@@ -71,10 +79,13 @@ namespace DECS_Excel_Add_Ins
             for (int row_offset = 1; row_offset < this.lastRow; row_offset++)
             {
                 thisCell = this.sourceColumn.Offset[row_offset, 0];
-                string cell_contents = thisCell.Value;
+                string cell_contents = thisCell.Value.ToString();
 
                 foreach (ExtractRule rule in config.ExtractRules)
                 {
+                    // Don't create new columns with blank names.
+                    if (rule.newColumn is null || rule.newColumn.Length == 0) continue;
+
                     Range targetRng = Utilities.TopOfNamedColumn(sheet: this.worksheet, columnName: rule.newColumn);
 
                     if (targetRng == null)
@@ -82,19 +93,31 @@ namespace DECS_Excel_Add_Ins
                         targetRng = Utilities.InsertnewColumn(range: this.sourceColumn, newColumnName: rule.newColumn);
                     }
 
-                    Match match = Regex.Match(cell_contents, rule.pattern);
-
-                    // Did we match?
-                    if (match.Groups.Count > 1)
+                    try
                     {
-                        targetRng.Offset[row_offset, 0].Value = match.Groups[1].Value;
+                        Match match = Regex.Match(cell_contents, rule.pattern);
+
+                        // Did we match?
+                        if (match.Groups.Count > 1)
+                        {
+                            targetRng.Offset[row_offset, 0].Value = match.Groups[1].Value;
+                        }
+                    }
+                    catch (System.ArgumentNullException)
+                    {
                     }
                 }
             }
-
         }
-        public void Parse()
-        {   
+        internal bool HasConfig()
+        {
+            return config != null && 
+                config.SourceColumn != string.Empty;
+        }
+        internal void Parse()
+        {
+            if (!HasConfig()) return;
+
             // Apply cleaning rules.
             Clean();
 
@@ -104,8 +127,74 @@ namespace DECS_Excel_Add_Ins
             // Save a copy of the revised workbook.
             SaveRevised();
         }
+        internal void ResetWorksheet()
+        {
+            RestoreOriginalColumns();
+            RestoreOriginalSourceColumn();
+        }
+        // Can't just walk through the list of columns and delete the new ones, 
+        // because--as they're deleted--the numbering changes.
+        private void RestoreOriginalColumns()
+        {
+            bool removedColumn = false;
+            int numColumns = Utilities.FindLastCol(this.worksheet);
+            Range thisCell = (Range)this.worksheet.Cells[1, 1];
+
+            // Scan along the header row and delete columns that aren't original.
+            for (int col_offset = 0; col_offset < numColumns; col_offset++)
+            {
+                string thisColumnName = thisCell.Offset[0, col_offset].Value2.ToString();
+
+                if (!originalColumnNames.Contains(thisColumnName))
+                {
+                    thisCell.Offset[0, col_offset].EntireColumn.Delete();
+                    removedColumn = true;
+                    break;
+                }
+            }
+
+            if (removedColumn)
+            {
+                // Repeat until we there are no more added columns found.
+                RestoreOriginalColumns();
+            }
+
+            // Need to refresh this count, now that we may have deleted a column.
+            this.lastCol = Utilities.FindLastCol(this.worksheet);
+        }
+        private void RestoreOriginalSourceColumn()
+        {
+            if (!HasConfig()) return;
+
+            Range thisCell;
+
+            // Run down the source column (skipping the header row),
+            // and restore its UNcleaned contents.
+            for (int row_offset = 1; row_offset < this.lastRow; row_offset++)
+            {
+                thisCell = this.sourceColumn.Offset[row_offset, 0];
+                thisCell.Value2 = originalSourceColumnEntries[row_offset - 1];
+            }
+        }
+        public void SaveOriginalSourceColumn()
+        {
+            if (!HasConfig()) return;
+
+            originalSourceColumnEntries = new List<string>();
+            Range thisCell;
+
+            // Run down the source column (skipping the header row),
+            // and save its UNcleaned contents.
+            for (int row_offset = 1; row_offset < this.lastRow; row_offset++)
+            {
+                thisCell = this.sourceColumn.Offset[row_offset, 0];
+                originalSourceColumnEntries.Add(thisCell.Value2.ToString());
+            }
+        }
         private void SaveRevised()
         {
+            if (!HasConfig()) return;
+
             Workbook workbook = this.worksheet.Parent;
             string filename = workbook.FullName;
             string directory = System.IO.Path.GetDirectoryName(filename);
@@ -118,16 +207,38 @@ namespace DECS_Excel_Add_Ins
             }
             catch (System.Runtime.InteropServices.COMException)
             {
-                newFilename = System.IO.Path.Combine(justTheFilename + "_revised");
+                newFilename = System.IO.Path.Combine(justTheFilename + "_" + Utilities.GetTimestamp());
                 workbook.SaveAs(newFilename, XlSaveAsAccessMode.xlNoChange);
             }
 
             MessageBox.Show("Saved in '" + newFilename + "'.");
         }
-        //private void SaveTemp()
-        //{
-        //    Workbook workbook = this.worksheet.Parent;
-        //    workbook.SaveCopyAs(@"C:\tmp\inprogress.xls");
-        //}
+        // Add config structure AFTER instantiation.
+        internal void UpdateConfig(NotesConfig configObj, bool updateOriginalSourceColumn = true)
+        {
+            // If no config already defined, we probably should offer to start defining a config file.
+            if (configObj == null) { return; }
+
+            this.config = configObj;
+
+            if (this.config.SourceColumn == string.Empty) return;
+
+            // Find the top of the source column.
+            Range rng = Utilities.TopOfNamedColumn(sheet: worksheet, columnName: this.config.SourceColumn);
+
+            if (rng == null)
+            {
+                Utilities.WarnColumnNotFound(this.config.SourceColumn);
+                return;
+            }
+
+            this.sourceColumn = rng;
+
+            if (updateOriginalSourceColumn)
+            {
+                // Save the uncleaned source column.
+                SaveOriginalSourceColumn();
+            }
+        }
     }
 }

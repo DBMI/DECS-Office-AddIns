@@ -42,7 +42,9 @@ namespace DECS_Excel_Add_Ins
         }
         public void OnSearchConfig(Office.IRibbonControl control)
         {
-            DefineRules form = new DefineRules();
+            Excel.Worksheet wksheet = (Excel.Worksheet)Globals.ThisAddIn.Application.ActiveSheet;
+            NotesParser parser = new NotesParser(worksheet: wksheet, withConfigFile: false);
+            DefineRules form = new DefineRules(parser);
             form.Visible = true;
         }
         public Bitmap notesConfigButton_GetImage(IRibbonControl control)
@@ -52,9 +54,8 @@ namespace DECS_Excel_Add_Ins
         public void OnSearchNotes(Office.IRibbonControl control)
         {
             Excel.Worksheet wksheet = (Excel.Worksheet)Globals.ThisAddIn.Application.ActiveSheet;
-            NotesParser parser = new NotesParser(wksheet);
+            NotesParser parser = new NotesParser(worksheet: wksheet);
             parser.Parse();
-
         }
         public Bitmap notesSearchButton_GetImage(IRibbonControl control)
         {
