@@ -42,6 +42,8 @@ namespace DECS_Excel_Add_Ins
         }
         public void OnSearchConfig(Office.IRibbonControl control)
         {
+            DefineRules form = new DefineRules();
+            form.Visible = true;
         }
         public Bitmap notesConfigButton_GetImage(IRibbonControl control)
         {

@@ -5,6 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using System.Xml.Linq;
 
 namespace DECS_Excel_Add_Ins
 {
@@ -30,7 +31,24 @@ namespace DECS_Excel_Add_Ins
             // Detect Last used Row, including cells that contains formulas that result in blank values
             return sheet.UsedRange.Rows.Count;
         }
-        internal static Range InsertNewColumn(Range range, string newColumnName)
+        internal static List<string> GetColumnNames(Worksheet sheet)
+        {
+            List<string> names = new List<string>();
+            Range range = (Range)sheet.Cells[1, 1];
+            int lastUsedCol = Utilities.FindLastCol(sheet);
+
+            // Search along row 1.
+            for (int col_index = 1; col_index < lastUsedCol; col_index++)
+            {
+                names.Add(range.Value.ToString());
+
+                // Move over one column.
+                range = range.Offset[0, 1];
+            }
+
+            return names;
+        }
+        internal static Range InsertnewColumn(Range range, string newColumnName)
         {
             int columnNumber = range.Column;
             Worksheet sheet = range.Worksheet;
@@ -39,6 +57,20 @@ namespace DECS_Excel_Add_Ins
             Range newRange = range.Offset[0, -1];
             newRange.Value2 = newColumnName;
             return newRange;
+        }
+        internal static int? ParseIndexFromName(string name)
+        {
+            string numericalPart = name.Substring(Math.Max(0, name.Length - 1));
+            int index;
+
+            if (Int32.TryParse(numericalPart, out index)) 
+            {
+                return index;
+            }
+            else
+            {
+                return null;
+            }
         }
         internal static Range TopOfNamedColumn(Worksheet sheet, string columnName)
         {

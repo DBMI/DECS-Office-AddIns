@@ -79,5 +79,15 @@ namespace DECS_Excel_Add_Ins.Properties {
                 return ((System.Drawing.Bitmap)(obj));
             }
         }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Icon similar to (Icon).
+        /// </summary>
+        internal static System.Drawing.Icon school_of_medicine {
+            get {
+                object obj = ResourceManager.GetObject("school_of_medicine", resourceCulture);
+                return ((System.Drawing.Icon)(obj));
+            }
+        }
     }
 }

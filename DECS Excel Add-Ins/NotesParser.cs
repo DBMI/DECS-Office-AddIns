@@ -75,23 +75,19 @@ namespace DECS_Excel_Add_Ins
 
                 foreach (ExtractRule rule in config.ExtractRules)
                 {
-                    Range targetRng = Utilities.TopOfNamedColumn(sheet: this.worksheet, columnName: rule.new_column);
+                    Range targetRng = Utilities.TopOfNamedColumn(sheet: this.worksheet, columnName: rule.newColumn);
 
                     if (targetRng == null)
                     {
-                        targetRng = Utilities.InsertNewColumn(range: this.sourceColumn, newColumnName: rule.new_column);
+                        targetRng = Utilities.InsertnewColumn(range: this.sourceColumn, newColumnName: rule.newColumn);
                     }
 
-                    foreach(Pattern pat in rule.Patterns)
-                    {
-                        Match match = Regex.Match(cell_contents, pat.pattern);
+                    Match match = Regex.Match(cell_contents, rule.pattern);
 
-                        // Did we match?
-                        if (match.Groups.Count > 1)
-                        {
-                            targetRng.Offset[row_offset, 0].Value = match.Groups[1].Value;
-                            break;  // Don't need to search any more patterns for this rule.
-                        }
+                    // Did we match?
+                    if (match.Groups.Count > 1)
+                    {
+                        targetRng.Offset[row_offset, 0].Value = match.Groups[1].Value;
                     }
                 }
             }
