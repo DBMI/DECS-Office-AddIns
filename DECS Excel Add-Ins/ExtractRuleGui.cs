@@ -10,14 +10,14 @@ using TextBox = System.Windows.Forms.TextBox;
 
 namespace DECS_Excel_Add_Ins
 {
-    internal class ExtractRulePanel : RulePanel
+    internal class ExtractRuleGui : RuleGui
     {
         private NotesConfig config;
-        private Action parentDeleteAction;
+        private Action<RuleGui> parentDeleteAction;
         private Action parentRuleChangedAction;
         private bool textChangedCallbackEnabled = true;
 
-        public ExtractRulePanel(int x, int y, int index, Panel parent, NotesConfig notesConfig, bool updateConfig = true) : base(x, y, index, parent, "extractRules")
+        public ExtractRuleGui(int x, int y, int index, Panel parent, NotesConfig notesConfig, bool updateConfig = true) : base(x, y, index, parent, "extractRules")
         {
             config = notesConfig;
             leftHandTextBox.TextChanged += extractRulesPatternTextBox_TextChanged;
@@ -27,7 +27,7 @@ namespace DECS_Excel_Add_Ins
             // we don't want to modify the object.
             if (updateConfig)
             {
-                // There needs to be an ExtractRule object (even if it's an empty placeholder) for every ExtractRulePanel object.
+                // There needs to be an ExtractRule object (even if it's an empty placeholder) for every ExtractRuleGui object.
                 config.AddExtractRule();
             }
 
@@ -35,7 +35,7 @@ namespace DECS_Excel_Add_Ins
             // it's an extract rule that needs to be deleted.
             base.AssignDelete(this.DeleteRule);
         }
-        public void AssignExternalDelete(Action deleteAction)
+        public void AssignExternalDelete(Action<RuleGui> deleteAction)
         {
             parentDeleteAction = deleteAction;
         }
@@ -50,14 +50,14 @@ namespace DECS_Excel_Add_Ins
             rightHandTextBox.Text = string.Empty;
             textChangedCallbackEnabled = true;
         }
-        // The RulePanel class handles the GUI stuff but this derived class needs to 'talk' to the NotesConfig structure
+        // The RuleGui class handles the GUI stuff but this derived class needs to 'talk' to the NotesConfig structure
         // because we know it's an >extract< rule.
-        // Also, because the DefineRules class creates THIS class (and not the parent RulePanel class),
+        // Also, because the DefineRules class creates THIS class (and not the parent RuleGui class),
         // we'll pass the delete action along to the DefineRules class to tell it to bump the extract Add button upwards.
-        protected void DeleteRule()
+        protected void DeleteRule(RuleGui ruleGui)
         {
-            config.DeleteExtractRule(index: index);
-            parentDeleteAction();
+            config.DeleteExtractRule(index: this.index);
+            parentDeleteAction(ruleGui);
         }
         private void extractRulesPatternTextBox_TextChanged(object sender, EventArgs e)
         {

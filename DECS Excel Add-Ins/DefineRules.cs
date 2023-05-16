@@ -1,4 +1,5 @@
-﻿using Microsoft.VisualStudio.Tools.Applications.Runtime;
+﻿using Microsoft.Office.Core;
+using Microsoft.VisualStudio.Tools.Applications.Runtime;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -11,6 +12,7 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 using System.Xml.Serialization;
 using static System.Windows.Forms.VisualStyles.VisualStyleElement;
+using Button = System.Windows.Forms.Button;
 using Excel = Microsoft.Office.Interop.Excel;
 
 namespace DECS_Excel_Add_Ins
@@ -23,12 +25,15 @@ namespace DECS_Excel_Add_Ins
         private const int BUTTON_HEIGHT = 30;
         private readonly Font BUTTON_FONT = new Font("Microsoft San Serif", 14.25f, FontStyle.Bold);
         private const int BUTTON_WIDTH = 40;
-        private const int BUTTON_X = 715;
-        private readonly int BUTTON_Y_OFFSET = (int)(RulePanel.Height() - BUTTON_HEIGHT) / 2;
+        private const int BUTTON_X = 1275;
+        private readonly int BUTTON_Y_OFFSET = (int)(RuleGui.Height() - BUTTON_HEIGHT) / 2;
 
-        private const int PANEL_X = 50;
+        private const int PANEL_X = 5;
         private const int PANEL_Y = 10;
-        private readonly int Y_STEP = RulePanel.Height();
+        private readonly int Y_STEP = RuleGui.Height();
+
+        private List<RuleGui> cleaningRules = new List<RuleGui>();
+        private List<RuleGui> extractRules = new List<RuleGui>();
 
         private NotesParser parser;
 
@@ -43,11 +48,10 @@ namespace DECS_Excel_Add_Ins
         private void AddCleaningRule(CleaningRule rule = null, bool updateConfig = true)
         {
             // How many do we have now?
-            List<Panel> cleaningRulePanels = FindPanelsNamed(parent: cleaningRulesPanel, keyword: "cleaningRules");
-            int nextIndex = cleaningRulePanels.Count;
+            int nextIndex = NumRulesThisType(parent: cleaningRulesPanel);
             int panelY = PANEL_Y + (Y_STEP * nextIndex);
 
-            CleaningRulePanel cleaningRulePanel = new CleaningRulePanel(
+            CleaningRuleGui cleaningRuleGui = new CleaningRuleGui(
                 x: PANEL_X, 
                 y: panelY, 
                 index: nextIndex, 
@@ -55,27 +59,28 @@ namespace DECS_Excel_Add_Ins
                 notesConfig: config,
                 updateConfig: updateConfig);
 
-            // Tell the cleaning rule panel to let us know when ITS parent (RulePanel)'s
+            // Tell the cleaning rule panel to let us know when ITS parent (RuleGui)'s
             // Delete button is pressed.
-            cleaningRulePanel.AssignExternalDelete(BumpUpCleaningAddButton);
+            cleaningRuleGui.AssignExternalDelete(DeleteCleaningRule);
 
             // Have the cleaning rule panel tell us when text changes so
             // we can invoke the ShowCleaningResult method.
-            cleaningRulePanel.AssignExternalRuleChanged(ShowCleaningResult);
-            cleaningRulePanel.Populate(rule);
+            cleaningRuleGui.AssignExternalRuleChanged(ShowCleaningResult);
+            cleaningRuleGui.Populate(rule);
 
-            // Add bump the Add button to line up below the new panel.
-            Point addButtonPosit = new Point(BUTTON_X, panelY + Y_STEP + BUTTON_Y_OFFSET);
-            cleaningRulesAddButton.Location = addButtonPosit;
+            // Keep a list.
+            cleaningRules.Add(cleaningRuleGui);
+
+            // Line everything up.
+            RearrangeCleaningControls();
         }
         private void AddExtractRule(ExtractRule rule = null, bool updateConfig = true)
         {
             // How many do we have now?
-            List<Panel> extractRulePanels = FindPanelsNamed(parent: extractRulesPanel, keyword: "extractRules");
-            int nextIndex = extractRulePanels.Count;
+            int nextIndex = NumRulesThisType(parent: extractRulesPanel);
             int panelY = PANEL_Y + (Y_STEP * nextIndex);
 
-            ExtractRulePanel extractRulePanel = new ExtractRulePanel(
+            ExtractRuleGui extractRuleGui = new ExtractRuleGui(
                 x: PANEL_X,
                 y: panelY,
                 index: nextIndex,
@@ -83,51 +88,39 @@ namespace DECS_Excel_Add_Ins
                 notesConfig: config,
                 updateConfig: updateConfig);
 
-            // Tell the cleaning rule panel to let us know when ITS parent (RulePanel)'s
+            // Tell the cleaning rule panel to let us know when ITS parent (RuleGui)'s
             // Delete button is pressed.
-            extractRulePanel.AssignExternalDelete(BumpUpExtractAddButton);
+            extractRuleGui.AssignExternalDelete(DeleteExtractRule);
 
             // Have the extract rule panel tell us when text changes so
             // we can invoke the ShowExtractResult method.
-            extractRulePanel.AssignExternalRuleChanged(ShowExtractResult);
-            extractRulePanel.Populate(rule);
+            extractRuleGui.AssignExternalRuleChanged(ShowExtractResult);
+            extractRuleGui.Populate(rule);
 
-            // Add bump the Add button to line up below the new panel.
-            Point addButtonPosit = new Point(BUTTON_X, panelY + Y_STEP + BUTTON_Y_OFFSET);
-            extractRulesAddButton.Location = addButtonPosit;
+            // Keep a list.
+            extractRules.Add(extractRuleGui);
+
+            // Line everything up.
+            RearrangeExtractControls();
         }
-        private List<RulePanel> AllRules()
+        private List<RuleGui> AllRules()
         {
-            List<RulePanel> rules = CleaningRules();
+            List<RuleGui> rules = CleaningRules();
             rules.AddRange(ExtractRules());
             return rules;
         }
-        internal void BumpUpCleaningAddButton()
+        private List<RuleGui> CleaningRules()
         {
-            Point addButtonPosit = cleaningRulesAddButton.Location;
-            addButtonPosit.Y -= Y_STEP;
-            cleaningRulesAddButton.Location = addButtonPosit;
-        }
-        internal void BumpUpExtractAddButton()
-        {
-            Point addButtonPosit = extractRulesAddButton.Location;
-            addButtonPosit.Y -= Y_STEP;
-            extractRulesAddButton.Location = addButtonPosit;
-        }
-        private List<RulePanel> CleaningRules()
-        {
-            List<Panel> cleaningRulePanels = cleaningRulesPanel.Controls.OfType<Panel>().ToList();
+            List<Panel> cleaningRuleGuis = cleaningRulesPanel.Controls.OfType<Panel>().ToList();
 
-            // Assemble the list of RulePanel objects to which these Panels belong
-            // and invoke their Clear() method.
-            List<RulePanel> rules = cleaningRulePanels.Select(o => (RulePanel)o.Tag).ToList();
+            // Assemble the list of RuleGui objects to which these Panels belong.
+            List<RuleGui> rules = cleaningRuleGuis.Select(o => (RuleGui)o.Tag).ToList();
             return rules;
         }
         private void cleaningRulesAddButton_Click(object sender, EventArgs e)
         {
             AddCleaningRule();
         }
-
         private void clearButton_Click(object sender, EventArgs e)
         {
             DeleteAllRules();
@@ -141,50 +134,58 @@ namespace DECS_Excel_Add_Ins
         }
         private void DeleteAllRules()
         {
-            List<RulePanel> rules = AllRules();
+            List<RuleGui> rules = AllRules();
 
             // Start with the highest indices & delete in descending order.
-            // (So we don't try to delete objects who've already changed their index.)
+            // (So we don't try to delete objects which have already changed their index.)
             rules.OrderByDescending(x => x.Index()).ToList().ForEach(r => r.Delete());
+        }
+        internal void DeleteCleaningRule(RuleGui cleaningRuleGui)
+        {
+            // Remove this RuleGui from the controls.
+            cleaningRulesPanel.Controls.Remove(cleaningRuleGui.PanelObj);
+
+            // Remove from our list of CleaningRuleGui objects.
+            cleaningRules.RemoveAll(r => r == cleaningRuleGui);
+
+            cleaningRuleGui.PanelObj.Dispose();
+
+            RearrangeCleaningControls();
+        }
+        internal void DeleteExtractRule(RuleGui extractRuleGui)
+        {
+            // Remove this RuleGui from the controls.
+            extractRulesPanel.Controls.Remove(extractRuleGui.PanelObj);
+
+            // Remove from our list of CleaningRuleGui objects.
+            extractRules.RemoveAll(r => r == extractRuleGui);
+
+            extractRuleGui.PanelObj.Dispose();
+
+            RearrangeExtractControls();
         }
         private void discardButton_Click(object sender, EventArgs e)
         {
             Close();
         }
-        private List<RulePanel> ExtractRules()
+        private List<RuleGui> ExtractRules()
         {
-            List<Panel> extractRulePanels = extractRulesPanel.Controls.OfType<Panel>().ToList();
+            List<Panel> extractRuleGuis = extractRulesPanel.Controls.OfType<Panel>().ToList();
 
-            // Assemble the list of RulePanel objects to which these Panels belong.
-            List<RulePanel> rules = extractRulePanels.Select(o => (RulePanel)o.Tag).ToList();
+            // Assemble the list of RuleGui objects to which these Panels belong.
+            List<RuleGui> rules = extractRuleGuis.Select(o => (RuleGui)o.Tag).ToList();
             return rules;
         }
         private void extractRulesAddButton_Click(object sender, EventArgs e)
         {
             AddExtractRule();
         }
-        private List<Panel> FindPanelsNamed(Panel parent, string keyword)
-        {
-            List<Panel> panels = parent.Controls.OfType<Panel>().ToList();
-            List<Panel> matchingPanels = panels.Where(b => b.Name.Contains(keyword)).ToList();
-            return matchingPanels;
-        }        
         private List<string> GetAvailableColumnNames()
         {
             Excel.Worksheet wksheet = (Excel.Worksheet)Globals.ThisAddIn.Application.ActiveSheet;
             List<string> columnNames = Utilities.GetColumnNames(wksheet);
             columnNames.Sort();
             return columnNames;
-        }
-        // We created a NotesParser object without a config object.
-        // Now that we're defining a NotesConfig object, let the NotesParser know about it.
-        private void InitializeConfig()
-        {
-            if (config.IsEmpty()) return;
-
-            if (this.parser.HasConfig()) return;
-
-            this.parser.UpdateConfig(this.config);
         }
         private void loadToolStripMenuItem_Click(object sender, EventArgs e)
         {
@@ -221,16 +222,50 @@ namespace DECS_Excel_Add_Ins
             ShowCleaningResult();
             ShowExtractResult();
         }
+        private int NumPanelsThisType(Panel parent)
+        {
+            List<Panel> panels = parent.Controls.OfType<Panel>().ToList();
+            return panels.Count;
+        }
+        private int NumRulesThisType(Panel parent)
+        {
+            List<Panel> panels = parent.Controls.OfType<Panel>().ToList();
+            List<RuleGui> rulesThisType = panels.Select(o => (RuleGui)o.Tag).ToList();
+            return rulesThisType.Count;
+        }
         private void PopulateSourceColumnListBox()
         {
             sourceColumnListBox.DataSource = null;
             sourceColumnListBox.Items.Clear();
             sourceColumnListBox.DataSource = GetAvailableColumnNames();
         }
-        private void PopulateSourceColumnListBox(string sourceColumn)
+        private void RearrangeControls(List<RuleGui> rules, Button addButton)
         {
-            PopulateSourceColumnListBox();
-            SetSourceColumn(sourceColumn);
+            int panelY = PANEL_Y + Y_STEP;
+
+            if (rules != null && rules.Count > 0)
+            {
+                foreach (RuleGui ruleGui in rules)
+                {
+                    if (ruleGui != null)
+                    {
+                        panelY = PANEL_Y + (Y_STEP * ruleGui.Index());
+                        ruleGui.ResetLocation(x: PANEL_X, y: panelY);
+                    }
+                }
+            }
+
+            panelY = PANEL_Y + (Y_STEP * rules.Count);
+            Point addButtonPosit = new Point(BUTTON_X, panelY + BUTTON_Y_OFFSET);
+            addButton.Location = addButtonPosit;
+        }
+        internal void RearrangeCleaningControls()
+        {
+            RearrangeControls(rules: this.cleaningRules, addButton: cleaningRulesAddButton);
+        }
+        internal void RearrangeExtractControls()
+        {
+            RearrangeControls(rules: this.extractRules, addButton: extractRulesAddButton);
         }
         private void Save()
         {

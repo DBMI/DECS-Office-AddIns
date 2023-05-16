@@ -15,23 +15,23 @@ using TextBox = System.Windows.Forms.TextBox;
 namespace DECS_Excel_Add_Ins
 {
     // A set of controls: two textboxes, a delete button and the panel that contains them all.
-    internal abstract class RulePanel
+    internal abstract class RuleGui
     {
         private const int BOX_HEIGHT = 22;
         private readonly Font BOX_FONT = new Font("Microsoft San Serif", 9.75f, FontStyle.Regular);
-        private const int BOX_WIDTH = 250;
+        private const int BOX_WIDTH = 600;
 
         private const int BUTTON_HEIGHT = 30;
         private readonly Font BUTTON_FONT = new Font("Microsoft San Serif", 14.25f, FontStyle.Bold);
         private const int BUTTON_WIDTH = 40;
-        private const int BUTTON_X = 665;
+        private const int BUTTON_X = 1270;
         private readonly int BUTTON_Y_OFFSET = (int)(BOX_HEIGHT - BUTTON_HEIGHT) / 2;
 
-        private const int leftHandX = 35;
-        private const int rightHandX = 365;
+        private const int leftHandX = 5;
+        private const int rightHandX = 640;
         private readonly int boxY = (int) BOX_HEIGHT/2;
 
-        private Panel panel;
+        protected Panel panel;
         private Panel parent;
         protected TextBox leftHandTextBox;
         protected TextBox rightHandTextBox;
@@ -40,25 +40,25 @@ namespace DECS_Excel_Add_Ins
         protected int index;
         private string keyword;
 
-        private static int width = 750;
+        private static int width = 1316;
         private static int height = 44;
 
-        private System.Action inheritedClassDeleteAction;
+        private System.Action<RuleGui> inheritedClassDeleteAction;
 
-        public RulePanel(int x, int y, int index, Panel parentObj, string ruleType)
+        public RuleGui(int x, int y, int index, Panel parentObj, string ruleType)
         {
             this.index = index;
-            parent = parentObj;
-            keyword = ruleType;
+            this.parent = parentObj;
+            this.keyword = ruleType;
 
             this.panel = new Panel();
             this.panel.Height = height;
             this.panel.Location = new Point(x, y);
-            this.panel.Name = ruleType;
+            this.panel.Name = this.keyword;
             this.panel.Parent = parent;
-            this.panel.Tag = this;      // So that, if we find the Panel GUI object, we can find the RulePanel object.
+            this.panel.Tag = this;      // So that, if we find the Panel object, we can find its associated RuleGui object.
             this.panel.Width = width;
-            parent.Controls.Add(this.panel);
+            this.parent.Controls.Add(this.panel);
 
             // Create and position boxes.
             this.leftHandTextBox = new System.Windows.Forms.TextBox();
@@ -67,7 +67,7 @@ namespace DECS_Excel_Add_Ins
             this.leftHandTextBox.Height = BOX_HEIGHT;
             Point leftHandPosit = new Point(leftHandX, boxY);
             this.leftHandTextBox.Location = leftHandPosit;
-            this.leftHandTextBox.Name = ruleType + "LeftTextBox";
+            this.leftHandTextBox.Name = this.keyword + "LeftTextBox";
             this.leftHandTextBox.Width = BOX_WIDTH;
 
             this.rightHandTextBox = new TextBox();
@@ -76,7 +76,7 @@ namespace DECS_Excel_Add_Ins
             this.rightHandTextBox.Height = BOX_HEIGHT;
             Point rightHandPosit = new Point(rightHandX, boxY);
             this.rightHandTextBox.Location = rightHandPosit;
-            this.rightHandTextBox.Name = ruleType + "RightTextBox";
+            this.rightHandTextBox.Name = this.keyword + "RightTextBox";
             this.rightHandTextBox.Width = BOX_WIDTH;
 
             // Create new delete button.
@@ -97,13 +97,13 @@ namespace DECS_Excel_Add_Ins
         }
         // This class creates the Delete button and handles disposing of the GUI elements
         // but knows nothing of the NotesConfig object being built.
-        // So classes which inherit RulePanel (CleaningRulePanel & ExtractRulePanel)
+        // So classes which inherit RuleGui (CleaningRuleGui & ExtractRuleGui)
         // and DO know about NotesConfig need to be able to assign actions that fire
         // when our our Delete button is pressed.
         // Similarly, the DefineRule Class owns the AddButton and needs to move the
         // button up when a rule is deleted, so it provides ITS callback to the 
-        // CleaningRulePanel and ExtractRulePanel classes to invoke.
-        protected void AssignDelete(System.Action deleteAction)
+        // CleaningRuleGui and ExtractRuleGui classes to invoke.
+        protected void AssignDelete(System.Action<RuleGui> deleteAction)
         {
             inheritedClassDeleteAction = deleteAction;
         }
@@ -114,7 +114,7 @@ namespace DECS_Excel_Add_Ins
         public void Delete()
         {
             // Pass the order down the chain to the next panel (until there isn't one).
-            RulePanel nextObject = NextPanel();
+            RuleGui nextObject = NextRuleGui();
 
             if (nextObject != null)
             {
@@ -123,61 +123,64 @@ namespace DECS_Excel_Add_Ins
 
             // Invoke the inherited class' Delete() function, which removes
             // the cleaning rule or extract rule for this index.
-            inheritedClassDeleteAction();
-
-            // Remove this GUI.
-            parent.Controls.Remove(panel);
-            panel.Dispose();
+            inheritedClassDeleteAction(this);
         }
         private void Delete(object sender, EventArgs e)
         {
             Delete();
         }
-        private RulePanel FindNth(int desiredIndex)
+        private RuleGui FindNth(int desiredIndex)
         {
             // Find the underlying Panel objects of this rule type.
             List<Panel> panels = parent.Controls.OfType<Panel>().ToList();
 
-            // Assemble the list of RulePanel objects to which these Panels belong.
-            List<RulePanel> rules = panels.Select(o => (RulePanel)o.Tag).ToList();
+            // Assemble the list of RuleGui objects to which these Panels belong.
+            List<RuleGui> rules = panels.Select(o => (RuleGui)o.Tag).ToList();
 
             // Which one has the index we want?
-            List<RulePanel> matchingPanels = rules.Where(b => b.Index() == desiredIndex).ToList();
+            List<RuleGui> matchingPanels = rules.Where(b => b.Index() == desiredIndex).ToList();
 
             if (matchingPanels.Count > 0)
             {
-                return (RulePanel)matchingPanels[0];
+                return (RuleGui)matchingPanels[0];
             }
 
             return null;
         }
-        // So calling class can ask how big a RulePanel object is prior to object instantiation.
+        // So calling class can ask how big a RuleGui object is prior to object instantiation.
         public static int Height()
         {
             return height;
         }
         public int Index()
         {
-            return index;
+            return this.index;
         }
         private void MoveUpInLine()
         {
             // Pass the word.
-            RulePanel nextInLine = NextPanel();
+            RuleGui nextInLine = NextRuleGui();
 
             nextInLine?.MoveUpInLine();
 
             // Decrement my index.
-            index -= 1;
+            this.index -= 1;
 
-            // Move panel up one place.
-            Point thisPoint = this.panel.Location;
-            thisPoint.Y -= height;
-            this.panel.Location = thisPoint;
+            //// Move panel up one place.
+            //Point thisPoint = this.panel.Location;
+            //thisPoint.Y -= height;
+
+            //this.panel.Location = thisPoint;
         }
-        private RulePanel NextPanel()
+        private RuleGui NextRuleGui()
         {
-            return FindNth(index + 1);
+            return FindNth(this.index + 1);
+        }
+        public Panel PanelObj { get { return this.panel; } }
+
+        internal void ResetLocation(int x, int y)
+        {
+            this.panel.Location = new Point(x, y);
         }
         public static int Width()
         {

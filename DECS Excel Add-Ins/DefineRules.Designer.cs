@@ -33,10 +33,12 @@
             this.sourceColumnGroupBox = new System.Windows.Forms.GroupBox();
             this.sourceColumnListBox = new System.Windows.Forms.ListBox();
             this.cleaningRulesGroupBox = new System.Windows.Forms.GroupBox();
+            this.cleaningRulesPanel = new System.Windows.Forms.Panel();
             this.cleaningRulesAddButton = new System.Windows.Forms.Button();
             this.cleaningRulesReplaceLabel = new System.Windows.Forms.Label();
             this.cleaningRulesPatternsLabel = new System.Windows.Forms.Label();
             this.extractRulesGroupBox = new System.Windows.Forms.GroupBox();
+            this.extractRulesPanel = new System.Windows.Forms.Panel();
             this.extractRulesAddButton = new System.Windows.Forms.Button();
             this.extractRulesnewColumnLabel = new System.Windows.Forms.Label();
             this.extractRulesPatternLabel = new System.Windows.Forms.Label();
@@ -48,14 +50,12 @@
             this.loadToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.saveToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.saveAsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.cleaningRulesPanel = new System.Windows.Forms.Panel();
-            this.extractRulesPanel = new System.Windows.Forms.Panel();
             this.sourceColumnGroupBox.SuspendLayout();
             this.cleaningRulesGroupBox.SuspendLayout();
-            this.extractRulesGroupBox.SuspendLayout();
-            this.menuStrip1.SuspendLayout();
             this.cleaningRulesPanel.SuspendLayout();
+            this.extractRulesGroupBox.SuspendLayout();
             this.extractRulesPanel.SuspendLayout();
+            this.menuStrip1.SuspendLayout();
             this.SuspendLayout();
             // 
             // headline
@@ -96,18 +96,28 @@
             this.cleaningRulesGroupBox.Controls.Add(this.cleaningRulesPanel);
             this.cleaningRulesGroupBox.Controls.Add(this.cleaningRulesReplaceLabel);
             this.cleaningRulesGroupBox.Controls.Add(this.cleaningRulesPatternsLabel);
+            this.cleaningRulesGroupBox.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
             this.cleaningRulesGroupBox.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.cleaningRulesGroupBox.Location = new System.Drawing.Point(31, 162);
             this.cleaningRulesGroupBox.Name = "cleaningRulesGroupBox";
-            this.cleaningRulesGroupBox.Size = new System.Drawing.Size(896, 236);
+            this.cleaningRulesGroupBox.Size = new System.Drawing.Size(1350, 236);
             this.cleaningRulesGroupBox.TabIndex = 2;
             this.cleaningRulesGroupBox.TabStop = false;
             this.cleaningRulesGroupBox.Text = "Cleaning Rules";
             // 
+            // cleaningRulesPanel
+            // 
+            this.cleaningRulesPanel.AutoScroll = true;
+            this.cleaningRulesPanel.Controls.Add(this.cleaningRulesAddButton);
+            this.cleaningRulesPanel.Location = new System.Drawing.Point(6, 45);
+            this.cleaningRulesPanel.Name = "cleaningRulesPanel";
+            this.cleaningRulesPanel.Size = new System.Drawing.Size(1340, 185);
+            this.cleaningRulesPanel.TabIndex = 6;
+            // 
             // cleaningRulesAddButton
             // 
             this.cleaningRulesAddButton.Font = new System.Drawing.Font("Microsoft Sans Serif", 14.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.cleaningRulesAddButton.Location = new System.Drawing.Point(705, 21);
+            this.cleaningRulesAddButton.Location = new System.Drawing.Point(1266, 23);
             this.cleaningRulesAddButton.Name = "cleaningRulesAddButton";
             this.cleaningRulesAddButton.Size = new System.Drawing.Size(40, 30);
             this.cleaningRulesAddButton.TabIndex = 5;
@@ -118,18 +128,20 @@
             // cleaningRulesReplaceLabel
             // 
             this.cleaningRulesReplaceLabel.AutoSize = true;
-            this.cleaningRulesReplaceLabel.Location = new System.Drawing.Point(476, 26);
+            this.cleaningRulesReplaceLabel.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.cleaningRulesReplaceLabel.Location = new System.Drawing.Point(871, 26);
             this.cleaningRulesReplaceLabel.Name = "cleaningRulesReplaceLabel";
-            this.cleaningRulesReplaceLabel.Size = new System.Drawing.Size(60, 15);
+            this.cleaningRulesReplaceLabel.Size = new System.Drawing.Size(66, 16);
             this.cleaningRulesReplaceLabel.TabIndex = 1;
             this.cleaningRulesReplaceLabel.Text = "Replace";
             // 
             // cleaningRulesPatternsLabel
             // 
             this.cleaningRulesPatternsLabel.AutoSize = true;
+            this.cleaningRulesPatternsLabel.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.cleaningRulesPatternsLabel.Location = new System.Drawing.Point(173, 26);
             this.cleaningRulesPatternsLabel.Name = "cleaningRulesPatternsLabel";
-            this.cleaningRulesPatternsLabel.Size = new System.Drawing.Size(53, 15);
+            this.cleaningRulesPatternsLabel.Size = new System.Drawing.Size(56, 16);
             this.cleaningRulesPatternsLabel.TabIndex = 0;
             this.cleaningRulesPatternsLabel.Text = "Pattern";
             // 
@@ -141,15 +153,24 @@
             this.extractRulesGroupBox.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.extractRulesGroupBox.Location = new System.Drawing.Point(31, 404);
             this.extractRulesGroupBox.Name = "extractRulesGroupBox";
-            this.extractRulesGroupBox.Size = new System.Drawing.Size(896, 236);
+            this.extractRulesGroupBox.Size = new System.Drawing.Size(1350, 236);
             this.extractRulesGroupBox.TabIndex = 3;
             this.extractRulesGroupBox.TabStop = false;
             this.extractRulesGroupBox.Text = "Extract Rules";
             // 
+            // extractRulesPanel
+            // 
+            this.extractRulesPanel.AutoScroll = true;
+            this.extractRulesPanel.Controls.Add(this.extractRulesAddButton);
+            this.extractRulesPanel.Location = new System.Drawing.Point(6, 45);
+            this.extractRulesPanel.Name = "extractRulesPanel";
+            this.extractRulesPanel.Size = new System.Drawing.Size(1340, 185);
+            this.extractRulesPanel.TabIndex = 4;
+            // 
             // extractRulesAddButton
             // 
             this.extractRulesAddButton.Font = new System.Drawing.Font("Microsoft Sans Serif", 14.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.extractRulesAddButton.Location = new System.Drawing.Point(705, 21);
+            this.extractRulesAddButton.Location = new System.Drawing.Point(1266, 25);
             this.extractRulesAddButton.Name = "extractRulesAddButton";
             this.extractRulesAddButton.Size = new System.Drawing.Size(40, 30);
             this.extractRulesAddButton.TabIndex = 8;
@@ -160,25 +181,27 @@
             // extractRulesnewColumnLabel
             // 
             this.extractRulesnewColumnLabel.AutoSize = true;
-            this.extractRulesnewColumnLabel.Location = new System.Drawing.Point(476, 26);
+            this.extractRulesnewColumnLabel.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.extractRulesnewColumnLabel.Location = new System.Drawing.Point(859, 26);
             this.extractRulesnewColumnLabel.Name = "extractRulesnewColumnLabel";
-            this.extractRulesnewColumnLabel.Size = new System.Drawing.Size(88, 15);
+            this.extractRulesnewColumnLabel.Size = new System.Drawing.Size(92, 16);
             this.extractRulesnewColumnLabel.TabIndex = 3;
             this.extractRulesnewColumnLabel.Text = "New Column";
             // 
             // extractRulesPatternLabel
             // 
             this.extractRulesPatternLabel.AutoSize = true;
+            this.extractRulesPatternLabel.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.extractRulesPatternLabel.Location = new System.Drawing.Point(173, 26);
             this.extractRulesPatternLabel.Name = "extractRulesPatternLabel";
-            this.extractRulesPatternLabel.Size = new System.Drawing.Size(53, 15);
+            this.extractRulesPatternLabel.Size = new System.Drawing.Size(56, 16);
             this.extractRulesPatternLabel.TabIndex = 2;
             this.extractRulesPatternLabel.Text = "Pattern";
             // 
             // saveButton
             // 
             this.saveButton.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.saveButton.Location = new System.Drawing.Point(285, 647);
+            this.saveButton.Location = new System.Drawing.Point(461, 662);
             this.saveButton.Name = "saveButton";
             this.saveButton.Size = new System.Drawing.Size(120, 40);
             this.saveButton.TabIndex = 4;
@@ -189,7 +212,7 @@
             // discardButton
             // 
             this.discardButton.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.discardButton.Location = new System.Drawing.Point(666, 647);
+            this.discardButton.Location = new System.Drawing.Point(842, 662);
             this.discardButton.Name = "discardButton";
             this.discardButton.Size = new System.Drawing.Size(120, 40);
             this.discardButton.TabIndex = 5;
@@ -200,7 +223,7 @@
             // clearButton
             // 
             this.clearButton.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.clearButton.Location = new System.Drawing.Point(486, 647);
+            this.clearButton.Location = new System.Drawing.Point(662, 662);
             this.clearButton.Name = "clearButton";
             this.clearButton.Size = new System.Drawing.Size(120, 40);
             this.clearButton.TabIndex = 6;
@@ -215,7 +238,7 @@
             this.fileToolStripMenuItem});
             this.menuStrip1.Location = new System.Drawing.Point(0, 0);
             this.menuStrip1.Name = "menuStrip1";
-            this.menuStrip1.Size = new System.Drawing.Size(1403, 24);
+            this.menuStrip1.Size = new System.Drawing.Size(1414, 24);
             this.menuStrip1.TabIndex = 7;
             this.menuStrip1.Text = "menuStrip1";
             // 
@@ -250,30 +273,12 @@
             this.saveAsToolStripMenuItem.Text = "SaveAs";
             this.saveAsToolStripMenuItem.Click += new System.EventHandler(this.saveAsToolStripMenuItem_Click);
             // 
-            // cleaningRulesPanel
-            // 
-            this.cleaningRulesPanel.AutoScroll = true;
-            this.cleaningRulesPanel.Controls.Add(this.cleaningRulesAddButton);
-            this.cleaningRulesPanel.Location = new System.Drawing.Point(6, 45);
-            this.cleaningRulesPanel.Name = "cleaningRulesPanel";
-            this.cleaningRulesPanel.Size = new System.Drawing.Size(884, 185);
-            this.cleaningRulesPanel.TabIndex = 6;
-            // 
-            // extractRulesPanel
-            // 
-            this.extractRulesPanel.AutoScroll = true;
-            this.extractRulesPanel.Controls.Add(this.extractRulesAddButton);
-            this.extractRulesPanel.Location = new System.Drawing.Point(6, 45);
-            this.extractRulesPanel.Name = "extractRulesPanel";
-            this.extractRulesPanel.Size = new System.Drawing.Size(884, 185);
-            this.extractRulesPanel.TabIndex = 4;
-            // 
             // DefineRules
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.SystemColors.Window;
-            this.ClientSize = new System.Drawing.Size(1403, 714);
+            this.ClientSize = new System.Drawing.Size(1414, 714);
             this.Controls.Add(this.clearButton);
             this.Controls.Add(this.discardButton);
             this.Controls.Add(this.saveButton);
@@ -289,12 +294,12 @@
             this.sourceColumnGroupBox.ResumeLayout(false);
             this.cleaningRulesGroupBox.ResumeLayout(false);
             this.cleaningRulesGroupBox.PerformLayout();
+            this.cleaningRulesPanel.ResumeLayout(false);
             this.extractRulesGroupBox.ResumeLayout(false);
             this.extractRulesGroupBox.PerformLayout();
+            this.extractRulesPanel.ResumeLayout(false);
             this.menuStrip1.ResumeLayout(false);
             this.menuStrip1.PerformLayout();
-            this.cleaningRulesPanel.ResumeLayout(false);
-            this.extractRulesPanel.ResumeLayout(false);
             this.ResumeLayout(false);
             this.PerformLayout();
 
