@@ -10,14 +10,14 @@ using TextBox = System.Windows.Forms.TextBox;
 
 namespace DECS_Excel_Add_Ins
 {
-    internal class CleaningRulePanel : RulePanel
+    internal class CleaningRuleGui : RuleGui
     {
         private NotesConfig config;
-        private Action parentDeleteAction;
+        private Action<RuleGui> parentDeleteAction;
         private Action parentRuleChangedAction;
         private bool textChangedCallbackEnabled = true;
 
-        public CleaningRulePanel(int x, int y, int index, Panel parent, NotesConfig notesConfig, bool updateConfig = true) : base(x, y, index, parent, "cleaningRules") 
+        public CleaningRuleGui(int x, int y, int index, Panel parent, NotesConfig notesConfig, bool updateConfig = true) : base(x, y, index, parent, "cleaningRules") 
         {
             config = notesConfig;
             leftHandTextBox.TextChanged += cleaningRulesPatternTextBox_TextChanged;
@@ -27,7 +27,7 @@ namespace DECS_Excel_Add_Ins
             // we don't want to modify the object.
             if (updateConfig )
             {
-                // There needs to be a CleaningRule object (even if it's an empty placeholder) for every CleaningRulePanel object.
+                // There needs to be a CleaningRule object (even if it's an empty placeholder) for every CleaningRuleGui object.
                 config.AddCleaningRule();
             }
 
@@ -35,7 +35,7 @@ namespace DECS_Excel_Add_Ins
             // it's a cleaning rule that needs to be deleted.
             base.AssignDelete(this.DeleteRule);
         }
-        public void AssignExternalDelete(Action deleteAction)
+        public void AssignExternalDelete(Action<RuleGui> deleteAction)
         {
             parentDeleteAction = deleteAction;
         }
@@ -108,14 +108,14 @@ namespace DECS_Excel_Add_Ins
             rightHandTextBox.Text = string.Empty;
             textChangedCallbackEnabled = true;
         }
-        // The RulePanel class handles the GUI stuff but this derived class needs to 'talk' to the NotesConfig structure
+        // The RuleGui class handles the GUI stuff but this derived class needs to 'talk' to the NotesConfig structure
         // because we know it's a >cleaning< rule.
-        // Also, because the DefineRules class creates THIS class (and not the parent RulePanel class),
+        // Also, because the DefineRules class creates THIS class (and not the parent RuleGui class),
         // we'll pass the delete action along to the DefineRules class to tell it to bump the cleaning Add button upwards.
-        protected void DeleteRule()
+        protected void DeleteRule(RuleGui ruleGui)
         {
-            config.DeleteCleaningRule(index: index);
-            parentDeleteAction();
+            config.DeleteCleaningRule(index: this.index);
+            parentDeleteAction(ruleGui);
         }
         public void Populate(CleaningRule rule)
         {
