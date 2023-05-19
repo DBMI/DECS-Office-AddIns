@@ -1,6 +1,7 @@
 ﻿using Microsoft.Office.Interop.Excel;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.IO;
 using System.Linq;
 using System.Net.NetworkInformation;
@@ -9,6 +10,7 @@ using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using System.Xml.Serialization;
+using static System.Windows.Forms.VisualStyles.VisualStyleElement;
 
 namespace DECS_Excel_Add_Ins
 {
@@ -21,6 +23,7 @@ namespace DECS_Excel_Add_Ins
         private List<string> originalSourceColumnEntries;
         private Range sourceColumn;
         private Worksheet worksheet;
+        private StatusForm statusForm;
 
         public NotesParser(Worksheet worksheet, bool withConfigFile = true)
         {
@@ -41,12 +44,13 @@ namespace DECS_Excel_Add_Ins
             }
         }
         // Apply cleaning rules.
-        internal void Clean()
+        internal void Clean(BackgroundWorker bw = null)
         {
             if (!HasConfig()) return;
 
             RestoreOriginalSourceColumn();
             Range thisCell;
+            int progressPercentage = 0;
 
             // Run down the source column (skipping the header row), applying each cleaning rule.
             for (int row_offset = 1; row_offset < this.lastRow; row_offset++)
@@ -63,16 +67,32 @@ namespace DECS_Excel_Add_Ins
                     catch (System.ArgumentNullException)
                     {
                     }
+
+                    bw?.ReportProgress(progressPercentage, rule.replace);
+                    statusForm?.UpdateProgressBarLabel(rule.replace);
                 }
 
                 thisCell.Value2 = cell_contents;
+
+                // Do this only if bw is not null.
+                if (this.lastRow > 1)
+                {
+                    progressPercentage = 100 * row_offset / (this.lastRow - 1);
+                }
+                else
+                {
+                    progressPercentage = 100;
+                }
+
+                statusForm?.UpdateProgressBar(progressPercentage);
             }
         }
-        internal void Extract()
+        internal void Extract(BackgroundWorker bw = null)
         {
             if (!HasConfig()) return;
 
             Range thisCell;
+            int progressPercentage = 0;
 
             // Run down the source column (skipping the header row),
             // applying each extraction rule, stopping at the first one that matches.
@@ -106,7 +126,22 @@ namespace DECS_Excel_Add_Ins
                     catch (System.ArgumentNullException)
                     {
                     }
+
+                    bw?.ReportProgress(progressPercentage, rule.newColumn);
+                    statusForm?.UpdateProgressBarLabel(rule.newColumn);
                 }
+
+                // Do this only if bw is not null.
+                if (this.lastRow > 1)
+                {
+                    progressPercentage = (100 * row_offset / (this.lastRow - 1));
+                }
+                else
+                {
+                    progressPercentage = 100;
+                }
+
+                statusForm?.UpdateProgressBar(progressPercentage);
             }
         }
         internal bool HasConfig()
@@ -118,14 +153,20 @@ namespace DECS_Excel_Add_Ins
         {
             if (!HasConfig()) return;
 
+            this.statusForm = new StatusForm();
+            this.statusForm.Show();
+
             // Apply cleaning rules.
             Clean();
 
             // Apply extraction rules.
             Extract();
 
+            this.statusForm.Close();
+
             // Save a copy of the revised workbook.
             SaveRevised();
+
         }
         internal void ResetWorksheet()
         {
@@ -145,7 +186,7 @@ namespace DECS_Excel_Add_Ins
             {
                 string thisColumnName = thisCell.Offset[0, col_offset].Value2.ToString();
 
-                if (!originalColumnNames.Contains(thisColumnName))
+                if (!this.originalColumnNames.Contains(thisColumnName))
                 {
                     thisCell.Offset[0, col_offset].EntireColumn.Delete();
                     removedColumn = true;
@@ -188,7 +229,15 @@ namespace DECS_Excel_Add_Ins
             for (int row_offset = 1; row_offset < this.lastRow; row_offset++)
             {
                 thisCell = this.sourceColumn.Offset[row_offset, 0];
-                originalSourceColumnEntries.Add(thisCell.Value2.ToString());
+
+                if (thisCell.Value2 == null)
+                {
+                    originalSourceColumnEntries.Add(string.Empty);
+                }
+                else
+                {
+                    originalSourceColumnEntries.Add(thisCell.Value2.ToString());
+                }
             }
         }
         private void SaveRevised()
@@ -203,12 +252,12 @@ namespace DECS_Excel_Add_Ins
 
             try
             {
-                workbook.SaveAs(newFilename, XlSaveAsAccessMode.xlNoChange);
+                workbook.SaveCopyAs(newFilename);
             }
             catch (System.Runtime.InteropServices.COMException)
             {
                 newFilename = System.IO.Path.Combine(justTheFilename + "_" + Utilities.GetTimestamp());
-                workbook.SaveAs(newFilename, XlSaveAsAccessMode.xlNoChange);
+                workbook.SaveCopyAs(newFilename);
             }
 
             MessageBox.Show("Saved in '" + newFilename + "'.");

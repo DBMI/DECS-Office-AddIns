@@ -6,6 +6,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using static System.Windows.Forms.VisualStyles.VisualStyleElement;
 using static System.Windows.Forms.VisualStyles.VisualStyleElement.TextBox;
 using Button = System.Windows.Forms.Button;
 using Font = System.Drawing.Font;
@@ -19,7 +20,8 @@ namespace DECS_Excel_Add_Ins
     {
         private const int BOX_HEIGHT = 22;
         private readonly Font BOX_FONT = new Font("Microsoft San Serif", 9.75f, FontStyle.Regular);
-        private const int BOX_WIDTH = 600;
+        private const int LEFT_BOX_WIDTH = 1000;
+        private const int RIGHT_BOX_WIDTH = 200;
 
         private const int BUTTON_HEIGHT = 30;
         private readonly Font BUTTON_FONT = new Font("Microsoft San Serif", 14.25f, FontStyle.Bold);
@@ -28,7 +30,7 @@ namespace DECS_Excel_Add_Ins
         private readonly int BUTTON_Y_OFFSET = (int)(BOX_HEIGHT - BUTTON_HEIGHT) / 2;
 
         private const int leftHandX = 5;
-        private const int rightHandX = 640;
+        private const int rightHandX = 1040;
         private readonly int boxY = (int) BOX_HEIGHT/2;
 
         protected Panel panel;
@@ -68,7 +70,7 @@ namespace DECS_Excel_Add_Ins
             Point leftHandPosit = new Point(leftHandX, boxY);
             this.leftHandTextBox.Location = leftHandPosit;
             this.leftHandTextBox.Name = this.keyword + "LeftTextBox";
-            this.leftHandTextBox.Width = BOX_WIDTH;
+            this.leftHandTextBox.Width = LEFT_BOX_WIDTH;
 
             this.rightHandTextBox = new TextBox();
             this.rightHandTextBox.Parent = this.panel;
@@ -77,7 +79,7 @@ namespace DECS_Excel_Add_Ins
             Point rightHandPosit = new Point(rightHandX, boxY);
             this.rightHandTextBox.Location = rightHandPosit;
             this.rightHandTextBox.Name = this.keyword + "RightTextBox";
-            this.rightHandTextBox.Width = BOX_WIDTH;
+            this.rightHandTextBox.Width = RIGHT_BOX_WIDTH;
 
             // Create new delete button.
             this.deleteButton = new Button();
@@ -129,6 +131,18 @@ namespace DECS_Excel_Add_Ins
         {
             Delete();
         }
+        private void Enable(Control control, bool locked)
+        {
+            if (control.InvokeRequired)
+            {
+                System.Action setProgress = delegate { Enable(control, locked); };
+                control.Invoke(setProgress);
+            }
+            else
+            {
+                control.Enabled = locked;
+            }
+        }
         private RuleGui FindNth(int desiredIndex)
         {
             // Find the underlying Panel objects of this rule type.
@@ -152,9 +166,15 @@ namespace DECS_Excel_Add_Ins
         {
             return height;
         }
-        public int Index()
+        internal int Index()
         {
             return this.index;
+        }
+        internal void Lock()
+        {
+            Enable(this.leftHandTextBox, false);
+            Enable(this.rightHandTextBox, false);
+            Enable(this.deleteButton, false);
         }
         private void MoveUpInLine()
         {
@@ -165,12 +185,6 @@ namespace DECS_Excel_Add_Ins
 
             // Decrement my index.
             this.index -= 1;
-
-            //// Move panel up one place.
-            //Point thisPoint = this.panel.Location;
-            //thisPoint.Y -= height;
-
-            //this.panel.Location = thisPoint;
         }
         private RuleGui NextRuleGui()
         {
@@ -181,6 +195,12 @@ namespace DECS_Excel_Add_Ins
         internal void ResetLocation(int x, int y)
         {
             this.panel.Location = new Point(x, y);
+        }
+        internal void Unlock()
+        {
+            Enable(this.leftHandTextBox, true);
+            Enable(this.rightHandTextBox, true);
+            Enable(this.deleteButton, true);
         }
         public static int Width()
         {

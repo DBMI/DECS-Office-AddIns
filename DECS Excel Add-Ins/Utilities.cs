@@ -38,7 +38,7 @@ namespace DECS_Excel_Add_Ins
             int lastUsedCol = Utilities.FindLastCol(sheet);
 
             // Search along row 1.
-            for (int col_index = 1; col_index < lastUsedCol; col_index++)
+            for (int col_index = 1; col_index <= lastUsedCol; col_index++)
             {
                 names.Add(range.Value.ToString());
 
@@ -83,7 +83,7 @@ namespace DECS_Excel_Add_Ins
             int lastUsedCol = Utilities.FindLastCol(sheet);
 
             // Search along row 1.
-            for (int col_index = 1; col_index < lastUsedCol; col_index++)
+            for (int col_index = 1; col_index <= lastUsedCol; col_index++)
             {
                 if (range.Value == columnName)
                 {
@@ -103,6 +103,5 @@ namespace DECS_Excel_Add_Ins
             MessageBoxButtons buttons = MessageBoxButtons.OK;
             DialogResult result = MessageBox.Show(message, title, buttons, MessageBoxIcon.Warning);
         }
-
     }
 }

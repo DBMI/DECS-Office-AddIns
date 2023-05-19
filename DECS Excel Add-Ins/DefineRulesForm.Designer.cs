@@ -1,6 +1,6 @@
 ﻿namespace DECS_Excel_Add_Ins
 {
-    partial class DefineRules
+    partial class DefineRulesForm
     {
         /// <summary>
         /// Required designer variable.
@@ -28,7 +28,7 @@
         /// </summary>
         private void InitializeComponent()
         {
-            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(DefineRules));
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(DefineRulesForm));
             this.headline = new System.Windows.Forms.Label();
             this.sourceColumnGroupBox = new System.Windows.Forms.GroupBox();
             this.sourceColumnListBox = new System.Windows.Forms.ListBox();

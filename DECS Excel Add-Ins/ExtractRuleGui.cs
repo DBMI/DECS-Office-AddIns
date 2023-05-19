@@ -21,7 +21,7 @@ namespace DECS_Excel_Add_Ins
         {
             config = notesConfig;
             leftHandTextBox.TextChanged += extractRulesPatternTextBox_TextChanged;
-            rightHandTextBox.TextChanged += extractRulesnewColumnTextBox_TextChanged;
+            rightHandTextBox.LostFocus += extractRulesnewColumnTextBox_TextChanged;
 
             // When loading an >existing< NotesConfig object,
             // we don't want to modify the object.
@@ -63,7 +63,7 @@ namespace DECS_Excel_Add_Ins
         {
             if (!textChangedCallbackEnabled) return;
 
-            System.Windows.Forms.TextBox textBox = (System.Windows.Forms.TextBox)sender;
+            TextBox textBox = (TextBox)sender;
 
             try
             {
@@ -91,7 +91,7 @@ namespace DECS_Excel_Add_Ins
         {
             if (!textChangedCallbackEnabled) return;
 
-            System.Windows.Forms.TextBox textBox = (System.Windows.Forms.TextBox)sender;
+            TextBox textBox = (TextBox)sender;
 
             try
             {

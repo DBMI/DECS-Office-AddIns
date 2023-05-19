@@ -18,7 +18,7 @@ using Excel = Microsoft.Office.Interop.Excel;
 
 namespace DECS_Excel_Add_Ins
 {
-    internal partial class DefineRules : Form
+    internal partial class DefineRulesForm : Form
     {
         private NotesConfig config = new NotesConfig();
         private string configFilename = string.Empty;
@@ -41,7 +41,7 @@ namespace DECS_Excel_Add_Ins
         internal BackgroundWorker backgroundWorker;
         private bool configLoading = false;
 
-        internal DefineRules(NotesParser parser)
+        internal DefineRulesForm(NotesParser parser)
         {
             this.parser = parser;
             this.backgroundWorker = new BackgroundWorker();
@@ -497,7 +497,6 @@ namespace DECS_Excel_Add_Ins
                 rule.Unlock();
             }
         }
-
         private void UpdateProgressBar(int percentage)
         {
             if (progressBar.InvokeRequired)

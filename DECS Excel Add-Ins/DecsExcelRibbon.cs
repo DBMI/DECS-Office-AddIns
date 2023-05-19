@@ -44,7 +44,7 @@ namespace DECS_Excel_Add_Ins
         {
             Excel.Worksheet wksheet = (Excel.Worksheet)Globals.ThisAddIn.Application.ActiveSheet;
             NotesParser parser = new NotesParser(worksheet: wksheet, withConfigFile: false);
-            DefineRules form = new DefineRules(parser);
+            DefineRulesForm form = new DefineRulesForm(parser);
             form.Visible = true;
         }
         public Bitmap notesConfigButton_GetImage(IRibbonControl control)

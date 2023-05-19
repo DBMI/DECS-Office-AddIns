@@ -56,7 +56,7 @@ namespace DECS_Excel_Add_Ins
 
                 // Clear any previous highlighting.
                 textBox.BackColor = Color.White;
-
+                
                 // Insert or update Nth cleaning rule with this pattern.
                 config.ChangeCleaningRulePattern(index: index, pattern: textBox.Text);
 
@@ -77,7 +77,7 @@ namespace DECS_Excel_Add_Ins
         {
             if (!textChangedCallbackEnabled) return;
 
-            System.Windows.Forms.TextBox textBox = (System.Windows.Forms.TextBox)sender;
+            TextBox textBox = (TextBox)sender;
 
             try
             {
