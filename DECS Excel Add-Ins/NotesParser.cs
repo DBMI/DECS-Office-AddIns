@@ -24,9 +24,11 @@ namespace DECS_Excel_Add_Ins
         private Range sourceColumn;
         private Worksheet worksheet;
         private StatusForm statusForm;
+        private Microsoft.Office.Interop.Excel.Window window;
 
         public NotesParser(Worksheet worksheet, bool withConfigFile = true)
         {
+            this.window = Globals.ThisAddIn.Application.ActiveWindow;
             this.worksheet = worksheet;
 
             // Identify last row, column.
@@ -48,6 +50,7 @@ namespace DECS_Excel_Add_Ins
         {
             if (!HasConfig()) return;
 
+            ShowRow(1);
             RestoreOriginalSourceColumn();
             Range thisCell;
             int progressPercentage = 0;
@@ -55,6 +58,7 @@ namespace DECS_Excel_Add_Ins
             // Run down the source column (skipping the header row), applying each cleaning rule.
             for (int row_offset = 1; row_offset < this.lastRow; row_offset++)
             {
+                ShowRow(row_offset);
                 thisCell = this.sourceColumn.Offset[row_offset, 0];
                 string cell_contents = thisCell.Value2.ToString();
 
@@ -98,6 +102,7 @@ namespace DECS_Excel_Add_Ins
             // applying each extraction rule, stopping at the first one that matches.
             for (int row_offset = 1; row_offset < this.lastRow; row_offset++)
             {
+                ShowRow(row_offset);
                 thisCell = this.sourceColumn.Offset[row_offset, 0];
                 string cell_contents = thisCell.Value.ToString();
 
@@ -157,16 +162,20 @@ namespace DECS_Excel_Add_Ins
             this.statusForm.Show();
 
             // Apply cleaning rules.
+            this.statusForm.UpdateStatusLabel("Applying cleaning rules.");
             Clean();
 
             // Apply extraction rules.
+            this.statusForm.UpdateStatusLabel("Applying extraction rules.");
             Extract();
 
-            this.statusForm.Close();
+            this.statusForm.UpdateStatusLabel("Saving revised file.");
+            this.statusForm.UpdateProgressBarLabel("Complete.");
+            ShowRow(1);
 
             // Save a copy of the revised workbook.
             SaveRevised();
-
+            this.statusForm.Close();
         }
         internal void ResetWorksheet()
         {
@@ -261,6 +270,10 @@ namespace DECS_Excel_Add_Ins
             }
 
             MessageBox.Show("Saved in '" + newFilename + "'.");
+        }
+        private void ShowRow(int row)
+        {
+            this.window.ScrollRow = row;
         }
         // Add config structure AFTER instantiation.
         internal void UpdateConfig(NotesConfig configObj, bool updateOriginalSourceColumn = true)

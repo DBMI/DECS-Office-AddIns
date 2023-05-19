@@ -44,9 +44,9 @@
             this.progressGroupBox.Controls.Add(this.progressBar);
             this.progressGroupBox.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.progressGroupBox.Location = new System.Drawing.Point(98, 68);
-            this.progressGroupBox.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.progressGroupBox.Margin = new System.Windows.Forms.Padding(4);
             this.progressGroupBox.Name = "progressGroupBox";
-            this.progressGroupBox.Padding = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.progressGroupBox.Padding = new System.Windows.Forms.Padding(4);
             this.progressGroupBox.Size = new System.Drawing.Size(416, 106);
             this.progressGroupBox.TabIndex = 10;
             this.progressGroupBox.TabStop = false;
@@ -66,7 +66,7 @@
             // progressBar
             // 
             this.progressBar.Location = new System.Drawing.Point(28, 63);
-            this.progressBar.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.progressBar.Margin = new System.Windows.Forms.Padding(4);
             this.progressBar.Name = "progressBar";
             this.progressBar.Size = new System.Drawing.Size(358, 28);
             this.progressBar.TabIndex = 8;
@@ -76,9 +76,9 @@
             this.statusGroupBox.Controls.Add(this.statusLabel);
             this.statusGroupBox.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.statusGroupBox.Location = new System.Drawing.Point(98, 212);
-            this.statusGroupBox.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.statusGroupBox.Margin = new System.Windows.Forms.Padding(4);
             this.statusGroupBox.Name = "statusGroupBox";
-            this.statusGroupBox.Padding = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.statusGroupBox.Padding = new System.Windows.Forms.Padding(4);
             this.statusGroupBox.Size = new System.Drawing.Size(416, 101);
             this.statusGroupBox.TabIndex = 11;
             this.statusGroupBox.TabStop = false;
@@ -95,7 +95,7 @@
             this.statusLabel.TabIndex = 0;
             this.statusLabel.Text = "status of the apparatus";
             // 
-            // Status
+            // StatusForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(9F, 16F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
@@ -105,8 +105,8 @@
             this.Controls.Add(this.progressGroupBox);
             this.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
-            this.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
-            this.Name = "Status";
+            this.Margin = new System.Windows.Forms.Padding(4);
+            this.Name = "StatusForm";
             this.Text = "Processing Status";
             this.progressGroupBox.ResumeLayout(false);
             this.progressGroupBox.PerformLayout();

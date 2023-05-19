@@ -27,6 +27,8 @@ namespace DECS_Excel_Add_Ins
             {
                 progressBar.Value = percentage;
             }
+
+            Application.DoEvents();
         }
         internal void UpdateProgressBarLabel(string text)
         {
@@ -39,6 +41,23 @@ namespace DECS_Excel_Add_Ins
             {
                 progressBarLabel.Text = text;
             }
+
+            Application.DoEvents();
         }
+        internal void UpdateStatusLabel(string text)
+        {
+            if (statusLabel.InvokeRequired)
+            {
+                Action setLabel = delegate { UpdateStatusLabel(text); };
+                statusLabel.Invoke(setLabel);
+            }
+            else
+            {
+                statusLabel.Text = text;
+            }
+
+            Application.DoEvents();
+        }
+
     }
 }
