@@ -50,12 +50,16 @@
             this.loadToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.saveToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.saveAsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.progressBar = new System.Windows.Forms.ProgressBar();
+            this.groupBox1 = new System.Windows.Forms.GroupBox();
+            this.progressBarLabel = new System.Windows.Forms.Label();
             this.sourceColumnGroupBox.SuspendLayout();
             this.cleaningRulesGroupBox.SuspendLayout();
             this.cleaningRulesPanel.SuspendLayout();
             this.extractRulesGroupBox.SuspendLayout();
             this.extractRulesPanel.SuspendLayout();
             this.menuStrip1.SuspendLayout();
+            this.groupBox1.SuspendLayout();
             this.SuspendLayout();
             // 
             // headline
@@ -129,17 +133,18 @@
             // 
             this.cleaningRulesReplaceLabel.AutoSize = true;
             this.cleaningRulesReplaceLabel.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.cleaningRulesReplaceLabel.Location = new System.Drawing.Point(871, 26);
+            this.cleaningRulesReplaceLabel.Location = new System.Drawing.Point(1120, 26);
             this.cleaningRulesReplaceLabel.Name = "cleaningRulesReplaceLabel";
             this.cleaningRulesReplaceLabel.Size = new System.Drawing.Size(66, 16);
             this.cleaningRulesReplaceLabel.TabIndex = 1;
             this.cleaningRulesReplaceLabel.Text = "Replace";
+            this.cleaningRulesReplaceLabel.TextAlign = System.Drawing.ContentAlignment.TopCenter;
             // 
             // cleaningRulesPatternsLabel
             // 
             this.cleaningRulesPatternsLabel.AutoSize = true;
             this.cleaningRulesPatternsLabel.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.cleaningRulesPatternsLabel.Location = new System.Drawing.Point(173, 26);
+            this.cleaningRulesPatternsLabel.Location = new System.Drawing.Point(500, 26);
             this.cleaningRulesPatternsLabel.Name = "cleaningRulesPatternsLabel";
             this.cleaningRulesPatternsLabel.Size = new System.Drawing.Size(56, 16);
             this.cleaningRulesPatternsLabel.TabIndex = 0;
@@ -182,17 +187,18 @@
             // 
             this.extractRulesnewColumnLabel.AutoSize = true;
             this.extractRulesnewColumnLabel.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.extractRulesnewColumnLabel.Location = new System.Drawing.Point(859, 26);
+            this.extractRulesnewColumnLabel.Location = new System.Drawing.Point(1110, 26);
             this.extractRulesnewColumnLabel.Name = "extractRulesnewColumnLabel";
             this.extractRulesnewColumnLabel.Size = new System.Drawing.Size(92, 16);
             this.extractRulesnewColumnLabel.TabIndex = 3;
             this.extractRulesnewColumnLabel.Text = "New Column";
+            this.extractRulesnewColumnLabel.TextAlign = System.Drawing.ContentAlignment.TopCenter;
             // 
             // extractRulesPatternLabel
             // 
             this.extractRulesPatternLabel.AutoSize = true;
             this.extractRulesPatternLabel.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.extractRulesPatternLabel.Location = new System.Drawing.Point(173, 26);
+            this.extractRulesPatternLabel.Location = new System.Drawing.Point(500, 26);
             this.extractRulesPatternLabel.Name = "extractRulesPatternLabel";
             this.extractRulesPatternLabel.Size = new System.Drawing.Size(56, 16);
             this.extractRulesPatternLabel.TabIndex = 2;
@@ -273,12 +279,42 @@
             this.saveAsToolStripMenuItem.Text = "SaveAs";
             this.saveAsToolStripMenuItem.Click += new System.EventHandler(this.saveAsToolStripMenuItem_Click);
             // 
+            // progressBar
+            // 
+            this.progressBar.Location = new System.Drawing.Point(19, 51);
+            this.progressBar.Name = "progressBar";
+            this.progressBar.Size = new System.Drawing.Size(239, 23);
+            this.progressBar.TabIndex = 8;
+            // 
+            // groupBox1
+            // 
+            this.groupBox1.Controls.Add(this.progressBarLabel);
+            this.groupBox1.Controls.Add(this.progressBar);
+            this.groupBox1.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.groupBox1.Location = new System.Drawing.Point(1104, 70);
+            this.groupBox1.Name = "groupBox1";
+            this.groupBox1.Size = new System.Drawing.Size(277, 86);
+            this.groupBox1.TabIndex = 9;
+            this.groupBox1.TabStop = false;
+            this.groupBox1.Text = "Progress";
+            // 
+            // progressBarLabel
+            // 
+            this.progressBarLabel.AutoSize = true;
+            this.progressBarLabel.Location = new System.Drawing.Point(91, 22);
+            this.progressBarLabel.Name = "progressBarLabel";
+            this.progressBarLabel.Size = new System.Drawing.Size(97, 15);
+            this.progressBarLabel.TabIndex = 9;
+            this.progressBarLabel.Text = "Applying rules";
+            this.progressBarLabel.TextAlign = System.Drawing.ContentAlignment.TopCenter;
+            // 
             // DefineRules
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.SystemColors.Window;
             this.ClientSize = new System.Drawing.Size(1414, 714);
+            this.Controls.Add(this.groupBox1);
             this.Controls.Add(this.clearButton);
             this.Controls.Add(this.discardButton);
             this.Controls.Add(this.saveButton);
@@ -300,6 +336,8 @@
             this.extractRulesPanel.ResumeLayout(false);
             this.menuStrip1.ResumeLayout(false);
             this.menuStrip1.PerformLayout();
+            this.groupBox1.ResumeLayout(false);
+            this.groupBox1.PerformLayout();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -328,5 +366,8 @@
         private System.Windows.Forms.ToolStripMenuItem saveAsToolStripMenuItem;
         private System.Windows.Forms.Panel cleaningRulesPanel;
         private System.Windows.Forms.Panel extractRulesPanel;
+        private System.Windows.Forms.ProgressBar progressBar;
+        private System.Windows.Forms.GroupBox groupBox1;
+        private System.Windows.Forms.Label progressBarLabel;
     }
 }

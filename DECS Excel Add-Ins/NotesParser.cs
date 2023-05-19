@@ -1,6 +1,7 @@
 ﻿using Microsoft.Office.Interop.Excel;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.IO;
 using System.Linq;
 using System.Net.NetworkInformation;
@@ -9,6 +10,7 @@ using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using System.Xml.Serialization;
+using static System.Windows.Forms.VisualStyles.VisualStyleElement;
 
 namespace DECS_Excel_Add_Ins
 {
@@ -41,7 +43,7 @@ namespace DECS_Excel_Add_Ins
             }
         }
         // Apply cleaning rules.
-        internal void Clean()
+        internal void Clean(BackgroundWorker bw = null)
         {
             if (!HasConfig()) return;
 
@@ -63,12 +65,22 @@ namespace DECS_Excel_Add_Ins
                     catch (System.ArgumentNullException)
                     {
                     }
+
+                    // Do this only if bw is not null.
+                    if (this.lastRow > 1)
+                    {
+                        bw?.ReportProgress(100 * row_offset / (this.lastRow - 1), rule.replace);
+                    }
+                    else
+                    {
+                        bw?.ReportProgress(100);
+                    }
                 }
 
                 thisCell.Value2 = cell_contents;
             }
         }
-        internal void Extract()
+        internal void Extract(BackgroundWorker bw = null)
         {
             if (!HasConfig()) return;
 
@@ -105,6 +117,16 @@ namespace DECS_Excel_Add_Ins
                     }
                     catch (System.ArgumentNullException)
                     {
+                    }
+
+                    // Do this only if bw is not null.
+                    if (this.lastRow > 1)
+                    {
+                        bw?.ReportProgress(100 * row_offset / (this.lastRow - 1), rule.newColumn);
+                    }
+                    else
+                    {
+                        bw?.ReportProgress(100);
                     }
                 }
             }
@@ -145,7 +167,7 @@ namespace DECS_Excel_Add_Ins
             {
                 string thisColumnName = thisCell.Offset[0, col_offset].Value2.ToString();
 
-                if (!originalColumnNames.Contains(thisColumnName))
+                if (!this.originalColumnNames.Contains(thisColumnName))
                 {
                     thisCell.Offset[0, col_offset].EntireColumn.Delete();
                     removedColumn = true;

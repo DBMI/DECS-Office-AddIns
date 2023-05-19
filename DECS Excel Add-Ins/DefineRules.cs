@@ -4,6 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
+using System.Diagnostics;
 using System.Drawing;
 using System.Linq;
 using System.Text;
@@ -37,9 +38,13 @@ namespace DECS_Excel_Add_Ins
 
         private NotesParser parser;
 
+        internal BackgroundWorker backgroundWorker;
+        private bool configLoading = false;
+
         internal DefineRules(NotesParser parser)
         {
             this.parser = parser;
+            this.backgroundWorker = new BackgroundWorker();
             InitializeComponent();
             PopulateSourceColumnListBox();
             AddCleaningRule();
@@ -65,7 +70,7 @@ namespace DECS_Excel_Add_Ins
 
             // Have the cleaning rule panel tell us when text changes so
             // we can invoke the ShowCleaningResult method.
-            cleaningRuleGui.AssignExternalRuleChanged(ShowCleaningResult);
+            cleaningRuleGui.AssignExternalRuleChanged(CleaningCallback);
             cleaningRuleGui.Populate(rule);
 
             // Keep a list.
@@ -94,7 +99,7 @@ namespace DECS_Excel_Add_Ins
 
             // Have the extract rule panel tell us when text changes so
             // we can invoke the ShowExtractResult method.
-            extractRuleGui.AssignExternalRuleChanged(ShowExtractResult);
+            extractRuleGui.AssignExternalRuleChanged(ExtractCallback);
             extractRuleGui.Populate(rule);
 
             // Keep a list.
@@ -108,6 +113,39 @@ namespace DECS_Excel_Add_Ins
             List<RuleGui> rules = CleaningRules();
             rules.AddRange(ExtractRules());
             return rules;
+        }        
+        // https://stackoverflow.com/a/12127025/18749636
+        internal void cleaningBackgroundWorker_DoWork(object sender, DoWorkEventArgs e)
+        {
+            // Don't let any new events fire while we're working.
+            Lock();
+            UpdateProgressBar(0);
+            UpdateProgressBarLabel("Applying cleaning rules.");
+            Trace.WriteLine("Calling NotesParser.Clean() method.");
+            parser.Clean(this.backgroundWorker);
+        }
+        private void cleaningBackgroundWorker_ProgressChanged(object sender, ProgressChangedEventArgs e)
+        {
+            Trace.WriteLine("Progress: " +  e.ProgressPercentage.ToString() + "%");
+            UpdateProgressBar(e.ProgressPercentage);
+            UpdateProgressBarLabel("Cleaning rule: " + e.UserState.ToString());
+        }
+        private void cleaningBackgroundWorker_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
+        {
+            Trace.WriteLine("Cleaning background job complete.");
+            UpdateProgressBar(0);
+            UpdateProgressBarLabel("Cleaning Completed.");
+            Application.DoEvents();
+
+            // Allow new events.
+            Unlock();
+        }
+        internal void CleaningCallback()
+        {
+            if (configLoading) return;
+
+            Trace.WriteLine("Received cleaning callback.");
+            ShowCleaningResult();
         }
         private List<RuleGui> CleaningRules()
         {
@@ -168,6 +206,38 @@ namespace DECS_Excel_Add_Ins
         {
             Close();
         }
+        internal void extractBackgroundWorker_DoWork(object sender, DoWorkEventArgs e)
+        {
+            // Don't let any new events fire while we're working.
+            Lock();
+            UpdateProgressBar(0);
+            UpdateProgressBarLabel("Applying extract rules.");
+            Trace.WriteLine("Calling NotesParser.Extract() method.");
+            parser.Extract(this.backgroundWorker);
+        }
+        private void extractBackgroundWorker_ProgressChanged(object sender, ProgressChangedEventArgs e)
+        {
+            Trace.WriteLine("Progress: " + e.ProgressPercentage.ToString() + "%");
+            UpdateProgressBar(e.ProgressPercentage);
+            UpdateProgressBarLabel("Extract rule: " + e.UserState.ToString());
+        }
+        private void extractBackgroundWorker_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
+        {
+            Trace.WriteLine("Extract background job complete.");
+            UpdateProgressBar(0);
+            UpdateProgressBarLabel("Extract Completed.");
+            Application.DoEvents();
+
+            // Allow new events.
+            Unlock();
+        }
+        internal void ExtractCallback()
+        {
+            if (configLoading) return;
+
+            Trace.WriteLine("Received extract callback.");
+            ShowCleaningResult();
+        }
         private List<RuleGui> ExtractRules()
         {
             List<Panel> extractRuleGuis = extractRulesPanel.Controls.OfType<Panel>().ToList();
@@ -194,6 +264,9 @@ namespace DECS_Excel_Add_Ins
 
             if (configLoaded != null)
             {
+                // Temporarily disable all other callbacks until we're done loading.
+                configLoading = true;
+
                 // Initialize the NotesConfig object.
                 this.config = configLoaded;
 
@@ -219,8 +292,24 @@ namespace DECS_Excel_Add_Ins
                 SetSourceColumn(this.config.SourceColumn);
             }
 
+            // Regard all further alarms.
+            configLoading = false;
+
+            Trace.WriteLine("Config file loaded; calling ShowCleaningResult(), ShowExtractResult().");
             ShowCleaningResult();
             ShowExtractResult();
+        }
+        private void Lock()
+        {
+            foreach (RuleGui rule in cleaningRules)
+            {
+                rule.Lock();
+            }
+
+            foreach (RuleGui rule in extractRules)
+            {
+                rule.Lock();
+            }
         }
         private int NumPanelsThisType(Panel parent)
         {
@@ -293,36 +382,6 @@ namespace DECS_Excel_Add_Ins
                 }
             }
         }
-        private void SetSourceColumn(string sourceColumn)
-        {
-            try
-            {
-                sourceColumnListBox.SelectedItem = sourceColumn;
-            }
-            catch (Exception)
-            {
-            }
-        }
-        private void ShowCleaningResult()
-        {
-            // Need to tell the parser object that the rules have changed.
-            this.parser.UpdateConfig(configObj: this.config, updateOriginalSourceColumn: false);
-
-            if (this.config.CleaningRules.Count > 0)
-            {
-                this.parser.Clean();
-            }            
-        }
-        private void ShowExtractResult()
-        {
-            // Need to tell the parser object that the rules have changed.
-            this.parser.UpdateConfig(configObj: this.config, updateOriginalSourceColumn: false);
-
-            if (this.config.ExtractRules.Count > 0)
-            {
-                this.parser.Extract();
-            }
-        }
         private void saveAsToolStripMenuItem_Click(object sender, EventArgs e)
         {
             SaveAs();
@@ -335,8 +394,81 @@ namespace DECS_Excel_Add_Ins
         {
             Save();
         }
+        private void SetSourceColumn(string sourceColumn)
+        {
+            try
+            {
+                sourceColumnListBox.SelectedItem = sourceColumn;
+            }
+            catch (Exception)
+            {
+            }
+        }
+        // https://stackoverflow.com/questions/9602567/how-to-update-ui-from-another-thread-running-in-another-class
+        private void SetupCleaningBackgroundWorker()
+        {
+            while (this.backgroundWorker.IsBusy)
+            {
+                Trace.WriteLine("Cleaning background worker busy.");
+                Application.DoEvents();
+                System.Threading.Thread.Sleep(500);
+            }
+
+            Trace.WriteLine("Switching backgroundWorker to cleaning.");
+            this.backgroundWorker.Dispose();
+            this.backgroundWorker = new BackgroundWorker();
+            this.backgroundWorker.WorkerReportsProgress = true;
+            this.backgroundWorker.WorkerSupportsCancellation = true;
+            this.backgroundWorker.DoWork += cleaningBackgroundWorker_DoWork;
+            this.backgroundWorker.ProgressChanged += cleaningBackgroundWorker_ProgressChanged;
+            this.backgroundWorker.RunWorkerCompleted += cleaningBackgroundWorker_RunWorkerCompleted;
+        }
+        private void SetupExtractBackgroundWorker()
+        {
+            while (this.backgroundWorker.IsBusy)
+            {
+                Trace.WriteLine("Extract background worker busy.");
+                Application.DoEvents();
+                System.Threading.Thread.Sleep(500);
+            }
+
+            Trace.WriteLine("Switching backgroundWorker to extract.");
+            this.backgroundWorker.Dispose();
+            this.backgroundWorker = new BackgroundWorker();
+            this.backgroundWorker.WorkerReportsProgress = true;
+            this.backgroundWorker.WorkerSupportsCancellation = true;
+            this.backgroundWorker.DoWork += extractBackgroundWorker_DoWork;
+            this.backgroundWorker.ProgressChanged += extractBackgroundWorker_ProgressChanged;
+            this.backgroundWorker.RunWorkerCompleted += extractBackgroundWorker_RunWorkerCompleted;
+        }
+        private void ShowCleaningResult()
+        {
+            // Need to tell the parser object that the rules have changed.
+            this.parser.UpdateConfig(configObj: this.config, updateOriginalSourceColumn: false);
+
+            if (this.config.CleaningRules.Count > 0)
+            {
+                SetupCleaningBackgroundWorker();
+                Trace.WriteLine("Cleaning background worker started.");
+                this.backgroundWorker.RunWorkerAsync();
+            }            
+        }
+        private void ShowExtractResult()
+        {
+            // Need to tell the parser object that the rules have changed.
+            this.parser.UpdateConfig(configObj: this.config, updateOriginalSourceColumn: false);
+
+            if (this.config.ExtractRules.Count > 0)
+            {
+                SetupExtractBackgroundWorker();
+                Trace.WriteLine("Extract background worker started.");
+                this.backgroundWorker.RunWorkerAsync();
+            }
+        }
         private void sourceColumnListBox_Selected(object sender, EventArgs e)
         {
+            if (configLoading) return;
+
             // Restore what was in the source column BEFORE we change the column.
             this.parser.ResetWorksheet();
 
@@ -349,8 +481,46 @@ namespace DECS_Excel_Add_Ins
             this.parser.SaveOriginalSourceColumn();
 
             // Show results of rules on NEW source column.
+            Trace.WriteLine("Source column selection changed. Calling ShowCleaningResult() and ShowExtractResult().");
             ShowCleaningResult();
             ShowExtractResult();
+        }
+        private void Unlock()
+        {
+            foreach (RuleGui rule in cleaningRules)
+            {
+                rule.Unlock();
+            }
+
+            foreach (RuleGui rule in extractRules)
+            {
+                rule.Unlock();
+            }
+        }
+
+        private void UpdateProgressBar(int percentage)
+        {
+            if (progressBar.InvokeRequired)
+            {
+                Action setProgress = delegate { UpdateProgressBar(percentage); };
+                progressBar.Invoke(setProgress);
+            }
+            else
+            {
+                progressBar.Value = percentage;
+            }
+        }
+        private void UpdateProgressBarLabel(string text)
+        {
+            if (progressBarLabel.InvokeRequired)
+            {
+                Action setLabel = delegate { UpdateProgressBarLabel(text); };
+                progressBarLabel.Invoke(setLabel);
+            }
+            else
+            {
+                progressBarLabel.Text = text;
+            }
         }
     }
 }
