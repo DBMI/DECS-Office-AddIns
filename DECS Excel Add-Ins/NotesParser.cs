@@ -22,11 +22,14 @@ namespace DECS_Excel_Add_Ins
         private List<string> originalColumnNames;
         private List<string> originalSourceColumnEntries;
         private Range sourceColumn;
-        private Worksheet worksheet;
         private StatusForm statusForm;
+        private bool stopProcessing = false;
+        private Microsoft.Office.Interop.Excel.Window window;
+        private Worksheet worksheet;
 
         public NotesParser(Worksheet worksheet, bool withConfigFile = true)
         {
+            this.window = Globals.ThisAddIn.Application.ActiveWindow;
             this.worksheet = worksheet;
 
             // Identify last row, column.
@@ -44,10 +47,19 @@ namespace DECS_Excel_Add_Ins
             }
         }
         // Apply cleaning rules.
-        internal void Clean(BackgroundWorker bw = null)
+        internal bool Clean(BackgroundWorker bw = null)
         {
-            if (!HasConfig()) return;
+            if (!HasConfig()) return true;
 
+            if (this.statusForm == null)
+            {
+                this.statusForm = new StatusForm(StopProcessing);
+                this.statusForm.Show();
+            }
+
+            this.statusForm.UpdateStatusLabel("Applying cleaning rules.");
+
+            ShowRow(1);
             RestoreOriginalSourceColumn();
             Range thisCell;
             int progressPercentage = 0;
@@ -55,6 +67,9 @@ namespace DECS_Excel_Add_Ins
             // Run down the source column (skipping the header row), applying each cleaning rule.
             for (int row_offset = 1; row_offset < this.lastRow; row_offset++)
             {
+                if (stopProcessing) return false;
+
+                ShowRow(row_offset);
                 thisCell = this.sourceColumn.Offset[row_offset, 0];
                 string cell_contents = thisCell.Value2.ToString();
 
@@ -68,8 +83,8 @@ namespace DECS_Excel_Add_Ins
                     {
                     }
 
-                    bw?.ReportProgress(progressPercentage, rule.replace);
-                    statusForm?.UpdateProgressBarLabel(rule.replace);
+                    //bw?.ReportProgress(progressPercentage, rule.replace);
+                    this.statusForm?.UpdateProgressBarLabel(rule.replace);
                 }
 
                 thisCell.Value2 = cell_contents;
@@ -84,12 +99,22 @@ namespace DECS_Excel_Add_Ins
                     progressPercentage = 100;
                 }
 
-                statusForm?.UpdateProgressBar(progressPercentage);
+                this.statusForm?.UpdateProgressBar(progressPercentage);
             }
+
+            return true;
         }
-        internal void Extract(BackgroundWorker bw = null)
+        internal bool Extract()
         {
-            if (!HasConfig()) return;
+            if (!HasConfig()) return true;
+
+            if (this.statusForm == null)
+            {
+                this.statusForm = new StatusForm(StopProcessing);
+                this.statusForm.Show();
+            }
+
+            this.statusForm.UpdateStatusLabel("Applying extraction rules.");
 
             Range thisCell;
             int progressPercentage = 0;
@@ -98,6 +123,9 @@ namespace DECS_Excel_Add_Ins
             // applying each extraction rule, stopping at the first one that matches.
             for (int row_offset = 1; row_offset < this.lastRow; row_offset++)
             {
+                if (stopProcessing) return false;
+
+                ShowRow(row_offset);
                 thisCell = this.sourceColumn.Offset[row_offset, 0];
                 string cell_contents = thisCell.Value.ToString();
 
@@ -127,8 +155,8 @@ namespace DECS_Excel_Add_Ins
                     {
                     }
 
-                    bw?.ReportProgress(progressPercentage, rule.newColumn);
-                    statusForm?.UpdateProgressBarLabel(rule.newColumn);
+                    //bw?.ReportProgress(progressPercentage, rule.newColumn);
+                    this.statusForm?.UpdateProgressBarLabel(rule.newColumn);
                 }
 
                 // Do this only if bw is not null.
@@ -141,8 +169,10 @@ namespace DECS_Excel_Add_Ins
                     progressPercentage = 100;
                 }
 
-                statusForm?.UpdateProgressBar(progressPercentage);
+                this.statusForm?.UpdateProgressBar(progressPercentage);
             }
+
+            return true;
         }
         internal bool HasConfig()
         {
@@ -153,20 +183,19 @@ namespace DECS_Excel_Add_Ins
         {
             if (!HasConfig()) return;
 
-            this.statusForm = new StatusForm();
-            this.statusForm.Show();
-
             // Apply cleaning rules.
-            Clean();
+            bool keepProcessing = Clean();
+
+            if (!keepProcessing) return;
 
             // Apply extraction rules.
-            Extract();
+            keepProcessing = Extract();
+            ShowRow(1);
 
-            this.statusForm.Close();
+            if (!keepProcessing) return;
 
             // Save a copy of the revised workbook.
             SaveRevised();
-
         }
         internal void ResetWorksheet()
         {
@@ -240,10 +269,16 @@ namespace DECS_Excel_Add_Ins
                 }
             }
         }
-        private void SaveRevised()
+        internal void SaveRevised()
         {
             if (!HasConfig()) return;
 
+            this.statusForm.UpdateStatusLabel("Saving revised file.");
+            this.statusForm.UpdateProgressBarLabel("Complete.");
+            ShowRow(1);
+            this.statusForm.Close();
+
+            // Save a copy of the revised workbook.
             Workbook workbook = this.worksheet.Parent;
             string filename = workbook.FullName;
             string directory = System.IO.Path.GetDirectoryName(filename);
@@ -261,6 +296,14 @@ namespace DECS_Excel_Add_Ins
             }
 
             MessageBox.Show("Saved in '" + newFilename + "'.");
+        }
+        private void ShowRow(int row)
+        {
+            this.window.ScrollRow = row;
+        }
+        internal void StopProcessing()
+        {
+            stopProcessing = true;
         }
         // Add config structure AFTER instantiation.
         internal void UpdateConfig(NotesConfig configObj, bool updateOriginalSourceColumn = true)
