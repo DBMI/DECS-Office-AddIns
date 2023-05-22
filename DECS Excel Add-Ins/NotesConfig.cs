@@ -122,10 +122,20 @@ namespace DECS_Excel_Add_Ins
                 ExtractRules.RemoveAt(index);
             }
         }
-        internal bool IsEmpty()
+        internal bool HasCleaningRules()
         {
-            return CleaningRules.Count == 0 && ExtractRules.Count == 0;
+            List<CleaningRule> validRules = CleaningRules.Where(r => r.pattern != null && r.replace != null).ToList();
+            return validRules.Count > 0;
         }
+        internal bool HasExtractRules()
+        {
+            List<ExtractRule> validRules = ExtractRules.Where(r => r.pattern != null && r.newColumn != null).ToList();
+            return validRules.Count > 0;
+        }
+        //internal bool IsEmpty()
+        //{
+        //    return CleaningRules.Count == 0 && ExtractRules.Count == 0;
+        //}
         internal static NotesConfig ReadConfigFile(string filePath)
         {
             // Declare this outside the 'using' block so we can access it later

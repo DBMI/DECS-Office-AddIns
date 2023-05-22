@@ -47,6 +47,8 @@ namespace DECS_Excel_Add_Ins
             PopulateSourceColumnListBox();
             AddCleaningRule();
             AddExtractRule();
+            this.parser.AssignWorksheetChangedCallback(ShowSelectedRows);
+            ShowSelectedRows();
         }
         private void AddCleaningRule(CleaningRule rule = null, bool updateConfig = true)
         {
@@ -355,7 +357,7 @@ namespace DECS_Excel_Add_Ins
             // Need to tell the parser object that the rules have changed.
             this.parser.UpdateConfig(configObj: this.config, updateOriginalSourceColumn: false);
 
-            if (this.config.CleaningRules.Count > 0)
+            if (this.config.HasCleaningRules())
             {
                 this.parser.Clean();
             }            
@@ -365,10 +367,50 @@ namespace DECS_Excel_Add_Ins
             // Need to tell the parser object that the rules have changed.
             this.parser.UpdateConfig(configObj: this.config, updateOriginalSourceColumn: false);
 
-            if (this.config.ExtractRules.Count > 0)
+            if (this.config.HasExtractRules())
             {
                 this.parser.Extract();
                 this.parser.SaveRevised();
+            }
+            else
+            {
+                // Still need to reset row & remove Status Form.
+                this.parser.ResetAfterProcessing();
+            }
+        }
+        private void ShowSelectedRows()
+        {
+            ProcessingRowsSelection rowSelection = this.parser.WhichRowsWillBeProcessed();
+            ShowSelectedRows(rowSelection);
+        }
+        private void ShowSelectedRows(ProcessingRowsSelection rowSelection)
+        {
+            List<int> selectedRows = rowSelection.GetRows();
+            string selectionReason = rowSelection.GetReason();
+
+            if (rowSelection.AllRows())
+            {
+                this.selectedRowsLabel.Text = "Processing ALL rows.";
+            }
+            else
+            {
+                int minRow = selectedRows.Min();
+                int maxRow = selectedRows.Max();
+                
+                if (selectedRows.Count == 1)
+                {
+                    this.selectedRowsLabel.Text = "Processing " + selectedRows.Count.ToString() + " row: " + minRow.ToString();
+                }
+                else if (selectedRows.Count > 1)
+                {
+                    this.selectedRowsLabel.Text = "Processing " + selectedRows.Count.ToString() + " rows:";
+                    this.selectedRowsLabel.Text += Environment.NewLine + "[" + minRow.ToString() + ":" + maxRow.ToString() + "]";
+                }
+            }
+
+            if (selectionReason != string.Empty)
+            {
+                this.selectedRowsLabel.Text += Environment.NewLine + selectionReason;
             }
         }
         private void sourceColumnListBox_Selected(object sender, EventArgs e)
