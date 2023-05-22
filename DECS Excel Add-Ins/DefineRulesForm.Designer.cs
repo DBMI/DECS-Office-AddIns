@@ -50,16 +50,13 @@
             this.loadToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.saveToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.saveAsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.progressBar = new System.Windows.Forms.ProgressBar();
-            this.groupBox1 = new System.Windows.Forms.GroupBox();
-            this.progressBarLabel = new System.Windows.Forms.Label();
+            this.runButton = new System.Windows.Forms.Button();
             this.sourceColumnGroupBox.SuspendLayout();
             this.cleaningRulesGroupBox.SuspendLayout();
             this.cleaningRulesPanel.SuspendLayout();
             this.extractRulesGroupBox.SuspendLayout();
             this.extractRulesPanel.SuspendLayout();
             this.menuStrip1.SuspendLayout();
-            this.groupBox1.SuspendLayout();
             this.SuspendLayout();
             // 
             // headline
@@ -206,35 +203,38 @@
             // 
             // saveButton
             // 
+            this.saveButton.BackColor = System.Drawing.Color.White;
             this.saveButton.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.saveButton.Location = new System.Drawing.Point(461, 662);
             this.saveButton.Name = "saveButton";
             this.saveButton.Size = new System.Drawing.Size(120, 40);
             this.saveButton.TabIndex = 4;
             this.saveButton.Text = "Save";
-            this.saveButton.UseVisualStyleBackColor = true;
+            this.saveButton.UseVisualStyleBackColor = false;
             this.saveButton.Click += new System.EventHandler(this.saveButton_Click);
             // 
             // discardButton
             // 
+            this.discardButton.BackColor = System.Drawing.Color.White;
             this.discardButton.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.discardButton.Location = new System.Drawing.Point(842, 662);
+            this.discardButton.Location = new System.Drawing.Point(863, 662);
             this.discardButton.Name = "discardButton";
             this.discardButton.Size = new System.Drawing.Size(120, 40);
             this.discardButton.TabIndex = 5;
-            this.discardButton.Text = "Discard";
-            this.discardButton.UseVisualStyleBackColor = true;
+            this.discardButton.Text = "Quit";
+            this.discardButton.UseVisualStyleBackColor = false;
             this.discardButton.Click += new System.EventHandler(this.discardButton_Click);
             // 
             // clearButton
             // 
+            this.clearButton.BackColor = System.Drawing.Color.White;
             this.clearButton.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.clearButton.Location = new System.Drawing.Point(662, 662);
             this.clearButton.Name = "clearButton";
             this.clearButton.Size = new System.Drawing.Size(120, 40);
             this.clearButton.TabIndex = 6;
             this.clearButton.Text = "Clear";
-            this.clearButton.UseVisualStyleBackColor = true;
+            this.clearButton.UseVisualStyleBackColor = false;
             this.clearButton.Click += new System.EventHandler(this.clearButton_Click);
             // 
             // menuStrip1
@@ -279,42 +279,26 @@
             this.saveAsToolStripMenuItem.Text = "SaveAs";
             this.saveAsToolStripMenuItem.Click += new System.EventHandler(this.saveAsToolStripMenuItem_Click);
             // 
-            // progressBar
+            // runButton
             // 
-            this.progressBar.Location = new System.Drawing.Point(19, 51);
-            this.progressBar.Name = "progressBar";
-            this.progressBar.Size = new System.Drawing.Size(239, 23);
-            this.progressBar.TabIndex = 8;
+            this.runButton.BackColor = System.Drawing.Color.White;
+            this.runButton.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.runButton.ForeColor = System.Drawing.Color.DarkBlue;
+            this.runButton.Location = new System.Drawing.Point(662, 103);
+            this.runButton.Name = "runButton";
+            this.runButton.Size = new System.Drawing.Size(120, 40);
+            this.runButton.TabIndex = 8;
+            this.runButton.Text = "Run";
+            this.runButton.UseVisualStyleBackColor = false;
+            this.runButton.Click += new System.EventHandler(this.runButton_Click);
             // 
-            // groupBox1
-            // 
-            this.groupBox1.Controls.Add(this.progressBarLabel);
-            this.groupBox1.Controls.Add(this.progressBar);
-            this.groupBox1.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.groupBox1.Location = new System.Drawing.Point(1104, 70);
-            this.groupBox1.Name = "groupBox1";
-            this.groupBox1.Size = new System.Drawing.Size(277, 86);
-            this.groupBox1.TabIndex = 9;
-            this.groupBox1.TabStop = false;
-            this.groupBox1.Text = "Progress";
-            // 
-            // progressBarLabel
-            // 
-            this.progressBarLabel.AutoSize = true;
-            this.progressBarLabel.Location = new System.Drawing.Point(91, 22);
-            this.progressBarLabel.Name = "progressBarLabel";
-            this.progressBarLabel.Size = new System.Drawing.Size(97, 15);
-            this.progressBarLabel.TabIndex = 9;
-            this.progressBarLabel.Text = "Applying rules";
-            this.progressBarLabel.TextAlign = System.Drawing.ContentAlignment.TopCenter;
-            // 
-            // DefineRules
+            // DefineRulesForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.SystemColors.Window;
             this.ClientSize = new System.Drawing.Size(1414, 714);
-            this.Controls.Add(this.groupBox1);
+            this.Controls.Add(this.runButton);
             this.Controls.Add(this.clearButton);
             this.Controls.Add(this.discardButton);
             this.Controls.Add(this.saveButton);
@@ -325,7 +309,7 @@
             this.Controls.Add(this.menuStrip1);
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.MainMenuStrip = this.menuStrip1;
-            this.Name = "DefineRules";
+            this.Name = "DefineRulesForm";
             this.Text = "Define Data Rules";
             this.sourceColumnGroupBox.ResumeLayout(false);
             this.cleaningRulesGroupBox.ResumeLayout(false);
@@ -336,8 +320,6 @@
             this.extractRulesPanel.ResumeLayout(false);
             this.menuStrip1.ResumeLayout(false);
             this.menuStrip1.PerformLayout();
-            this.groupBox1.ResumeLayout(false);
-            this.groupBox1.PerformLayout();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -366,8 +348,6 @@
         private System.Windows.Forms.ToolStripMenuItem saveAsToolStripMenuItem;
         private System.Windows.Forms.Panel cleaningRulesPanel;
         private System.Windows.Forms.Panel extractRulesPanel;
-        private System.Windows.Forms.ProgressBar progressBar;
-        private System.Windows.Forms.GroupBox groupBox1;
-        private System.Windows.Forms.Label progressBarLabel;
+        private System.Windows.Forms.Button runButton;
     }
 }

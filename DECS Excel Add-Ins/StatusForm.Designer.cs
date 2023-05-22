@@ -34,6 +34,7 @@
             this.progressBar = new System.Windows.Forms.ProgressBar();
             this.statusGroupBox = new System.Windows.Forms.GroupBox();
             this.statusLabel = new System.Windows.Forms.Label();
+            this.processingStopButton = new System.Windows.Forms.Button();
             this.progressGroupBox.SuspendLayout();
             this.statusGroupBox.SuspendLayout();
             this.SuspendLayout();
@@ -95,12 +96,24 @@
             this.statusLabel.TabIndex = 0;
             this.statusLabel.Text = "status of the apparatus";
             // 
+            // processingStopButton
+            // 
+            this.processingStopButton.BackColor = System.Drawing.Color.White;
+            this.processingStopButton.Location = new System.Drawing.Point(278, 335);
+            this.processingStopButton.Name = "processingStopButton";
+            this.processingStopButton.Size = new System.Drawing.Size(75, 33);
+            this.processingStopButton.TabIndex = 12;
+            this.processingStopButton.Text = "Stop";
+            this.processingStopButton.UseVisualStyleBackColor = false;
+            this.processingStopButton.Click += new System.EventHandler(this.processingStopButton_Click);
+            // 
             // StatusForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(9F, 16F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.Color.White;
-            this.ClientSize = new System.Drawing.Size(663, 384);
+            this.ClientSize = new System.Drawing.Size(638, 384);
+            this.Controls.Add(this.processingStopButton);
             this.Controls.Add(this.statusGroupBox);
             this.Controls.Add(this.progressGroupBox);
             this.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
@@ -123,5 +136,6 @@
         private System.Windows.Forms.ProgressBar progressBar;
         private System.Windows.Forms.GroupBox statusGroupBox;
         private System.Windows.Forms.Label statusLabel;
+        private System.Windows.Forms.Button processingStopButton;
     }
 }
