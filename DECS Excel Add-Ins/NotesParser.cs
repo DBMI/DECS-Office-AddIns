@@ -11,6 +11,9 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 using System.Xml.Serialization;
 using static System.Windows.Forms.VisualStyles.VisualStyleElement;
+using Action = System.Action;
+using Application = System.Windows.Forms.Application;
+using Excel = Microsoft.Office.Interop.Excel;
 
 namespace DECS_Excel_Add_Ins
 {
@@ -24,13 +27,15 @@ namespace DECS_Excel_Add_Ins
         private Range sourceColumn;
         private StatusForm statusForm;
         private bool stopProcessing = false;
-        private Microsoft.Office.Interop.Excel.Window window;
+        private Microsoft.Office.Interop.Excel.Application application;
         private Worksheet worksheet;
+        private Action<ProcessingRowsSelection> worksheetChangedCallback;
 
         public NotesParser(Worksheet worksheet, bool withConfigFile = true)
         {
-            this.window = Globals.ThisAddIn.Application.ActiveWindow;
+            this.application = Globals.ThisAddIn.Application;
             this.worksheet = worksheet;
+            this.worksheet.SelectionChange += WorksheetSelectionChanged;
 
             // Identify last row, column.
             this.lastCol = Utilities.FindLastCol(sheet: worksheet);
@@ -46,17 +51,21 @@ namespace DECS_Excel_Add_Ins
                 UpdateConfig(configObj);
             }
         }
+        internal void AssignWorksheetChangedCallback(Action<ProcessingRowsSelection> externalCallback)
+        {
+            worksheetChangedCallback = externalCallback;
+        }
         // Apply cleaning rules.
-        internal bool Clean(BackgroundWorker bw = null)
+        internal bool Clean()
         {
             if (!HasConfig()) return true;
 
             if (this.statusForm == null)
             {
                 this.statusForm = new StatusForm(StopProcessing);
-                this.statusForm.Show();
             }
 
+            this.statusForm.Show();
             this.statusForm.UpdateStatusLabel("Applying cleaning rules.");
 
             ShowRow(1);
@@ -64,14 +73,29 @@ namespace DECS_Excel_Add_Ins
             Range thisCell;
             int progressPercentage = 0;
 
+            // If the user has selected some rows, we'll run cleaning only on those rows.
+            List<int> selectedRows = WhichRowsWillBeProcessedOnly();
+
+            int numRowsProcessed = 0;
+
             // Run down the source column (skipping the header row), applying each cleaning rule.
-            for (int row_offset = 1; row_offset < this.lastRow; row_offset++)
+            foreach (int rowNumber in selectedRows)
             {
                 if (stopProcessing) return false;
 
-                ShowRow(row_offset);
-                thisCell = this.sourceColumn.Offset[row_offset, 0];
-                string cell_contents = thisCell.Value2.ToString();
+                ShowRow(rowNumber);
+                thisCell = this.sourceColumn.Offset[rowNumber - 1, 0];
+                string cell_contents;
+
+                try
+                {
+                    cell_contents = thisCell.Value2.ToString();
+                }
+                catch
+                {
+                    // There's nothing in this cell.
+                    continue;
+                }
 
                 foreach (CleaningRule rule in config.CleaningRules)
                 {
@@ -83,16 +107,15 @@ namespace DECS_Excel_Add_Ins
                     {
                     }
 
-                    //bw?.ReportProgress(progressPercentage, rule.replace);
                     this.statusForm?.UpdateProgressBarLabel(rule.replace);
                 }
 
                 thisCell.Value2 = cell_contents;
+                numRowsProcessed++;
 
-                // Do this only if bw is not null.
-                if (this.lastRow > 1)
+                if (selectedRows.Count > 1)
                 {
-                    progressPercentage = 100 * row_offset / (this.lastRow - 1);
+                    progressPercentage = 100 * numRowsProcessed / selectedRows.Count;
                 }
                 else
                 {
@@ -111,22 +134,26 @@ namespace DECS_Excel_Add_Ins
             if (this.statusForm == null)
             {
                 this.statusForm = new StatusForm(StopProcessing);
-                this.statusForm.Show();
             }
 
+            this.statusForm.Show();
             this.statusForm.UpdateStatusLabel("Applying extraction rules.");
 
             Range thisCell;
             int progressPercentage = 0;
+            int numRowsProcessed = 0;
+
+            // If the user has selected some rows, we'll run cleaning only on those rows.
+            List<int> selectedRows = WhichRowsWillBeProcessedOnly();
 
             // Run down the source column (skipping the header row),
             // applying each extraction rule, stopping at the first one that matches.
-            for (int row_offset = 1; row_offset < this.lastRow; row_offset++)
+            foreach (int rowNumber in selectedRows)
             {
                 if (stopProcessing) return false;
 
-                ShowRow(row_offset);
-                thisCell = this.sourceColumn.Offset[row_offset, 0];
+                ShowRow(rowNumber);
+                thisCell = this.sourceColumn.Offset[rowNumber - 1, 0];
                 string cell_contents = thisCell.Value.ToString();
 
                 foreach (ExtractRule rule in config.ExtractRules)
@@ -148,21 +175,21 @@ namespace DECS_Excel_Add_Ins
                         // Did we match?
                         if (match.Groups.Count > 1)
                         {
-                            targetRng.Offset[row_offset, 0].Value = match.Groups[1].Value;
+                            targetRng.Offset[rowNumber - 1, 0].Value = match.Groups[1].Value;
                         }
                     }
                     catch (System.ArgumentNullException)
                     {
                     }
 
-                    //bw?.ReportProgress(progressPercentage, rule.newColumn);
                     this.statusForm?.UpdateProgressBarLabel(rule.newColumn);
                 }
 
-                // Do this only if bw is not null.
-                if (this.lastRow > 1)
+                numRowsProcessed++;
+
+                if (selectedRows.Count > 1)
                 {
-                    progressPercentage = (100 * row_offset / (this.lastRow - 1));
+                    progressPercentage = (100 * numRowsProcessed / selectedRows.Count);
                 }
                 else
                 {
@@ -186,16 +213,48 @@ namespace DECS_Excel_Add_Ins
             // Apply cleaning rules.
             bool keepProcessing = Clean();
 
-            if (!keepProcessing) return;
+            if (!keepProcessing)
+            {
+                ResetAfterProcessing();
+                return;
+            }
 
             // Apply extraction rules.
             keepProcessing = Extract();
-            ShowRow(1);
 
-            if (!keepProcessing) return;
+            if (!keepProcessing)
+            {
+                ResetAfterProcessing();
+                return;
+            }
 
             // Save a copy of the revised workbook.
             SaveRevised();
+        }
+        private ProcessingRowsSelection ReadSelectedRows()
+        {
+            List<int> rows = new List<int>();
+            Excel.Range rng = (Excel.Range)this.application.Selection;
+
+            foreach (Excel.Range row in rng.Rows)
+            {
+                int rowNumber = row.Row;
+
+                if (!rows.Contains(rowNumber) && rowNumber <= this.lastRow)
+                {
+                    rows.Add(rowNumber);
+                }
+            }
+
+            rows.Sort();
+            return new ProcessingRowsSelection(rows, "");
+        }
+        // Allow DefineRulesForm to tell us to go back to row 1 & close the status form.
+        // This is useful when we only had cleaning rules--no extract rules.
+        internal void ResetAfterProcessing()
+        {
+            ShowRow(1);
+            this.statusForm?.Close();
         }
         internal void ResetWorksheet()
         {
@@ -275,8 +334,7 @@ namespace DECS_Excel_Add_Ins
 
             this.statusForm.UpdateStatusLabel("Saving revised file.");
             this.statusForm.UpdateProgressBarLabel("Complete.");
-            ShowRow(1);
-            this.statusForm.Close();
+            ResetAfterProcessing();
 
             // Save a copy of the revised workbook.
             Workbook workbook = this.worksheet.Parent;
@@ -299,7 +357,7 @@ namespace DECS_Excel_Add_Ins
         }
         private void ShowRow(int row)
         {
-            this.window.ScrollRow = row;
+            this.application.ActiveWindow.ScrollRow = row;
         }
         internal void StopProcessing()
         {
@@ -331,6 +389,41 @@ namespace DECS_Excel_Add_Ins
                 // Save the uncleaned source column.
                 SaveOriginalSourceColumn();
             }
+        }
+        private List<int> WhichRowsWillBeProcessedOnly()
+        {
+            // If the user has selected some rows, we'll run cleaning only on those rows.
+            ProcessingRowsSelection selection = ReadSelectedRows();
+            List<int> selectedRows = selection.GetRows();
+
+            // Otherwise, gotta catch 'em all.
+            if (selectedRows.Count == 0)
+            {
+                selectedRows = Enumerable.Range(1, this.lastRow).ToList();
+            }
+
+            return selectedRows;
+        }
+        internal ProcessingRowsSelection WhichRowsWillBeProcessed()
+        {
+            // If the user has selected some rows, we'll run cleaning only on those rows.
+            ProcessingRowsSelection selection = ReadSelectedRows();
+            List<int> selectedRows = selection.GetRows();
+            bool allRows = false;
+
+            // Otherwise, gotta catch 'em all.
+            if (selectedRows.Count == 0)
+            {
+                selectedRows = Enumerable.Range(1, this.lastRow).ToList();
+                allRows = true;
+            }
+
+            return new ProcessingRowsSelection(selectedRows, selection.GetReason(), allRows);
+        }
+        private void WorksheetSelectionChanged(Range Target)
+        {
+            ProcessingRowsSelection selection = WhichRowsWillBeProcessed();
+            worksheetChangedCallback(selection);
         }
     }
 }

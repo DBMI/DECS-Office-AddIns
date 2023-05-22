@@ -51,12 +51,15 @@
             this.saveToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.saveAsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.runButton = new System.Windows.Forms.Button();
+            this.selectedRowsGroupBox = new System.Windows.Forms.GroupBox();
+            this.selectedRowsLabel = new System.Windows.Forms.Label();
             this.sourceColumnGroupBox.SuspendLayout();
             this.cleaningRulesGroupBox.SuspendLayout();
             this.cleaningRulesPanel.SuspendLayout();
             this.extractRulesGroupBox.SuspendLayout();
             this.extractRulesPanel.SuspendLayout();
             this.menuStrip1.SuspendLayout();
+            this.selectedRowsGroupBox.SuspendLayout();
             this.SuspendLayout();
             // 
             // headline
@@ -292,12 +295,33 @@
             this.runButton.UseVisualStyleBackColor = false;
             this.runButton.Click += new System.EventHandler(this.runButton_Click);
             // 
+            // selectedRowsGroupBox
+            // 
+            this.selectedRowsGroupBox.Controls.Add(this.selectedRowsLabel);
+            this.selectedRowsGroupBox.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.selectedRowsGroupBox.Location = new System.Drawing.Point(1104, 70);
+            this.selectedRowsGroupBox.Name = "selectedRowsGroupBox";
+            this.selectedRowsGroupBox.Size = new System.Drawing.Size(277, 86);
+            this.selectedRowsGroupBox.TabIndex = 9;
+            this.selectedRowsGroupBox.TabStop = false;
+            this.selectedRowsGroupBox.Text = "Rows Selected for Processing";
+            // 
+            // selectedRowsLabel
+            // 
+            this.selectedRowsLabel.AutoSize = true;
+            this.selectedRowsLabel.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.selectedRowsLabel.Location = new System.Drawing.Point(7, 33);
+            this.selectedRowsLabel.Name = "selectedRowsLabel";
+            this.selectedRowsLabel.Size = new System.Drawing.Size(0, 15);
+            this.selectedRowsLabel.TabIndex = 0;
+            // 
             // DefineRulesForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.SystemColors.Window;
             this.ClientSize = new System.Drawing.Size(1414, 714);
+            this.Controls.Add(this.selectedRowsGroupBox);
             this.Controls.Add(this.runButton);
             this.Controls.Add(this.clearButton);
             this.Controls.Add(this.discardButton);
@@ -320,6 +344,8 @@
             this.extractRulesPanel.ResumeLayout(false);
             this.menuStrip1.ResumeLayout(false);
             this.menuStrip1.PerformLayout();
+            this.selectedRowsGroupBox.ResumeLayout(false);
+            this.selectedRowsGroupBox.PerformLayout();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -349,5 +375,7 @@
         private System.Windows.Forms.Panel cleaningRulesPanel;
         private System.Windows.Forms.Panel extractRulesPanel;
         private System.Windows.Forms.Button runButton;
+        private System.Windows.Forms.GroupBox selectedRowsGroupBox;
+        private System.Windows.Forms.Label selectedRowsLabel;
     }
 }
