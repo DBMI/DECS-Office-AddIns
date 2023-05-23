@@ -260,9 +260,9 @@ namespace DECS_Excel_Add_Ins
         }
         private void PopulateSourceColumnListBox()
         {
-            sourceColumnListBox.DataSource = null;
-            sourceColumnListBox.Items.Clear();
-            sourceColumnListBox.DataSource = GetAvailableColumnNames();
+            this.sourceColumnListBox.DataSource = null;
+            this.sourceColumnListBox.Items.Clear();
+            this.sourceColumnListBox.DataSource = GetAvailableColumnNames();
         }
         private void RearrangeControls(List<RuleGui> rules, Button addButton)
         {
@@ -346,7 +346,7 @@ namespace DECS_Excel_Add_Ins
         {
             try
             {
-                sourceColumnListBox.SelectedItem = sourceColumn;
+                this.sourceColumnListBox.SelectedItem = sourceColumn;
             }
             catch (Exception)
             {
@@ -421,7 +421,7 @@ namespace DECS_Excel_Add_Ins
             this.parser.ResetWorksheet();
 
             // Change the source column...
-            string selectedColumn = sourceColumnListBox.SelectedValue.ToString();
+            string selectedColumn = this.sourceColumnListBox.SelectedItem.ToString();
             this.config.SourceColumn = selectedColumn;
             this.parser.UpdateConfig(this.config);
 

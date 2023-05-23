@@ -40,6 +40,16 @@ namespace DECS_Excel_Add_Ins
         public DecsExcelRibbon()
         {
         }
+        public Bitmap buildMrnsButton_GetImage(IRibbonControl control)
+        {
+            return Resources.clipboard;
+        }
+        public void OnBuildMRN(Office.IRibbonControl control)
+        {
+            ListImporter importer = new ListImporter();
+            Excel.Worksheet wksheet = (Excel.Worksheet)Globals.ThisAddIn.Application.ActiveSheet;
+            importer.Scan(wksheet);
+        }
         public void OnSearchConfig(Office.IRibbonControl control)
         {
             Excel.Worksheet wksheet = (Excel.Worksheet)Globals.ThisAddIn.Application.ActiveSheet;
