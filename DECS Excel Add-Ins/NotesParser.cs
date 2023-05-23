@@ -12,7 +12,7 @@ using System.Windows.Forms;
 using System.Xml.Serialization;
 using static System.Windows.Forms.VisualStyles.VisualStyleElement;
 using Action = System.Action;
-using Application = System.Windows.Forms.Application;
+using Application = Microsoft.Office.Interop.Excel.Application;
 using Excel = Microsoft.Office.Interop.Excel;
 
 namespace DECS_Excel_Add_Ins
@@ -27,7 +27,7 @@ namespace DECS_Excel_Add_Ins
         private Range sourceColumn;
         private StatusForm statusForm;
         private bool stopProcessing = false;
-        private Microsoft.Office.Interop.Excel.Application application;
+        private Application application;
         private Worksheet worksheet;
         private Action<ProcessingRowsSelection> worksheetChangedCallback;
 

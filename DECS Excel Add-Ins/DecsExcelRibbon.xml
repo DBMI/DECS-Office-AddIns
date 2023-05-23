@@ -19,6 +19,13 @@
 							screentip="Configure Search"
 							size="large"
 							supertip="Configure search of notes." />
+					<button id="buildMrnsButton"
+							getImage="buildMrnsButton_GetImage"
+							label="Build MRN import"
+							onAction="OnBuildMRN"
+							screentip="Build MRN import code"
+							size="large"
+							supertip="Build SQL code that imports MRN list." />
 				</group>
 			</tab>
 		</tabs>
