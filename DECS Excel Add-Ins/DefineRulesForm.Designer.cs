@@ -53,6 +53,7 @@
             this.runButton = new System.Windows.Forms.Button();
             this.selectedRowsGroupBox = new System.Windows.Forms.GroupBox();
             this.selectedRowsLabel = new System.Windows.Forms.Label();
+            this.label1 = new System.Windows.Forms.Label();
             this.sourceColumnGroupBox.SuspendLayout();
             this.cleaningRulesGroupBox.SuspendLayout();
             this.cleaningRulesPanel.SuspendLayout();
@@ -97,6 +98,7 @@
             // 
             // cleaningRulesGroupBox
             // 
+            this.cleaningRulesGroupBox.Controls.Add(this.label1);
             this.cleaningRulesGroupBox.Controls.Add(this.cleaningRulesPanel);
             this.cleaningRulesGroupBox.Controls.Add(this.cleaningRulesReplaceLabel);
             this.cleaningRulesGroupBox.Controls.Add(this.cleaningRulesPatternsLabel);
@@ -315,6 +317,16 @@
             this.selectedRowsLabel.Size = new System.Drawing.Size(0, 15);
             this.selectedRowsLabel.TabIndex = 0;
             // 
+            // label1
+            // 
+            this.label1.AutoSize = true;
+            this.label1.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label1.Location = new System.Drawing.Point(4, 26);
+            this.label1.Name = "label1";
+            this.label1.Size = new System.Drawing.Size(65, 16);
+            this.label1.TabIndex = 7;
+            this.label1.Text = "Enabled";
+            // 
             // DefineRulesForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -377,5 +389,6 @@
         private System.Windows.Forms.Button runButton;
         private System.Windows.Forms.GroupBox selectedRowsGroupBox;
         private System.Windows.Forms.Label selectedRowsLabel;
+        private System.Windows.Forms.Label label1;
     }
 }

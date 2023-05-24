@@ -8,7 +8,9 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 using static System.Windows.Forms.VisualStyles.VisualStyleElement;
 using static System.Windows.Forms.VisualStyles.VisualStyleElement.TextBox;
+using Action = System.Action;
 using Button = System.Windows.Forms.Button;
+using CheckBox = System.Windows.Forms.CheckBox;
 using Font = System.Drawing.Font;
 using Point = System.Drawing.Point;
 using TextBox = System.Windows.Forms.TextBox;
@@ -20,7 +22,7 @@ namespace DECS_Excel_Add_Ins
     {
         private const int BOX_HEIGHT = 22;
         private readonly Font BOX_FONT = new Font("Microsoft San Serif", 9.75f, FontStyle.Regular);
-        private const int LEFT_BOX_WIDTH = 1000;
+        private const int LEFT_BOX_WIDTH = 975;
         private const int RIGHT_BOX_WIDTH = 200;
 
         private const int BUTTON_HEIGHT = 30;
@@ -29,15 +31,20 @@ namespace DECS_Excel_Add_Ins
         private const int BUTTON_X = 1270;
         private readonly int BUTTON_Y_OFFSET = (int)(BOX_HEIGHT - BUTTON_HEIGHT) / 2;
 
-        private const int leftHandX = 5;
-        private const int rightHandX = 1040;
-        private readonly int boxY = (int) BOX_HEIGHT/2;
+        private const int LEFT_HAND_X = 35;
+        private const int RIGHT_HAND_X = 1040;
+        private readonly int BOX_Y = (int) BOX_HEIGHT/2;
+
+        private readonly Font CHECKBOX_FONT = new Font("Microsoft San Serif", 7f, FontStyle.Regular);
+        private const int CHECKBOX_X = 2;
+        private const int CHECKBOX_WIDTH = 13;
 
         protected Panel panel;
         private Panel parent;
+        protected CheckBox checkBox;
+        private Button deleteButton;
         protected TextBox leftHandTextBox;
         protected TextBox rightHandTextBox;
-        private Button deleteButton;
 
         protected int index;
         private string keyword;
@@ -45,11 +52,13 @@ namespace DECS_Excel_Add_Ins
         private static int width = 1316;
         private static int height = 44;
 
-        private System.Action<RuleGui> inheritedClassDeleteAction;
+        private Action<RuleGui> inheritedClassDeleteAction;
+        private Action<RuleGui> parentClassDisableAction; 
+        private Action<RuleGui> parentClassEnableAction;
 
         public RuleGui(int x, int y, int index, Panel parentObj, string ruleType)
         {
-            this.index = index;
+            this.index = index; // zero-based
             this.parent = parentObj;
             this.keyword = ruleType;
 
@@ -62,12 +71,27 @@ namespace DECS_Excel_Add_Ins
             this.panel.Width = width;
             this.parent.Controls.Add(this.panel);
 
+            // Create enable checkbox.
+            this.checkBox = new CheckBox();
+            this.checkBox.Checked = true;
+            this.checkBox.Click += CheckBoxClicked;
+            this.checkBox.Font = CHECKBOX_FONT;
+            this.checkBox.Height = BUTTON_HEIGHT;
+            System.Drawing.Size checkBoxSize = this.checkBox.Size;
+            checkBoxSize.Width = CHECKBOX_WIDTH;
+            this.checkBox.Size = checkBoxSize;
+            int checkBoxYoffset = (int)(BOX_HEIGHT - checkBoxSize.Height) / 2;
+            Point checkBoxPosit = new Point(CHECKBOX_X, BOX_Y + checkBoxYoffset);
+            this.checkBox.Location = checkBoxPosit;
+            this.checkBox.Parent = this.panel;
+            this.checkBox.Text = "";
+
             // Create and position boxes.
             this.leftHandTextBox = new System.Windows.Forms.TextBox();
             this.leftHandTextBox.Parent = this.panel;
             this.leftHandTextBox.Font = BOX_FONT;
             this.leftHandTextBox.Height = BOX_HEIGHT;
-            Point leftHandPosit = new Point(leftHandX, boxY);
+            Point leftHandPosit = new Point(LEFT_HAND_X, BOX_Y);
             this.leftHandTextBox.Location = leftHandPosit;
             this.leftHandTextBox.Name = this.keyword + "LeftTextBox";
             this.leftHandTextBox.Width = LEFT_BOX_WIDTH;
@@ -76,21 +100,21 @@ namespace DECS_Excel_Add_Ins
             this.rightHandTextBox.Parent = this.panel;
             this.rightHandTextBox.Font = BOX_FONT;
             this.rightHandTextBox.Height = BOX_HEIGHT;
-            Point rightHandPosit = new Point(rightHandX, boxY);
+            Point rightHandPosit = new Point(RIGHT_HAND_X, BOX_Y);
             this.rightHandTextBox.Location = rightHandPosit;
             this.rightHandTextBox.Name = this.keyword + "RightTextBox";
             this.rightHandTextBox.Width = RIGHT_BOX_WIDTH;
 
             // Create new delete button.
             this.deleteButton = new Button();
-            this.deleteButton.Parent = this.panel;
+            this.deleteButton.Click += Delete;
             this.deleteButton.Font = BUTTON_FONT;
             this.deleteButton.Height = BUTTON_HEIGHT;
-            Point deleteButtonPosit = new Point(BUTTON_X, boxY + BUTTON_Y_OFFSET);
+            Point deleteButtonPosit = new Point(BUTTON_X, BOX_Y + BUTTON_Y_OFFSET);
             this.deleteButton.Location = deleteButtonPosit;
+            this.deleteButton.Parent = this.panel;
             this.deleteButton.Text = "−";
             this.deleteButton.Width = BUTTON_WIDTH;
-            this.deleteButton.Click += Delete;
 
             // Add to controls.
             this.panel.Controls.Add(this.leftHandTextBox);
@@ -105,9 +129,48 @@ namespace DECS_Excel_Add_Ins
         // Similarly, the DefineRule Class owns the AddButton and needs to move the
         // button up when a rule is deleted, so it provides ITS callback to the 
         // CleaningRuleGui and ExtractRuleGui classes to invoke.
-        protected void AssignDelete(System.Action<RuleGui> deleteAction)
+        protected void AssignDelete(Action<RuleGui> deleteAction)
         {
             inheritedClassDeleteAction = deleteAction;
+        }
+        internal void AssignDisable(Action<RuleGui> disableAction)
+        {
+            parentClassDisableAction = disableAction;
+        }
+        internal void AssignEnable(Action<RuleGui> enableAction)
+        {
+            parentClassEnableAction = enableAction;
+        }
+        private void ChangeLockStatus(Control control, bool locked)
+        {
+            if (control.InvokeRequired)
+            {
+                Action setProgress = delegate { ChangeLockStatus(control, locked); };
+                control.Invoke(setProgress);
+            }
+            else
+            {
+                control.Enabled = locked;
+            }
+        }
+        private void CheckBoxClicked(object sender, EventArgs e)
+        {
+            CheckBox checkBox = sender as CheckBox;
+
+            if (checkBox.Checked)
+            {
+                if (parentClassEnableAction != null)
+                {
+                    parentClassEnableAction(this);
+                }
+            }
+            else
+            {
+                if (parentClassDisableAction != null)
+                {
+                    parentClassDisableAction(this);
+                }
+            }
         }
         // Implemented in the derived classes because the TextChanged methods are defined there
         // and we temporarily need to disable the TextChanged methods while clearing the textboxes.
@@ -130,18 +193,6 @@ namespace DECS_Excel_Add_Ins
         private void Delete(object sender, EventArgs e)
         {
             Delete();
-        }
-        private void Enable(Control control, bool locked)
-        {
-            if (control.InvokeRequired)
-            {
-                System.Action setProgress = delegate { Enable(control, locked); };
-                control.Invoke(setProgress);
-            }
-            else
-            {
-                control.Enabled = locked;
-            }
         }
         private RuleGui FindNth(int desiredIndex)
         {
@@ -170,12 +221,6 @@ namespace DECS_Excel_Add_Ins
         {
             return this.index;
         }
-        internal void Lock()
-        {
-            Enable(this.leftHandTextBox, false);
-            Enable(this.rightHandTextBox, false);
-            Enable(this.deleteButton, false);
-        }
         private void MoveUpInLine()
         {
             // Pass the word.
@@ -195,16 +240,6 @@ namespace DECS_Excel_Add_Ins
         internal void ResetLocation(int x, int y)
         {
             this.panel.Location = new Point(x, y);
-        }
-        internal void Unlock()
-        {
-            Enable(this.leftHandTextBox, true);
-            Enable(this.rightHandTextBox, true);
-            Enable(this.deleteButton, true);
-        }
-        public static int Width()
-        {
-            return width;
         }
     }
 }

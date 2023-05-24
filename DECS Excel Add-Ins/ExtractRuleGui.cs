@@ -19,16 +19,16 @@ namespace DECS_Excel_Add_Ins
 
         public ExtractRuleGui(int x, int y, int index, Panel parent, NotesConfig notesConfig, bool updateConfig = true) : base(x, y, index, parent, "extractRules")
         {
-            config = notesConfig;
-            leftHandTextBox.TextChanged += extractRulesPatternTextBox_TextChanged;
-            rightHandTextBox.LostFocus += extractRulesnewColumnTextBox_TextChanged;
+            this.config = notesConfig;
+            base.leftHandTextBox.TextChanged += extractRulesPatternTextBox_TextChanged;
+            base.rightHandTextBox.LostFocus += extractRulesnewColumnTextBox_TextChanged;
 
             // When loading an >existing< NotesConfig object,
             // we don't want to modify the object.
             if (updateConfig)
             {
                 // There needs to be an ExtractRule object (even if it's an empty placeholder) for every ExtractRuleGui object.
-                config.AddExtractRule();
+                this.config.AddExtractRule();
             }
 
             // The Delete button is part of the base class, but this class 'knows'
@@ -37,18 +37,18 @@ namespace DECS_Excel_Add_Ins
         }
         public void AssignExternalDelete(Action<RuleGui> deleteAction)
         {
-            parentDeleteAction = deleteAction;
+            this.parentDeleteAction = deleteAction;
         }
         public void AssignExternalRuleChanged(Action ruleChangedAction)
         {
-            parentRuleChangedAction = ruleChangedAction;
+            this.parentRuleChangedAction = ruleChangedAction;
         }
         public override void Clear()
         {
-            textChangedCallbackEnabled = false;
-            leftHandTextBox.Text = string.Empty;
-            rightHandTextBox.Text = string.Empty;
-            textChangedCallbackEnabled = true;
+            this.textChangedCallbackEnabled = false;
+            base.leftHandTextBox.Text = string.Empty;
+            base.rightHandTextBox.Text = string.Empty;
+            this.textChangedCallbackEnabled = true;
         }
         // The RuleGui class handles the GUI stuff but this derived class needs to 'talk' to the NotesConfig structure
         // because we know it's an >extract< rule.
@@ -56,12 +56,12 @@ namespace DECS_Excel_Add_Ins
         // we'll pass the delete action along to the DefineRules class to tell it to bump the extract Add button upwards.
         protected void DeleteRule(RuleGui ruleGui)
         {
-            config.DeleteExtractRule(index: this.index);
-            parentDeleteAction(ruleGui);
+            this.config.DeleteExtractRule(index: base.index);
+            this.parentDeleteAction(ruleGui);
         }
         private void extractRulesPatternTextBox_TextChanged(object sender, EventArgs e)
         {
-            if (!textChangedCallbackEnabled) return;
+            if (!this.textChangedCallbackEnabled) return;
 
             TextBox textBox = (TextBox)sender;
 
@@ -73,10 +73,10 @@ namespace DECS_Excel_Add_Ins
                 textBox.BackColor = Color.White;
 
                 // Insert or update Nth extract rule with this pattern.
-                config.ChangeExtractRulePattern(index: index, pattern: textBox.Text);
+                this.config.ChangeExtractRulePattern(index: base.index, pattern: textBox.Text);
 
                 // Alert upper-level GUI.
-                parentRuleChangedAction();
+                this.parentRuleChangedAction();
             }
             catch (ArgumentException)
             {
@@ -84,12 +84,12 @@ namespace DECS_Excel_Add_Ins
                 textBox.BackColor = Color.Pink;
 
                 // Clear Nth cleaning rule's pattern.
-                config.ChangeExtractRulePattern(index: index, pattern: string.Empty);
+                this.config.ChangeExtractRulePattern(index: base.index, pattern: string.Empty);
             }
         }
         private void extractRulesnewColumnTextBox_TextChanged(object sender, EventArgs e)
         {
-            if (!textChangedCallbackEnabled) return;
+            if (!this.textChangedCallbackEnabled) return;
 
             TextBox textBox = (TextBox)sender;
 
@@ -101,10 +101,10 @@ namespace DECS_Excel_Add_Ins
                 textBox.BackColor = Color.White;
 
                 // Insert or update Nth extract rule with this pattern.
-                config.ChangeExtractRulenewColumn(index: index, newColumn: textBox.Text);
+                this.config.ChangeExtractRulenewColumn(index: base.index, newColumn: textBox.Text);
 
                 // Alert upper-level GUI.
-                parentRuleChangedAction();
+                this.parentRuleChangedAction();
             }
             catch (ArgumentException)
             {
@@ -112,17 +112,17 @@ namespace DECS_Excel_Add_Ins
                 textBox.BackColor = Color.Pink;
 
                 // Clear Nth cleaning rule's pattern.
-                config.ChangeExtractRulenewColumn(index: index, newColumn: string.Empty);
+                this.config.ChangeExtractRulenewColumn(index: base.index, newColumn: string.Empty);
             }
         }
         public void Populate(ExtractRule rule)
         {
             if (rule == null) return;
 
-            textChangedCallbackEnabled = false;
-            leftHandTextBox.Text = rule.pattern;
-            rightHandTextBox.Text = rule.newColumn;
-            textChangedCallbackEnabled = true;
+            this.textChangedCallbackEnabled = false;
+            base.leftHandTextBox.Text = rule.pattern;
+            base.rightHandTextBox.Text = rule.newColumn;
+            this.textChangedCallbackEnabled = true;
         }
     }
 }

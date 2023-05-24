@@ -60,7 +60,7 @@ namespace DECS_Excel_Add_Ins
         {
             if (!HasConfig()) return true;
 
-            if (this.statusForm == null)
+            if (this.statusForm == null || this.statusForm.IsDisposed)
             {
                 this.statusForm = new StatusForm(StopProcessing);
             }
@@ -97,7 +97,7 @@ namespace DECS_Excel_Add_Ins
                     continue;
                 }
 
-                foreach (CleaningRule rule in config.CleaningRules)
+                foreach (CleaningRule rule in config.ValidCleaningRules())
                 {
                     try
                     {
@@ -131,7 +131,7 @@ namespace DECS_Excel_Add_Ins
         {
             if (!HasConfig()) return true;
 
-            if (this.statusForm == null)
+            if (this.statusForm == null || this.statusForm.IsDisposed)
             {
                 this.statusForm = new StatusForm(StopProcessing);
             }
@@ -156,7 +156,7 @@ namespace DECS_Excel_Add_Ins
                 thisCell = this.sourceColumn.Offset[rowNumber - 1, 0];
                 string cell_contents = thisCell.Value.ToString();
 
-                foreach (ExtractRule rule in config.ExtractRules)
+                foreach (ExtractRule rule in config.ValidExtractRules())
                 {
                     // Don't create new columns with blank names.
                     if (rule.newColumn is null || rule.newColumn.Length == 0) continue;
