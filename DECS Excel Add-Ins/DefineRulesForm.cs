@@ -49,10 +49,11 @@ namespace DECS_Excel_Add_Ins
             AddExtractRule();
             this.parser.AssignWorksheetChangedCallback(ShowSelectedRows);
             ShowSelectedRows();
+            SetRunButtonStatus();
         }
         private void AddCleaningRule(CleaningRule rule = null, bool updateConfig = true)
         {
-            // How many do we have now?
+            // How many do we have now? (Index is zero-based.)
             int nextIndex = NumRulesThisType(parent: cleaningRulesPanel);
             int panelY = PANEL_Y + (Y_STEP * nextIndex);
 
@@ -68,6 +69,9 @@ namespace DECS_Excel_Add_Ins
             // Delete button is pressed.
             cleaningRuleGui.AssignExternalDelete(DeleteCleaningRule);
 
+            cleaningRuleGui.AssignDisable(DisableRule);
+            cleaningRuleGui.AssignEnable(EnableRule);
+
             // Have the cleaning rule panel tell us when text changes so
             // we can invoke the ShowCleaningResult method.
             cleaningRuleGui.AssignExternalRuleChanged(RegisterChanges);
@@ -78,10 +82,13 @@ namespace DECS_Excel_Add_Ins
 
             // Line everything up.
             RearrangeCleaningControls();
+
+            // Should we turn on the Run button?
+            SetRunButtonStatus();
         }
         private void AddExtractRule(ExtractRule rule = null, bool updateConfig = true)
         {
-            // How many do we have now?
+            // How many do we have now? (Index is zero-based.)
             int nextIndex = NumRulesThisType(parent: extractRulesPanel);
             int panelY = PANEL_Y + (Y_STEP * nextIndex);
 
@@ -97,6 +104,9 @@ namespace DECS_Excel_Add_Ins
             // Delete button is pressed.
             extractRuleGui.AssignExternalDelete(DeleteExtractRule);
 
+            extractRuleGui.AssignDisable(DisableRule);
+            extractRuleGui.AssignEnable(EnableRule);
+
             // Have the extract rule panel tell us when text changes so
             // we can invoke the ShowExtractResult method.
             extractRuleGui.AssignExternalRuleChanged(RegisterChanges);
@@ -107,6 +117,9 @@ namespace DECS_Excel_Add_Ins
 
             // Line everything up.
             RearrangeExtractControls();
+
+            // Should we turn on the Run button?
+            SetRunButtonStatus();
         }
         private List<RuleGui> AllRules()
         {
@@ -137,6 +150,9 @@ namespace DECS_Excel_Add_Ins
 
             // Restore any cleaning/extraction done.
             this.parser.ResetWorksheet();
+
+            // Should we turn off the Run button?
+            SetRunButtonStatus();
         }
         private void DeleteAllRules()
         {
@@ -157,6 +173,9 @@ namespace DECS_Excel_Add_Ins
             cleaningRuleGui.PanelObj.Dispose();
 
             RearrangeCleaningControls();
+
+            // Should we turn off the Run button?
+            SetRunButtonStatus();
         }
         internal void DeleteExtractRule(RuleGui extractRuleGui)
         {
@@ -169,10 +188,27 @@ namespace DECS_Excel_Add_Ins
             extractRuleGui.PanelObj.Dispose();
 
             RearrangeExtractControls();
+
+            // Should we turn off the Run button?
+            SetRunButtonStatus();
+        }
+        internal void DisableRule(RuleGui ruleGui)
+        {
+            this.config.DisableRule(ruleGui.Index());
+
+            // Should we turn off the Run button?
+            SetRunButtonStatus();
         }
         private void discardButton_Click(object sender, EventArgs e)
         {
             Close();
+        }
+        internal void EnableRule(RuleGui ruleGui)
+        {
+            this.config.EnableRule(ruleGui.Index());
+
+            // Should we turn on the Run button?
+            SetRunButtonStatus();
         }
         private List<RuleGui> ExtractRules()
         {
@@ -228,29 +264,15 @@ namespace DECS_Excel_Add_Ins
                 SetSourceColumn(this.config.SourceColumn);
             }
 
+            // Should we turn on the Run button?
+            SetRunButtonStatus();
+
             // Regard all further alarms.
             configLoading = false;
 
             Trace.WriteLine("Config file loaded; calling ShowCleaningResult(), ShowExtractResult().");
             ShowCleaningResult();
             ShowExtractResult();
-        }
-        private void Lock()
-        {
-            foreach (RuleGui rule in cleaningRules)
-            {
-                rule.Lock();
-            }
-
-            foreach (RuleGui rule in extractRules)
-            {
-                rule.Lock();
-            }
-        }
-        private int NumPanelsThisType(Panel parent)
-        {
-            List<Panel> panels = parent.Controls.OfType<Panel>().ToList();
-            return panels.Count;
         }
         private int NumRulesThisType(Panel parent)
         {
@@ -342,6 +364,11 @@ namespace DECS_Excel_Add_Ins
         {
             Save();
         }
+        private void SetRunButtonStatus()
+        {
+            // If NO cleaning rules and NO extract rules, then the button should be disabled.
+            this.runButton.Enabled = this.config.HasCleaningRules() || this.config.HasExtractRules();
+        }
         private void SetSourceColumn(string sourceColumn)
         {
             try
@@ -432,18 +459,6 @@ namespace DECS_Excel_Add_Ins
             Trace.WriteLine("Source column selection changed. Calling ShowCleaningResult() and ShowExtractResult().");
             ShowCleaningResult();
             ShowExtractResult();
-        }
-        private void Unlock()
-        {
-            foreach (RuleGui rule in cleaningRules)
-            {
-                rule.Unlock();
-            }
-
-            foreach (RuleGui rule in extractRules)
-            {
-                rule.Unlock();
-            }
         }
     }
 }

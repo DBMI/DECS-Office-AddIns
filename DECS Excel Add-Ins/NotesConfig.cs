@@ -13,20 +13,34 @@ namespace DECS_Excel_Add_Ins
     // Defines a single replacement rule.
     public class CleaningRule
     {
+        public bool enabled { get; set; }
+
         // The Regular Expression to search for...
         public string pattern { get; set; }
 
         // ...and what to replace it with.
         public string replace { get; set; }
+
+        public CleaningRule() 
+        {
+            enabled = true;
+        }
     }
     //  Defines a single extraction rule.
     public class ExtractRule
     {
+        public bool enabled { get; set; }
+
         // The Regular Expression to search for...
         public string pattern { get; set; }
 
         // ...and the new column to be created.
         public string newColumn { get; set; }
+
+        public ExtractRule() 
+        {
+            enabled = true;
+        }
     }
     // Defines the way the current workbook & sheet should be parsed.
     public class NotesConfig
@@ -110,32 +124,52 @@ namespace DECS_Excel_Add_Ins
         }
         internal void DeleteCleaningRule(int index)
         {
-            if (index > 0 && index < CleaningRules.Count)
+            if (index >= 0 && index < CleaningRules.Count)
             {
                 CleaningRules.RemoveAt(index);
             }
         }
         internal void DeleteExtractRule(int index)
         {
-            if (index > 0 && index < ExtractRules.Count)
+            if (index >= 0 && index < ExtractRules.Count)
             {
                 ExtractRules.RemoveAt(index);
             }
         }
+        internal void DisableRule(int index)
+        {
+            if (index >= 0 && index < CleaningRules.Count)
+            {
+                CleaningRules[index].enabled = false;
+            }
+
+            if (index >= 0 && index < ExtractRules.Count)
+            {
+                ExtractRules[index].enabled = false;
+            }
+        }
+        internal void EnableRule(int index)
+        {
+            if (index >= 0 && index < CleaningRules.Count)
+            {
+                CleaningRules[index].enabled = true;
+            }
+
+            if (index >= 0 && index < ExtractRules.Count)
+            {
+                ExtractRules[index].enabled = true;
+            }
+        }
         internal bool HasCleaningRules()
         {
-            List<CleaningRule> validRules = CleaningRules.Where(r => r.pattern != null && r.replace != null).ToList();
+            List<CleaningRule> validRules = ValidCleaningRules();
             return validRules.Count > 0;
         }
         internal bool HasExtractRules()
         {
-            List<ExtractRule> validRules = ExtractRules.Where(r => r.pattern != null && r.newColumn != null).ToList();
+            List<ExtractRule> validRules = ValidExtractRules();
             return validRules.Count > 0;
         }
-        //internal bool IsEmpty()
-        //{
-        //    return CleaningRules.Count == 0 && ExtractRules.Count == 0;
-        //}
         internal static NotesConfig ReadConfigFile(string filePath)
         {
             // Declare this outside the 'using' block so we can access it later
@@ -149,6 +183,20 @@ namespace DECS_Excel_Add_Ins
             }
 
             return config;
+        }
+        internal List<CleaningRule> ValidCleaningRules()
+        {
+            List<CleaningRule> validRules = CleaningRules.Where(r => r.pattern != null &&
+                                                                     r.replace != null &&
+                                                                     r.enabled).ToList();
+            return validRules;
+        }
+        internal List<ExtractRule> ValidExtractRules()
+        {
+            List<ExtractRule> validRules = ExtractRules.Where(r => r.pattern != null &&
+                                                                   r.newColumn != null &&
+                                                                   r.enabled).ToList();
+            return validRules;
         }
     }
 }

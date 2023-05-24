@@ -19,6 +19,9 @@
 							screentip="Configure Search"
 							size="large"
 							supertip="Configure search of notes." />
+				</group>
+				<group id="MrnGroup"
+					   label="MRNs">
 					<button id="buildMrnsButton"
 							getImage="buildMrnsButton_GetImage"
 							label="Build MRN import"
