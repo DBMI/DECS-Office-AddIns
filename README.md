@@ -6,6 +6,7 @@ Creates a custom buttons in Microsoft Excel & Word that allows user to:
 ![image info](./DECS%20Excel%20Add-Ins/pictures/toolbar.png) 
 
 - Scan `Notes` fields for keywords, creating new columns.
+- Turn a column of MRNs into a SQL snippet that imports the column into a query.
 ### Word: 
 ![image info](./DECS%20Word%20Add-Ins/pictures/toolbar.png)
 - Scan a statement of work file & create SQL code that searches for the ICD-10 codes and names listed in the SoW.

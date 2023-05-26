@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Drawing;
 using System.Globalization;
 using System.IO;
 using System.Linq;
@@ -10,11 +11,20 @@ using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using System.Xml.Linq;
+using TextBox = System.Windows.Forms.TextBox;
 
 namespace DECS_Excel_Add_Ins
 {
     internal class Utilities
     {
+        internal static void ClearRegexInvalid(TextBox textBox)
+        {
+            if (textBox == null) return;
+
+            // Clear any previous highlighting.
+            textBox.BackColor = Color.White;
+        }
+
         internal static int CountCellsWithData(Range rng, int lastRow)
         {
             int numCellsWithData = 0;
@@ -109,6 +119,30 @@ namespace DECS_Excel_Add_Ins
             Range newRange = range.Offset[0, -1];
             newRange.Value2 = newColumnName;
             return newRange;
+        }
+
+        internal static bool IsRegexValid(string regexText)
+        {
+            bool valid;
+
+            try
+            {
+                Regex regex = new Regex(regexText);
+                valid = true;
+            }
+            catch (ArgumentException)
+            {
+                valid = false;
+            }
+
+            return valid;
+        }
+        internal static void MarkRegexInvalid(TextBox textBox)
+        {
+            if (textBox == null) return;
+
+            // Highlight box to show RegEx is invalid.
+            textBox.BackColor = Color.Pink;
         }
 
         // Open the output StreamWriter object,

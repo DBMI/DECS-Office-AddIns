@@ -7,6 +7,7 @@ using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using Panel = System.Windows.Forms.Panel;
 using TextBox = System.Windows.Forms.TextBox;
+using log4net;
 
 namespace DECS_Excel_Add_Ins
 {
@@ -16,6 +17,9 @@ namespace DECS_Excel_Add_Ins
         private Action<RuleGui> parentDeleteAction;
         private Action parentRuleChangedAction;
         private bool textChangedCallbackEnabled = true;
+
+        // https://stackoverflow.com/a/28546547/18749636
+        private static readonly log4net.ILog log = log4net.LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
 
         public ExtractRuleGui(int x, int y, int index, Panel parent, NotesConfig notesConfig, bool updateConfig = true) : base(x, y, index, parent, "extractRules")
         {
@@ -32,7 +36,7 @@ namespace DECS_Excel_Add_Ins
             }
 
             // The Delete button is part of the base class, but this class 'knows'
-            // it's an extract rule that needs to be deleted.
+            // it's an >extract< rule that needs to be deleted.
             base.AssignDelete(this.DeleteRule);
         }
         public void AssignExternalDelete(Action<RuleGui> deleteAction)
@@ -63,14 +67,13 @@ namespace DECS_Excel_Add_Ins
         {
             if (!this.textChangedCallbackEnabled) return;
 
+            log.Debug("extractRulesPatternTextBox_TextChanged.");
             TextBox textBox = (TextBox)sender;
 
-            try
+            if (Utilities.IsRegexValid(textBox.Text))
             {
-                Regex regex = new Regex(textBox.Text);
-
                 // Clear any previous highlighting.
-                textBox.BackColor = Color.White;
+                Utilities.ClearRegexInvalid(textBox);
 
                 // Insert or update Nth extract rule with this pattern.
                 this.config.ChangeExtractRulePattern(index: base.index, pattern: textBox.Text);
@@ -78,10 +81,10 @@ namespace DECS_Excel_Add_Ins
                 // Alert upper-level GUI.
                 this.parentRuleChangedAction();
             }
-            catch (ArgumentException)
+            else
             {
                 // Highlight box to show RegEx is invalid.
-                textBox.BackColor = Color.Pink;
+                Utilities.MarkRegexInvalid(textBox);
 
                 // Clear Nth cleaning rule's pattern.
                 this.config.ChangeExtractRulePattern(index: base.index, pattern: string.Empty);
@@ -91,29 +94,14 @@ namespace DECS_Excel_Add_Ins
         {
             if (!this.textChangedCallbackEnabled) return;
 
+            log.Debug("extractRulesnewColumnTextBox_TextChanged.");
             TextBox textBox = (TextBox)sender;
 
-            try
-            {
-                Regex regex = new Regex(textBox.Text);
+            // Insert or update Nth extract rule with this pattern.
+            this.config.ChangeExtractRulenewColumn(index: base.index, newColumn: textBox.Text);
 
-                // Clear any previous highlighting.
-                textBox.BackColor = Color.White;
-
-                // Insert or update Nth extract rule with this pattern.
-                this.config.ChangeExtractRulenewColumn(index: base.index, newColumn: textBox.Text);
-
-                // Alert upper-level GUI.
-                this.parentRuleChangedAction();
-            }
-            catch (ArgumentException)
-            {
-                // Highlight box to show RegEx is invalid.
-                textBox.BackColor = Color.Pink;
-
-                // Clear Nth cleaning rule's pattern.
-                this.config.ChangeExtractRulenewColumn(index: base.index, newColumn: string.Empty);
-            }
+            // Alert upper-level GUI.
+            this.parentRuleChangedAction();
         }
         public void Populate(ExtractRule rule)
         {
@@ -122,6 +110,19 @@ namespace DECS_Excel_Add_Ins
             this.textChangedCallbackEnabled = false;
             base.leftHandTextBox.Text = rule.pattern;
             base.rightHandTextBox.Text = rule.newColumn;
+
+            // Validate the rule.
+            if (!Utilities.IsRegexValid(rule.pattern))
+            {
+                Utilities.MarkRegexInvalid(base.leftHandTextBox);
+            }
+
+            // Validate the rule.
+            if (string.IsNullOrEmpty(rule.newColumn))
+            {
+                Utilities.MarkRegexInvalid(base.rightHandTextBox);
+            }
+
             this.textChangedCallbackEnabled = true;
         }
     }

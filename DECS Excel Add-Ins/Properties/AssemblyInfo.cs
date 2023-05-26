@@ -36,3 +36,5 @@ using System.Security;
 [assembly: AssemblyVersion("1.0.0.0")]
 [assembly: AssemblyFileVersion("1.0.0.0")]
 
+// https://stackify.com/log4net-guide-dotnet-logging/
+[assembly: log4net.Config.XmlConfigurator(ConfigFile = "log4net.config")]

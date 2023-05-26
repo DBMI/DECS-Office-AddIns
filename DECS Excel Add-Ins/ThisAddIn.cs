@@ -6,6 +6,7 @@ using System.Xml.Linq;
 using Excel = Microsoft.Office.Interop.Excel;
 using Office = Microsoft.Office.Core;
 using Microsoft.Office.Tools.Excel;
+using log4net;
 
 namespace DECS_Excel_Add_Ins
 {
@@ -17,8 +18,10 @@ namespace DECS_Excel_Add_Ins
             return new DecsExcelRibbon();
         }
 
+        // https://stackoverflow.com/a/28546547/18749636
         private void ThisAddIn_Startup(object sender, System.EventArgs e)
         {
+            log4net.Config.XmlConfigurator.Configure();
         }
 
         private void ThisAddIn_Shutdown(object sender, System.EventArgs e)

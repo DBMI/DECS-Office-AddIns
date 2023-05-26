@@ -7,6 +7,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using log4net;
 
 namespace DECS_Excel_Add_Ins
 {
@@ -14,10 +15,14 @@ namespace DECS_Excel_Add_Ins
     {
         private Action externalStopAction;
 
+        // https://stackoverflow.com/a/28546547/18749636
+        private static readonly log4net.ILog log = log4net.LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
+
         public StatusForm(Action parentStopAction)
         {
             InitializeComponent();
-            externalStopAction = parentStopAction;
+            this.externalStopAction = parentStopAction;
+            log.Debug("Status form instantiated.");
         }
         internal void UpdateProgressBar(int percentage)
         {
@@ -64,8 +69,10 @@ namespace DECS_Excel_Add_Ins
 
         private void processingStopButton_Click(object sender, EventArgs e)
         {
+            log.Debug("Stop ordered.");
+
             // Let calling class know user has requested STOP.
-            externalStopAction();
+            this.externalStopAction();
         }
     }
 }
