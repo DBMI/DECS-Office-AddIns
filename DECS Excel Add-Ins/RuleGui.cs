@@ -12,8 +12,12 @@ using Action = System.Action;
 using Button = System.Windows.Forms.Button;
 using CheckBox = System.Windows.Forms.CheckBox;
 using Font = System.Drawing.Font;
+using Panel = System.Windows.Forms.Panel;
 using Point = System.Drawing.Point;
 using TextBox = System.Windows.Forms.TextBox;
+using log4net;
+using System.Text.RegularExpressions;
+using System.Web.UI.WebControls;
 
 namespace DECS_Excel_Add_Ins
 {
@@ -55,6 +59,9 @@ namespace DECS_Excel_Add_Ins
         private Action<RuleGui> inheritedClassDeleteAction;
         private Action<RuleGui> parentClassDisableAction; 
         private Action<RuleGui> parentClassEnableAction;
+
+        // https://stackoverflow.com/a/28546547/18749636
+        private static readonly log4net.ILog log = log4net.LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
 
         public RuleGui(int x, int y, int index, Panel parentObj, string ruleType)
         {
@@ -119,7 +126,7 @@ namespace DECS_Excel_Add_Ins
             // Add to controls.
             this.panel.Controls.Add(this.leftHandTextBox);
             this.panel.Controls.Add(this.rightHandTextBox);
-            this.panel.Controls.Add(this.deleteButton);            
+            this.panel.Controls.Add(this.deleteButton);
         }
         // This class creates the Delete button and handles disposing of the GUI elements
         // but knows nothing of the NotesConfig object being built.
@@ -141,24 +148,26 @@ namespace DECS_Excel_Add_Ins
         {
             parentClassEnableAction = enableAction;
         }
-        private void ChangeLockStatus(Control control, bool locked)
-        {
-            if (control.InvokeRequired)
-            {
-                Action setProgress = delegate { ChangeLockStatus(control, locked); };
-                control.Invoke(setProgress);
-            }
-            else
-            {
-                control.Enabled = locked;
-            }
-        }
+        //private void ChangeLockStatus(Control control, bool locked)
+        //{
+        //    if (control.InvokeRequired)
+        //    {
+        //        Action setProgress = delegate { ChangeLockStatus(control, locked); };
+        //        control.Invoke(setProgress);
+        //    }
+        //    else
+        //    {
+        //        control.Enabled = locked;
+        //    }
+        //}
         private void CheckBoxClicked(object sender, EventArgs e)
         {
             CheckBox checkBox = sender as CheckBox;
 
             if (checkBox.Checked)
             {
+                log.Debug("Checkbox " + this.index.ToString() + " checked.");
+
                 if (parentClassEnableAction != null)
                 {
                     parentClassEnableAction(this);
@@ -166,6 +175,8 @@ namespace DECS_Excel_Add_Ins
             }
             else
             {
+                log.Debug("Checkbox " + this.index.ToString() + " unchecked.");
+
                 if (parentClassDisableAction != null)
                 {
                     parentClassDisableAction(this);
@@ -175,7 +186,6 @@ namespace DECS_Excel_Add_Ins
         // Implemented in the derived classes because the TextChanged methods are defined there
         // and we temporarily need to disable the TextChanged methods while clearing the textboxes.
         public abstract void Clear();
-
         public void Delete()
         {
             // Pass the order down the chain to the next panel (until there isn't one).

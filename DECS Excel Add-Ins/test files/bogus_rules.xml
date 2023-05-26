@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<NotesConfig>
+	<SourceColumn>REPORT</SourceColumn>
+	<CleaningRules>
+		<CleaningRule>
+			<pattern>Date performed:?\s*(\d{1,2}/\d{1,2}/\d{4}</pattern>
+			<replace>Date of Exam: $1</replace>
+		</CleaningRule>
+		<CleaningRule>
+			<pattern>temparature</pattern>
+			<replace>temperature</replace>
+		</CleaningRule>
+	</CleaningRules>
+	<ExtractRules>
+		<ExtractRule>
+			<pattern>Date of Exam:\s*(?\d{1,2}/\d{1,2}/\d{4})</pattern>
+			<newColumn>Date of Exam</newColumn>
+		</ExtractRule>
+		<ExtractRule>
+			<pattern>Date of Exam:\s*(\d{1,2}-\d{1,2}-\d{4})</pattern>
+			<newColumn></newColumn>
+		</ExtractRule>
+	</ExtractRules>
+</NotesConfig>

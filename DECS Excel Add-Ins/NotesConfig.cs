@@ -7,6 +7,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using System.Xml.Serialization;
+using log4net;
 
 namespace DECS_Excel_Add_Ins
 {
@@ -51,9 +52,13 @@ namespace DECS_Excel_Add_Ins
 
         public string SourceColumn { get; set; }
 
+        // https://stackoverflow.com/a/28546547/18749636
+        private static readonly log4net.ILog log = log4net.LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
+
         // Constructor
-       internal NotesConfig()
+        internal NotesConfig()
         {
+            log.Debug("Instantiating a NotesConfig object.");
             SourceColumn = string.Empty;
             CleaningRules = new List<CleaningRule>();
             ExtractRules = new List<ExtractRule>();
@@ -184,6 +189,16 @@ namespace DECS_Excel_Add_Ins
 
             return config;
         }
+        internal int NumValidCleaningRules()
+        {
+            List<CleaningRule> validRules = ValidCleaningRules();
+            return validRules.Count;
+        }
+        internal int NumValidExternalRules()
+        {
+            List<ExtractRule> validRules = ValidExtractRules();
+            return validRules.Count;
+        }
         internal List<CleaningRule> ValidCleaningRules()
         {
             List<CleaningRule> validRules = CleaningRules.Where(r => r.pattern != null &&
@@ -197,6 +212,46 @@ namespace DECS_Excel_Add_Ins
                                                                    r.newColumn != null &&
                                                                    r.enabled).ToList();
             return validRules;
+        }
+        internal List<RuleValidationError> ValidateRules()
+        {
+            List<RuleValidationError> errorReports = new List<RuleValidationError>();
+
+            for (int index = 0; index < CleaningRules.Count; index++)
+            {
+                CleaningRule rule = CleaningRules[index];
+
+                if (!Utilities.IsRegexValid(rule.pattern))
+                {
+                    RuleValidationError ruleValidationError = new RuleValidationError(RuleType.Cleaning, index, RuleComponent.Pattern);
+                    errorReports.Add(ruleValidationError);
+                }
+
+                if (!Utilities.IsRegexValid(rule.replace))
+                {
+                    RuleValidationError ruleValidationError = new RuleValidationError(RuleType.Cleaning, index, RuleComponent.Replace);
+                    errorReports.Add(ruleValidationError);
+                }
+            }
+
+            for (int index = 0; index < ExtractRules.Count; index++)
+            {
+                ExtractRule rule = ExtractRules[index];
+
+                if (!Utilities.IsRegexValid(rule.pattern))
+                {
+                    RuleValidationError ruleValidationError = new RuleValidationError(RuleType.Extract, index, RuleComponent.Pattern);
+                    errorReports.Add(ruleValidationError);
+                }
+
+                if (string.IsNullOrEmpty(rule.newColumn))
+                {
+                    RuleValidationError ruleValidationError = new RuleValidationError(RuleType.Extract, index, RuleComponent.NewColumn);
+                    errorReports.Add(ruleValidationError);
+                }
+            }
+
+            return errorReports;
         }
     }
 }

@@ -7,6 +7,7 @@ using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using Panel = System.Windows.Forms.Panel;
 using TextBox = System.Windows.Forms.TextBox;
+using log4net;
 
 namespace DECS_Excel_Add_Ins
 {
@@ -16,6 +17,9 @@ namespace DECS_Excel_Add_Ins
         private Action<RuleGui> parentDeleteAction;
         private Action parentRuleChangedAction;
         private bool textChangedCallbackEnabled = true;
+
+        // https://stackoverflow.com/a/28546547/18749636
+        private static readonly log4net.ILog log = log4net.LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
 
         public CleaningRuleGui(int x, int y, int index, Panel parent, NotesConfig notesConfig, bool updateConfig = true) : base(x, y, index, parent, "cleaningRules") 
         {
@@ -32,7 +36,7 @@ namespace DECS_Excel_Add_Ins
             }
 
             // The Delete button is part of the base class, but this class 'knows'
-            // it's a cleaning rule that needs to be deleted.
+            // it's a >cleaning< rule that needs to be deleted.
             base.AssignDelete(this.DeleteRule);
         }
         public void AssignExternalDelete(Action<RuleGui> deleteAction)
@@ -48,14 +52,13 @@ namespace DECS_Excel_Add_Ins
         {
             if (!this.textChangedCallbackEnabled) return;
 
+            log.Debug("cleaningRulesPatternTextBox_TextChanged");
             TextBox textBox = (TextBox)sender;
 
-            try
+            if (Utilities.IsRegexValid(textBox.Text))
             {
-                Regex regex = new Regex(textBox.Text);
-
                 // Clear any previous highlighting.
-                textBox.BackColor = Color.White;
+                Utilities.ClearRegexInvalid(textBox);
                 
                 // Insert or update Nth cleaning rule with this pattern.
                 this.config.ChangeCleaningRulePattern(index: base.index, pattern: textBox.Text);
@@ -63,10 +66,10 @@ namespace DECS_Excel_Add_Ins
                 // Alert upper-level GUI.
                 this.parentRuleChangedAction();
             }
-            catch (ArgumentException)
+            else
             {
                 // Highlight box to show RegEx is invalid.
-                textBox.BackColor = Color.Pink;
+                Utilities.MarkRegexInvalid(textBox);
 
                 // Clear Nth cleaning rule's pattern.
                 this.config.ChangeCleaningRulePattern(index: base.index, pattern: string.Empty);
@@ -76,15 +79,13 @@ namespace DECS_Excel_Add_Ins
         private void cleaningRulesReplaceTextBox_TextChanged(object sender, EventArgs e)
         {
             if (!textChangedCallbackEnabled) return;
-
+            log.Debug("cleaningRulesReplaceTextBox_TextChanged");
             TextBox textBox = (TextBox)sender;
 
-            try
+            if (Utilities.IsRegexValid(textBox.Text))
             {
-                Regex regex = new Regex(textBox.Text);
-
                 // Clear any previous highlighting.
-                textBox.BackColor = Color.White;
+                Utilities.ClearRegexInvalid(textBox);
 
                 // Insert or update Nth cleaning rule with this replace string.
                 this.config.ChangeCleaningRuleReplace(index: base.index, replace: textBox.Text);
@@ -92,10 +93,10 @@ namespace DECS_Excel_Add_Ins
                 // Alert upper-level GUI.
                 this.parentRuleChangedAction();
             }
-            catch (ArgumentException)
+            else
             {
                 // Highlight box to show RegEx is invalid.
-                textBox.BackColor = Color.Pink;
+                Utilities.MarkRegexInvalid(textBox);
 
                 // Clear Nth cleaning rule's replace string.
                 this.config.ChangeCleaningRuleReplace(index: base.index, replace: string.Empty);
@@ -124,6 +125,18 @@ namespace DECS_Excel_Add_Ins
             this.textChangedCallbackEnabled = false;
             base.leftHandTextBox.Text = rule.pattern;
             base.rightHandTextBox.Text = rule.replace;
+
+            // Validate the rule.
+            if (!Utilities.IsRegexValid(rule.pattern))
+            {
+                Utilities.MarkRegexInvalid(base.leftHandTextBox);
+            }
+
+            if (!Utilities.IsRegexValid(rule.replace))
+            {
+                Utilities.MarkRegexInvalid(base.rightHandTextBox);
+            }
+
             this.textChangedCallbackEnabled = true;
         }
     }

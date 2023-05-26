@@ -53,7 +53,7 @@ namespace DECS_Excel_Add_Ins
         public void OnSearchConfig(Office.IRibbonControl control)
         {
             Excel.Worksheet wksheet = (Excel.Worksheet)Globals.ThisAddIn.Application.ActiveSheet;
-            NotesParser parser = new NotesParser(worksheet: wksheet, withConfigFile: false);
+            NotesParser parser = new NotesParser(worksheet: wksheet, withConfigFile: false, allRows: false);
             DefineRulesForm form = new DefineRulesForm(parser);
             form.Visible = true;
         }

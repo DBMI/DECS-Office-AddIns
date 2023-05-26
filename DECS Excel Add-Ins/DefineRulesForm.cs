@@ -15,6 +15,7 @@ using System.Xml.Serialization;
 using static System.Windows.Forms.VisualStyles.VisualStyleElement;
 using Button = System.Windows.Forms.Button;
 using Excel = Microsoft.Office.Interop.Excel;
+using log4net;
 
 namespace DECS_Excel_Add_Ins
 {
@@ -40,8 +41,12 @@ namespace DECS_Excel_Add_Ins
 
         private bool configLoading = false;
 
+        // https://stackoverflow.com/a/28546547/18749636
+        private static readonly log4net.ILog log = log4net.LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
+
         internal DefineRulesForm(NotesParser parser)
         {
+            log.Debug("Instantiating DefineRulesForm");
             this.parser = parser;
             InitializeComponent();
             PopulateSourceColumnListBox();
@@ -53,6 +58,7 @@ namespace DECS_Excel_Add_Ins
         }
         private void AddCleaningRule(CleaningRule rule = null, bool updateConfig = true)
         {
+            log.Debug("Adding cleaning rule.");
             // How many do we have now? (Index is zero-based.)
             int nextIndex = NumRulesThisType(parent: cleaningRulesPanel);
             int panelY = PANEL_Y + (Y_STEP * nextIndex);
@@ -88,6 +94,7 @@ namespace DECS_Excel_Add_Ins
         }
         private void AddExtractRule(ExtractRule rule = null, bool updateConfig = true)
         {
+            log.Debug("Adding extraction rule.");
             // How many do we have now? (Index is zero-based.)
             int nextIndex = NumRulesThisType(parent: extractRulesPanel);
             int panelY = PANEL_Y + (Y_STEP * nextIndex);
@@ -194,6 +201,8 @@ namespace DECS_Excel_Add_Ins
         }
         internal void DisableRule(RuleGui ruleGui)
         {
+            log.Debug("Disabling cleaning rule " + ruleGui.Index().ToString() + ".");
+
             this.config.DisableRule(ruleGui.Index());
 
             // Should we turn off the Run button?
@@ -205,6 +214,8 @@ namespace DECS_Excel_Add_Ins
         }
         internal void EnableRule(RuleGui ruleGui)
         {
+            log.Debug("Enabling cleaning rule " + ruleGui.Index().ToString() + ".");
+
             this.config.EnableRule(ruleGui.Index());
 
             // Should we turn on the Run button?
@@ -231,13 +242,15 @@ namespace DECS_Excel_Add_Ins
         }
         private void loadToolStripMenuItem_Click(object sender, EventArgs e)
         {
+            log.Debug("Loading config file.");
+
             this.configFilename = NotesConfig.ChooseConfigFile();
             NotesConfig configLoaded = NotesConfig.ReadConfigFile(this.configFilename);
 
             if (configLoaded != null)
             {
                 // Temporarily disable all other callbacks until we're done loading.
-                configLoading = true;
+                this.configLoading = true;
 
                 // Initialize the NotesConfig object.
                 this.config = configLoaded;
@@ -268,11 +281,9 @@ namespace DECS_Excel_Add_Ins
             SetRunButtonStatus();
 
             // Regard all further alarms.
-            configLoading = false;
+            this.configLoading = false;
 
-            Trace.WriteLine("Config file loaded; calling ShowCleaningResult(), ShowExtractResult().");
-            ShowCleaningResult();
-            ShowExtractResult();
+            // Don't automatically run. The user might have wanted to open for development.
         }
         private int NumRulesThisType(Panel parent)
         {
@@ -320,9 +331,13 @@ namespace DECS_Excel_Add_Ins
 
             // Need to tell the parser object that the rules have changed.
             this.parser.UpdateConfig(configObj: this.config, updateOriginalSourceColumn: false);
+
+            SetRunButtonStatus();
         }
         private void runButton_Click(object sender, EventArgs e)
         {
+            log.Debug("Run button clicked.");
+
             ShowCleaningResult();
             ShowExtractResult();
         }
@@ -367,7 +382,20 @@ namespace DECS_Excel_Add_Ins
         private void SetRunButtonStatus()
         {
             // If NO cleaning rules and NO extract rules, then the button should be disabled.
-            this.runButton.Enabled = this.config.HasCleaningRules() || this.config.HasExtractRules();
+            if (this.config.HasCleaningRules() || this.config.HasExtractRules())
+            {
+                this.runButton.Enabled = true;
+                this.runButton.BackColor = Color.White;
+                this.runButton.ForeColor = Color.DarkBlue;
+                log.Debug("Enabling run button.");
+            }
+            else
+            {
+                this.runButton.Enabled = false;
+                this.runButton.BackColor = Color.Gray;
+                this.runButton.ForeColor = Color.LightGray;
+                log.Debug("Disabling run button.");
+            }
         }
         private void SetSourceColumn(string sourceColumn)
         {
@@ -381,6 +409,8 @@ namespace DECS_Excel_Add_Ins
         }
         private void ShowCleaningResult()
         {
+            log.Debug("Showing cleaning results.");
+
             // Need to tell the parser object that the rules have changed.
             this.parser.UpdateConfig(configObj: this.config, updateOriginalSourceColumn: false);
 
@@ -391,6 +421,8 @@ namespace DECS_Excel_Add_Ins
         }
         private void ShowExtractResult()
         {
+            log.Debug("Showing extraction results.");
+
             // Need to tell the parser object that the rules have changed.
             this.parser.UpdateConfig(configObj: this.config, updateOriginalSourceColumn: false);
 
