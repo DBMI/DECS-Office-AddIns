@@ -23,7 +23,7 @@ namespace DECS_Excel_Add_Ins
             supportedDateFormats.Add("MM/dd/yyyy", "(\\d{1,2}\\/\\d{1,2}\\/\\d{4})");
             supportedDateFormats.Add("MM-dd-yyyy", "(\\d{1,2}-\\d{1,2}-\\d{4})");
             supportedDateFormats.Add("dd MMMM yyyy", "(\\d{1,2} \\w{3,9}\\.? \\d{4})");
-            supportedDateFormats.Add("MMMM dd yyyy", "(\\w{3,9}\\.? \\d{1,2} \\d{4})");
+            supportedDateFormats.Add("MMMM dd yyyy", "(\\w{3,9}\\.? \\d{1,2},? \\d{4})");
             supportedDateFormats.Add("MMMM dd", "(\\w{3,9}\\.? \\d{1,2})");
         }
         internal string Convert(string note, string desiredFormat)

@@ -28,6 +28,7 @@ namespace DECS_Excel_Add_Ins
             Range allRows = (Range)sheet.Range[firstCell, lastCell];
             return allRows;
         }
+
         internal static void ClearRegexInvalid(TextBox textBox)
         {
             if (textBox == null) return;
@@ -35,9 +36,17 @@ namespace DECS_Excel_Add_Ins
             // Clear any previous highlighting.
             textBox.BackColor = Color.White;
 
-            // Add a no-op response to mouse hover.
-            Action<object, System.EventArgs> mouseHover = (sender, e) => {};
-            textBox.MouseHover += new System.EventHandler(mouseHover);
+            // Remove the MouseHover EventHandler.
+            DetachEvents(textBox);
+        }
+
+        public static void DetachEvents(TextBox textBox)
+        {
+            object objNew = textBox.GetType().GetConstructor(new Type[] { }).Invoke(new object[] { });
+            PropertyInfo propEvents = textBox.GetType().GetProperty("Events", BindingFlags.NonPublic | BindingFlags.Instance);
+
+            EventHandlerList eventHandlerList_obj = (EventHandlerList)propEvents.GetValue(textBox, null);
+            eventHandlerList_obj.Dispose();
         }
 
         internal static int CountCellsWithData(Range rng, int lastRow)
@@ -64,6 +73,7 @@ namespace DECS_Excel_Add_Ins
 
             return numCellsWithData;
         }
+
         // https://stackoverflow.com/a/22151620/18749636
         internal static int FindLastCol(Worksheet sheet)
         {
@@ -85,6 +95,7 @@ namespace DECS_Excel_Add_Ins
             // Detect Last used Row, including cells that contains formulas that result in blank values
             return sheet.UsedRange.Rows.Count;
         }
+
         internal static ToolTip FindToolTip(TextBox textBox)
         {
             ToolTip toolTip = null;

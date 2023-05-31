@@ -15,14 +15,9 @@
 	</CleaningRules>
 	<DateConversionRule>
 		<enabled>true</enabled>
-		<desiredDateFormat>MM-dd-yyyy</desiredDateFormat>
+		<desiredDateFormat>MM/dd/yyyy</desiredDateFormat>
 	</DateConversionRule>
 	<ExtractRules>
-		<ExtractRule>
-			<enabled>true</enabled>
-			<pattern>Date of Exam:\s*(\d{1,2}/\d{1,2}/\d{4})</pattern>
-			<newColumn>Date of Exam</newColumn>
-		</ExtractRule>
 		<ExtractRule>
 			<enabled>true</enabled>
 			<pattern>Date of Exam:\s*(\d{1,2}-\d{1,2}-\d{4})</pattern>
