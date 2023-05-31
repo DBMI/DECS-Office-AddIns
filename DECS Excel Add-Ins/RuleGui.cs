@@ -15,6 +15,7 @@ using Font = System.Drawing.Font;
 using Panel = System.Windows.Forms.Panel;
 using Point = System.Drawing.Point;
 using TextBox = System.Windows.Forms.TextBox;
+using ToolTip = System.Windows.Forms.ToolTip;
 using log4net;
 using System.Text.RegularExpressions;
 using System.Web.UI.WebControls;
@@ -59,6 +60,8 @@ namespace DECS_Excel_Add_Ins
         private Action<RuleGui> inheritedClassDeleteAction;
         private Action<RuleGui> parentClassDisableAction; 
         private Action<RuleGui> parentClassEnableAction;
+
+        private ToolTip toolTip;
 
         // https://stackoverflow.com/a/28546547/18749636
         private static readonly log4net.ILog log = log4net.LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
@@ -127,6 +130,9 @@ namespace DECS_Excel_Add_Ins
             this.panel.Controls.Add(this.leftHandTextBox);
             this.panel.Controls.Add(this.rightHandTextBox);
             this.panel.Controls.Add(this.deleteButton);
+
+            // Find ToolTip belonging to overall form.
+
         }
         // This class creates the Delete button and handles disposing of the GUI elements
         // but knows nothing of the NotesConfig object being built.

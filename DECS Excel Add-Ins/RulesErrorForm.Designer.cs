@@ -49,7 +49,7 @@
             // okButton
             // 
             this.okButton.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.okButton.Location = new System.Drawing.Point(298, 303);
+            this.okButton.Location = new System.Drawing.Point(463, 304);
             this.okButton.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
             this.okButton.Name = "okButton";
             this.okButton.Size = new System.Drawing.Size(100, 29);
@@ -63,7 +63,7 @@
             this.panel1.Controls.Add(this.rulesErrorFormLabel);
             this.panel1.Location = new System.Drawing.Point(12, 12);
             this.panel1.Name = "panel1";
-            this.panel1.Size = new System.Drawing.Size(670, 261);
+            this.panel1.Size = new System.Drawing.Size(1004, 261);
             this.panel1.TabIndex = 2;
             // 
             // RulesErrorForm
@@ -71,7 +71,7 @@
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.Color.White;
-            this.ClientSize = new System.Drawing.Size(694, 359);
+            this.ClientSize = new System.Drawing.Size(1028, 359);
             this.Controls.Add(this.panel1);
             this.Controls.Add(this.okButton);
             this.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));

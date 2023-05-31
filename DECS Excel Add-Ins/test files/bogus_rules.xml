@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <NotesConfig>
-	<SourceColumn>REPORT</SourceColumn>
+	<SourceColumnName>REPORT</SourceColumnName>
 	<CleaningRules>
 		<CleaningRule>
 			<pattern>Date performed:?\s*(\d{1,2}/\d{1,2}/\d{4}</pattern>

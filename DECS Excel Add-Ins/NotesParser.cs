@@ -15,6 +15,9 @@ using Action = System.Action;
 using Application = Microsoft.Office.Interop.Excel.Application;
 using Excel = Microsoft.Office.Interop.Excel;
 using log4net;
+using System.Collections.Concurrent;
+using System.Threading;
+using System.Data;
 
 namespace DECS_Excel_Add_Ins
 {
@@ -27,6 +30,7 @@ namespace DECS_Excel_Add_Ins
         private List<string> originalColumnNames;
         private List<string> originalSourceColumnEntries;
         private bool processAllRows;
+        private ProcessingRowsSelection rowsToProcess;
         private Range sourceColumn;
         private StatusForm statusForm;
         private bool stopProcessing = false;
@@ -51,6 +55,9 @@ namespace DECS_Excel_Add_Ins
 
             // In development mode, we may want to run rules on just selected rows.
             this.processAllRows = allRows;
+
+            this.rowsToProcess = WhichRowsToProcess();
+            log.Debug("Processing " + this.rowsToProcess.NumRows().ToString() + " rows.");
 
             // Remember what it looked like before any additional extracted columns were added.
             this.originalColumnNames = Utilities.GetColumnNames(worksheet);
@@ -89,17 +96,14 @@ namespace DECS_Excel_Add_Ins
             int progressPercentage = 0;
 
             // If the user has selected some rows, we'll run cleaning only on those rows.
-            List<int> selectedRows = WhichRowsWillBeProcessedOnly();
-            log.Debug("Processing " + selectedRows.Count.ToString() + " rows.");
-            log.Debug("Processing " + this.config.NumValidCleaningRules() + " valid cleaning rules.");
-
             int numRowsProcessed = 0;
 
-            // Run down the source column (skipping the header row), applying each cleaning rule.
-            foreach (int rowNumber in selectedRows)
+            // Run down the source column, applying each cleaning rule.
+            foreach (Range row in this.rowsToProcess.GetRows())
             {
                 if (stopProcessing) return false;
 
+                int rowNumber = row.Row;
                 log.Debug("Processing row " + rowNumber.ToString());
                 ShowRow(rowNumber);
                 thisCell = this.sourceColumn.Offset[rowNumber - 1, 0];
@@ -131,9 +135,9 @@ namespace DECS_Excel_Add_Ins
                 thisCell.Value2 = cell_contents;
                 numRowsProcessed++;
 
-                if (selectedRows.Count > 1)
+                if (this.rowsToProcess.GetRows().Count > 1)
                 {
-                    progressPercentage = 100 * numRowsProcessed / selectedRows.Count;
+                    progressPercentage = 100 * numRowsProcessed / this.rowsToProcess.GetRows().Count;
                 }
                 else
                 {
@@ -144,6 +148,66 @@ namespace DECS_Excel_Add_Ins
             }
 
             return true;
+        }
+        internal void ConvertDatesToStandardFormat()
+        {
+            if (!HasConfig() || !this.config.HasDateConversionRule()) return;
+
+            log.Debug("Starting date conversion.");
+
+            if (this.statusForm == null || this.statusForm.IsDisposed)
+            {
+                log.Debug("Creating StatusForm object.");
+                this.statusForm = new StatusForm(StopProcessing);
+            }
+
+            log.Debug("Ordering StatusForm object .Show().");
+            this.statusForm.Show();
+            this.statusForm.UpdateStatusLabel("Applying date conversion rules.");
+
+            Range thisCell;
+            int progressPercentage = 0;
+            int numRowsProcessed = 0;
+            DateConverter dateConverter = new DateConverter();
+            string desiredDateFormat = this.config.DateConversionRule.desiredDateFormat;
+
+            // Run down the source column, applying each extraction rule.
+            foreach (Range row in this.rowsToProcess.GetRows())
+            {
+                if (stopProcessing) return;
+
+                int rowNumber = row.Row;
+                log.Debug("Processing row " + rowNumber.ToString());
+                ShowRow(rowNumber);
+                thisCell = this.sourceColumn.Offset[rowNumber - 1, 0];
+                string cell_contents;
+
+                try
+                {
+                    cell_contents = thisCell.Value2.ToString();
+                }
+                catch
+                {
+                    // There's nothing in this cell.
+                    continue;
+                }
+
+                thisCell.Value2 = dateConverter.Convert(cell_contents, desiredDateFormat);
+                numRowsProcessed++;
+
+                if (this.rowsToProcess.GetRows().Count > 1)
+                {
+                    progressPercentage = (100 * numRowsProcessed / this.rowsToProcess.GetRows().Count);
+                }
+                else
+                {
+                    progressPercentage = 100;
+                }
+
+                this.statusForm?.UpdateProgressBar(progressPercentage);
+            }
+
+            return;
         }
         internal bool Extract()
         {
@@ -165,21 +229,26 @@ namespace DECS_Excel_Add_Ins
             int progressPercentage = 0;
             int numRowsProcessed = 0;
 
-            // If the user has selected some rows, we'll run cleaning only on those rows.
-            List<int> selectedRows = WhichRowsWillBeProcessedOnly();
-            log.Debug("Processing " + selectedRows.Count.ToString() + " rows.");
-            log.Debug("Processing " + this.config.NumValidExternalRules() + " valid extract rules.");
-
-            // Run down the source column (skipping the header row),
-            // applying each extraction rule, stopping at the first one that matches.
-            foreach (int rowNumber in selectedRows)
+            // Run down the source column, applying each extraction rule.
+            foreach (Range row in this.rowsToProcess.GetRows())
             {
                 if (stopProcessing) return false;
 
+                int rowNumber = row.Row;
                 log.Debug("Processing row " + rowNumber.ToString());
                 ShowRow(rowNumber);
                 thisCell = this.sourceColumn.Offset[rowNumber - 1, 0];
-                string cell_contents = thisCell.Value.ToString();
+                string cell_contents;
+
+                try
+                {
+                    cell_contents = thisCell.Value2.ToString();
+                }
+                catch
+                {
+                    // There's nothing in this cell.
+                    continue;
+                }
 
                 foreach (ExtractRule rule in this.config.ValidExtractRules())
                 {
@@ -218,9 +287,9 @@ namespace DECS_Excel_Add_Ins
 
                 numRowsProcessed++;
 
-                if (selectedRows.Count > 1)
+                if (this.rowsToProcess.GetRows().Count > 1)
                 {
-                    progressPercentage = (100 * numRowsProcessed / selectedRows.Count);
+                    progressPercentage = (100 * numRowsProcessed / this.rowsToProcess.GetRows().Count);
                 }
                 else
                 {
@@ -235,7 +304,7 @@ namespace DECS_Excel_Add_Ins
         internal bool HasConfig()
         {
             return this.config != null && 
-                this.config.SourceColumn != string.Empty;
+                this.config.SourceColumnName != string.Empty;
         }
         internal void Parse()
         {
@@ -263,24 +332,6 @@ namespace DECS_Excel_Add_Ins
 
             // Save a copy of the revised workbook.
             SaveRevised();
-        }
-        private ProcessingRowsSelection ReadSelectedRows()
-        {
-            List<int> rows = new List<int>();
-            Excel.Range rng = (Excel.Range)this.application.Selection;
-
-            foreach (Excel.Range row in rng.Rows)
-            {
-                int rowNumber = row.Row;
-
-                if (!rows.Contains(rowNumber) && rowNumber <= this.lastRow)
-                {
-                    rows.Add(rowNumber);
-                }
-            }
-
-            rows.Sort();
-            return new ProcessingRowsSelection(rows, "");
         }
         // Allow DefineRulesForm to tell us to go back to row 1 & close the status form.
         // This is useful when we only had cleaning rules--no extract rules.
@@ -376,6 +427,17 @@ namespace DECS_Excel_Add_Ins
             string justTheFilename = System.IO.Path.GetFileNameWithoutExtension(filename);
             string newFilename = System.IO.Path.Combine(directory, justTheFilename + "_revised.xlsx");
 
+            var thread = new Thread(() =>
+            {
+                SaveRevised(workbook, newFilename, justTheFilename);
+            }
+            );
+
+            thread.Start();
+            thread.IsBackground = true;
+        }
+        private void SaveRevised(Workbook workbook, string newFilename, string justTheFilename)
+        {
             try
             {
                 workbook.SaveCopyAs(newFilename);
@@ -404,18 +466,14 @@ namespace DECS_Excel_Add_Ins
 
             this.config = configObj;
 
-            if (this.config.SourceColumn == string.Empty) return;
-
-            this.rulesValid = ValidateAndWarn();
-
-            if (!this.rulesValid) return;
+            if (this.config.SourceColumnName == string.Empty) return;
 
             // Find the top of the source column.
-            Range rng = Utilities.TopOfNamedColumn(sheet: worksheet, columnName: this.config.SourceColumn);
+            Range rng = Utilities.TopOfNamedColumn(sheet: worksheet, columnName: this.config.SourceColumnName);
 
             if (rng == null)
             {
-                Utilities.WarnColumnNotFound(this.config.SourceColumn);
+                Utilities.WarnColumnNotFound(this.config.SourceColumnName);
                 return;
             }
 
@@ -426,6 +484,8 @@ namespace DECS_Excel_Add_Ins
                 // Save the uncleaned source column.
                 SaveOriginalSourceColumn();
             }
+
+            this.rulesValid = ValidateAndWarn();
         }
         private bool ValidateAndWarn()
         {
@@ -446,40 +506,58 @@ namespace DECS_Excel_Add_Ins
 
             return rulesValid;
         }
-        private List<int> WhichRowsWillBeProcessedOnly()
+        internal ProcessingRowsSelection WhichRowsToProcess()
         {
-            // If the user has selected some rows, we'll run cleaning only on those rows.
-            ProcessingRowsSelection selection = ReadSelectedRows();
-            List<int> selectedRows = selection.GetRows();
-
-            // Otherwise, gotta catch 'em all.
-            if (this.processAllRows || selectedRows.Count == 0)
+            if (this.processAllRows)
             {
-                selectedRows = Enumerable.Range(1, this.lastRow).ToList();
+                // This object was called in production mode ==> ALL rows.
+                return new ProcessingRowsSelection(Utilities.AllAvailableRows(worksheet), string.Empty, true);
             }
-
-            return selectedRows;
-        }
-        internal ProcessingRowsSelection WhichRowsWillBeProcessed()
-        {
-            // If the user has selected some rows, we'll run cleaning only on those rows.
-            ProcessingRowsSelection selection = ReadSelectedRows();
-            List<int> selectedRows = selection.GetRows();
-            bool allRows = false;
-
-            // Otherwise, gotta catch 'em all.
-            if (selectedRows.Count == 0)
+            else
             {
-                selectedRows = Enumerable.Range(1, this.lastRow).ToList();
-                allRows = true;
-            }
+                // If the user has selected some rows, we'll process those rows only.
+                Excel.Range rng = (Excel.Range)this.application.Selection;
+                Range selectedRows = rng.Rows;
+                bool allRows = false;
+                string reason = string.Empty;
+                
+                if (selectedRows.Count == 1)
+                {
+                    try
+                    {
+                        int selectedRowNumber = selectedRows[0].Row;
 
-            return new ProcessingRowsSelection(selectedRows, selection.GetReason(), allRows);
+                        if (selectedRowNumber == 0)
+                        {
+                            reason = "Only header row selected.";
+                            selectedRows = Utilities.AllAvailableRows(worksheet);
+                            allRows = true;
+                            return new ProcessingRowsSelection(selectedRows, reason, allRows);
+                        }
+                        else if (selectedRowNumber >= this.lastRow) // Use equals because selectedRowNumber is zero-based.
+                        {
+                            reason = "Selected row outside data area.";
+                            selectedRows = Utilities.AllAvailableRows(worksheet);
+                            allRows = true;
+                            return new ProcessingRowsSelection(selectedRows, reason, allRows);
+                        }
+                    }
+                    catch (System.Runtime.InteropServices.COMException)
+                    {
+                        reason = "No rows selected.";
+                        selectedRows = Utilities.AllAvailableRows(worksheet);
+                        allRows = true;
+                        return new ProcessingRowsSelection(selectedRows, reason, allRows);
+                    }
+                }
+
+                return new ProcessingRowsSelection(selectedRows, reason, allRows);
+            }
         }
         private void WorksheetSelectionChanged(Range Target)
         {
-            ProcessingRowsSelection selection = WhichRowsWillBeProcessed();
-            worksheetChangedCallback(selection);
+            this.rowsToProcess = WhichRowsToProcess();
+            worksheetChangedCallback(this.rowsToProcess);
         }
     }
 }

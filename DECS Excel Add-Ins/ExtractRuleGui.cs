@@ -69,8 +69,9 @@ namespace DECS_Excel_Add_Ins
 
             log.Debug("extractRulesPatternTextBox_TextChanged.");
             TextBox textBox = (TextBox)sender;
+            RuleValidationResult result = Utilities.IsRegexValid(textBox.Text);
 
-            if (Utilities.IsRegexValid(textBox.Text))
+            if (result.Valid())
             {
                 // Clear any previous highlighting.
                 Utilities.ClearRegexInvalid(textBox);
@@ -84,7 +85,7 @@ namespace DECS_Excel_Add_Ins
             else
             {
                 // Highlight box to show RegEx is invalid.
-                Utilities.MarkRegexInvalid(textBox);
+                Utilities.MarkRegexInvalid(textBox: textBox, message: result.ToString());
 
                 // Clear Nth cleaning rule's pattern.
                 this.config.ChangeExtractRulePattern(index: base.index, pattern: string.Empty);
@@ -110,17 +111,18 @@ namespace DECS_Excel_Add_Ins
             this.textChangedCallbackEnabled = false;
             base.leftHandTextBox.Text = rule.pattern;
             base.rightHandTextBox.Text = rule.newColumn;
+            RuleValidationResult result = Utilities.IsRegexValid(rule.pattern);
 
             // Validate the rule.
-            if (!Utilities.IsRegexValid(rule.pattern))
+            if (!result.Valid())
             {
-                Utilities.MarkRegexInvalid(base.leftHandTextBox);
+                Utilities.MarkRegexInvalid(textBox: base.leftHandTextBox, message: result.ToString());
             }
 
             // Validate the rule.
             if (string.IsNullOrEmpty(rule.newColumn))
             {
-                Utilities.MarkRegexInvalid(base.rightHandTextBox);
+                Utilities.MarkRegexInvalid(textBox: base.rightHandTextBox, message: "newColumn is empty");
             }
 
             this.textChangedCallbackEnabled = true;
