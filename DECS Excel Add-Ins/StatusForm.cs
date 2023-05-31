@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
+using System.Diagnostics;
 using System.Drawing;
 using System.Linq;
 using System.Text;
@@ -13,60 +14,91 @@ namespace DECS_Excel_Add_Ins
 {
     public partial class StatusForm : Form
     {
+        private int count;
         private Action externalStopAction;
+        private int numRepetitions;
+        private Stopwatch stopWatch;
 
         // https://stackoverflow.com/a/28546547/18749636
         private static readonly log4net.ILog log = log4net.LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
 
-        public StatusForm(Action parentStopAction)
+        public StatusForm(int numRepetitions, Action parentStopAction)
         {
             InitializeComponent();
             this.externalStopAction = parentStopAction;
             log.Debug("Status form instantiated.");
+            this.count = 0;
+            this.numRepetitions = numRepetitions;
+            this.stopWatch = new Stopwatch();
+            this.stopWatch.Start();
         }
-        internal void UpdateProgressBar(int percentage)
+        internal void Reset(int numRepetitions)
         {
-            if (progressBar.InvokeRequired)
+            this.count = 0;
+            this.numRepetitions = numRepetitions;
+            this.stopWatch.Stop();
+            this.stopWatch.Start();
+        }
+        internal void UpdateCount(int increment = 1)
+        {
+            this.count += increment;
+
+            int progressPercentage = 100;
+
+            if (this.numRepetitions > 1)
+            {
+                progressPercentage = 100 * this.count / this.numRepetitions;
+            }
+
+            UpdateProgressBar(progressPercentage);
+            UpdatePredictedCompletion(this.stopWatch.GetEta(this.count, this.numRepetitions));
+        }
+        private void UpdatePredictedCompletion(TimeSpan timeRemaining)
+        {
+            this.predictedCompletionLabel.Text = timeRemaining.ToString("c");
+        }
+        private void UpdateProgressBar(int percentage)
+        {
+            if (this.progressBar.InvokeRequired)
             {
                 Action setProgress = delegate { UpdateProgressBar(percentage); };
-                progressBar.Invoke(setProgress);
+                this.progressBar.Invoke(setProgress);
             }
             else
             {
-                progressBar.Value = percentage;
+                this.progressBar.Value = percentage;
             }
 
             Application.DoEvents();
         }
         internal void UpdateProgressBarLabel(string text)
         {
-            if (progressBarLabel.InvokeRequired)
+            if (this.progressBarLabel.InvokeRequired)
             {
                 Action setLabel = delegate { UpdateProgressBarLabel(text); };
-                progressBarLabel.Invoke(setLabel);
+                this.progressBarLabel.Invoke(setLabel);
             }
             else
             {
-                progressBarLabel.Text = text;
+                this.progressBarLabel.Text = text;
             }
 
             Application.DoEvents();
         }
         internal void UpdateStatusLabel(string text)
         {
-            if (statusLabel.InvokeRequired)
+            if (this.statusLabel.InvokeRequired)
             {
                 Action setLabel = delegate { UpdateStatusLabel(text); };
-                statusLabel.Invoke(setLabel);
+                this.statusLabel.Invoke(setLabel);
             }
             else
             {
-                statusLabel.Text = text;
+                this.statusLabel.Text = text;
             }
 
             Application.DoEvents();
         }
-
         private void processingStopButton_Click(object sender, EventArgs e)
         {
             log.Debug("Stop ordered.");

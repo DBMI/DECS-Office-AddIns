@@ -35,12 +35,14 @@
             this.statusGroupBox = new System.Windows.Forms.GroupBox();
             this.statusLabel = new System.Windows.Forms.Label();
             this.processingStopButton = new System.Windows.Forms.Button();
+            this.predictedCompletionLabel = new System.Windows.Forms.Label();
             this.progressGroupBox.SuspendLayout();
             this.statusGroupBox.SuspendLayout();
             this.SuspendLayout();
             // 
             // progressGroupBox
             // 
+            this.progressGroupBox.Controls.Add(this.predictedCompletionLabel);
             this.progressGroupBox.Controls.Add(this.progressBarLabel);
             this.progressGroupBox.Controls.Add(this.progressBar);
             this.progressGroupBox.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
@@ -48,7 +50,7 @@
             this.progressGroupBox.Margin = new System.Windows.Forms.Padding(4);
             this.progressGroupBox.Name = "progressGroupBox";
             this.progressGroupBox.Padding = new System.Windows.Forms.Padding(4);
-            this.progressGroupBox.Size = new System.Drawing.Size(416, 106);
+            this.progressGroupBox.Size = new System.Drawing.Size(416, 136);
             this.progressGroupBox.TabIndex = 10;
             this.progressGroupBox.TabStop = false;
             this.progressGroupBox.Text = "Progress";
@@ -107,6 +109,16 @@
             this.processingStopButton.UseVisualStyleBackColor = false;
             this.processingStopButton.Click += new System.EventHandler(this.processingStopButton_Click);
             // 
+            // predictedCompletionLabel
+            // 
+            this.predictedCompletionLabel.AutoSize = true;
+            this.predictedCompletionLabel.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.predictedCompletionLabel.Location = new System.Drawing.Point(25, 108);
+            this.predictedCompletionLabel.Name = "predictedCompletionLabel";
+            this.predictedCompletionLabel.Size = new System.Drawing.Size(149, 15);
+            this.predictedCompletionLabel.TabIndex = 10;
+            this.predictedCompletionLabel.Text = "predicted completion time";
+            // 
             // StatusForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(9F, 16F);
@@ -137,5 +149,6 @@
         private System.Windows.Forms.GroupBox statusGroupBox;
         private System.Windows.Forms.Label statusLabel;
         private System.Windows.Forms.Button processingStopButton;
+        private System.Windows.Forms.Label predictedCompletionLabel;
     }
 }
