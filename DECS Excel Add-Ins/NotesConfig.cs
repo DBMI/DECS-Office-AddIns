@@ -24,7 +24,18 @@ namespace DECS_Excel_Add_Ins
 
         public CleaningRule() 
         {
-            enabled = true;
+            enabled = false;
+        }
+    }
+    public class DateConversionRule
+    {
+        public bool enabled { get; set; }
+
+        public string desiredDateFormat { get; set; }
+
+        public DateConversionRule()
+        {
+            enabled = false;
         }
     }
     //  Defines a single extraction rule.
@@ -40,7 +51,7 @@ namespace DECS_Excel_Add_Ins
 
         public ExtractRule() 
         {
-            enabled = true;
+            enabled = false;
         }
     }
     // Defines the way the current workbook & sheet should be parsed.
@@ -48,9 +59,11 @@ namespace DECS_Excel_Add_Ins
     {
         public List<CleaningRule> CleaningRules { get; set; }
 
+        public DateConversionRule DateConversionRule { get; set; }
+
         public List<ExtractRule> ExtractRules { get; set; }
 
-        public string SourceColumn { get; set; }
+        public string SourceColumnName { get; set; }
 
         // https://stackoverflow.com/a/28546547/18749636
         private static readonly log4net.ILog log = log4net.LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
@@ -59,8 +72,9 @@ namespace DECS_Excel_Add_Ins
         internal NotesConfig()
         {
             log.Debug("Instantiating a NotesConfig object.");
-            SourceColumn = string.Empty;
+            SourceColumnName = string.Empty;
             CleaningRules = new List<CleaningRule>();
+            DateConversionRule = new DateConversionRule();
             ExtractRules = new List<ExtractRule>();
         }
         internal void AddCleaningRule()
@@ -141,25 +155,29 @@ namespace DECS_Excel_Add_Ins
                 ExtractRules.RemoveAt(index);
             }
         }
-        internal void DisableRule(int index)
+        internal void DisableCleaningRule(int index)
         {
             if (index >= 0 && index < CleaningRules.Count)
             {
                 CleaningRules[index].enabled = false;
             }
-
+        }
+        internal void DisableExtractRule(int index)
+        {
             if (index >= 0 && index < ExtractRules.Count)
             {
                 ExtractRules[index].enabled = false;
             }
         }
-        internal void EnableRule(int index)
+        internal void EnableCleaningRule(int index)
         {
             if (index >= 0 && index < CleaningRules.Count)
             {
                 CleaningRules[index].enabled = true;
             }
-
+        }
+        internal void EnableExtractRule(int index)
+        {
             if (index >= 0 && index < ExtractRules.Count)
             {
                 ExtractRules[index].enabled = true;
@@ -169,6 +187,11 @@ namespace DECS_Excel_Add_Ins
         {
             List<CleaningRule> validRules = ValidCleaningRules();
             return validRules.Count > 0;
+        }
+        internal bool HasDateConversionRule()
+        {
+            return this.DateConversionRule.enabled && 
+                !string.IsNullOrEmpty(this.DateConversionRule.desiredDateFormat);
         }
         internal bool HasExtractRules()
         {
@@ -220,16 +243,25 @@ namespace DECS_Excel_Add_Ins
             for (int index = 0; index < CleaningRules.Count; index++)
             {
                 CleaningRule rule = CleaningRules[index];
+                RuleValidationResult result = Utilities.IsRegexValid(rule.pattern);
 
-                if (!Utilities.IsRegexValid(rule.pattern))
+                if (!result.Valid())
                 {
-                    RuleValidationError ruleValidationError = new RuleValidationError(RuleType.Cleaning, index, RuleComponent.Pattern);
+                    RuleValidationError ruleValidationError = new RuleValidationError(ruleType: RuleType.Cleaning, 
+                                                                                      index: index, 
+                                                                                      ruleComponent: RuleComponent.Pattern,
+                                                                                      message: result.ToString());
                     errorReports.Add(ruleValidationError);
                 }
 
-                if (!Utilities.IsRegexValid(rule.replace))
+                result = Utilities.IsRegexValid(rule.replace);
+
+                if (!result.Valid())
                 {
-                    RuleValidationError ruleValidationError = new RuleValidationError(RuleType.Cleaning, index, RuleComponent.Replace);
+                    RuleValidationError ruleValidationError = new RuleValidationError(ruleType: RuleType.Cleaning,
+                                                                                      index: index,
+                                                                                      ruleComponent: RuleComponent.Replace,
+                                                                                      message: result.ToString());
                     errorReports.Add(ruleValidationError);
                 }
             }
@@ -237,16 +269,23 @@ namespace DECS_Excel_Add_Ins
             for (int index = 0; index < ExtractRules.Count; index++)
             {
                 ExtractRule rule = ExtractRules[index];
+                RuleValidationResult result = Utilities.IsRegexValid(rule.pattern);
 
-                if (!Utilities.IsRegexValid(rule.pattern))
+                if (!result.Valid())
                 {
-                    RuleValidationError ruleValidationError = new RuleValidationError(RuleType.Extract, index, RuleComponent.Pattern);
+                    RuleValidationError ruleValidationError = new RuleValidationError(ruleType: RuleType.Extract, 
+                                                                                      index: index, 
+                                                                                      ruleComponent: RuleComponent.Pattern,
+                                                                                      message: result.ToString());
                     errorReports.Add(ruleValidationError);
                 }
 
                 if (string.IsNullOrEmpty(rule.newColumn))
                 {
-                    RuleValidationError ruleValidationError = new RuleValidationError(RuleType.Extract, index, RuleComponent.NewColumn);
+                    RuleValidationError ruleValidationError = new RuleValidationError(ruleType: RuleType.Extract, 
+                                                                                      index: index, 
+                                                                                      ruleComponent: RuleComponent.NewColumn, 
+                                                                                      message: "newColumn is empty.");
                     errorReports.Add(ruleValidationError);
                 }
             }

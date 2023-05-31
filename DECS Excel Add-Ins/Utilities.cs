@@ -1,28 +1,43 @@
 ﻿using Microsoft.Office.Interop.Excel;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Diagnostics;
 using System.Drawing;
 using System.Globalization;
 using System.IO;
 using System.Linq;
+using System.Reflection;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using System.Xml.Linq;
+using static System.Windows.Forms.VisualStyles.VisualStyleElement;
 using TextBox = System.Windows.Forms.TextBox;
+using ToolTip = System.Windows.Forms.ToolTip;
 
 namespace DECS_Excel_Add_Ins
 {
     internal class Utilities
     {
+        internal static Range AllAvailableRows(Worksheet sheet)
+        {
+            Range firstCell = (Range)sheet.Cells[1, 1];
+            Range lastCell = (Range)sheet.Cells[Utilities.FindLastRow(sheet), 1];
+            Range allRows = (Range)sheet.Range[firstCell, lastCell];
+            return allRows;
+        }
         internal static void ClearRegexInvalid(TextBox textBox)
         {
             if (textBox == null) return;
 
             // Clear any previous highlighting.
             textBox.BackColor = Color.White;
+
+            // Add a no-op response to mouse hover.
+            Action<object, System.EventArgs> mouseHover = (sender, e) => {};
+            textBox.MouseHover += new System.EventHandler(mouseHover);
         }
 
         internal static int CountCellsWithData(Range rng, int lastRow)
@@ -69,6 +84,27 @@ namespace DECS_Excel_Add_Ins
 
             // Detect Last used Row, including cells that contains formulas that result in blank values
             return sheet.UsedRange.Rows.Count;
+        }
+        internal static ToolTip FindToolTip(TextBox textBox)
+        {
+            ToolTip toolTip = null;
+            Form form = textBox.FindForm();
+
+            if (form != null)
+            {
+                // https://stackoverflow.com/a/42113517/18749636
+                Type typeForm = form.GetType();
+                FieldInfo fieldInfo = typeForm.GetField("components", BindingFlags.Instance | BindingFlags.NonPublic);
+                IContainer parent = (IContainer)fieldInfo.GetValue(form);
+                List<ToolTip> ToolTipList = parent.Components.OfType<ToolTip>().ToList();
+
+                if (ToolTipList.Count > 0)
+                {
+                    toolTip = ToolTipList[0];
+                }
+            }
+
+            return toolTip;
         }
 
         // Turn the statement of work filename into a .sql filename.
@@ -121,32 +157,44 @@ namespace DECS_Excel_Add_Ins
             return newRange;
         }
 
-        internal static bool IsRegexValid(string regexText)
+        internal static RuleValidationResult IsRegexValid(string regexText)
         {
-            bool valid;
-
-            try
+            // Empty strings are not errors.
+            if (!string.IsNullOrEmpty(regexText)) 
             {
-                Regex regex = new Regex(regexText);
-                valid = true;
-            }
-            catch (ArgumentException)
-            {
-                valid = false;
+                try
+                {
+                    Regex regex = new Regex(regexText);
+                }
+                catch (ArgumentException ex)
+                {
+                    return new RuleValidationResult(ex);
+                }
             }
 
-            return valid;
+            return new RuleValidationResult();
         }
-        internal static void MarkRegexInvalid(TextBox textBox)
+        internal static void MarkRegexInvalid(TextBox textBox, string message)
         {
             if (textBox == null) return;
 
             // Highlight box to show RegEx is invalid.
             textBox.BackColor = Color.Pink;
-        }
 
-        // Open the output StreamWriter object,
-        // understanding that we might have to substitute a shorter version of the output filename
+            ToolTip toolTip = FindToolTip(textBox);
+
+            if (toolTip != null)
+            {
+                Action<object, System.EventArgs> mouseHover = (sender, e) =>
+                {
+                    toolTip.SetToolTip(textBox, message);
+                };
+
+                textBox.MouseHover += new System.EventHandler(mouseHover);
+            }
+        }
+        // Open the output StreamWriter object, understanding that we might
+        // have to substitute a shorter version of the output filename
         // if the default filename is too long.
         internal static (StreamWriter writer, string opened_filename) OpenOutput(string input_filename, string filetype = ".sql")
         {
