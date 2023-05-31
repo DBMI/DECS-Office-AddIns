@@ -79,12 +79,7 @@ namespace DECS_Excel_Add_Ins
             log.Debug("Starting cleaning.");
 
             if (!HasConfig() || !this.rulesValid) return true;
-
-            if (this.statusForm == null || this.statusForm.IsDisposed)
-            {
-                log.Debug("Creating StatusForm object.");
-                this.statusForm = new StatusForm(StopProcessing);
-            }
+            CreateStatusForm();
 
             log.Debug("Ordering StatusForm object .Show().");
             this.statusForm.Show();
@@ -93,10 +88,6 @@ namespace DECS_Excel_Add_Ins
             ShowRow(1);
             RestoreOriginalSourceColumn();
             Range thisCell;
-            int progressPercentage = 0;
-
-            // If the user has selected some rows, we'll run cleaning only on those rows.
-            int numRowsProcessed = 0;
 
             // Run down the source column, applying each cleaning rule.
             foreach (Range row in this.rowsToProcess.GetRows())
@@ -133,18 +124,7 @@ namespace DECS_Excel_Add_Ins
                 }
 
                 thisCell.Value2 = cell_contents;
-                numRowsProcessed++;
-
-                if (this.rowsToProcess.GetRows().Count > 1)
-                {
-                    progressPercentage = 100 * numRowsProcessed / this.rowsToProcess.GetRows().Count;
-                }
-                else
-                {
-                    progressPercentage = 100;
-                }
-
-                this.statusForm?.UpdateProgressBar(progressPercentage);
+                this.statusForm?.UpdateCount();
             }
 
             return true;
@@ -154,22 +134,16 @@ namespace DECS_Excel_Add_Ins
             if (!HasConfig() || !this.config.HasDateConversionRule()) return;
 
             log.Debug("Starting date conversion.");
-
-            if (this.statusForm == null || this.statusForm.IsDisposed)
-            {
-                log.Debug("Creating StatusForm object.");
-                this.statusForm = new StatusForm(StopProcessing);
-            }
+            CreateStatusForm();
 
             log.Debug("Ordering StatusForm object .Show().");
             this.statusForm.Show();
             this.statusForm.UpdateStatusLabel("Applying date conversion rules.");
 
             Range thisCell;
-            int progressPercentage = 0;
-            int numRowsProcessed = 0;
             DateConverter dateConverter = new DateConverter();
             string desiredDateFormat = this.config.DateConversionRule.desiredDateFormat;
+            this.statusForm?.UpdateProgressBarLabel("Converting dates to " + desiredDateFormat);
 
             // Run down the source column, applying each extraction rule.
             foreach (Range row in this.rowsToProcess.GetRows())
@@ -193,41 +167,37 @@ namespace DECS_Excel_Add_Ins
                 }
 
                 thisCell.Value2 = dateConverter.Convert(cell_contents, desiredDateFormat);
-                numRowsProcessed++;
-
-                if (this.rowsToProcess.GetRows().Count > 1)
-                {
-                    progressPercentage = (100 * numRowsProcessed / this.rowsToProcess.GetRows().Count);
-                }
-                else
-                {
-                    progressPercentage = 100;
-                }
-
-                this.statusForm?.UpdateProgressBar(progressPercentage);
+                this.statusForm?.UpdateCount();
             }
 
             return;
+        }
+        private void CreateStatusForm()
+        {
+            int numRows = this.rowsToProcess.GetRows().Count;
+
+            if (this.statusForm == null || this.statusForm.IsDisposed)
+            {
+                log.Debug("Creating StatusForm object.");
+                this.statusForm = new StatusForm(numRepetitions: numRows, parentStopAction: StopProcessing);
+            }
+            else
+            {
+                this.statusForm.Reset(numRepetitions: numRows);
+            }
         }
         internal bool Extract()
         {
             log.Debug("Starting extraction.");
 
             if (!HasConfig() || !this.rulesValid) return true;
-
-            if (this.statusForm == null || this.statusForm.IsDisposed)
-            {
-                log.Debug("Creating StatusForm object.");
-                this.statusForm = new StatusForm(StopProcessing);
-            }
+            CreateStatusForm();
 
             log.Debug("Ordering StatusForm object .Show().");
             this.statusForm.Show();
             this.statusForm.UpdateStatusLabel("Applying extraction rules.");
 
             Range thisCell;
-            int progressPercentage = 0;
-            int numRowsProcessed = 0;
 
             // Run down the source column, applying each extraction rule.
             foreach (Range row in this.rowsToProcess.GetRows())
@@ -285,18 +255,7 @@ namespace DECS_Excel_Add_Ins
                     this.statusForm?.UpdateProgressBarLabel(rule.newColumn);
                 }
 
-                numRowsProcessed++;
-
-                if (this.rowsToProcess.GetRows().Count > 1)
-                {
-                    progressPercentage = (100 * numRowsProcessed / this.rowsToProcess.GetRows().Count);
-                }
-                else
-                {
-                    progressPercentage = 100;
-                }
-
-                this.statusForm?.UpdateProgressBar(progressPercentage);
+                this.statusForm?.UpdateCount();
             }
 
             return true;
