@@ -271,10 +271,10 @@ namespace DECS_Excel_Add_Ins
                         Match match = Regex.Match(cell_contents, rule.pattern);
 
                         // Did we match?
-                        if (match.Groups.Count > 1)
+                        if (match.Success)
                         {
-                            log.Debug("Rule matched: " + match.Groups[1].Value.ToString());
-                            targetRng.Offset[rowNumber - 1, 0].Value = match.Groups[1].Value;
+                            log.Debug("Rule matched: " + match.Value.ToString());
+                            targetRng.Offset[rowNumber - 1, 0].Value = match.Value.ToString();
                         }
                     }
                     catch (System.ArgumentNullException)

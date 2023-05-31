@@ -32,22 +32,16 @@ namespace DECS_Excel_Add_Ins
             {
                 if (entry.Key == desiredFormat) continue;
 
-                Match match = Regex.Match(note, entry.Value);
-
-                // Did we match?
-                if (match.Groups.Count > 1)
+                foreach (Match match in Regex.Matches(note, entry.Value))
                 {
-                    for (int index = 1; index < match.Groups.Count; index++)
-                    {
-                        string dateString = match.Groups[index].Value.ToString();
-                        log.Debug("Rule matched: " + dateString);
+                    string dateString = match.Value.ToString();
+                    log.Debug("Rule matched: " + dateString);
 
-                        if (DateTime.TryParse(dateString, out DateTime dateValue))
-                        {
-                            string dateConverted = dateValue.ToString(desiredFormat);
-                            log.Debug("Converted '" + dateString + "' to '" + dateConverted + "'.");
-                            note = note.Replace(dateString, dateConverted);
-                        }
+                    if (DateTime.TryParse(dateString, out DateTime dateValue))
+                    {
+                        string dateConverted = dateValue.ToString(desiredFormat);
+                        log.Debug("Converted '" + dateString + "' to '" + dateConverted + "'.");
+                        note = note.Replace(dateString, dateConverted);
                     }
                 }
             }
