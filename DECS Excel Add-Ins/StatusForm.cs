@@ -4,6 +4,7 @@ using System.ComponentModel;
 using System.Data;
 using System.Diagnostics;
 using System.Drawing;
+using System.Globalization;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -15,6 +16,7 @@ namespace DECS_Excel_Add_Ins
     public partial class StatusForm : Form
     {
         private int count;
+        private CultureInfo culture = new CultureInfo("en-US");
         private Action externalStopAction;
         private int numRepetitions;
         private Stopwatch stopWatch;
@@ -55,7 +57,8 @@ namespace DECS_Excel_Add_Ins
         }
         private void UpdatePredictedCompletion(TimeSpan timeRemaining)
         {
-            this.predictedCompletionLabel.Text = timeRemaining.ToString("c");
+            string predictedCompletion = "Completion in " + timeRemaining.ToString(@"hh\:mm\:ss", this.culture);
+            this.predictedCompletionLabel.Text = predictedCompletion;
         }
         private void UpdateProgressBar(int percentage)
         {
