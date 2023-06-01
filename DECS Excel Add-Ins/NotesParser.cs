@@ -120,7 +120,7 @@ namespace DECS_Excel_Add_Ins
                     {
                     }
 
-                    this.statusForm?.UpdateProgressBarLabel(rule.replace);
+                    this.statusForm?.UpdateProgressBarLabel(rule.displayName ?? rule.replace);
                 }
 
                 thisCell.Value2 = cell_contents;
@@ -258,7 +258,7 @@ namespace DECS_Excel_Add_Ins
                         log.Error("Caught System.ArgumentNullException");
                     }
 
-                    this.statusForm?.UpdateProgressBarLabel(rule.newColumn);
+                    this.statusForm?.UpdateProgressBarLabel(rule.displayName ?? rule.newColumn);
                 }
 
                 this.statusForm?.UpdateCount();
