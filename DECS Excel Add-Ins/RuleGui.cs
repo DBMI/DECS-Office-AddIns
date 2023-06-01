@@ -27,8 +27,9 @@ namespace DECS_Excel_Add_Ins
     {
         private const int BOX_HEIGHT = 22;
         private readonly Font BOX_FONT = new Font("Microsoft San Serif", 9.75f, FontStyle.Regular);
-        private const int LEFT_BOX_WIDTH = 975;
-        private const int RIGHT_BOX_WIDTH = 200;
+        private const int LEFT_BOX_WIDTH = 150;
+        private const int CENTER_BOX_WIDTH = 840;
+        private const int RIGHT_BOX_WIDTH = 195;
 
         private const int BUTTON_HEIGHT = 30;
         private readonly Font BUTTON_FONT = new Font("Microsoft San Serif", 14.25f, FontStyle.Bold);
@@ -36,8 +37,9 @@ namespace DECS_Excel_Add_Ins
         private const int BUTTON_X = 1270;
         private readonly int BUTTON_Y_OFFSET = (int)(BOX_HEIGHT - BUTTON_HEIGHT) / 2;
 
-        private const int LEFT_HAND_X = 35;
-        private const int RIGHT_HAND_X = 1040;
+        private const int LEFT_BOX_X = 25;
+        private const int CENTER_BOX_X = 195;
+        private const int RIGHT_BOX_X = 1055;
         private readonly int BOX_Y = (int) BOX_HEIGHT/2;
 
         private readonly Font CHECKBOX_FONT = new Font("Microsoft San Serif", 7f, FontStyle.Regular);
@@ -48,8 +50,9 @@ namespace DECS_Excel_Add_Ins
         private Panel parent;
         protected CheckBox checkBox;
         private Button deleteButton;
-        protected TextBox leftHandTextBox;
-        protected TextBox rightHandTextBox;
+        protected TextBox leftTextBox;
+        protected TextBox centerTextBox;
+        protected TextBox rightTextBox;
 
         protected int index;
         private string keyword;
@@ -97,23 +100,32 @@ namespace DECS_Excel_Add_Ins
             this.checkBox.Text = "";
 
             // Create and position boxes.
-            this.leftHandTextBox = new System.Windows.Forms.TextBox();
-            this.leftHandTextBox.Parent = this.panel;
-            this.leftHandTextBox.Font = BOX_FONT;
-            this.leftHandTextBox.Height = BOX_HEIGHT;
-            Point leftHandPosit = new Point(LEFT_HAND_X, BOX_Y);
-            this.leftHandTextBox.Location = leftHandPosit;
-            this.leftHandTextBox.Name = this.keyword + "LeftTextBox";
-            this.leftHandTextBox.Width = LEFT_BOX_WIDTH;
+            this.leftTextBox = new TextBox();
+            this.leftTextBox.Parent = this.panel;
+            this.leftTextBox.Font = BOX_FONT;
+            this.leftTextBox.Height = BOX_HEIGHT;
+            Point leftPosit = new Point(LEFT_BOX_X, BOX_Y);
+            this.leftTextBox.Location = leftPosit;
+            this.leftTextBox.Name = this.keyword + "LeftTextBox";
+            this.leftTextBox.Width = LEFT_BOX_WIDTH;
 
-            this.rightHandTextBox = new TextBox();
-            this.rightHandTextBox.Parent = this.panel;
-            this.rightHandTextBox.Font = BOX_FONT;
-            this.rightHandTextBox.Height = BOX_HEIGHT;
-            Point rightHandPosit = new Point(RIGHT_HAND_X, BOX_Y);
-            this.rightHandTextBox.Location = rightHandPosit;
-            this.rightHandTextBox.Name = this.keyword + "RightTextBox";
-            this.rightHandTextBox.Width = RIGHT_BOX_WIDTH;
+            this.centerTextBox = new TextBox();
+            this.centerTextBox.Parent = this.panel;
+            this.centerTextBox.Font = BOX_FONT;
+            this.centerTextBox.Height = BOX_HEIGHT;
+            Point centerPosit = new Point(CENTER_BOX_X, BOX_Y);
+            this.centerTextBox.Location = centerPosit;
+            this.centerTextBox.Name = this.keyword + "CenterTextBox";
+            this.centerTextBox.Width = CENTER_BOX_WIDTH;
+
+            this.rightTextBox = new TextBox();
+            this.rightTextBox.Parent = this.panel;
+            this.rightTextBox.Font = BOX_FONT;
+            this.rightTextBox.Height = BOX_HEIGHT;
+            Point rightHandPosit = new Point(RIGHT_BOX_X, BOX_Y);
+            this.rightTextBox.Location = rightHandPosit;
+            this.rightTextBox.Name = this.keyword + "RightTextBox";
+            this.rightTextBox.Width = RIGHT_BOX_WIDTH;
 
             // Create new delete button.
             this.deleteButton = new Button();
@@ -127,12 +139,10 @@ namespace DECS_Excel_Add_Ins
             this.deleteButton.Width = BUTTON_WIDTH;
 
             // Add to controls.
-            this.panel.Controls.Add(this.leftHandTextBox);
-            this.panel.Controls.Add(this.rightHandTextBox);
+            this.panel.Controls.Add(this.leftTextBox);
+            this.panel.Controls.Add(this.centerTextBox);
+            this.panel.Controls.Add(this.rightTextBox);
             this.panel.Controls.Add(this.deleteButton);
-
-            // Find ToolTip belonging to overall form.
-
         }
         // This class creates the Delete button and handles disposing of the GUI elements
         // but knows nothing of the NotesConfig object being built.
@@ -154,18 +164,6 @@ namespace DECS_Excel_Add_Ins
         {
             parentClassEnableAction = enableAction;
         }
-        //private void ChangeLockStatus(Control control, bool locked)
-        //{
-        //    if (control.InvokeRequired)
-        //    {
-        //        Action setProgress = delegate { ChangeLockStatus(control, locked); };
-        //        control.Invoke(setProgress);
-        //    }
-        //    else
-        //    {
-        //        control.Enabled = locked;
-        //    }
-        //}
         private void CheckBoxClicked(object sender, EventArgs e)
         {
             CheckBox checkBox = sender as CheckBox;

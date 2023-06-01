@@ -14,6 +14,8 @@ namespace DECS_Excel_Add_Ins
     // Defines a single replacement rule.
     public class CleaningRule
     {
+        public string displayName { get; set; }
+
         public bool enabled { get; set; }
 
         // The Regular Expression to search for...
@@ -41,6 +43,8 @@ namespace DECS_Excel_Add_Ins
     //  Defines a single extraction rule.
     public class ExtractRule
     {
+        public string displayName { get; set; }
+
         public bool enabled { get; set; }
 
         // The Regular Expression to search for...
@@ -81,17 +85,16 @@ namespace DECS_Excel_Add_Ins
         {
             CleaningRules.Add(new CleaningRule());
         }
-        internal void AddCleaningRule(CleaningRule cleaningRule)
-        {
-            CleaningRules.Add(cleaningRule);
-        }
         internal void AddExtractRule()
         {
             ExtractRules.Add(new ExtractRule());
         }
-        internal void AddExtractRule(ExtractRule extractRule)
+        internal void ChangeCleaningRuleDisplayName(int index, string displayName)
         {
-            ExtractRules.Add(extractRule);
+            if (CleaningRules.Count - 1 >= index)
+            {
+                CleaningRules[index].displayName = displayName;
+            }
         }
         internal void ChangeCleaningRulePattern(int index, string pattern)
         {
@@ -105,6 +108,13 @@ namespace DECS_Excel_Add_Ins
             if (CleaningRules.Count - 1 >= index)
             {
                 CleaningRules[index].replace = replace;
+            }
+        }
+        internal void ChangeExtractRuleDisplayName(int index, string displayName)
+        {
+            if (ExtractRules.Count - 1 >= index)
+            {
+                ExtractRules[index].displayName = displayName;
             }
         }
         internal void ChangeExtractRulePattern(int index, string pattern)

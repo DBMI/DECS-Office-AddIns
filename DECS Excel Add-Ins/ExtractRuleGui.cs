@@ -24,8 +24,9 @@ namespace DECS_Excel_Add_Ins
         public ExtractRuleGui(int x, int y, int index, Panel parent, NotesConfig notesConfig, bool updateConfig = true) : base(x, y, index, parent, "extractRules")
         {
             this.config = notesConfig;
-            base.leftHandTextBox.TextChanged += extractRulesPatternTextBox_TextChanged;
-            base.rightHandTextBox.LostFocus += extractRulesnewColumnTextBox_TextChanged;
+            base.leftTextBox.TextChanged += extractRulesDisplayNameTextBox_TextChanged;
+            base.centerTextBox.TextChanged += extractRulesPatternTextBox_TextChanged;
+            base.rightTextBox.LostFocus += extractRulesnewColumnTextBox_TextChanged;
 
             // When loading an >existing< NotesConfig object,
             // we don't want to modify the object.
@@ -50,8 +51,8 @@ namespace DECS_Excel_Add_Ins
         public override void Clear()
         {
             this.textChangedCallbackEnabled = false;
-            base.leftHandTextBox.Text = string.Empty;
-            base.rightHandTextBox.Text = string.Empty;
+            base.centerTextBox.Text = string.Empty;
+            base.rightTextBox.Text = string.Empty;
             this.textChangedCallbackEnabled = true;
         }
         // The RuleGui class handles the GUI stuff but this derived class needs to 'talk' to the NotesConfig structure
@@ -62,6 +63,16 @@ namespace DECS_Excel_Add_Ins
         {
             this.config.DeleteExtractRule(index: base.index);
             this.parentDeleteAction(ruleGui);
+        }
+        private void extractRulesDisplayNameTextBox_TextChanged(object sender, EventArgs e)
+        {
+            if (!this.textChangedCallbackEnabled) return;
+
+            log.Debug("extractRulesDisplayNameTextBox_TextChanged");
+            TextBox textBox = (TextBox)sender;
+
+            // Insert or update Nth cleaning rule with this display Name.
+            this.config.ChangeExtractRuleDisplayName(index: base.index, displayName: textBox.Text);
         }
         private void extractRulesPatternTextBox_TextChanged(object sender, EventArgs e)
         {
@@ -109,20 +120,21 @@ namespace DECS_Excel_Add_Ins
             if (rule == null) return;
 
             this.textChangedCallbackEnabled = false;
-            base.leftHandTextBox.Text = rule.pattern;
-            base.rightHandTextBox.Text = rule.newColumn;
+            base.leftTextBox.Text = rule.displayName;
+            base.centerTextBox.Text = rule.pattern;
+            base.rightTextBox.Text = rule.newColumn;
             RuleValidationResult result = Utilities.IsRegexValid(rule.pattern);
 
             // Validate the rule.
             if (!result.Valid())
             {
-                Utilities.MarkRegexInvalid(textBox: base.leftHandTextBox, message: result.ToString());
+                Utilities.MarkRegexInvalid(textBox: base.centerTextBox, message: result.ToString());
             }
 
             // Validate the rule.
             if (string.IsNullOrEmpty(rule.newColumn))
             {
-                Utilities.MarkRegexInvalid(textBox: base.rightHandTextBox, message: "newColumn is empty");
+                Utilities.MarkRegexInvalid(textBox: base.rightTextBox, message: "newColumn is empty");
             }
 
             this.textChangedCallbackEnabled = true;
