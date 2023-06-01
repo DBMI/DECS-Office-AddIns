@@ -120,7 +120,7 @@ namespace DECS_Excel_Add_Ins
                     {
                     }
 
-                    this.statusForm?.UpdateProgressBarLabel(rule.replace);
+                    this.statusForm?.UpdateProgressBarLabel(rule.displayName ?? rule.replace);
                 }
 
                 thisCell.Value2 = cell_contents;
@@ -251,14 +251,14 @@ namespace DECS_Excel_Add_Ins
                             }
                         }
 
-                        targetRng.Offset[rowNumber - 1, 0].Value = String.Join(", ", extractedValues);
+                        targetRng.Offset[rowNumber - 1, 0].Value += String.Join(", ", extractedValues);
                     }
                     catch (System.ArgumentNullException)
                     {
                         log.Error("Caught System.ArgumentNullException");
                     }
 
-                    this.statusForm?.UpdateProgressBarLabel(rule.newColumn);
+                    this.statusForm?.UpdateProgressBarLabel(rule.displayName ?? rule.newColumn);
                 }
 
                 this.statusForm?.UpdateCount();
