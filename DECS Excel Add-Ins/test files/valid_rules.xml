@@ -25,7 +25,7 @@
 	<ExtractRules>
 		<ExtractRule>
 			<enabled>true</enabled>
-			<pattern>Date of Exam:\s*(\d{1,2}/\d{1,2}/\d{4})</pattern>
+			<pattern>Date of Exam:\s*(?:\d{1,2}/\d{1,2}/\d{4}, ?)*(\d{1,2}/\d{1,2}/\d{4})</pattern>
 			<newColumn>Date of Exam</newColumn>
 		</ExtractRule>
 		<ExtractRule>
