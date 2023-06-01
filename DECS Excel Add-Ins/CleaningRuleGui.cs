@@ -24,8 +24,9 @@ namespace DECS_Excel_Add_Ins
         public CleaningRuleGui(int x, int y, int index, Panel parent, NotesConfig notesConfig, bool updateConfig = true) : base(x, y, index, parent, "cleaningRules") 
         {
             this.config = notesConfig;
-            base.leftHandTextBox.TextChanged += cleaningRulesPatternTextBox_TextChanged;
-            base.rightHandTextBox.TextChanged += cleaningRulesReplaceTextBox_TextChanged;
+            base.leftTextBox.TextChanged += cleaningRulesDisplayNameTextBox_TextChanged;
+            base.centerTextBox.TextChanged += cleaningRulesPatternTextBox_TextChanged;
+            base.rightTextBox.TextChanged += cleaningRulesReplaceTextBox_TextChanged;
 
             // When loading an >existing< NotesConfig object,
             // we don't want to modify the object.
@@ -46,6 +47,16 @@ namespace DECS_Excel_Add_Ins
         public void AssignExternalRuleChanged(Action ruleChangedAction)
         {
             this.parentRuleChangedAction = ruleChangedAction;
+        }
+        private void cleaningRulesDisplayNameTextBox_TextChanged(object sender, EventArgs e)
+        {
+            if (!this.textChangedCallbackEnabled) return;
+
+            log.Debug("cleaningRulesDisplayNameTextBox_TextChanged");
+            TextBox textBox = (TextBox)sender;
+
+            // Insert or update Nth cleaning rule with this display Name.
+            this.config.ChangeCleaningRuleDisplayName(index: base.index, displayName: textBox.Text);
         }
         // Extract the text & add to this cleaning rule.
         private void cleaningRulesPatternTextBox_TextChanged(object sender, EventArgs e)
@@ -75,7 +86,7 @@ namespace DECS_Excel_Add_Ins
                 // Clear Nth cleaning rule's pattern.
                 this.config.ChangeCleaningRulePattern(index: base.index, pattern: string.Empty);
             }
-        }        
+        }
         // Extract the text & add to this cleaning rule.
         private void cleaningRulesReplaceTextBox_TextChanged(object sender, EventArgs e)
         {
@@ -107,8 +118,8 @@ namespace DECS_Excel_Add_Ins
         public override void Clear()
         {
             this.textChangedCallbackEnabled = false;
-            base.leftHandTextBox.Text = string.Empty;
-            base.rightHandTextBox.Text = string.Empty;
+            base.centerTextBox.Text = string.Empty;
+            base.rightTextBox.Text = string.Empty;
             this.textChangedCallbackEnabled = true;
         }
         // The RuleGui class handles the GUI stuff but this derived class needs to 'talk' to the NotesConfig structure
@@ -125,21 +136,22 @@ namespace DECS_Excel_Add_Ins
             if (rule == null) return;
 
             this.textChangedCallbackEnabled = false;
-            base.leftHandTextBox.Text = rule.pattern;
-            base.rightHandTextBox.Text = rule.replace;
+            base.leftTextBox.Text = rule.displayName;
+            base.centerTextBox.Text = rule.pattern;
+            base.rightTextBox.Text = rule.replace;
             RuleValidationResult result = Utilities.IsRegexValid(rule.pattern);
 
             // Validate the rule.
             if (!result.Valid())
             {
-                Utilities.MarkRegexInvalid(textBox: base.leftHandTextBox, message: result.ToString());
+                Utilities.MarkRegexInvalid(textBox: base.centerTextBox, message: result.ToString());
             }
 
             result = Utilities.IsRegexValid(rule.replace);
 
             if (!result.Valid())
             {
-                Utilities.MarkRegexInvalid(textBox: base.rightHandTextBox, message: result.ToString());
+                Utilities.MarkRegexInvalid(textBox: base.rightTextBox, message: result.ToString());
             }
 
             this.textChangedCallbackEnabled = true;

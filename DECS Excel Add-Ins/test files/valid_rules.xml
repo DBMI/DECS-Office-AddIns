@@ -1,42 +1,48 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<NotesConfig>
-	<SourceColumnName>REPORT</SourceColumnName>
-	<CleaningRules>
-		<CleaningRule>
-			<enabled>true</enabled>
-			<pattern>Date performed:?\s*(\d{1,2}/\d{1,2}/\d{4})</pattern>
-			<replace>Date of Exam: $1</replace>
-		</CleaningRule>
-		<CleaningRule>
-			<enabled>true</enabled>
-			<pattern>temparature</pattern>
-			<replace>temperature</replace>
-		</CleaningRule>
-		<CleaningRule>
-			<enabled>true</enabled>
-			<pattern>(\d{1,2})(?:st|nd|rd|th)</pattern>
-			<replace>$1</replace>
-		</CleaningRule>
-	</CleaningRules>
-	<DateConversionRule>
-		<enabled>true</enabled>
-		<desiredDateFormat>MM/dd/yyyy</desiredDateFormat>
-	</DateConversionRule>
-	<ExtractRules>
-		<ExtractRule>
-			<enabled>true</enabled>
-			<pattern>Date of Exam:\s*(?:\d{1,2}/\d{1,2}/\d{4}, ?)*(\d{1,2}/\d{1,2}/\d{4})</pattern>
-			<newColumn>Date of Exam</newColumn>
-		</ExtractRule>
-		<ExtractRule>
-			<enabled>true</enabled>
-			<pattern>Air temperature:\s*(\d+\.?\d*)\s*(?: deg|°)F</pattern>
-			<newColumn>Air Temp (°F)</newColumn>
-		</ExtractRule>
-		<ExtractRule>
-			<enabled>true</enabled>
-			<pattern>Air pressure:\s*(\d+\.?\d*)\s*mBar</pattern>
-			<newColumn>Air Pressure (mBar)</newColumn>
-		</ExtractRule>
-	</ExtractRules>
+<?xml version="1.0" encoding="utf-8"?>
+<NotesConfig xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <CleaningRules>
+    <CleaningRule>
+      <displayName>Change 'Date performed' to 'Date of Exam'</displayName>
+      <enabled>true</enabled>
+      <pattern>Date performed:?\s*(\d{1,2}/\d{1,2}/\d{4})</pattern>
+      <replace>Date of Exam: $1</replace>
+    </CleaningRule>
+    <CleaningRule>
+      <displayName>Fix spelling</displayName>
+      <enabled>true</enabled>
+      <pattern>temparature</pattern>
+      <replace>temperature</replace>
+    </CleaningRule>
+    <CleaningRule>
+      <displayName>Convert 1st to 1</displayName>
+      <enabled>true</enabled>
+      <pattern>(\d{1,2})(?:st|nd|rd|th)</pattern>
+      <replace>$1</replace>
+    </CleaningRule>
+  </CleaningRules>
+  <DateConversionRule>
+    <enabled>true</enabled>
+    <desiredDateFormat>MM/dd/yyyy</desiredDateFormat>
+  </DateConversionRule>
+  <ExtractRules>
+    <ExtractRule>
+      <displayName>Get date</displayName>
+      <enabled>true</enabled>
+      <pattern>Date of Exam:\s*(?:\d{1,2}/\d{1,2}/\d{4}, ?)*(\d{1,2}/\d{1,2}/\d{4})</pattern>
+      <newColumn>Date of Exam</newColumn>
+    </ExtractRule>
+    <ExtractRule>
+      <displayName>Get temperature</displayName>
+      <enabled>true</enabled>
+      <pattern>Air temperature:\s*(\d+\.?\d*)\s*(?: deg|°)F</pattern>
+      <newColumn>Air Temp (°F)</newColumn>
+    </ExtractRule>
+    <ExtractRule>
+      <displayName>Get baro pressure</displayName>
+      <enabled>true</enabled>
+      <pattern>Air pressure:\s*(\d+\.?\d*)\s*mBar</pattern>
+      <newColumn>Air Pressure (mBar)</newColumn>
+    </ExtractRule>
+  </ExtractRules>
+  <SourceColumnName>REPORT</SourceColumnName>
 </NotesConfig>

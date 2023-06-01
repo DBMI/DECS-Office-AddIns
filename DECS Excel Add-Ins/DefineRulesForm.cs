@@ -68,8 +68,8 @@ namespace DECS_Excel_Add_Ins
                 x: PANEL_X, 
                 y: panelY, 
                 index: nextIndex, 
-                parent: cleaningRulesPanel,
-                notesConfig: config,
+                parent: this.cleaningRulesPanel,
+                notesConfig: this.config,
                 updateConfig: updateConfig);
 
             // Tell the cleaning rule panel to let us know when ITS parent (RuleGui)'s
@@ -104,8 +104,8 @@ namespace DECS_Excel_Add_Ins
                 x: PANEL_X,
                 y: panelY,
                 index: nextIndex,
-                parent: extractRulesPanel,
-                notesConfig: config,
+                parent: this.extractRulesPanel,
+                notesConfig: this.config,
                 updateConfig: updateConfig);
 
             // Tell the cleaning rule panel to let us know when ITS parent (RuleGui)'s
