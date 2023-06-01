@@ -34,14 +34,17 @@ namespace DECS_Excel_Add_Ins
 
                 foreach (Match match in Regex.Matches(note, entry.Value))
                 {
-                    string dateString = match.Value.ToString();
-                    log.Debug("Rule matched: " + dateString);
-
-                    if (DateTime.TryParse(dateString, out DateTime dateValue))
+                    if (match.Success)
                     {
-                        string dateConverted = dateValue.ToString(desiredFormat);
-                        log.Debug("Converted '" + dateString + "' to '" + dateConverted + "'.");
-                        note = note.Replace(dateString, dateConverted);
+                        string dateString = match.Value.ToString();
+                        log.Debug("Rule matched: " + dateString);
+
+                        if (DateTime.TryParse(dateString, out DateTime dateValue))
+                        {
+                            string dateConverted = dateValue.ToString(desiredFormat);
+                            log.Debug("Converted '" + dateString + "' to '" + dateConverted + "'.");
+                            note = note.Replace(dateString, dateConverted);
+                        }
                     }
                 }
             }

@@ -238,14 +238,20 @@ namespace DECS_Excel_Add_Ins
                     try
                     {
                         log.Debug("Attempting match using pattern '" + rule.pattern + "'.");
-                        Match match = Regex.Match(cell_contents, rule.pattern);
+                        
+                        // If we get more than one extracted value, concatenate into comma-separated string.
+                        List<string> extractedValues = new List<string>();
 
-                        // Did we match?
-                        if (match.Success)
+                        foreach (Match match in Regex.Matches(cell_contents, rule.pattern, RegexOptions.IgnoreCase))
                         {
-                            log.Debug("Rule matched: " + match.Value.ToString());
-                            targetRng.Offset[rowNumber - 1, 0].Value = match.Value.ToString();
+                            if (match.Success)
+                            {
+                                log.Debug("Rule matched: " + match.Value.ToString());
+                                extractedValues.Add(match.Groups[1].ToString());
+                            }
                         }
+
+                        targetRng.Offset[rowNumber - 1, 0].Value = String.Join(", ", extractedValues);
                     }
                     catch (System.ArgumentNullException)
                     {
