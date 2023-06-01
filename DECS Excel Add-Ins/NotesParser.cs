@@ -251,7 +251,7 @@ namespace DECS_Excel_Add_Ins
                             }
                         }
 
-                        targetRng.Offset[rowNumber - 1, 0].Value = String.Join(", ", extractedValues);
+                        targetRng.Offset[rowNumber - 1, 0].Value += String.Join(", ", extractedValues);
                     }
                     catch (System.ArgumentNullException)
                     {

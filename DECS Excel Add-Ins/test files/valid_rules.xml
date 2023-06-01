@@ -32,6 +32,12 @@
       <newColumn>Date of Exam</newColumn>
     </ExtractRule>
     <ExtractRule>
+	  <displayName>Get date that won't match</displayName>
+	  <enabled>true</enabled>
+	  <pattern>I received the vaccine on\s*(?:\d{1,2}/\d{1,2}/\d{4}, ?)*(\d{1,2}/\d{1,2}/\d{4})</pattern>
+	  <newColumn>Date of Exam</newColumn>
+	</ExtractRule>
+	<ExtractRule>
       <displayName>Get temperature</displayName>
       <enabled>true</enabled>
       <pattern>Air temperature:\s*(\d+\.?\d*)\s*(?: deg|°)F</pattern>
