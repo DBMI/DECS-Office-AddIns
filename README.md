@@ -5,12 +5,18 @@ Creates a custom buttons in Microsoft Excel & Word that allows user to:
 ### Excel:
 ![image info](./DECS%20Excel%20Add-Ins/pictures/toolbar.png) 
 
-- Scan `Notes` fields for keywords, creating new columns.
-- Turn a column of MRNs into a SQL snippet that imports the column into a query.
+* Scan `Notes` fields for keywords, creating new columns.
+* Turn a column of MRNs into a SQL snippet that imports the column into a query.
 ### Word: 
 ![image info](./DECS%20Word%20Add-Ins/pictures/toolbar.png)
-- Scan a statement of work file & create SQL code that searches for the ICD-10 codes and names listed in the SoW.
-- Turn a list of MRNs into a SQL snippet that imports the list into a query.
+* Scan a Scope of Work (SoW) file & create SQL code that searches for the ICD-10 codes and names listed in the SoW.
+* Turn a list of MRNs into a SQL snippet that imports the list into a query.
+* Setup a DECS project using the info in a Scope of Work file:
+    - Build the DECS project directory.
+    - Initialize the Excel output file, including disclaimer.
+    - Initialize the SQL file.
+    - Modify a Slicer/Dicer SQL file to include patient consent, etc.
+    - Draft the completion email.
 
 ## Installation
 * Download the `Office Add-Ins` folder from [Sharepoint.](https://ucsdhs.sharepoint.com/:f:/t/ACTRI-BMI-DECSPrivate/EhFYD_9zfX9GsNRN9enCMzABFKg6wmPh13zY_ps2qRJHSg?e=KYFZeG)
