@@ -41,43 +41,41 @@ namespace DecsWordAddIns
         private const string PREFIX = "\r\n        CASE\r\n              WHEN\r\n                    (\r\n                        SELECT TOP 1\r\n                               DX_ID\r\n                        FROM   problem_list\r\n                        WHERE  PAT_ID = pat.PAT_ID\r\n                        AND    DX_ID IN\r\n                               (\r\n                                      SELECT DX_ID\r\n                                      FROM   EDG_CURRENT_ICD10\r\n                                      WHERE  CODE LIKE ";
         private const string SUFFIX = "\r\n                    ) IS NOT NULL THEN 'Y'\r\n                      ELSE 'N'\r\n        END AS ";
 
-        private Regex alpha_regex;
-        private Regex code_regex;
-        private Regex[] line_regexes;
-        private Regex number_regex;
-        private Regex series_regex;
+        private Regex alphaRegex;
+        private Regex codeRegex;
+        private Regex[] lineRegexes;
+        private Regex numberRegex;
+        private Regex seriesRegex;
 
         internal IcdExtractor()
         {
             BuildRegex();
         }
-
         // Create all the reusable Regex objects.
         private void BuildRegex()
         {
-            alpha_regex = new Regex(ALPHA_PATTERN);
-            code_regex = new Regex(CODE_PATTERN);
+            this.alphaRegex = new Regex(ALPHA_PATTERN);
+            this.codeRegex = new Regex(CODE_PATTERN);
 
-            line_regexes = new Regex[LINE_PATTERNS.Length];
+            this.lineRegexes = new Regex[LINE_PATTERNS.Length];
 
             for (int i = 0; i < LINE_PATTERNS.Length; i++)
             {
-                line_regexes[i] = new Regex(LINE_PATTERNS[i]);
+                this.lineRegexes[i] = new Regex(LINE_PATTERNS[i]);
             }
 
-            number_regex = new Regex(NUMBER_PATTERN);
-            series_regex = new Regex(SERIES_PATTERN);
+            this.numberRegex = new Regex(NUMBER_PATTERN);
+            this.seriesRegex = new Regex(SERIES_PATTERN);
         }
-
         // Expand text like "M30 - M35" into a comma-separated string "M30, M31, M32, M33, M34, M35".
         private string ExpandSeries(string text)
         {
             string expanded_text = text;
             string alpha;
-            int end_number;
-            int start_number;
+            int endNumber;
+            int startNumber;
 
-            MatchCollection matches = series_regex.Matches(text);
+            MatchCollection matches = this.seriesRegex.Matches(text);
 
             foreach (Match match in matches)
             {
@@ -85,20 +83,20 @@ namespace DecsWordAddIns
                 {
                     // The thing we need to replace.
                     string series_definition = match.Groups[0].Value;
-                    Match start_match = number_regex.Match(match.Groups[1].Value);
+                    Match start_match = this.numberRegex.Match(match.Groups[1].Value);
                     
-                    if (!Int32.TryParse(start_match.Groups[0].Value, out start_number)) continue;
+                    if (!Int32.TryParse(start_match.Groups[0].Value, out startNumber)) continue;
 
-                    Match end_match = number_regex.Match(match.Groups[2].Value);
+                    Match end_match = this.numberRegex.Match(match.Groups[2].Value);
 
-                    if (!Int32.TryParse(end_match.Groups[0].Value, out end_number)) continue;
+                    if (!Int32.TryParse(end_match.Groups[0].Value, out endNumber)) continue;
 
-                    int sequence_count = end_number - start_number;
-                    Match alpha_match = alpha_regex.Match(match.Groups[1].Value);
+                    int sequence_count = endNumber - startNumber;
+                    Match alpha_match = this.alphaRegex.Match(match.Groups[1].Value);
                     alpha = alpha_match.Groups[0].Value;
 
-                    int[] code_number_sequence = Enumerable.Range(start_number, sequence_count + 1).ToArray();
-                    string[] codes_with_alpha = code_number_sequence.Select(i => alpha + i.ToString()).ToArray();
+                    int[] codeNumberSequence = Enumerable.Range(startNumber, sequence_count + 1).ToArray();
+                    string[] codes_with_alpha = codeNumberSequence.Select(i => alpha + i.ToString()).ToArray();
                     string codes = String.Join(",", codes_with_alpha);
                     expanded_text = text.Replace(series_definition, codes);
                     break;
@@ -107,20 +105,19 @@ namespace DecsWordAddIns
 
             return expanded_text;
         }
-
         // Handle a paragraph, which is probably just one line (since it ends with a newline.)
         internal void ProcessParagraph(string text, StreamWriter writer)
         {
             // Look for all the ICD codes in the paragraph (to be able to handle things like "M30, M31, M32").
-            MatchCollection code_matches = code_regex.Matches(text);
+            MatchCollection code_matches = this.codeRegex.Matches(text);
 
             if (code_matches.Count > 0)
             {
                 bool found_match = false;
 
-                foreach (Regex line_regex in line_regexes)
+                foreach (Regex lineRegex in this.lineRegexes)
                 {
-                    Match line_match = line_regex.Match(text);
+                    Match line_match = lineRegex.Match(text);
                     string condition_name = "";
 
                     if (line_match.Success)
@@ -168,11 +165,10 @@ namespace DecsWordAddIns
                 }
             }
         }
-
         // Main method. Accepts a Document object & writes out the .sql file.
         internal void Scan(Document doc)
         {
-            (StreamWriter writer, string output_filename) = Utilities.OpenOutput(input_filename: doc.FullName, filetype: ".sql");
+            (StreamWriter writer, string outputFilename) = Utilities.OpenOutput(input_filename: doc.FullName, filetype: ".sql");
 
             writer.WriteLine(PREAMBLE);
 
@@ -186,13 +182,13 @@ namespace DecsWordAddIns
 
                 text = Utilities.CleanText(text);
 
-                string text_expanded = ExpandSeries(text);
+                string textExpanded = ExpandSeries(text);
 
-                ProcessParagraph(text_expanded, writer);
+                ProcessParagraph(textExpanded, writer);
             }
             
             writer.Close();
-            Utilities.ShowResults(output_filename);
+            Utilities.ShowResults(outputFilename);
         }
     }
 }

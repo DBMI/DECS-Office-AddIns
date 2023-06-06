@@ -1,9 +1,11 @@
-﻿using System;
+﻿using DecsWordAddIns.Properties;
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Globalization;
 using System.IO;
 using System.Linq;
+using System.Runtime.Remoting.Messaging;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
@@ -36,6 +38,16 @@ namespace DecsWordAddIns
             // Shift To Title Case.
             var textinfo = CultureInfo.CurrentCulture.TextInfo;
             return textinfo.ToTitleCase(column_name);
+        }
+
+        internal static string GetUserName()
+        {
+            string fullUserName = System.Security.Principal.WindowsIdentity.GetCurrent().Name;
+
+            // Strip off any prefix like "AD".
+            string userName = Path.GetFileName(fullUserName);
+
+            return userName;
         }
 
         // Turn the statement of work filename into a .sql filename.
@@ -98,6 +110,62 @@ namespace DecsWordAddIns
             }
 
             return (writer: writer_obj, opened_filename: output_filename);
+        }
+
+        // From a text file, build a dictionary of login names, nice names.
+        // gwashington, George Washington
+        internal static Dictionary<string,string> ReadUserNamesFile()
+        {
+            Dictionary<string,string> userNames = new Dictionary<string,string>();
+            string allUserNames = Resources.usernames;
+            string[] lines = allUserNames.Split('\n');
+
+            foreach (var line in lines)
+            {
+                string[] pieces = line.Split(':');
+
+                if (pieces.Length == 2)
+                {
+                    userNames.Add(pieces[0].Trim(), pieces[1].Trim());
+                }
+            }
+
+            return userNames;
+        }
+
+        internal static string SalutationFromName(string name)
+        {
+            bool isProfessor = name.Contains("Prof");
+            bool isPhysician = name.Contains("Dr") || name.Contains("MD");
+
+            string name_detitled = name.Replace("Dr", "");
+            name_detitled = name_detitled.Replace("Professor", "");
+            name_detitled = name_detitled.Replace("Prof", "");
+            name_detitled = name_detitled.Replace("Assistant", "");
+            name_detitled = name_detitled.Replace("Asst", "");
+            name_detitled = name_detitled.Replace("Associate", "");
+            name_detitled = name_detitled.Replace("Assoc", "");
+            name_detitled = name_detitled.Replace("MD", "");
+            name_detitled = name_detitled.Replace("DO", "");
+            name_detitled = name_detitled.Replace("PhD", "");
+            name_detitled = name_detitled.Replace("Ph.D.", "");
+            name_detitled = name_detitled.Replace("PHD", "");
+            string name_depunctuated = name_detitled.Replace(",", "");
+            name_depunctuated = name_depunctuated.Trim();
+            string[] name_pieces = name_depunctuated.Split(' ');
+            string last_name = name_pieces.Last();
+
+            if (isPhysician)
+            {
+                return "Dr. " + last_name;
+            }
+
+            if (isProfessor)
+            {
+                return "Prof. " + last_name;
+            }
+
+            return name_depunctuated;
         }
 
         // Reassure the user that we've created the desired output file,

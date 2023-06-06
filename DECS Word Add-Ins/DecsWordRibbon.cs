@@ -50,6 +50,11 @@ namespace DecsWordAddIns
             IcdExtractor extractor = new IcdExtractor();
             extractor.Scan(Globals.ThisAddIn.Application.ActiveDocument);
         }
+        public void OnParseSOW(Office.IRibbonControl control)
+        {
+            ScopeOfWorkParser parser = new ScopeOfWorkParser();
+            parser.SetupProject(Globals.ThisAddIn.Application.ActiveDocument);
+        }
         public Bitmap buildMrnsButton_GetImage(IRibbonControl control)
         {
             return Resources.clipboard;
@@ -57,6 +62,10 @@ namespace DecsWordAddIns
         public Bitmap icdExtractButton_GetImage(IRibbonControl control)
         {
             return Resources.icd_10_zoom;
+        }
+        public Bitmap scopeOfWorkParserButton_GetImage(IRibbonControl control)
+        {
+            return Resources.crane;
         }
         #region IRibbonExtensibility Members
 

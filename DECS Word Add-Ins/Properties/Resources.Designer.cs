@@ -73,10 +73,70 @@ namespace DecsWordAddIns.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
+        internal static System.Drawing.Bitmap crane {
+            get {
+                object obj = ResourceManager.GetObject("crane", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
         internal static System.Drawing.Bitmap icd_10_zoom {
             get {
                 object obj = ResourceManager.GetObject("icd_10_zoom", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to &lt;!DOCTYPE html&gt;
+        ///&lt;html&gt;
+        ///&lt;body&gt;
+        ///    &lt;p&gt;&lt;br&gt;&lt;/p&gt;
+        ///    &lt;p&gt;Hello {{ cookiecutter.__requestor_salutation }},&lt;/p&gt;
+        ///    &lt;p&gt;I am pleased to report that your DECS request is completed and the data are now available via OneDrive:&lt;/p&gt;
+        ///    &lt;ul&gt;&lt;li&gt;&lt;strong&gt;Request #:&lt;/strong&gt; DECS-{{ cookiecutter.task_number }}&lt;/li&gt;
+        ///    &lt;li&gt;&lt;strong&gt;OneDrive Link:&lt;/strong&gt; link&lt;/li&gt;&lt;/ul&gt;
+        ///    &lt;p&gt;All data from this request are governed by UCSD policies and IRB rules and regulations.&lt;/p&gt;
+        ///    &lt;h2 id=&quot;DECSRequestReady(SlicerDicer)-DataR [rest of string was truncated]&quot;;.
+        /// </summary>
+        internal static string one_drive_email_body {
+            get {
+                return ResourceManager.GetString("one_drive_email_body", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to befox: Brian E. Fox
+        ///g1zhang: Ge Zhang
+        ///kjdelaney: Kevin J. Delaney
+        ///mjmarshall: Michael J. Marshall
+        ///padesai: Paresh Desai
+        ///pshipman: Perry Shipman
+        ///tmelander: Troy M. Melander.
+        /// </summary>
+        internal static string usernames {
+            get {
+                return ResourceManager.GetString("usernames", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to &lt;!DOCTYPE html&gt;
+        ///&lt;html&gt;
+        ///&lt;body&gt;
+        ///    &lt;p&gt;Hello {{ cookiecutter.__requestor_salutation }},&lt;/p&gt;
+        ///    &lt;p&gt;I am pleased to report that your DECS request is complete and your results are available on Virtual Research Desktop (VRD):&lt;/p&gt;
+        ///    &lt;ul&gt;
+        ///    &lt;li&gt;&lt;strong&gt;Request #:&lt;/strong&gt; DECS-{{ cookiecutter.task_number }}&lt;/li&gt;
+        ///    &lt;li&gt;&lt;strong&gt;VRD Shared folder:&lt;/strong&gt; SecureDrop/{{ cookiecutter.__directory_name }}&amp;mdash;
+        ///    Please transfer the results file(s) from the shared folder to your VRD personal folder.&lt;/li [rest of string was truncated]&quot;;.
+        /// </summary>
+        internal static string vrd_email_body {
+            get {
+                return ResourceManager.GetString("vrd_email_body", resourceCulture);
             }
         }
     }
