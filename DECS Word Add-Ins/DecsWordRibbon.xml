@@ -3,7 +3,7 @@
   <ribbon>
     <tabs>
       <tab id="DecsTab" label="DECS Tools">
-        <group id="DecsGroup"
+        <group id="SqlGroup"
                label="SQL">
 			<button id="extractIcdButton" 
 					getImage="icdExtractButton_GetImage" 
@@ -20,6 +20,16 @@
 					size="large"
 					supertip="Build SQL code that imports MRN list." />
 		</group>
+		  <group id ="SowGroup"
+				 label="Project Setup">
+			  <button id="scopeOfWorkParserButton"
+					  getImage="scopeOfWorkParserButton_GetImage"
+					  label="Parse Scope of Work"
+					  onAction="OnParseSOW"
+					  screentip="Set up project from Scope of Work (SOW) document."
+					  size="large"
+					  supertip="Parse Scope of Work (SOW) document and set up DECS project." />
+		  </group>
       </tab>
     </tabs>
   </ribbon>

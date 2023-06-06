@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html>
+<body>
+    <p>Hello {{ cookiecutter.__requestor_salutation }},</p>
+    <p>I am pleased to report that your DECS request is complete and your results are available on Virtual Research Desktop (VRD):</p>
+    <ul>
+    <li><strong>Request #:</strong> DECS-{{ cookiecutter.task_number }}</li>
+    <li><strong>VRD Shared folder:</strong> SecureDrop/{{ cookiecutter.__directory_name }}&mdash;
+    Please transfer the results file(s) from the shared folder to your VRD personal folder.</li>
+    </ul>
+    <p>If you are new to VRD, please follow the instructions that the ACTRI Applications Support team has sent you 
+    to set up VRD access on your computer.</p>
+    <p>Initial access to the VRD folder is granted to the P.I. and requester. 
+    All data from this request are governed by UCSD policies and IRB rules and regulations.</p>
+    <h2 id="DECSRequestReady(VRD)-DataRetention">Data Retention</h2>
+    <p><strong><span style="color: rgb(255,0,0);">Per UCSD/ACTRI data security policies, 
+    files will only be stored in the VRD SecureDrop folder for <em>60 days&nbsp;</em>from this notice, 
+    then <em>deleted</em>.</span></strong><span style="color: rgb(0,0,0);"><br></span></p>
+    <p>You should copy your DECS results from the SecureDrop folder to your VRD personal folder (Y:) 
+    at your earliest opportunity.</p>
+    <p>It is the sole responsibility of the PI to manage and store the studys data. 
+    The DECS team does not keep copies of released data, per UCSD data security policies.</p>
+    <p>The DECS team archives released data for only 180 days before deleting; 
+    after that point a request must be re-executed. You may incur charges for any work performed.</p>
+    <h2 id="DECSRequestReady(VRD)-DataReview"><span style="color: rgb(0,0,0);">Data Review</span></h2>
+    <p><span style="color: rgb(0,0,0);"><strong>Please review these data immediately.</strong> 
+    Any questions or issues with the data in this extract must be brought to our attention <em>within 21 days</em>. 
+    At the end of this review period, if there are no issues, the request will be closed.</span></p>
+    <h2 id="DECSRequestReady(VRD)-CitetheGrant">Cite the Grant</h2><p>Use of these data requires 
+    that you cite the&nbsp;<strong>UCSD ACTRI CTSA Grant</strong>&nbsp;in all publications:</p>
+    <p>"The project described was partially supported by the National Institutes of Health, 
+    Grant&nbsp;<strong>UL1TR001442 of CTSA funding</strong>.
+    The content is solely the responsibility of the authors and does not necessarily represent 
+    the official views of the NIH."</p>
+    <h2 id="DECSRequestReady(VRD)-Questions">Questions</h2>
+    <p>If you need to import external files into VRD, send an email to
+    &nbsp;<a href="mailto:ctri-support@ucsd.edu" class="external-link" rel="nofollow">ctri-support@ucsd.edu</a>&nbsp;
+    with the Subject line "<strong>Import data into VRD</strong> <strong>– DECS#{{ cookiecutter.task_number }}</strong>", 
+    and list the justifications.</p>
+    <p>If you need to export data files out of VRD, sent an email to
+    &nbsp;<a href="mailto:ctri-support@ucsd.edu" class="external-link" rel="nofollow">ctri-support@ucsd.edu</a>&nbsp;
+    with the Subject line "<strong>Export data out of VRD&nbsp;– DECS#{{ cookiecutter.task_number }}</strong>",&nbsp;
+    and list the justifications. VRD data can only be exported to a computer on the MedCenter network.</p>
+    <p>If you have any other questions about the data or data request, please contact the DECS analyst directly.</p>
+    <p>To request access to the DECS VRD for additional study team members, 
+    contact <a href="mailto:ctri-support@ucsd.edu." class="external-link" rel="nofollow">ctri-support@ucsd.edu.</a>
+    Please note that all persons with access to study data must be listed on the IRB, per UCSD/ACTRI/IRB policy.</p>
+    <h2 id="DECSRequestReady(VRD)-DECSOpenOfficeHours">DECS Open Office Hours</h2>
+    <p>Every <strong>Thursday, 1-2pm</strong>, the DECS team holds a virtual open office session&mdash; 
+    drop in to ask questions, get advice on setting up a new DECS request, etc.</p>
+    <p>Zoom Link: <a class="external-link" 
+    href="https://uchealth.zoom.us/j/81732217241?pwd=Yk9rc0NPTGRTMnFxQkxhSTFaVEo2UT09&amp;from=addon" 
+    rel="nofollow">https://uchealth.zoom.us/j/81732217241?pwd=Yk9rc0NPTGRTMnFxQkxhSTFaVEo2UT09&amp;from=addon</a></p>
+    <p>Thank you for using our services.</p>
+</body>
+</html>
