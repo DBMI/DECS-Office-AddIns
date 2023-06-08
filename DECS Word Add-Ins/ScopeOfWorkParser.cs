@@ -1,4 +1,6 @@
 ﻿using DecsWordAddIns.Properties;
+using log4net;
+using log4net.Core;
 using Microsoft.Office.Interop.Word;
 using System;
 using System.Collections.Generic;
@@ -49,8 +51,13 @@ namespace DecsWordAddIns
         private Regex decsNumberRegex;
         private Regex peopleRegex;
 
+        // https://stackoverflow.com/a/28546547/18749636
+        private static readonly log4net.ILog log = log4net.LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
+
         internal ScopeOfWorkParser()
         {
+            LogManager.GetRepository().Threshold = Level.Debug;
+            log.Debug("Instantiating ScopeOfWorkParser.");
             BuildRegex();
         }
 
@@ -64,6 +71,7 @@ namespace DecsWordAddIns
         private bool BuildSqlFile()
         {
             this.sqlFilename = Path.Combine(this.projectDirectory.FullName, ProjectTriple() + ".sql");
+            log.Debug("Will build file '" + this.sqlFilename + "'.");
 
             if (!InsertSqlHeader())
             {
@@ -159,14 +167,16 @@ namespace DecsWordAddIns
         {
             try
             {
+                log.Debug("About to copy file to '" + projectDirectory.FullName + "'.");
                 string targetFile = Path.Combine(projectDirectory.FullName, ProjectTriple() + ".xlsx");
 
                 // Copy results template to project directory, allowing overwrite.
                 File.Copy(@"Resources\results_template.xlsx", targetFile, true);
                 return true;
             }
-            catch
+            catch (Exception ex)
             {
+                log.Error("Unable to copy file to project directory because: " + ex.Message);
                 return false;
             }
         }
@@ -269,6 +279,8 @@ namespace DecsWordAddIns
         {
             try
             {
+                log.Debug("About to use Streamwriter to create SQL file.");
+
                 using (StreamWriter writer = new StreamWriter(this.sqlFilename))
                 {
                     writer.WriteLine("/*");
@@ -291,8 +303,9 @@ namespace DecsWordAddIns
                 
                 return true;
             }
-            catch
+            catch (Exception ex)
             {
+                log.Error("Unable to use StreamWriter to create SQL file because: " + ex.Message);
                 return false;
             }
         }
@@ -366,6 +379,10 @@ namespace DecsWordAddIns
 
         private string ProjectTriple()
         {
+            log.Debug("Building project triple from" + 
+                      " surname: " + this.principalInvestigatorSurname + 
+                      " task number: " + this.taskNumber + 
+                      " study name: " + StudyName());
             string triple = this.principalInvestigatorSurname + "-" + this.taskNumber + "-" + StudyName();
             triple = triple.Replace("&", "and");
             triple = triple.Replace(' ', '_');
@@ -382,6 +399,7 @@ namespace DecsWordAddIns
 
         internal void SetupProject(Document doc)
         {
+            log.Debug("Setting up project.");
             this.scopeOfWork = doc;
             this.documentDirectoryName = Path.GetDirectoryName(doc.FullName);
             MessageBoxButtons buttons = MessageBoxButtons.OK;
@@ -392,6 +410,7 @@ namespace DecsWordAddIns
             if (!Parse())
             {
                 message = "Unable to parse document.";
+                log.Error(message);
                 result = MessageBox.Show(message, "Parse Failed", buttons);
 
                 if (result == DialogResult.OK)
@@ -404,6 +423,7 @@ namespace DecsWordAddIns
             if (!CreateProjectDirectory())
             {
                 message = "Unable to create project directory.";
+                log.Error(message);
                 result = MessageBox.Show(message, "Create Directory Failed", buttons);
 
                 if (result == DialogResult.OK)
@@ -416,6 +436,7 @@ namespace DecsWordAddIns
             if (!CreateOutputFile())
             {
                 message = "Unable to create output file.";
+                log.Error(message);
                 result = MessageBox.Show(message, "Create Output File Failed", buttons);
 
                 if (result == DialogResult.OK)
@@ -428,6 +449,7 @@ namespace DecsWordAddIns
             if (!BuildSqlFile()) 
             {
                 message = "Unable to build SQL file.";
+                log.Error(message);
                 result = MessageBox.Show(message, "Create SQL File Failed", buttons);
 
                 if (result == DialogResult.OK)
@@ -444,6 +466,7 @@ namespace DecsWordAddIns
                 if (!gitLabHandler.PushFileExe(sqlFilename))
                 {
                     message = "Unable to upload SQL file to GitLab.";
+                    log.Error(message);
                     result = MessageBox.Show(message, "GitLab upload Failed", buttons);
 
                     if (result == DialogResult.OK)
@@ -467,6 +490,7 @@ namespace DecsWordAddIns
                 else
                 {
                     // User declined to specify, so we can't proceed.
+                    log.Error("Usere did not specify the project delivery type.");
                     return;
                 }
             }
@@ -481,6 +505,7 @@ namespace DecsWordAddIns
                                            recipients: this.requesterEmail))
             {
                 message = "Unable to draft email.";
+                log.Error(message);
                 result = MessageBox.Show(message, "Create email Failed", buttons);
 
                 if (result == DialogResult.OK)
@@ -490,6 +515,7 @@ namespace DecsWordAddIns
             }
 
             message = "Completed project " + this.taskNumber + " setup.";
+            log.Debug(message);
             result = MessageBox.Show(message, "Success", buttons);
 
             if (result == DialogResult.OK)

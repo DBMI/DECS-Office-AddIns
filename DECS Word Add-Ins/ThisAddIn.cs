@@ -19,6 +19,7 @@ namespace DecsWordAddIns
 
         private void ThisAddIn_Startup(object sender, System.EventArgs e)
         {
+            log4net.Config.XmlConfigurator.Configure();
         }
 
         private void ThisAddIn_Shutdown(object sender, System.EventArgs e)
