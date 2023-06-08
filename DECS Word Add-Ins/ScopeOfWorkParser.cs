@@ -451,16 +451,6 @@ namespace DecsWordAddIns
                         return;
                     }
                 }
-                //if (!gitLabHandler.PushFile(sqlFilename).Result)
-                //{
-                //    message = "Unable to upload SQL file to GitLab.";
-                //    result = MessageBox.Show(message, "GitLab upload Failed", buttons);
-
-                //    if (result == DialogResult.OK)
-                //    {
-                //        return;
-                //    }
-                //}
             }
 
             // 6. Ask user how results will be delivered.
