@@ -437,12 +437,21 @@ namespace DecsWordAddIns
             }
 
             // 5. Push SQL file to GitLab.
-            //GitLabHandler gitLabHandler = new GitLabHandler();
+            GitLabHandler gitLabHandler = new GitLabHandler();
 
-            //if (gitLabHandler.Ready())
-            //{
-            //    gitLabHandler.PushFile(sqlFilename).Wait();
-            //}
+            if (gitLabHandler.Ready())
+            {
+                if (!gitLabHandler.PushFileExe(sqlFilename))
+                {
+                    message = "Unable to upload SQL file to GitLab.";
+                    result = MessageBox.Show(message, "GitLab upload Failed", buttons);
+
+                    if (result == DialogResult.OK)
+                    {
+                        return;
+                    }
+                }
+            }
 
             // 6. Ask user how results will be delivered.
             DeliveryType deliveryType;

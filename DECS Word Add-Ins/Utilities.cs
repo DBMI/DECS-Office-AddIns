@@ -181,5 +181,16 @@ namespace DecsWordAddIns
                 Process.Start(output_filename);
             }
         }
+        internal static string TranslateLoginName(string loginName)
+        {
+            Dictionary<string, string> userNamesList = ReadUserNamesFile();
+
+            if (userNamesList != null && userNamesList.ContainsKey(loginName))
+            {
+                return userNamesList[loginName];
+            }
+
+            return loginName;
+        }
     }
 }
