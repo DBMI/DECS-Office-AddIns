@@ -576,9 +576,6 @@ namespace DECS_Excel_Add_Ins
 
             // Show results of rules on NEW source column.
             Trace.WriteLine("Source column selection changed. Calling ShowCleaningResult() and ShowExtractResult().");
-            //ShowCleaningResult();
-            //ShowDateConversionResult();
-            //ShowExtractResult();
         }
     }
 }

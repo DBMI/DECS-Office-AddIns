@@ -16,6 +16,7 @@ Creates a custom buttons in Microsoft Excel & Word that allows user to:
     - Initialize the Excel output file, including disclaimer.
     - Initialize the SQL file.
     - Modify a Slicer/Dicer SQL file to include patient consent, etc.
+    - Push the SQL file to GitLab.
     - Draft the completion email.
 
 ## Installation
