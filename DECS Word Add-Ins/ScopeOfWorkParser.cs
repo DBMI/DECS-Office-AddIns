@@ -21,10 +21,12 @@ namespace DecsWordAddIns
         private string dataSetName;
         private string dataSource;
         private string documentDirectoryName;
+        private string outputFileName;
         private string principalInvestigatorEmail;
         private string principalInvestigatorGivenName;
         private string principalInvestigatorSurname;
         private DirectoryInfo projectDirectory;
+        private string projectTriple;
         private string requesterEmail;
         private string requesterName;
         private Document scopeOfWork;
@@ -48,8 +50,11 @@ namespace DecsWordAddIns
         private const string SLICER_DICER_GROUP_BY = "GROUP BY";
         private const string SLICER_DICER_ISOLATION = "SET TRANSACTION ISOLATION LEVEL SNAPSHOT";
 
+
         private Regex decsNumberRegex;
         private Regex peopleRegex;
+
+        private ProgressForm progressForm;
 
         // https://stackoverflow.com/a/28546547/18749636
         private static readonly log4net.ILog log = log4net.LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
@@ -59,6 +64,8 @@ namespace DecsWordAddIns
             LogManager.GetRepository().Threshold = Level.Debug;
             log.Debug("Instantiating ScopeOfWorkParser.");
             BuildRegex();
+            this.progressForm = new ProgressForm();
+            this.progressForm.Show();
         }
 
         // Create all the reusable Regex objects.
@@ -70,7 +77,7 @@ namespace DecsWordAddIns
 
         private bool BuildSqlFile()
         {
-            this.sqlFilename = Path.Combine(this.projectDirectory.FullName, ProjectTriple() + ".sql");
+            this.sqlFilename = Path.Combine(this.projectDirectory.FullName, this.projectTriple + ".sql");
             log.Debug("Will build file '" + this.sqlFilename + "'.");
 
             if (!InsertSqlHeader())
@@ -86,6 +93,9 @@ namespace DecsWordAddIns
                 return true;
             }
 
+            // Since there IS a SlicerDicer file to convert, enable this section.
+            this.progressForm.EnableSlicerDicer();
+
             if (!CopySqlBody(slicerDicerFilename))
             {
                 return false;
@@ -95,6 +105,11 @@ namespace DecsWordAddIns
             {
                 return false;
             }
+
+            // Can't do this in SetupProject, because it can't tell if this method returned true 
+            // because it converted the SlicerDicer file or because there isn't one.
+            this.progressForm.CheckOffConvertSlicerDicer();
+            this.progressForm.LinkConvertedSlicerDicerFile(this.sqlFilename);
 
             return true;
         }
@@ -168,22 +183,30 @@ namespace DecsWordAddIns
             try
             {
                 log.Debug("About to copy file to '" + projectDirectory.FullName + "'.");
-                string targetFile = Path.Combine(projectDirectory.FullName, ProjectTriple() + ".xlsx");
+                this.outputFileName = Path.Combine(projectDirectory.FullName, this.projectTriple + ".xlsx");
 
                 // Copy results template to project directory, allowing overwrite.
-                File.Copy(@"Resources\results_template.xlsx", targetFile, true);
-                return true;
+                var fullpath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Resources", "results_template.xlsx");
+
+                if (File.Exists(fullpath))
+                {
+                    File.Copy(fullpath, this.outputFileName, true);
+                    return true;
+                }
+
+                log.Error("Unable to find file '" + fullpath + "'.");
             }
             catch (Exception ex)
             {
                 log.Error("Unable to copy file to project directory because: " + ex.Message);
-                return false;
             }
+
+            return false;
         }
 
         private bool CreateProjectDirectory()
         {
-            string targetDirectory = Path.Combine(this.documentDirectoryName, ProjectTriple());
+            string targetDirectory = Path.Combine(this.documentDirectoryName, this.projectTriple);
             this.projectDirectory = Directory.CreateDirectory(targetDirectory);
             return projectDirectory.Exists;
         }
@@ -284,7 +307,7 @@ namespace DecsWordAddIns
                 using (StreamWriter writer = new StreamWriter(this.sqlFilename))
                 {
                     writer.WriteLine("/*");
-                    writer.WriteLine("** " + ProjectTriple() + ".sql");
+                    writer.WriteLine("** " + this.projectTriple + ".sql");
                     writer.WriteLine("** Task: " + this.taskNumber);
                     writer.WriteLine("** Principal Investigator: " +
                         this.principalInvestigatorGivenName + " " +
@@ -374,6 +397,7 @@ namespace DecsWordAddIns
                 index++;
             }
 
+            this.projectTriple = ProjectTriple();
             return Done();
         }
 
@@ -406,10 +430,13 @@ namespace DecsWordAddIns
             string message;
             DialogResult result;
 
+            if (this.progressForm.StopSignaled()) return;
+
             // 1. Extract key information from Scope of Work.
             if (!Parse())
             {
                 message = "Unable to parse document.";
+                this.progressForm.ReportProgress(message);
                 log.Error(message);
                 result = MessageBox.Show(message, "Parse Failed", buttons);
 
@@ -419,10 +446,13 @@ namespace DecsWordAddIns
                 }
             }
 
+            if (this.progressForm.StopSignaled()) return;
+
             // 2. Create project directory.
             if (!CreateProjectDirectory())
             {
                 message = "Unable to create project directory.";
+                this.progressForm.ReportProgress(message);
                 log.Error(message);
                 result = MessageBox.Show(message, "Create Directory Failed", buttons);
 
@@ -432,10 +462,16 @@ namespace DecsWordAddIns
                 }
             }
 
+            if (this.progressForm.StopSignaled()) return;
+
+            this.progressForm.CheckOffCreateProjectDirectory();
+            this.progressForm.LinkProjectDirectory(this.documentDirectoryName);
+
             // 3. Create Excel file to hold output.
             if (!CreateOutputFile())
             {
                 message = "Unable to create output file.";
+                this.progressForm.ReportProgress(message);
                 log.Error(message);
                 result = MessageBox.Show(message, "Create Output File Failed", buttons);
 
@@ -445,10 +481,16 @@ namespace DecsWordAddIns
                 }
             }
 
+            if (this.progressForm.StopSignaled()) return;
+
+            this.progressForm.CheckOffInitializeExcelFile();
+            this.progressForm.LinkExcelFile(this.outputFileName);
+
             // 4. Initialize SQL file with project info in header.
             if (!BuildSqlFile()) 
             {
                 message = "Unable to build SQL file.";
+                this.progressForm.ReportProgress(message);
                 log.Error(message);
                 result = MessageBox.Show(message, "Create SQL File Failed", buttons);
 
@@ -458,6 +500,11 @@ namespace DecsWordAddIns
                 }
             }
 
+            if (this.progressForm.StopSignaled()) return;
+
+            this.progressForm.CheckOffInitializeSqlFile();
+            this.progressForm.LinkSqlFile(this.sqlFilename);
+
             // 5. Push SQL file to GitLab.
             GitLabHandler gitLabHandler = new GitLabHandler();
 
@@ -466,6 +513,7 @@ namespace DecsWordAddIns
                 if (!gitLabHandler.PushFileExe(sqlFilename))
                 {
                     message = "Unable to upload SQL file to GitLab.";
+                    this.progressForm.ReportProgress(message);
                     log.Error(message);
                     result = MessageBox.Show(message, "GitLab upload Failed", buttons);
 
@@ -475,6 +523,13 @@ namespace DecsWordAddIns
                     }
                 }
             }
+
+            if (this.progressForm.StopSignaled()) return;
+
+            // Since it's a web address, use Uri class to convert path separators to fwd slash.
+            Uri gitLabProjectAddress = new Uri(Path.Combine(GitLabHandler.Address(), this.projectTriple));
+            this.progressForm.CheckOffPushToGitLab();
+            this.progressForm.LinkGitLab(gitLabProjectAddress.ToString());
 
             // 6. Ask user how results will be delivered.
             DeliveryType deliveryType;
@@ -490,10 +545,14 @@ namespace DecsWordAddIns
                 else
                 {
                     // User declined to specify, so we can't proceed.
-                    log.Error("Usere did not specify the project delivery type.");
+                    message = "User did not specify the project delivery type.";
+                    this.progressForm.ReportProgress(message);
+                    log.Error(message);
                     return;
                 }
             }
+
+            if (this.progressForm.StopSignaled()) return;
 
             // 7. Draft email reporting project completion.
             Emailer emailer = new Emailer(deliveryType: deliveryType,
@@ -505,6 +564,7 @@ namespace DecsWordAddIns
                                            recipients: this.requesterEmail))
             {
                 message = "Unable to draft email.";
+                this.progressForm.ReportProgress(message);
                 log.Error(message);
                 result = MessageBox.Show(message, "Create email Failed", buttons);
 
@@ -514,14 +574,9 @@ namespace DecsWordAddIns
                 }
             }
 
-            message = "Completed project " + this.taskNumber + " setup.";
-            log.Debug(message);
-            result = MessageBox.Show(message, "Success", buttons);
-
-            if (result == DialogResult.OK)
-            {
-                return;
-            }
+            this.progressForm.CheckOffDraftEmail();
+            this.progressForm.EnableOkButton();
+            this.progressForm.ReportProgress("Completed project " + this.taskNumber + " setup.");
         }
 
         private string StudyName()
