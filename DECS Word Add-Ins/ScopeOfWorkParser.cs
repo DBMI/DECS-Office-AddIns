@@ -274,23 +274,25 @@ namespace DecsWordAddIns
         private string GetSlicerDicerFilename()
         {
             string filePath = string.Empty;
-            MessageBoxButtons buttons = MessageBoxButtons.YesNo;
-            string message = "Is there a Slicer Dicer SQL file to be adapted?";
-            DialogResult result = MessageBox.Show(message, "Slicer Dicer SQL File", buttons);
 
-            if (result == DialogResult.Yes)
+            using (var form = new YesNoForm())
             {
-                using (OpenFileDialog openFileDialog = new OpenFileDialog())
-                {
-                    // Because we don't specify an opening directory,
-                    // the dialog will open in the last directory used.
-                    openFileDialog.Filter = "SQL files (*.sql)|*.sql";
-                    openFileDialog.RestoreDirectory = true;
+                var result = form.ShowDialog();
 
-                    if (openFileDialog.ShowDialog() == DialogResult.OK)
+                if (result == DialogResult.OK && form.fileExists)
+                {
+                    using (OpenFileDialog openFileDialog = new OpenFileDialog())
                     {
-                        // Get the path of specified file.
-                        filePath = openFileDialog.FileName;
+                        // Because we don't specify an opening directory,
+                        // the dialog will open in the last directory used.
+                        openFileDialog.Filter = "SQL files (*.sql)|*.sql";
+                        openFileDialog.RestoreDirectory = true;
+
+                        if (openFileDialog.ShowDialog() == DialogResult.OK)
+                        {
+                            // Get the path of specified file.
+                            filePath = openFileDialog.FileName;
+                        }
                     }
                 }
             }
@@ -452,6 +454,7 @@ namespace DecsWordAddIns
             if (!CreateProjectDirectory())
             {
                 message = "Unable to create project directory.";
+                this.progressForm.MarkFailedCreateProjectDirectory();
                 this.progressForm.ReportProgress(message);
                 log.Error(message);
                 result = MessageBox.Show(message, "Create Directory Failed", buttons);
@@ -471,6 +474,7 @@ namespace DecsWordAddIns
             if (!CreateOutputFile())
             {
                 message = "Unable to create output file.";
+                this.progressForm.MarkFailedInitializeExcelFile();
                 this.progressForm.ReportProgress(message);
                 log.Error(message);
                 result = MessageBox.Show(message, "Create Output File Failed", buttons);
@@ -490,6 +494,7 @@ namespace DecsWordAddIns
             if (!BuildSqlFile()) 
             {
                 message = "Unable to build SQL file.";
+                this.progressForm.MarkFailedInitializeSqlFile();
                 this.progressForm.ReportProgress(message);
                 log.Error(message);
                 result = MessageBox.Show(message, "Create SQL File Failed", buttons);
@@ -513,6 +518,7 @@ namespace DecsWordAddIns
                 if (!gitLabHandler.PushFileExe(sqlFilename))
                 {
                     message = "Unable to upload SQL file to GitLab.";
+                    this.progressForm.MarkFailedPushToGitLab();
                     this.progressForm.ReportProgress(message);
                     log.Error(message);
                     result = MessageBox.Show(message, "GitLab upload Failed", buttons);
@@ -564,6 +570,7 @@ namespace DecsWordAddIns
                                            recipients: this.requesterEmail))
             {
                 message = "Unable to draft email.";
+                this.progressForm.MarkFailedDraftEmail();
                 this.progressForm.ReportProgress(message);
                 log.Error(message);
                 result = MessageBox.Show(message, "Create email Failed", buttons);

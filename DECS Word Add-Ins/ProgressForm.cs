@@ -16,8 +16,8 @@ namespace DecsWordAddIns
     internal partial class ProgressForm : Form
     {
         private const string CHECKED_BOX = "☑";
-        private const string uncheckedBox = "☐";
-
+        private const string RED_X = "❌";
+        
         private bool stopExecution = false;
 
         internal ProgressForm()
@@ -32,9 +32,19 @@ namespace DecsWordAddIns
             this.Close();
         }
 
+        internal void CheckOffConvertSlicerDicer()
+        {
+            this.convertSlicerDicerStatusLabel.Text = CHECKED_BOX;
+        }
+
         internal void CheckOffCreateProjectDirectory()
         {
             this.createProjectDirectoryStatusLabel.Text = CHECKED_BOX;
+        }
+
+        internal void CheckOffDraftEmail()
+        {
+            this.draftEmailStatusLabel.Text = CHECKED_BOX;
         }
 
         internal void CheckOffInitializeExcelFile()
@@ -47,19 +57,9 @@ namespace DecsWordAddIns
             this.initializeSqlFileStatusLabel.Text = CHECKED_BOX;
         }
 
-        internal void CheckOffConvertSlicerDicer()
-        {
-            this.convertSlicerDicerStatusLabel.Text = CHECKED_BOX;
-        }
-
         internal void CheckOffPushToGitLab()
         {
             this.pushToGitLabStatusLabel.Text = CHECKED_BOX;
-        }
-
-        internal void CheckOffDraftEmail()
-        {
-            this.draftEmailStatusLabel.Text = CHECKED_BOX;
         }
 
         internal void EnableOkButton()
@@ -104,6 +104,36 @@ namespace DecsWordAddIns
         internal void LinkSqlFile(string filePath)
         {
             this.initializeSqlFileLinkLabel.Text = filePath;
+        }
+
+        internal void MarkFailedConvertSlicerDicer()
+        {
+            this.convertSlicerDicerStatusLabel.Text = RED_X;
+        }
+
+        internal void MarkFailedCreateProjectDirectory()
+        {
+            this.createProjectDirectoryStatusLabel.Text = RED_X;
+        }
+
+        internal void MarkFailedDraftEmail()
+        {
+            this.draftEmailStatusLabel.Text = RED_X;
+        }
+
+        internal void MarkFailedInitializeExcelFile()
+        {
+            this.initializeExcelFileStatusLabel.Text = RED_X;
+        }
+
+        internal void MarkFailedInitializeSqlFile()
+        {
+            this.initializeSqlFileStatusLabel.Text = RED_X;
+        }
+
+        internal void MarkFailedPushToGitLab()
+        {
+            this.pushToGitLabStatusLabel.Text = RED_X;
         }
 
         private void okButton_Click(object sender, EventArgs e)
