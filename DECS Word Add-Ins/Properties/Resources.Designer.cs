@@ -109,6 +109,16 @@ namespace DecsWordAddIns.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap school_of_medicine {
+            get {
+                object obj = ResourceManager.GetObject("school_of_medicine", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to befox: Brian E. Fox
         ///g1zhang: Ge Zhang
         ///kjdelaney: Kevin J. Delaney

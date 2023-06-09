@@ -16,20 +16,32 @@ using System.Windows.Forms;
 using System.Runtime.InteropServices;
 using System.Security.Policy;
 using System.ComponentModel;
+using log4net.Core;
+using log4net;
 
 namespace DecsWordAddIns
 {
     internal class GitLabHandler
     {
-        private const string BASE_ADDRESS = @"https://ctri-gitlab.ucsd.edu/api/v4/projects/238/repository/files/";
         private const string DIVIDER = "%2F";
         private const string QUOTES = "\"";
+        private const string VIEW_ADDRESS = @"https://ctri-gitlab.ucsd.edu/cdwr/data-concierge/-/tree/master/";
         private string token;
         private string userName;
 
+        // https://stackoverflow.com/a/28546547/18749636
+        private static readonly log4net.ILog log = log4net.LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
+
         internal GitLabHandler()
         {
+            LogManager.GetRepository().Threshold = Level.Debug;
+            log.Debug("Instantiating GitLabHandler object.");
             GetGitLabToken();
+        }
+
+        internal static string Address()
+        {
+            return VIEW_ADDRESS;
         }
 
         private void GetGitLabToken()
@@ -37,6 +49,8 @@ namespace DecsWordAddIns
             // If we can't read an existing token ...
             if (!ReadGitLabToken())
             {
+                log.Debug("Asking user to create new GitLab token.");
+
                 // ...ask user to create a new one.
                 using (var form = new TokenForm())
                 {
@@ -63,12 +77,15 @@ namespace DecsWordAddIns
             ProcessStartInfo startInfo = new ProcessStartInfo();
             startInfo.Arguments = "--file " + QUOTES + pathCorrected + QUOTES;
             startInfo.CreateNoWindow = true;
-            startInfo.FileName = @"Resources\git_uploader.exe";
+            var fullpath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Resources", "git_uploader.exe");
 
-            if (!File.Exists(startInfo.FileName))
+            if (!File.Exists(fullpath))
             {
-                throw new FileNotFoundException(startInfo.FileName);
+                log.Error("Unable to find GitLabUploader executable '" + fullpath + "'.");
+                return false;
             }
+
+            startInfo.FileName = fullpath;
 
             // https://stackoverflow.com/a/31650828/18749636
             startInfo.UseShellExecute = true;
@@ -86,51 +103,17 @@ namespace DecsWordAddIns
             }
             catch
             {
+                log.Error("Received error when starting external process.");
             }
 
             return success;
-        }
-
-        internal async Task<bool> PushFile(string path)
-        {
-            string fullProjectDirectory = Path.GetDirectoryName(path);
-            string projectDirectory = Path.GetFileName(fullProjectDirectory);
-            string justTheFilenameAndExt = Path.GetFileName(path);
-            string urlExtended = BASE_ADDRESS + projectDirectory + DIVIDER + justTheFilenameAndExt;
-
-            Dictionary<string, string> parameters = new Dictionary<string, string>();
-            parameters.Add("branch", "master");
-            parameters.Add("author_email", this.userName + "@ucsd.edu");
-            parameters.Add("author_name", Utilities.TranslateLoginName(this.userName));
-            parameters.Add("commit_message", "Automated project setup");
-            parameters.Add("content", ReadFile(path));
-            var parametersJson = JsonSerializer.Serialize(parameters);
-            var data = new StringContent(parametersJson, Encoding.UTF8, "application/json");
-
-            var productValue = new ProductInfoHeaderValue("python-requests", "2.28.2");
-
-            // https://stackoverflow.com/a/48930280/18749636
-            ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12;
-
-            using (var client = new HttpClient())
-            {
-                client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", this.token);
-                client.DefaultRequestHeaders.Accept.Clear();
-                client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("*/*"));
-                client.DefaultRequestHeaders.AcceptEncoding.Add(new StringWithQualityHeaderValue("gzip"));
-                client.DefaultRequestHeaders.Add("Connection", "keep-alive");
-                client.DefaultRequestHeaders.UserAgent.Add(productValue);
-
-                HttpResponseMessage response = await client.PostAsync(urlExtended, data);
-
-                return response.IsSuccessStatusCode;
-            }
         }
 
         private string ReadFile(string path)
         {
             if (!File.Exists(path))
             {
+                log.Error("Unable to find file '" + path + "'.");
                 throw new FileNotFoundException("Unable to find file '" + path + "'.");
             }
 
@@ -151,9 +134,11 @@ namespace DecsWordAddIns
                 {
                     this.token = File.ReadAllText(tokenFilename);
                     success = !string.IsNullOrEmpty(this.token);
+                    log.Debug("Reading file '" + tokenFilename + "' resulted in " + success.ToString());
                 }
                 catch 
                 {
+                    log.Error("Error when trying to read file '" + tokenFilename + "'.");
                 }
             }
 
