@@ -224,12 +224,12 @@ namespace DECS_Excel_Add_Ins
         // Open the output StreamWriter object, understanding that we might
         // have to substitute a shorter version of the output filename
         // if the default filename is too long.
-        internal static (StreamWriter writer, string opened_filename) OpenOutput(
+        internal static (StreamWriter writer, string openedFilename) OpenOutput(
             string input_filename,
             string filetype = ".sql"
         )
         {
-            string output_filename = Utilities.FormOutputFilename(
+            string outputFilename = Utilities.FormOutputFilename(
                 filename: input_filename,
                 filetype: filetype,
                 short_version: false
@@ -238,35 +238,21 @@ namespace DECS_Excel_Add_Ins
 
             try
             {
-                writer_obj = new StreamWriter(output_filename);
+                writer_obj = new StreamWriter(outputFilename);
             }
             // https://stackoverflow.com/a/19329123/18749636
             catch (Exception ex)
                 when (ex is System.IO.PathTooLongException || ex is System.NotSupportedException)
             {
-                output_filename = Utilities.FormOutputFilename(
+                outputFilename = Utilities.FormOutputFilename(
                     filename: input_filename,
                     filetype: filetype,
                     short_version: true
                 );
-                writer_obj = new StreamWriter(output_filename);
+                writer_obj = new StreamWriter(outputFilename);
             }
 
-            return (writer: writer_obj, opened_filename: output_filename);
-        }
-
-        // Reassure the user that we've created the desired output file,
-        // and display the file once they've seen the message.
-        internal static void ShowResults(string output_filename)
-        {
-            MessageBoxButtons buttons = MessageBoxButtons.OK;
-            string message = "Created file '" + output_filename + "'.";
-            DialogResult result = MessageBox.Show(message, "Success", buttons);
-
-            if (result == DialogResult.OK)
-            {
-                Process.Start(output_filename);
-            }
+            return (writer: writer_obj, openedFilename: outputFilename);
         }
 
         internal static Range TopOfNamedColumn(Worksheet sheet, string columnName)
