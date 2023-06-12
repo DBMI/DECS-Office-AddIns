@@ -11,7 +11,7 @@ using log4net;
 namespace DECS_Excel_Add_Ins
 {
     public partial class ThisAddIn
-    {        
+    {
         //  https://learn.microsoft.com/en-us/visualstudio/vsto/walkthrough-creating-a-custom-tab-by-using-ribbon-xml?view=vs-2022&tabs=csharp
         protected override Microsoft.Office.Core.IRibbonExtensibility CreateRibbonExtensibilityObject()
         {
@@ -24,9 +24,7 @@ namespace DECS_Excel_Add_Ins
             log4net.Config.XmlConfigurator.Configure();
         }
 
-        private void ThisAddIn_Shutdown(object sender, System.EventArgs e)
-        {
-        }
+        private void ThisAddIn_Shutdown(object sender, System.EventArgs e) { }
 
         #region VSTO generated code
 
@@ -39,7 +37,7 @@ namespace DECS_Excel_Add_Ins
             this.Startup += new System.EventHandler(ThisAddIn_Startup);
             this.Shutdown += new System.EventHandler(ThisAddIn_Shutdown);
         }
-        
+
         #endregion
     }
 }

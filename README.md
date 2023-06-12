@@ -1,7 +1,7 @@
 # DECS Office Add-Ins
 ![Last Commit Date](./.github/badges/last-commit-badge.svg?dummy=8484744)
 
-Creates a custom buttons in Microsoft Excel & Word that allows user to:
+Creates custom buttons in Microsoft Excel & Word that allow user to:
 ### Excel:
 ![image info](./DECS%20Excel%20Add-Ins/pictures/toolbar.png) 
 

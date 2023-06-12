@@ -31,7 +31,8 @@ namespace DECS_Excel_Add_Ins
 
         internal static void ClearRegexInvalid(TextBox textBox)
         {
-            if (textBox == null) return;
+            if (textBox == null)
+                return;
 
             // Clear any previous highlighting.
             textBox.BackColor = Color.White;
@@ -42,10 +43,16 @@ namespace DECS_Excel_Add_Ins
 
         public static void DetachEvents(TextBox textBox)
         {
-            object objNew = textBox.GetType().GetConstructor(new Type[] { }).Invoke(new object[] { });
-            PropertyInfo propEvents = textBox.GetType().GetProperty("Events", BindingFlags.NonPublic | BindingFlags.Instance);
+            object objNew = textBox
+                .GetType()
+                .GetConstructor(new Type[] { })
+                .Invoke(new object[] { });
+            PropertyInfo propEvents = textBox
+                .GetType()
+                .GetProperty("Events", BindingFlags.NonPublic | BindingFlags.Instance);
 
-            EventHandlerList eventHandlerList_obj = (EventHandlerList)propEvents.GetValue(textBox, null);
+            EventHandlerList eventHandlerList_obj = (EventHandlerList)
+                propEvents.GetValue(textBox, null);
             eventHandlerList_obj.Dispose();
         }
 
@@ -105,7 +112,10 @@ namespace DECS_Excel_Add_Ins
             {
                 // https://stackoverflow.com/a/42113517/18749636
                 Type typeForm = form.GetType();
-                FieldInfo fieldInfo = typeForm.GetField("components", BindingFlags.Instance | BindingFlags.NonPublic);
+                FieldInfo fieldInfo = typeForm.GetField(
+                    "components",
+                    BindingFlags.Instance | BindingFlags.NonPublic
+                );
                 IContainer parent = (IContainer)fieldInfo.GetValue(form);
                 List<ToolTip> ToolTipList = parent.Components.OfType<ToolTip>().ToList();
 
@@ -119,7 +129,11 @@ namespace DECS_Excel_Add_Ins
         }
 
         // Turn the statement of work filename into a .sql filename.
-        internal static string FormOutputFilename(string filename, string filetype = ".sql", bool short_version = false)
+        internal static string FormOutputFilename(
+            string filename,
+            string filetype = ".sql",
+            bool short_version = false
+        )
         {
             string dir = Path.GetDirectoryName(filename);
             string just_the_filename = Path.GetFileNameWithoutExtension(filename);
@@ -171,7 +185,7 @@ namespace DECS_Excel_Add_Ins
         internal static RuleValidationResult IsRegexValid(string regexText)
         {
             // Empty strings are not errors.
-            if (!string.IsNullOrEmpty(regexText)) 
+            if (!string.IsNullOrEmpty(regexText))
             {
                 try
                 {
@@ -185,9 +199,11 @@ namespace DECS_Excel_Add_Ins
 
             return new RuleValidationResult();
         }
+
         internal static void MarkRegexInvalid(TextBox textBox, string message)
         {
-            if (textBox == null) return;
+            if (textBox == null)
+                return;
 
             // Highlight box to show RegEx is invalid.
             textBox.BackColor = Color.Pink;
@@ -204,12 +220,20 @@ namespace DECS_Excel_Add_Ins
                 textBox.MouseHover += new System.EventHandler(mouseHover);
             }
         }
+
         // Open the output StreamWriter object, understanding that we might
         // have to substitute a shorter version of the output filename
         // if the default filename is too long.
-        internal static (StreamWriter writer, string opened_filename) OpenOutput(string input_filename, string filetype = ".sql")
+        internal static (StreamWriter writer, string opened_filename) OpenOutput(
+            string input_filename,
+            string filetype = ".sql"
+        )
         {
-            string output_filename = Utilities.FormOutputFilename(filename: input_filename, filetype: filetype, short_version: false);
+            string output_filename = Utilities.FormOutputFilename(
+                filename: input_filename,
+                filetype: filetype,
+                short_version: false
+            );
             StreamWriter writer_obj;
 
             try
@@ -217,11 +241,14 @@ namespace DECS_Excel_Add_Ins
                 writer_obj = new StreamWriter(output_filename);
             }
             // https://stackoverflow.com/a/19329123/18749636
-            catch (Exception ex) when (
-                ex is System.IO.PathTooLongException
-                || ex is System.NotSupportedException)
+            catch (Exception ex)
+                when (ex is System.IO.PathTooLongException || ex is System.NotSupportedException)
             {
-                output_filename = Utilities.FormOutputFilename(filename: input_filename, filetype: filetype, short_version: true);
+                output_filename = Utilities.FormOutputFilename(
+                    filename: input_filename,
+                    filetype: filetype,
+                    short_version: true
+                );
                 writer_obj = new StreamWriter(output_filename);
             }
 
@@ -261,6 +288,7 @@ namespace DECS_Excel_Add_Ins
 
             return null;
         }
+
         internal static void WarnColumnNotFound(string columnName)
         {
             string message = "Column '" + columnName + "' not found.";

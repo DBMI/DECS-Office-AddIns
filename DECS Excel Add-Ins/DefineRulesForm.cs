@@ -42,7 +42,9 @@ namespace DECS_Excel_Add_Ins
         private bool configLoading = false;
 
         // https://stackoverflow.com/a/28546547/18749636
-        private static readonly log4net.ILog log = log4net.LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
+        private static readonly log4net.ILog log = log4net.LogManager.GetLogger(
+            System.Reflection.MethodBase.GetCurrentMethod().DeclaringType
+        );
 
         internal DefineRulesForm(NotesParser parser)
         {
@@ -57,6 +59,7 @@ namespace DECS_Excel_Add_Ins
             ShowSelectedRows();
             SetRunButtonStatus();
         }
+
         private void AddCleaningRule(CleaningRule rule = null, bool updateConfig = true)
         {
             log.Debug("Adding cleaning rule.");
@@ -65,12 +68,13 @@ namespace DECS_Excel_Add_Ins
             int panelY = PANEL_Y + (Y_STEP * nextIndex);
 
             CleaningRuleGui cleaningRuleGui = new CleaningRuleGui(
-                x: PANEL_X, 
-                y: panelY, 
-                index: nextIndex, 
+                x: PANEL_X,
+                y: panelY,
+                index: nextIndex,
                 parent: this.cleaningRulesPanel,
                 notesConfig: this.config,
-                updateConfig: updateConfig);
+                updateConfig: updateConfig
+            );
 
             // Tell the cleaning rule panel to let us know when ITS parent (RuleGui)'s
             // Delete button is pressed.
@@ -93,6 +97,7 @@ namespace DECS_Excel_Add_Ins
             // Should we turn on the Run button?
             SetRunButtonStatus();
         }
+
         private void AddExtractRule(ExtractRule rule = null, bool updateConfig = true)
         {
             log.Debug("Adding extraction rule.");
@@ -106,7 +111,8 @@ namespace DECS_Excel_Add_Ins
                 index: nextIndex,
                 parent: this.extractRulesPanel,
                 notesConfig: this.config,
-                updateConfig: updateConfig);
+                updateConfig: updateConfig
+            );
 
             // Tell the cleaning rule panel to let us know when ITS parent (RuleGui)'s
             // Delete button is pressed.
@@ -129,12 +135,14 @@ namespace DECS_Excel_Add_Ins
             // Should we turn on the Run button?
             SetRunButtonStatus();
         }
+
         private List<RuleGui> AllRules()
         {
             List<RuleGui> rules = CleaningRules();
             rules.AddRange(ExtractRules());
             return rules;
-        }        
+        }
+
         // https://stackoverflow.com/a/12127025/18749636
         private List<RuleGui> CleaningRules()
         {
@@ -144,10 +152,12 @@ namespace DECS_Excel_Add_Ins
             List<RuleGui> rules = cleaningRuleGuis.Select(o => (RuleGui)o.Tag).ToList();
             return rules;
         }
+
         private void cleaningRulesAddButton_Click(object sender, EventArgs e)
         {
             AddCleaningRule();
         }
+
         private void clearButton_Click(object sender, EventArgs e)
         {
             DeleteAllRules();
@@ -162,6 +172,7 @@ namespace DECS_Excel_Add_Ins
             // Should we turn off the Run button?
             SetRunButtonStatus();
         }
+
         private void dateConversionEnabledCheckBox_Click(object sender, EventArgs e)
         {
             CheckBox checkBox = sender as CheckBox;
@@ -169,12 +180,14 @@ namespace DECS_Excel_Add_Ins
             this.config.DateConversionRule.enabled = checkBox.Checked;
             SetRunButtonStatus();
         }
+
         private void dateFormatsListBox_SelectedIndexChanged(object sender, EventArgs e)
         {
             ListBox listBox = sender as ListBox;
             string selectedDateFormat = listBox.SelectedItem.ToString();
             this.config.DateConversionRule.desiredDateFormat = selectedDateFormat;
         }
+
         private void DeleteAllRules()
         {
             List<RuleGui> rules = AllRules();
@@ -183,6 +196,7 @@ namespace DECS_Excel_Add_Ins
             // (So we don't try to delete objects which have already changed their index.)
             rules.OrderByDescending(x => x.Index()).ToList().ForEach(r => r.Delete());
         }
+
         internal void DeleteCleaningRule(RuleGui cleaningRuleGui)
         {
             // Remove this RuleGui from the controls.
@@ -198,6 +212,7 @@ namespace DECS_Excel_Add_Ins
             // Should we turn off the Run button?
             SetRunButtonStatus();
         }
+
         internal void DeleteExtractRule(RuleGui extractRuleGui)
         {
             // Remove this RuleGui from the controls.
@@ -213,6 +228,7 @@ namespace DECS_Excel_Add_Ins
             // Should we turn off the Run button?
             SetRunButtonStatus();
         }
+
         internal void DisableCleaningRule(RuleGui ruleGui)
         {
             log.Debug("Disabling cleaning rule " + ruleGui.Index().ToString() + ".");
@@ -222,6 +238,7 @@ namespace DECS_Excel_Add_Ins
             // Should we turn off the Run button?
             SetRunButtonStatus();
         }
+
         internal void DisableExtractRule(RuleGui ruleGui)
         {
             log.Debug("Disabling extract rule " + ruleGui.Index().ToString() + ".");
@@ -231,10 +248,12 @@ namespace DECS_Excel_Add_Ins
             // Should we turn off the Run button?
             SetRunButtonStatus();
         }
+
         private void discardButton_Click(object sender, EventArgs e)
         {
             Close();
         }
+
         internal void EnableCleaningRule(RuleGui ruleGui)
         {
             log.Debug("Enabling cleaning rule " + ruleGui.Index().ToString() + ".");
@@ -244,6 +263,7 @@ namespace DECS_Excel_Add_Ins
             // Should we turn on the Run button?
             SetRunButtonStatus();
         }
+
         internal void EnableExtractRule(RuleGui ruleGui)
         {
             log.Debug("Enabling extract rule " + ruleGui.Index().ToString() + ".");
@@ -253,6 +273,7 @@ namespace DECS_Excel_Add_Ins
             // Should we turn on the Run button?
             SetRunButtonStatus();
         }
+
         private List<RuleGui> ExtractRules()
         {
             List<Panel> extractRuleGuis = extractRulesPanel.Controls.OfType<Panel>().ToList();
@@ -261,10 +282,12 @@ namespace DECS_Excel_Add_Ins
             List<RuleGui> rules = extractRuleGuis.Select(o => (RuleGui)o.Tag).ToList();
             return rules;
         }
+
         private void extractRulesAddButton_Click(object sender, EventArgs e)
         {
             AddExtractRule();
         }
+
         private List<string> GetAvailableColumnNames()
         {
             Excel.Worksheet wksheet = (Excel.Worksheet)Globals.ThisAddIn.Application.ActiveSheet;
@@ -272,6 +295,7 @@ namespace DECS_Excel_Add_Ins
             columnNames.Sort();
             return columnNames;
         }
+
         private void loadToolStripMenuItem_Click(object sender, EventArgs e)
         {
             log.Debug("Loading config file.");
@@ -295,13 +319,13 @@ namespace DECS_Excel_Add_Ins
 
                 // Create & populate boxes, but without changing the config variable,
                 // because that's already set.
-                foreach(CleaningRule rule in this.config.CleaningRules)
+                foreach (CleaningRule rule in this.config.CleaningRules)
                 {
                     AddCleaningRule(rule: rule, updateConfig: false);
                 }
 
                 PopulateDateConversionRule();
-                
+
                 foreach (ExtractRule rule in this.config.ExtractRules)
                 {
                     AddExtractRule(rule: rule, updateConfig: false);
@@ -319,18 +343,21 @@ namespace DECS_Excel_Add_Ins
 
             // Don't automatically run. The user might have wanted to open for development.
         }
+
         private int NumRulesThisType(Panel parent)
         {
             List<Panel> panels = parent.Controls.OfType<Panel>().ToList();
             List<RuleGui> rulesThisType = panels.Select(o => (RuleGui)o.Tag).ToList();
             return rulesThisType.Count;
         }
+
         private void PopulateDateConversionRule()
         {
             this.dateConversionEnabledCheckBox.Checked = this.config.DateConversionRule.enabled;
             string loadedDateFormat = this.config.DateConversionRule.desiredDateFormat;
 
-            if (string.IsNullOrEmpty(loadedDateFormat)) return;
+            if (string.IsNullOrEmpty(loadedDateFormat))
+                return;
 
             if (this.dateFormatsListBox.Items.Contains(loadedDateFormat))
             {
@@ -341,7 +368,12 @@ namespace DECS_Excel_Add_Ins
                 string message = "Format '" + loadedDateFormat + "' is not supported.";
                 string title = "Unsupported date format";
                 MessageBoxButtons buttons = MessageBoxButtons.OK;
-                DialogResult result = MessageBox.Show(message, title, buttons, MessageBoxIcon.Warning);
+                DialogResult result = MessageBox.Show(
+                    message,
+                    title,
+                    buttons,
+                    MessageBoxIcon.Warning
+                );
 
                 if (result == DialogResult.OK)
                 {
@@ -349,6 +381,7 @@ namespace DECS_Excel_Add_Ins
                 }
             }
         }
+
         private void PopulateDateFormatsListBox()
         {
             this.dateFormatsListBox.DataSource = null;
@@ -356,12 +389,14 @@ namespace DECS_Excel_Add_Ins
             DateConverter converter = new DateConverter();
             this.dateFormatsListBox.DataSource = converter.SupportedDateFormats();
         }
+
         private void PopulateSourceColumnListBox()
         {
             this.sourceColumnListBox.DataSource = null;
             this.sourceColumnListBox.Items.Clear();
             this.sourceColumnListBox.DataSource = GetAvailableColumnNames();
         }
+
         private void RearrangeControls(List<RuleGui> rules, Button addButton)
         {
             int panelY = PANEL_Y + Y_STEP;
@@ -382,23 +417,28 @@ namespace DECS_Excel_Add_Ins
             Point addButtonPosit = new Point(BUTTON_X, panelY + BUTTON_Y_OFFSET);
             addButton.Location = addButtonPosit;
         }
+
         internal void RearrangeCleaningControls()
         {
             RearrangeControls(rules: this.cleaningRules, addButton: cleaningRulesAddButton);
         }
+
         internal void RearrangeExtractControls()
         {
             RearrangeControls(rules: this.extractRules, addButton: extractRulesAddButton);
         }
+
         internal void RegisterChanges()
         {
-            if (configLoading) return;
+            if (configLoading)
+                return;
 
             // Need to tell the parser object that the rules have changed.
             this.parser.UpdateConfig(configObj: this.config, updateOriginalSourceColumn: false);
 
             SetRunButtonStatus();
         }
+
         private void runButton_Click(object sender, EventArgs e)
         {
             log.Debug("Run button clicked.");
@@ -407,6 +447,7 @@ namespace DECS_Excel_Add_Ins
             ShowDateConversionResult();
             ShowExtractResult();
         }
+
         private void Save()
         {
             using (var writer = new System.IO.StreamWriter(configFilename))
@@ -416,6 +457,7 @@ namespace DECS_Excel_Add_Ins
                 writer.Flush();
             }
         }
+
         private void SaveAs()
         {
             SaveFileDialog dialog = new SaveFileDialog();
@@ -433,24 +475,30 @@ namespace DECS_Excel_Add_Ins
                 }
             }
         }
+
         private void saveAsToolStripMenuItem_Click(object sender, EventArgs e)
         {
             SaveAs();
         }
+
         private void saveButton_Click(object sender, EventArgs e)
         {
             SaveAs();
         }
+
         private void saveToolStripMenuItem_Click(object sender, EventArgs e)
         {
             Save();
         }
+
         private void SetRunButtonStatus()
         {
             // If NO cleaning rules, NO date conversion rule and NO extract rules, then the button should be disabled.
-            if (this.config.HasCleaningRules() || 
-                this.config.HasDateConversionRule() ||
-                this.config.HasExtractRules())
+            if (
+                this.config.HasCleaningRules()
+                || this.config.HasDateConversionRule()
+                || this.config.HasExtractRules()
+            )
             {
                 this.runButton.Enabled = true;
                 this.runButton.BackColor = Color.White;
@@ -465,16 +513,16 @@ namespace DECS_Excel_Add_Ins
                 log.Debug("Disabling run button.");
             }
         }
+
         private void SetSourceColumn(string sourceColumn)
         {
             try
             {
                 this.sourceColumnListBox.SelectedItem = sourceColumn;
             }
-            catch (Exception)
-            {
-            }
+            catch (Exception) { }
         }
+
         private void ShowCleaningResult()
         {
             log.Debug("Showing cleaning results.");
@@ -487,6 +535,7 @@ namespace DECS_Excel_Add_Ins
                 this.parser.Clean();
             }
         }
+
         private void ShowDateConversionResult()
         {
             log.Debug("Showing date conversion results.");
@@ -499,6 +548,7 @@ namespace DECS_Excel_Add_Ins
                 this.parser.ConvertDatesToStandardFormat();
             }
         }
+
         private void ShowExtractResult()
         {
             log.Debug("Showing extraction results.");
@@ -517,11 +567,13 @@ namespace DECS_Excel_Add_Ins
                 this.parser.ResetAfterProcessing();
             }
         }
+
         private void ShowSelectedRows()
         {
             ProcessingRowsSelection rowSelection = this.parser.WhichRowsToProcess();
             ShowSelectedRows(rowSelection);
         }
+
         private void ShowSelectedRows(ProcessingRowsSelection rowSelection)
         {
             Excel.Range selectedRows = rowSelection.GetRows();
@@ -541,17 +593,26 @@ namespace DECS_Excel_Add_Ins
 
                     if (selectedRows.Count == 1)
                     {
-                        this.selectedRowsLabel.Text = "Processing " + selectedRows.Count.ToString() + " row: " + minRow.ToString();
+                        this.selectedRowsLabel.Text =
+                            "Processing "
+                            + selectedRows.Count.ToString()
+                            + " row: "
+                            + minRow.ToString();
                     }
                     else if (selectedRows.Count > 1)
                     {
-                        this.selectedRowsLabel.Text = "Processing " + selectedRows.Count.ToString() + " rows:";
-                        this.selectedRowsLabel.Text += Environment.NewLine + "[" + minRow.ToString() + ":" + maxRow.ToString() + "]";
+                        this.selectedRowsLabel.Text =
+                            "Processing " + selectedRows.Count.ToString() + " rows:";
+                        this.selectedRowsLabel.Text +=
+                            Environment.NewLine
+                            + "["
+                            + minRow.ToString()
+                            + ":"
+                            + maxRow.ToString()
+                            + "]";
                     }
                 }
-                catch (System.Runtime.InteropServices.COMException)
-                {
-                }
+                catch (System.Runtime.InteropServices.COMException) { }
             }
 
             if (!string.IsNullOrEmpty(selectionReason))
@@ -559,9 +620,11 @@ namespace DECS_Excel_Add_Ins
                 this.selectedRowsLabel.Text += Environment.NewLine + selectionReason;
             }
         }
+
         private void sourceColumnListBox_Selected(object sender, EventArgs e)
         {
-            if (configLoading) return;
+            if (configLoading)
+                return;
 
             // Restore what was in the source column BEFORE we change the column.
             this.parser.ResetWorksheet();
@@ -575,7 +638,9 @@ namespace DECS_Excel_Add_Ins
             this.parser.SaveOriginalSourceColumn();
 
             // Show results of rules on NEW source column.
-            Trace.WriteLine("Source column selection changed. Calling ShowCleaningResult() and ShowExtractResult().");
+            Trace.WriteLine(
+                "Source column selection changed. Calling ShowCleaningResult() and ShowExtractResult()."
+            );
         }
     }
 }

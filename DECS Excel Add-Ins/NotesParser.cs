@@ -39,7 +39,9 @@ namespace DECS_Excel_Add_Ins
         private Action<ProcessingRowsSelection> worksheetChangedCallback;
 
         // https://stackoverflow.com/a/28546547/18749636
-        private static readonly log4net.ILog log = log4net.LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
+        private static readonly log4net.ILog log = log4net.LogManager.GetLogger(
+            System.Reflection.MethodBase.GetCurrentMethod().DeclaringType
+        );
 
         public NotesParser(Worksheet worksheet, bool withConfigFile = true, bool allRows = true)
         {
@@ -69,16 +71,21 @@ namespace DECS_Excel_Add_Ins
                 UpdateConfig(configObj);
             }
         }
-        internal void AssignWorksheetChangedCallback(Action<ProcessingRowsSelection> externalCallback)
+
+        internal void AssignWorksheetChangedCallback(
+            Action<ProcessingRowsSelection> externalCallback
+        )
         {
             worksheetChangedCallback = externalCallback;
         }
+
         // Apply cleaning rules.
         internal bool Clean()
         {
             log.Debug("Starting cleaning.");
 
-            if (!HasConfig() || !this.rulesValid) return true;
+            if (!HasConfig() || !this.rulesValid)
+                return true;
             CreateStatusForm();
 
             log.Debug("Ordering StatusForm object .Show().");
@@ -92,7 +99,8 @@ namespace DECS_Excel_Add_Ins
             // Run down the source column, applying each cleaning rule.
             foreach (Range row in this.rowsToProcess.GetRows())
             {
-                if (stopProcessing) return false;
+                if (stopProcessing)
+                    return false;
 
                 int rowNumber = row.Row;
                 log.Debug("Processing row " + rowNumber.ToString());
@@ -116,9 +124,7 @@ namespace DECS_Excel_Add_Ins
                     {
                         cell_contents = Regex.Replace(cell_contents, rule.pattern, rule.replace);
                     }
-                    catch (System.ArgumentNullException)
-                    {
-                    }
+                    catch (System.ArgumentNullException) { }
 
                     this.statusForm?.UpdateProgressBarLabel(rule.displayName ?? rule.replace);
                 }
@@ -129,9 +135,11 @@ namespace DECS_Excel_Add_Ins
 
             return true;
         }
+
         internal void ConvertDatesToStandardFormat()
         {
-            if (!HasConfig() || !this.config.HasDateConversionRule()) return;
+            if (!HasConfig() || !this.config.HasDateConversionRule())
+                return;
 
             log.Debug("Starting date conversion.");
             CreateStatusForm();
@@ -148,7 +156,8 @@ namespace DECS_Excel_Add_Ins
             // Run down the source column, applying each extraction rule.
             foreach (Range row in this.rowsToProcess.GetRows())
             {
-                if (stopProcessing) return;
+                if (stopProcessing)
+                    return;
 
                 int rowNumber = row.Row;
                 log.Debug("Processing row " + rowNumber.ToString());
@@ -172,6 +181,7 @@ namespace DECS_Excel_Add_Ins
 
             return;
         }
+
         private void CreateStatusForm()
         {
             int numRows = this.rowsToProcess.GetRows().Count;
@@ -179,18 +189,23 @@ namespace DECS_Excel_Add_Ins
             if (this.statusForm == null || this.statusForm.IsDisposed)
             {
                 log.Debug("Creating StatusForm object.");
-                this.statusForm = new StatusForm(numRepetitions: numRows, parentStopAction: StopProcessing);
+                this.statusForm = new StatusForm(
+                    numRepetitions: numRows,
+                    parentStopAction: StopProcessing
+                );
             }
             else
             {
                 this.statusForm.Reset(numRepetitions: numRows);
             }
         }
+
         internal bool Extract()
         {
             log.Debug("Starting extraction.");
 
-            if (!HasConfig() || !this.rulesValid) return true;
+            if (!HasConfig() || !this.rulesValid)
+                return true;
             CreateStatusForm();
 
             log.Debug("Ordering StatusForm object .Show().");
@@ -202,7 +217,8 @@ namespace DECS_Excel_Add_Ins
             // Run down the source column, applying each extraction rule.
             foreach (Range row in this.rowsToProcess.GetRows())
             {
-                if (stopProcessing) return false;
+                if (stopProcessing)
+                    return false;
 
                 int rowNumber = row.Row;
                 log.Debug("Processing row " + rowNumber.ToString());
@@ -223,26 +239,39 @@ namespace DECS_Excel_Add_Ins
                 foreach (ExtractRule rule in this.config.ValidExtractRules())
                 {
                     // Don't create new columns with blank names.
-                    if (rule.newColumn is null || rule.newColumn.Length == 0) continue;
+                    if (rule.newColumn is null || rule.newColumn.Length == 0)
+                        continue;
                     log.Debug("Extracting to column '" + rule.newColumn + "'.");
 
-                    Range targetRng = Utilities.TopOfNamedColumn(sheet: this.worksheet, columnName: rule.newColumn);
+                    Range targetRng = Utilities.TopOfNamedColumn(
+                        sheet: this.worksheet,
+                        columnName: rule.newColumn
+                    );
 
                     if (targetRng == null)
                     {
                         log.Debug("Creating new column '" + rule.newColumn + "'.");
-                        targetRng = Utilities.InsertnewColumn(range: this.sourceColumn, newColumnName: rule.newColumn);
+                        targetRng = Utilities.InsertnewColumn(
+                            range: this.sourceColumn,
+                            newColumnName: rule.newColumn
+                        );
                         log.Debug("Created new column '" + rule.newColumn + "'.");
                     }
 
                     try
                     {
                         log.Debug("Attempting match using pattern '" + rule.pattern + "'.");
-                        
+
                         // If we get more than one extracted value, concatenate into comma-separated string.
                         List<string> extractedValues = new List<string>();
 
-                        foreach (Match match in Regex.Matches(cell_contents, rule.pattern, RegexOptions.IgnoreCase))
+                        foreach (
+                            Match match in Regex.Matches(
+                                cell_contents,
+                                rule.pattern,
+                                RegexOptions.IgnoreCase
+                            )
+                        )
                         {
                             if (match.Success)
                             {
@@ -251,7 +280,10 @@ namespace DECS_Excel_Add_Ins
                             }
                         }
 
-                        targetRng.Offset[rowNumber - 1, 0].Value += String.Join(", ", extractedValues);
+                        targetRng.Offset[rowNumber - 1, 0].Value += String.Join(
+                            ", ",
+                            extractedValues
+                        );
                     }
                     catch (System.ArgumentNullException)
                     {
@@ -266,16 +298,18 @@ namespace DECS_Excel_Add_Ins
 
             return true;
         }
+
         internal bool HasConfig()
         {
-            return this.config != null && 
-                this.config.SourceColumnName != string.Empty;
+            return this.config != null && this.config.SourceColumnName != string.Empty;
         }
+
         internal void Parse()
         {
             log.Debug("Starting parsing.");
 
-            if (!HasConfig() || !this.rulesValid) return;
+            if (!HasConfig() || !this.rulesValid)
+                return;
 
             // Apply cleaning rules.
             bool keepProcessing = Clean();
@@ -298,6 +332,7 @@ namespace DECS_Excel_Add_Ins
             // Save a copy of the revised workbook.
             SaveRevised();
         }
+
         // Allow DefineRulesForm to tell us to go back to row 1 & close the status form.
         // This is useful when we only had cleaning rules--no extract rules.
         internal void ResetAfterProcessing()
@@ -305,12 +340,14 @@ namespace DECS_Excel_Add_Ins
             ShowRow(1);
             this.statusForm?.Close();
         }
+
         internal void ResetWorksheet()
         {
             RestoreOriginalColumns();
             RestoreOriginalSourceColumn();
         }
-        // Can't just walk through the list of columns and delete the new ones, 
+
+        // Can't just walk through the list of columns and delete the new ones,
         // because--as they're deleted--the numbering changes.
         private void RestoreOriginalColumns()
         {
@@ -340,9 +377,11 @@ namespace DECS_Excel_Add_Ins
             // Need to refresh this count, now that we may have deleted a column.
             this.lastCol = Utilities.FindLastCol(this.worksheet);
         }
+
         private void RestoreOriginalSourceColumn()
         {
-            if (!HasConfig() || !this.rulesValid) return;
+            if (!HasConfig() || !this.rulesValid)
+                return;
 
             Range thisCell;
 
@@ -354,9 +393,11 @@ namespace DECS_Excel_Add_Ins
                 thisCell.Value2 = originalSourceColumnEntries[row_offset - 1];
             }
         }
+
         public void SaveOriginalSourceColumn()
         {
-            if (!HasConfig() || !this.rulesValid) return;
+            if (!HasConfig() || !this.rulesValid)
+                return;
 
             originalSourceColumnEntries = new List<string>();
             Range thisCell;
@@ -377,9 +418,11 @@ namespace DECS_Excel_Add_Ins
                 }
             }
         }
+
         internal void SaveRevised()
         {
-            if (!HasConfig() || !this.rulesValid) return;
+            if (!HasConfig() || !this.rulesValid)
+                return;
 
             this.statusForm.UpdateStatusLabel("Saving revised file.");
             this.statusForm.UpdateProgressBarLabel("Complete.");
@@ -390,17 +433,20 @@ namespace DECS_Excel_Add_Ins
             string filename = workbook.FullName;
             string directory = System.IO.Path.GetDirectoryName(filename);
             string justTheFilename = System.IO.Path.GetFileNameWithoutExtension(filename);
-            string newFilename = System.IO.Path.Combine(directory, justTheFilename + "_revised.xlsx");
+            string newFilename = System.IO.Path.Combine(
+                directory,
+                justTheFilename + "_revised.xlsx"
+            );
 
             var thread = new Thread(() =>
             {
                 SaveRevised(workbook, newFilename, justTheFilename);
-            }
-            );
+            });
 
             thread.Start();
             thread.IsBackground = true;
         }
+
         private void SaveRevised(Workbook workbook, string newFilename, string justTheFilename)
         {
             try
@@ -409,32 +455,42 @@ namespace DECS_Excel_Add_Ins
             }
             catch (System.Runtime.InteropServices.COMException)
             {
-                newFilename = System.IO.Path.Combine(justTheFilename + "_" + Utilities.GetTimestamp());
+                newFilename = System.IO.Path.Combine(
+                    justTheFilename + "_" + Utilities.GetTimestamp()
+                );
                 workbook.SaveCopyAs(newFilename);
             }
 
             MessageBox.Show("Saved in '" + newFilename + "'.");
         }
+
         private void ShowRow(int row)
         {
             this.application.ActiveWindow.ScrollRow = row;
         }
+
         internal void StopProcessing()
         {
             stopProcessing = true;
         }
+
         // Add config structure AFTER instantiation.
         internal void UpdateConfig(NotesConfig configObj, bool updateOriginalSourceColumn = true)
         {
             // If no config already defined, we probably should offer to start defining a config file.
-            if (configObj == null) return;
+            if (configObj == null)
+                return;
 
             this.config = configObj;
 
-            if (this.config.SourceColumnName == string.Empty) return;
+            if (this.config.SourceColumnName == string.Empty)
+                return;
 
             // Find the top of the source column.
-            Range rng = Utilities.TopOfNamedColumn(sheet: worksheet, columnName: this.config.SourceColumnName);
+            Range rng = Utilities.TopOfNamedColumn(
+                sheet: worksheet,
+                columnName: this.config.SourceColumnName
+            );
 
             if (rng == null)
             {
@@ -452,6 +508,7 @@ namespace DECS_Excel_Add_Ins
 
             this.rulesValid = ValidateAndWarn();
         }
+
         private bool ValidateAndWarn()
         {
             bool rulesValid = true;
@@ -462,7 +519,9 @@ namespace DECS_Excel_Add_Ins
                 rulesValid = false;
 
                 // Don't open duplicate forms.
-                if (System.Windows.Forms.Application.OpenForms.OfType<RulesErrorForm>().Count() == 0)
+                if (
+                    System.Windows.Forms.Application.OpenForms.OfType<RulesErrorForm>().Count() == 0
+                )
                 {
                     RulesErrorForm form = new RulesErrorForm(errors);
                     form.Show();
@@ -471,12 +530,17 @@ namespace DECS_Excel_Add_Ins
 
             return rulesValid;
         }
+
         internal ProcessingRowsSelection WhichRowsToProcess()
         {
             if (this.processAllRows)
             {
                 // This object was called in production mode ==> ALL rows.
-                return new ProcessingRowsSelection(Utilities.AllAvailableRows(worksheet), string.Empty, true);
+                return new ProcessingRowsSelection(
+                    Utilities.AllAvailableRows(worksheet),
+                    string.Empty,
+                    true
+                );
             }
             else
             {
@@ -485,7 +549,7 @@ namespace DECS_Excel_Add_Ins
                 Range selectedRows = rng.Rows;
                 bool allRows = false;
                 string reason = string.Empty;
-                
+
                 if (selectedRows.Count == 1)
                 {
                     try
@@ -519,6 +583,7 @@ namespace DECS_Excel_Add_Ins
                 return new ProcessingRowsSelection(selectedRows, reason, allRows);
             }
         }
+
         private void WorksheetSelectionChanged(Range Target)
         {
             this.rowsToProcess = WhichRowsToProcess();

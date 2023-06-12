@@ -19,22 +19,27 @@ namespace DECS_Excel_Add_Ins
             this.reason = reason;
             this.allRows = allRows;
         }
-        internal bool AllRows() 
-        { 
+
+        internal bool AllRows()
+        {
             return allRows;
         }
+
         internal string GetReason()
         {
             return reason;
         }
+
         internal Excel.Range GetRows()
         {
             return rows;
         }
+
         internal int NumRows()
         {
             return rows.Count;
         }
+
         public override string ToString()
         {
             return this.rows.Count.ToString() + " rows selected.";

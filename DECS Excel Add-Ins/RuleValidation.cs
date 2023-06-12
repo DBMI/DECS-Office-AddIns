@@ -13,13 +13,15 @@ namespace DECS_Excel_Add_Ins
         Pattern,
         Replace
     }
+
     public enum RuleType
     {
         Cleaning,
         Extract
     }
+
     // Describes result of attempting to form a RegEx.
-    public class RuleValidationResult 
+    public class RuleValidationResult
     {
         private bool valid = true;
         private string message = string.Empty;
@@ -32,15 +34,18 @@ namespace DECS_Excel_Add_Ins
                 this.message = ex.Message;
             }
         }
+
         public override string ToString()
         {
             return this.message;
         }
+
         internal bool Valid()
         {
             return this.valid;
         }
     }
+
     // Describes just why & where a rule has been found invalid.
     public class RuleValidationError
     {
@@ -49,16 +54,28 @@ namespace DECS_Excel_Add_Ins
         private string message;
         private RuleComponent ruleComponent;
 
-        public RuleValidationError(RuleType ruleType, int index, RuleComponent ruleComponent, string message)
+        public RuleValidationError(
+            RuleType ruleType,
+            int index,
+            RuleComponent ruleComponent,
+            string message
+        )
         {
             this.ruleType = ruleType;
             this.index = index;
             this.ruleComponent = ruleComponent;
             this.message = message;
         }
+
         public override string ToString()
         {
-            string explanation = ruleType.ToString() + " rule #" + index.ToString() + " has invalid " + ruleComponent.ToString() + " component";
+            string explanation =
+                ruleType.ToString()
+                + " rule #"
+                + index.ToString()
+                + " has invalid "
+                + ruleComponent.ToString()
+                + " component";
 
             if (string.IsNullOrEmpty(this.message))
             {

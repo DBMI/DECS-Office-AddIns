@@ -19,9 +19,19 @@ namespace DECS_Excel_Add_Ins
         private bool textChangedCallbackEnabled = true;
 
         // https://stackoverflow.com/a/28546547/18749636
-        private static readonly log4net.ILog log = log4net.LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
+        private static readonly log4net.ILog log = log4net.LogManager.GetLogger(
+            System.Reflection.MethodBase.GetCurrentMethod().DeclaringType
+        );
 
-        public ExtractRuleGui(int x, int y, int index, Panel parent, NotesConfig notesConfig, bool updateConfig = true) : base(x, y, index, parent, "extractRules")
+        public ExtractRuleGui(
+            int x,
+            int y,
+            int index,
+            Panel parent,
+            NotesConfig notesConfig,
+            bool updateConfig = true
+        )
+            : base(x, y, index, parent, "extractRules")
         {
             this.config = notesConfig;
             base.leftTextBox.TextChanged += extractRulesDisplayNameTextBox_TextChanged;
@@ -40,14 +50,17 @@ namespace DECS_Excel_Add_Ins
             // it's an >extract< rule that needs to be deleted.
             base.AssignDelete(this.DeleteRule);
         }
+
         public void AssignExternalDelete(Action<RuleGui> deleteAction)
         {
             this.parentDeleteAction = deleteAction;
         }
+
         public void AssignExternalRuleChanged(Action ruleChangedAction)
         {
             this.parentRuleChangedAction = ruleChangedAction;
         }
+
         public override void Clear()
         {
             this.textChangedCallbackEnabled = false;
@@ -55,6 +68,7 @@ namespace DECS_Excel_Add_Ins
             base.rightTextBox.Text = string.Empty;
             this.textChangedCallbackEnabled = true;
         }
+
         // The RuleGui class handles the GUI stuff but this derived class needs to 'talk' to the NotesConfig structure
         // because we know it's an >extract< rule.
         // Also, because the DefineRules class creates THIS class (and not the parent RuleGui class),
@@ -64,9 +78,11 @@ namespace DECS_Excel_Add_Ins
             this.config.DeleteExtractRule(index: base.index);
             this.parentDeleteAction(ruleGui);
         }
+
         private void extractRulesDisplayNameTextBox_TextChanged(object sender, EventArgs e)
         {
-            if (!this.textChangedCallbackEnabled) return;
+            if (!this.textChangedCallbackEnabled)
+                return;
 
             log.Debug("extractRulesDisplayNameTextBox_TextChanged");
             TextBox textBox = (TextBox)sender;
@@ -74,9 +90,11 @@ namespace DECS_Excel_Add_Ins
             // Insert or update Nth cleaning rule with this display Name.
             this.config.ChangeExtractRuleDisplayName(index: base.index, displayName: textBox.Text);
         }
+
         private void extractRulesPatternTextBox_TextChanged(object sender, EventArgs e)
         {
-            if (!this.textChangedCallbackEnabled) return;
+            if (!this.textChangedCallbackEnabled)
+                return;
 
             log.Debug("extractRulesPatternTextBox_TextChanged.");
             TextBox textBox = (TextBox)sender;
@@ -102,9 +120,11 @@ namespace DECS_Excel_Add_Ins
                 this.config.ChangeExtractRulePattern(index: base.index, pattern: string.Empty);
             }
         }
+
         private void extractRulesnewColumnTextBox_TextChanged(object sender, EventArgs e)
         {
-            if (!this.textChangedCallbackEnabled) return;
+            if (!this.textChangedCallbackEnabled)
+                return;
 
             log.Debug("extractRulesnewColumnTextBox_TextChanged.");
             TextBox textBox = (TextBox)sender;
@@ -115,9 +135,11 @@ namespace DECS_Excel_Add_Ins
             // Alert upper-level GUI.
             this.parentRuleChangedAction();
         }
+
         public void Populate(ExtractRule rule)
         {
-            if (rule == null) return;
+            if (rule == null)
+                return;
 
             this.textChangedCallbackEnabled = false;
             base.leftTextBox.Text = rule.displayName;
@@ -134,7 +156,10 @@ namespace DECS_Excel_Add_Ins
             // Validate the rule.
             if (string.IsNullOrEmpty(rule.newColumn))
             {
-                Utilities.MarkRegexInvalid(textBox: base.rightTextBox, message: "newColumn is empty");
+                Utilities.MarkRegexInvalid(
+                    textBox: base.rightTextBox,
+                    message: "newColumn is empty"
+                );
             }
 
             this.textChangedCallbackEnabled = true;
