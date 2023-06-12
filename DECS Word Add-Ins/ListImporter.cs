@@ -23,7 +23,7 @@ namespace DecsWordAddIns
         public void Scan(Document doc)
         {
             // Initialize the output .SQL file.
-            (StreamWriter writer, string output_filename) = Utilities.OpenOutput(
+            (StreamWriter writer, string outputFilename) = Utilities.OpenOutput(
                 input_filename: doc.FullName,
                 filetype: ".sql"
             );
@@ -74,7 +74,7 @@ namespace DecsWordAddIns
             }
 
             writer.Close();
-            Utilities.ShowResults(output_filename);
+            Process.Start(outputFilename);
         }
     }
 }

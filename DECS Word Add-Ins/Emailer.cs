@@ -24,6 +24,8 @@ namespace DecsWordAddIns
         private const string SALUTATION = "{{ cookiecutter.__requestor_salutation }}";
         private const string TASK_NUMBER = "{{ cookiecutter.task_number }}";
 
+        private MsOutlook.MailItem mail;
+
         internal Emailer(
             DeliveryType deliveryType,
             string projectDirectory,
@@ -36,6 +38,37 @@ namespace DecsWordAddIns
             this.htmlBody = this.htmlBody.Replace(PROJECT_DIRECTORY, projectDirectory);
             this.htmlBody = this.htmlBody.Replace(SALUTATION, requestorSalutation);
             this.htmlBody = this.htmlBody.Replace(TASK_NUMBER, taskNumber);
+        }
+
+        internal bool DraftOutlookEmail(string subject, string recipients)
+        {
+            try
+            {
+                // create the outlook application.
+                MsOutlook.Application outlookApp = new MsOutlook.Application();
+
+                if (outlookApp == null)
+                {
+                    return false;
+                }
+
+                // create a new mail item.
+                this.mail = (MsOutlook.MailItem)
+                    outlookApp.CreateItem(MsOutlook.OlItemType.olMailItem);
+
+                // add the body of the email
+                this.mail.HTMLBody = this.htmlBody;
+
+                this.mail.Subject = subject;
+                this.mail.To = recipients;
+
+                this.mail.Display(true);
+                return true;
+            }
+            catch
+            {
+                return false;
+            }
         }
 
         private void ReadEmailBody(DeliveryType deliveryType)
@@ -53,33 +86,14 @@ namespace DecsWordAddIns
             }
         }
 
-        internal bool DraftOutlookEmail(string subject, string recipients)
+        internal void ShowDraftEmail()
         {
-            try
-            {
-                // create the outlook application.
-                MsOutlook.Application outlookApp = new MsOutlook.Application();
+            this.mail.Display(true);
+        }
 
-                if (outlookApp == null)
-                    return false;
-
-                // create a new mail item.
-                MsOutlook.MailItem mail = (MsOutlook.MailItem)
-                    outlookApp.CreateItem(MsOutlook.OlItemType.olMailItem);
-
-                // add the body of the email
-                mail.HTMLBody = this.htmlBody;
-
-                mail.Subject = subject;
-                mail.To = recipients;
-
-                mail.Display(true);
-                return true;
-            }
-            catch
-            {
-                return false;
-            }
+        internal string Subject()
+        {
+            return this.mail.Subject;
         }
     }
 }

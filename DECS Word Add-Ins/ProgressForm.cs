@@ -20,6 +20,8 @@ namespace DecsWordAddIns
 
         private bool stopExecution = false;
 
+        private Emailer emailer;
+
         internal ProgressForm()
         {
             InitializeComponent();
@@ -62,6 +64,11 @@ namespace DecsWordAddIns
             this.pushToGitLabStatusLabel.Text = CHECKED_BOX;
         }
 
+        private void draftEmailLinkLabel_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
+        {
+            this.emailer.ShowDraftEmail();
+        }
+
         internal void EnableOkButton()
         {
             this.okButton.Enabled = true;
@@ -77,6 +84,12 @@ namespace DecsWordAddIns
         internal void LinkConvertedSlicerDicerFile(string filePath)
         {
             this.convertSlicerDicerLinkLabel.Text = filePath;
+        }
+
+        internal void LinkEmail(Emailer emailer)
+        {
+            this.emailer = emailer;
+            this.draftEmailLinkLabel.Text = this.emailer.Subject();
         }
 
         internal void LinkExcelFile(string filePath)

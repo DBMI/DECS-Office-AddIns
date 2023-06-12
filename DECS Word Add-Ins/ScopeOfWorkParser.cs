@@ -550,7 +550,61 @@ namespace DecsWordAddIns
             this.progressForm.CheckOffInitializeSqlFile();
             this.progressForm.LinkSqlFile(this.sqlFilename);
 
-            // 5. Push SQL file to GitLab.
+            // 5. Ask user how results will be delivered.
+            DeliveryType deliveryType;
+
+            using (var form = new DeliveryTypeForm())
+            {
+                result = form.ShowDialog();
+
+                if (result == DialogResult.OK)
+                {
+                    deliveryType = form.deliveryType;
+                }
+                else
+                {
+                    // User declined to specify, so we can't proceed.
+                    message = "User did not specify the project delivery type.";
+                    this.progressForm.ReportProgress(message);
+                    log.Error(message);
+                    return;
+                }
+            }
+
+            if (this.progressForm.StopSignaled())
+                return;
+
+            // 6. Draft email reporting project completion.
+            Emailer emailer = new Emailer(
+                deliveryType: deliveryType,
+                projectDirectory: this.projectDirectory.ToString(),
+                requestorSalutation: Utilities.SalutationFromName(this.requesterName),
+                taskNumber: this.taskNumber
+            );
+
+            if (
+                !emailer.DraftOutlookEmail(
+                    subject: "Your DECS Request is Ready: DECS-" + this.taskNumber,
+                    recipients: this.requesterEmail
+                )
+            )
+            {
+                message = "Unable to draft email.";
+                this.progressForm.MarkFailedDraftEmail();
+                this.progressForm.ReportProgress(message);
+                log.Error(message);
+                result = MessageBox.Show(message, "Create email Failed", buttons);
+
+                if (result == DialogResult.OK)
+                {
+                    return;
+                }
+            }
+
+            this.progressForm.CheckOffDraftEmail();
+            this.progressForm.LinkEmail(emailer);
+
+            // 7. Push SQL file to GitLab.
             GitLabHandler gitLabHandler = new GitLabHandler();
 
             if (gitLabHandler.Ready())
@@ -580,58 +634,6 @@ namespace DecsWordAddIns
             this.progressForm.CheckOffPushToGitLab();
             this.progressForm.LinkGitLab(gitLabProjectAddress.ToString());
 
-            // 6. Ask user how results will be delivered.
-            DeliveryType deliveryType;
-
-            using (var form = new DeliveryTypeForm())
-            {
-                result = form.ShowDialog();
-
-                if (result == DialogResult.OK)
-                {
-                    deliveryType = form.deliveryType;
-                }
-                else
-                {
-                    // User declined to specify, so we can't proceed.
-                    message = "User did not specify the project delivery type.";
-                    this.progressForm.ReportProgress(message);
-                    log.Error(message);
-                    return;
-                }
-            }
-
-            if (this.progressForm.StopSignaled())
-                return;
-
-            // 7. Draft email reporting project completion.
-            Emailer emailer = new Emailer(
-                deliveryType: deliveryType,
-                projectDirectory: this.projectDirectory.ToString(),
-                requestorSalutation: Utilities.SalutationFromName(this.requesterName),
-                taskNumber: this.taskNumber
-            );
-
-            if (
-                !emailer.DraftOutlookEmail(
-                    subject: "Your DECS Request is Ready: DECS-" + this.taskNumber,
-                    recipients: this.requesterEmail
-                )
-            )
-            {
-                message = "Unable to draft email.";
-                this.progressForm.MarkFailedDraftEmail();
-                this.progressForm.ReportProgress(message);
-                log.Error(message);
-                result = MessageBox.Show(message, "Create email Failed", buttons);
-
-                if (result == DialogResult.OK)
-                {
-                    return;
-                }
-            }
-
-            this.progressForm.CheckOffDraftEmail();
             this.progressForm.EnableOkButton();
             this.progressForm.ReportProgress("Completed project " + this.taskNumber + " setup.");
         }
