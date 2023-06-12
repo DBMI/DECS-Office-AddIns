@@ -28,14 +28,14 @@ namespace DecsWordAddIns
 
         private void noButton_Click(object sender, EventArgs e)
         {
-            this.fileExists= false;
+            this.fileExists = false;
             this.DialogResult = DialogResult.OK;
             this.Close();
         }
 
         private void quitButton_Click(object sender, EventArgs e)
         {
-            this.DialogResult= DialogResult.Cancel;
+            this.DialogResult = DialogResult.Cancel;
             this.Close();
         }
     }

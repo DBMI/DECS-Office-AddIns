@@ -22,7 +22,9 @@ namespace DecsWordAddIns
         private void linkLabel1_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
         {
             linkLabel1.LinkVisited = true;
-            System.Diagnostics.Process.Start("https://docs.gitlab.com/ee/user/profile/personal_access_tokens.html");
+            System.Diagnostics.Process.Start(
+                "https://docs.gitlab.com/ee/user/profile/personal_access_tokens.html"
+            );
         }
 
         private void okButton_Click(object sender, EventArgs e)
@@ -34,7 +36,7 @@ namespace DecsWordAddIns
         private void quitButton_Click(object sender, EventArgs e)
         {
             this.token = string.Empty;
-            this.DialogResult= DialogResult.Cancel;
+            this.DialogResult = DialogResult.Cancel;
             this.Close();
         }
 

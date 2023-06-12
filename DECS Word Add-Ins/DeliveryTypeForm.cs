@@ -24,7 +24,7 @@ namespace DecsWordAddIns
             RadioButton button = (RadioButton)sender;
             vrdRadioButton.Checked = !button.Checked;
 
-            if (button.Checked )
+            if (button.Checked)
             {
                 deliveryType = DeliveryType.OneDrive;
             }
@@ -40,6 +40,7 @@ namespace DecsWordAddIns
                 deliveryType = DeliveryType.VRD;
             }
         }
+
         private void okButton_Click(object sender, EventArgs e)
         {
             this.DialogResult = DialogResult.OK;

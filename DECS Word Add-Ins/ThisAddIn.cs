@@ -22,9 +22,7 @@ namespace DecsWordAddIns
             log4net.Config.XmlConfigurator.Configure();
         }
 
-        private void ThisAddIn_Shutdown(object sender, System.EventArgs e)
-        {
-        }
+        private void ThisAddIn_Shutdown(object sender, System.EventArgs e) { }
 
         #region VSTO generated code
 
@@ -37,7 +35,7 @@ namespace DecsWordAddIns
             this.Startup += new System.EventHandler(ThisAddIn_Startup);
             this.Shutdown += new System.EventHandler(ThisAddIn_Shutdown);
         }
-        
+
         #endregion
     }
 }

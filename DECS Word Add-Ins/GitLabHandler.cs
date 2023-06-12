@@ -25,12 +25,15 @@ namespace DecsWordAddIns
     {
         private const string DIVIDER = "%2F";
         private const string QUOTES = "\"";
-        private const string VIEW_ADDRESS = @"https://ctri-gitlab.ucsd.edu/cdwr/data-concierge/-/tree/master/";
+        private const string VIEW_ADDRESS =
+            @"https://ctri-gitlab.ucsd.edu/cdwr/data-concierge/-/tree/master/";
         private string token;
         private string userName;
 
         // https://stackoverflow.com/a/28546547/18749636
-        private static readonly log4net.ILog log = log4net.LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
+        private static readonly log4net.ILog log = log4net.LogManager.GetLogger(
+            System.Reflection.MethodBase.GetCurrentMethod().DeclaringType
+        );
 
         internal GitLabHandler()
         {
@@ -77,7 +80,11 @@ namespace DecsWordAddIns
             ProcessStartInfo startInfo = new ProcessStartInfo();
             startInfo.Arguments = "--file " + QUOTES + pathCorrected + QUOTES;
             startInfo.CreateNoWindow = true;
-            var fullpath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Resources", "git_uploader.exe");
+            var fullpath = Path.Combine(
+                AppDomain.CurrentDomain.BaseDirectory,
+                "Resources",
+                "git_uploader.exe"
+            );
 
             if (!File.Exists(fullpath))
             {
@@ -126,7 +133,12 @@ namespace DecsWordAddIns
         {
             bool success = false;
             this.userName = Utilities.GetUserName();
-            string tokenFilename = Path.Combine(@"C:\Users", this.userName, ".ssh", "gitlab_api_token.txt");
+            string tokenFilename = Path.Combine(
+                @"C:\Users",
+                this.userName,
+                ".ssh",
+                "gitlab_api_token.txt"
+            );
 
             if (File.Exists(tokenFilename))
             {
@@ -134,9 +146,11 @@ namespace DecsWordAddIns
                 {
                     this.token = File.ReadAllText(tokenFilename);
                     success = !string.IsNullOrEmpty(this.token);
-                    log.Debug("Reading file '" + tokenFilename + "' resulted in " + success.ToString());
+                    log.Debug(
+                        "Reading file '" + tokenFilename + "' resulted in " + success.ToString()
+                    );
                 }
-                catch 
+                catch
                 {
                     log.Error("Error when trying to read file '" + tokenFilename + "'.");
                 }
@@ -153,7 +167,12 @@ namespace DecsWordAddIns
         private void SaveGitLabToken()
         {
             string userName = System.Security.Principal.WindowsIdentity.GetCurrent().Name;
-            string tokenFilename = Path.Combine(@"C:\Users", userName, ".ssh", "gitlab_api_token.txt");
+            string tokenFilename = Path.Combine(
+                @"C:\Users",
+                userName,
+                ".ssh",
+                "gitlab_api_token.txt"
+            );
 
             using (StreamWriter writer = new StreamWriter(tokenFilename))
             {
