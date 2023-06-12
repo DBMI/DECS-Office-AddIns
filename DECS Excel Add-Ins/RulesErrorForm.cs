@@ -15,7 +15,8 @@ namespace DECS_Excel_Add_Ins
         public RulesErrorForm(List<RuleValidationError> errorList)
         {
             InitializeComponent();
-            this.rulesErrorFormLabel.Text = Environment.NewLine + String.Join(Environment.NewLine, errorList);
+            this.rulesErrorFormLabel.Text =
+                Environment.NewLine + String.Join(Environment.NewLine, errorList);
         }
 
         private void okButton_Click(object sender, EventArgs e)

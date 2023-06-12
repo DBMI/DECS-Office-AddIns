@@ -40,9 +40,13 @@ namespace DECS_Excel_Add_Ins
         private const int LEFT_BOX_X = 25;
         private const int CENTER_BOX_X = 195;
         private const int RIGHT_BOX_X = 1055;
-        private readonly int BOX_Y = (int) BOX_HEIGHT/2;
+        private readonly int BOX_Y = (int)BOX_HEIGHT / 2;
 
-        private readonly Font CHECKBOX_FONT = new Font("Microsoft San Serif", 7f, FontStyle.Regular);
+        private readonly Font CHECKBOX_FONT = new Font(
+            "Microsoft San Serif",
+            7f,
+            FontStyle.Regular
+        );
         private const int CHECKBOX_X = 2;
         private const int CHECKBOX_WIDTH = 13;
 
@@ -61,13 +65,15 @@ namespace DECS_Excel_Add_Ins
         private static int height = 44;
 
         private Action<RuleGui> inheritedClassDeleteAction;
-        private Action<RuleGui> parentClassDisableAction; 
+        private Action<RuleGui> parentClassDisableAction;
         private Action<RuleGui> parentClassEnableAction;
 
         private ToolTip toolTip;
 
         // https://stackoverflow.com/a/28546547/18749636
-        private static readonly log4net.ILog log = log4net.LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
+        private static readonly log4net.ILog log = log4net.LogManager.GetLogger(
+            System.Reflection.MethodBase.GetCurrentMethod().DeclaringType
+        );
 
         public RuleGui(int x, int y, int index, Panel parentObj, string ruleType)
         {
@@ -80,7 +86,7 @@ namespace DECS_Excel_Add_Ins
             this.panel.Location = new Point(x, y);
             this.panel.Name = this.keyword;
             this.panel.Parent = parent;
-            this.panel.Tag = this;      // So that, if we find the Panel object, we can find its associated RuleGui object.
+            this.panel.Tag = this; // So that, if we find the Panel object, we can find its associated RuleGui object.
             this.panel.Width = width;
             this.parent.Controls.Add(this.panel);
 
@@ -144,26 +150,30 @@ namespace DECS_Excel_Add_Ins
             this.panel.Controls.Add(this.rightTextBox);
             this.panel.Controls.Add(this.deleteButton);
         }
+
         // This class creates the Delete button and handles disposing of the GUI elements
         // but knows nothing of the NotesConfig object being built.
         // So classes which inherit RuleGui (CleaningRuleGui & ExtractRuleGui)
         // and DO know about NotesConfig need to be able to assign actions that fire
         // when our our Delete button is pressed.
         // Similarly, the DefineRule Class owns the AddButton and needs to move the
-        // button up when a rule is deleted, so it provides ITS callback to the 
+        // button up when a rule is deleted, so it provides ITS callback to the
         // CleaningRuleGui and ExtractRuleGui classes to invoke.
         protected void AssignDelete(Action<RuleGui> deleteAction)
         {
             inheritedClassDeleteAction = deleteAction;
         }
+
         internal void AssignDisable(Action<RuleGui> disableAction)
         {
             parentClassDisableAction = disableAction;
         }
+
         internal void AssignEnable(Action<RuleGui> enableAction)
         {
             parentClassEnableAction = enableAction;
         }
+
         private void CheckBoxClicked(object sender, EventArgs e)
         {
             CheckBox checkBox = sender as CheckBox;
@@ -187,9 +197,11 @@ namespace DECS_Excel_Add_Ins
                 }
             }
         }
+
         // Implemented in the derived classes because the TextChanged methods are defined there
         // and we temporarily need to disable the TextChanged methods while clearing the textboxes.
         public abstract void Clear();
+
         public void Delete()
         {
             // Pass the order down the chain to the next panel (until there isn't one).
@@ -204,10 +216,12 @@ namespace DECS_Excel_Add_Ins
             // the cleaning rule or extract rule for this index.
             inheritedClassDeleteAction(this);
         }
+
         private void Delete(object sender, EventArgs e)
         {
             Delete();
         }
+
         private RuleGui FindNth(int desiredIndex)
         {
             // Find the underlying Panel objects of this rule type.
@@ -226,15 +240,18 @@ namespace DECS_Excel_Add_Ins
 
             return null;
         }
+
         // So calling class can ask how big a RuleGui object is prior to object instantiation.
         public static int Height()
         {
             return height;
         }
+
         internal int Index()
         {
             return this.index;
         }
+
         private void MoveUpInLine()
         {
             // Pass the word.
@@ -245,11 +262,16 @@ namespace DECS_Excel_Add_Ins
             // Decrement my index.
             this.index -= 1;
         }
+
         private RuleGui NextRuleGui()
         {
             return FindNth(this.index + 1);
         }
-        public Panel PanelObj { get { return this.panel; } }
+
+        public Panel PanelObj
+        {
+            get { return this.panel; }
+        }
 
         internal void ResetLocation(int x, int y)
         {

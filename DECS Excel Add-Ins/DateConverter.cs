@@ -15,7 +15,9 @@ namespace DECS_Excel_Add_Ins
         private IDictionary<string, string> supportedDateFormats;
 
         // https://stackoverflow.com/a/28546547/18749636
-        private static readonly log4net.ILog log = log4net.LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
+        private static readonly log4net.ILog log = log4net.LogManager.GetLogger(
+            System.Reflection.MethodBase.GetCurrentMethod().DeclaringType
+        );
 
         internal DateConverter()
         {
@@ -26,11 +28,13 @@ namespace DECS_Excel_Add_Ins
             supportedDateFormats.Add("MMMM dd yyyy", "(\\w{3,9}\\.? \\d{1,2},? \\d{4})");
             supportedDateFormats.Add("MMMM dd", "(\\w{3,9}\\.? \\d{1,2})");
         }
+
         internal string Convert(string note, string desiredFormat)
         {
             foreach (KeyValuePair<string, string> entry in this.supportedDateFormats)
             {
-                if (entry.Key == desiredFormat) continue;
+                if (entry.Key == desiredFormat)
+                    continue;
 
                 foreach (Match match in Regex.Matches(note, entry.Value))
                 {
@@ -51,6 +55,7 @@ namespace DECS_Excel_Add_Ins
 
             return note;
         }
+
         internal List<string> SupportedDateFormats()
         {
             return new List<string>(this.supportedDateFormats.Keys);

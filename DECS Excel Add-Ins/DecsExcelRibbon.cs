@@ -25,7 +25,7 @@ using Office = Microsoft.Office.Core;
 //    move your code from the event handlers to the callback methods and modify the code to work with the
 //    Ribbon extensibility (RibbonX) programming model.
 
-// 3. Assign attributes to the control tags in the Ribbon XML file to identify the appropriate callback methods in your code.  
+// 3. Assign attributes to the control tags in the Ribbon XML file to identify the appropriate callback methods in your code.
 
 // For more information, see the Ribbon XML documentation in the Visual Studio Tools for Office Help.
 
@@ -37,36 +37,44 @@ namespace DECS_Excel_Add_Ins
     {
         private Office.IRibbonUI ribbon;
 
-        public DecsExcelRibbon()
-        {
-        }
+        public DecsExcelRibbon() { }
+
         public Bitmap buildMrnsButton_GetImage(IRibbonControl control)
         {
             return Resources.clipboard;
         }
+
         public void OnBuildMRN(Office.IRibbonControl control)
         {
             ListImporter importer = new ListImporter();
             Excel.Worksheet wksheet = (Excel.Worksheet)Globals.ThisAddIn.Application.ActiveSheet;
             importer.Scan(wksheet);
         }
+
         public void OnSearchConfig(Office.IRibbonControl control)
         {
             Excel.Worksheet wksheet = (Excel.Worksheet)Globals.ThisAddIn.Application.ActiveSheet;
-            NotesParser parser = new NotesParser(worksheet: wksheet, withConfigFile: false, allRows: false);
+            NotesParser parser = new NotesParser(
+                worksheet: wksheet,
+                withConfigFile: false,
+                allRows: false
+            );
             DefineRulesForm form = new DefineRulesForm(parser);
             form.Visible = true;
         }
+
         public Bitmap notesConfigButton_GetImage(IRibbonControl control)
         {
             return Resources.regex_setup_icon;
         }
+
         public void OnSearchNotes(Office.IRibbonControl control)
         {
             Excel.Worksheet wksheet = (Excel.Worksheet)Globals.ThisAddIn.Application.ActiveSheet;
             NotesParser parser = new NotesParser(worksheet: wksheet);
             parser.Parse();
         }
+
         public Bitmap notesSearchButton_GetImage(IRibbonControl control)
         {
             return Resources.regex_search_icon;
@@ -99,9 +107,19 @@ namespace DECS_Excel_Add_Ins
             string[] resourceNames = asm.GetManifestResourceNames();
             for (int i = 0; i < resourceNames.Length; ++i)
             {
-                if (string.Compare(resourceName, resourceNames[i], StringComparison.OrdinalIgnoreCase) == 0)
+                if (
+                    string.Compare(
+                        resourceName,
+                        resourceNames[i],
+                        StringComparison.OrdinalIgnoreCase
+                    ) == 0
+                )
                 {
-                    using (StreamReader resourceReader = new StreamReader(asm.GetManifestResourceStream(resourceNames[i])))
+                    using (
+                        StreamReader resourceReader = new StreamReader(
+                            asm.GetManifestResourceStream(resourceNames[i])
+                        )
+                    )
                     {
                         if (resourceReader != null)
                         {

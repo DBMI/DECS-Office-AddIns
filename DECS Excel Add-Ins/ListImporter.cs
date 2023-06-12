@@ -23,6 +23,7 @@ namespace DECS_Excel_Add_Ins
         {
             this.application = Globals.ThisAddIn.Application;
         }
+
         private Range GetMrnColumn(Worksheet worksheet, int lastRow)
         {
             Excel.Range column = GetSelectedCol();
@@ -36,6 +37,7 @@ namespace DECS_Excel_Add_Ins
 
             return column;
         }
+
         private Range GetSelectedCol()
         {
             Excel.Range rng = (Excel.Range)this.application.Selection;
@@ -49,13 +51,17 @@ namespace DECS_Excel_Add_Ins
 
             return selectedColumn;
         }
+
         public void Scan(Worksheet worksheet)
         {
             // Initialize the output .SQL file.
             Workbook workbook = worksheet.Parent;
             string filename = workbook.FullName;
 
-            (StreamWriter writer, string output_filename) = Utilities.OpenOutput(input_filename: filename, filetype: ".sql");
+            (StreamWriter writer, string output_filename) = Utilities.OpenOutput(
+                input_filename: filename,
+                filetype: ".sql"
+            );
             writer.Write(PREAMBLE + SEGMENT_START);
 
             int lastRow = Utilities.FindLastRow(worksheet);
@@ -80,10 +86,12 @@ namespace DECS_Excel_Add_Ins
                     continue;
                 }
 
-                if (string.IsNullOrEmpty(cell_contents)) continue;
+                if (string.IsNullOrEmpty(cell_contents))
+                    continue;
 
                 // If the line is just "MRN", ignore it.
-                if (IGNORED_WORDS.Contains(cell_contents)) continue;
+                if (IGNORED_WORDS.Contains(cell_contents))
+                    continue;
 
                 string line_ending;
 
