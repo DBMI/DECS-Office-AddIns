@@ -1,6 +1,7 @@
 ﻿using Microsoft.Office.Interop.Excel;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -58,7 +59,7 @@ namespace DECS_Excel_Add_Ins
             Workbook workbook = worksheet.Parent;
             string filename = workbook.FullName;
 
-            (StreamWriter writer, string output_filename) = Utilities.OpenOutput(
+            (StreamWriter writer, string outputFilename) = Utilities.OpenOutput(
                 input_filename: filename,
                 filetype: ".sql"
             );
@@ -120,7 +121,7 @@ namespace DECS_Excel_Add_Ins
             }
 
             writer.Close();
-            Utilities.ShowResults(output_filename);
+            Process.Start(outputFilename);
         }
     }
 }
