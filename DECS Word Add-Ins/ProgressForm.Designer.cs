@@ -52,6 +52,7 @@
             this.progressLabel = new System.Windows.Forms.Label();
             this.okButton = new System.Windows.Forms.Button();
             this.cancelButton = new System.Windows.Forms.Button();
+            this.draftEmailLinkLabel = new System.Windows.Forms.LinkLabel();
             ((System.ComponentModel.ISupportInitialize)(this.logoPictureBox)).BeginInit();
             this.groupBox1.SuspendLayout();
             this.SuspendLayout();
@@ -222,7 +223,7 @@
             // 
             this.pushToGitLabLinkLabel.AutoSize = true;
             this.pushToGitLabLinkLabel.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.pushToGitLabLinkLabel.Location = new System.Drawing.Point(407, 397);
+            this.pushToGitLabLinkLabel.Location = new System.Drawing.Point(407, 463);
             this.pushToGitLabLinkLabel.Name = "pushToGitLabLinkLabel";
             this.pushToGitLabLinkLabel.Size = new System.Drawing.Size(32, 20);
             this.pushToGitLabLinkLabel.TabIndex = 17;
@@ -234,7 +235,7 @@
             // 
             this.pushToGitLabDescriptionLabel.AutoSize = true;
             this.pushToGitLabDescriptionLabel.Font = new System.Drawing.Font("Microsoft Sans Serif", 15.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.pushToGitLabDescriptionLabel.Location = new System.Drawing.Point(113, 393);
+            this.pushToGitLabDescriptionLabel.Location = new System.Drawing.Point(113, 459);
             this.pushToGitLabDescriptionLabel.Name = "pushToGitLabDescriptionLabel";
             this.pushToGitLabDescriptionLabel.Size = new System.Drawing.Size(154, 25);
             this.pushToGitLabDescriptionLabel.TabIndex = 16;
@@ -244,7 +245,7 @@
             // 
             this.pushToGitLabStatusLabel.AutoSize = true;
             this.pushToGitLabStatusLabel.Font = new System.Drawing.Font("Microsoft Sans Serif", 36F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.pushToGitLabStatusLabel.Location = new System.Drawing.Point(49, 378);
+            this.pushToGitLabStatusLabel.Location = new System.Drawing.Point(49, 444);
             this.pushToGitLabStatusLabel.Name = "pushToGitLabStatusLabel";
             this.pushToGitLabStatusLabel.Size = new System.Drawing.Size(58, 55);
             this.pushToGitLabStatusLabel.TabIndex = 15;
@@ -254,7 +255,7 @@
             // 
             this.draftEmailDescriptionLabel.AutoSize = true;
             this.draftEmailDescriptionLabel.Font = new System.Drawing.Font("Microsoft Sans Serif", 15.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.draftEmailDescriptionLabel.Location = new System.Drawing.Point(113, 455);
+            this.draftEmailDescriptionLabel.Location = new System.Drawing.Point(113, 396);
             this.draftEmailDescriptionLabel.Name = "draftEmailDescriptionLabel";
             this.draftEmailDescriptionLabel.Size = new System.Drawing.Size(231, 25);
             this.draftEmailDescriptionLabel.TabIndex = 19;
@@ -264,7 +265,7 @@
             // 
             this.draftEmailStatusLabel.AutoSize = true;
             this.draftEmailStatusLabel.Font = new System.Drawing.Font("Microsoft Sans Serif", 36F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.draftEmailStatusLabel.Location = new System.Drawing.Point(49, 440);
+            this.draftEmailStatusLabel.Location = new System.Drawing.Point(49, 381);
             this.draftEmailStatusLabel.Name = "draftEmailStatusLabel";
             this.draftEmailStatusLabel.Size = new System.Drawing.Size(58, 55);
             this.draftEmailStatusLabel.TabIndex = 18;
@@ -313,12 +314,25 @@
             this.cancelButton.UseVisualStyleBackColor = true;
             this.cancelButton.Click += new System.EventHandler(this.cancelButton_Click);
             // 
+            // draftEmailLinkLabel
+            // 
+            this.draftEmailLinkLabel.AutoSize = true;
+            this.draftEmailLinkLabel.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.draftEmailLinkLabel.Location = new System.Drawing.Point(407, 400);
+            this.draftEmailLinkLabel.Name = "draftEmailLinkLabel";
+            this.draftEmailLinkLabel.Size = new System.Drawing.Size(32, 20);
+            this.draftEmailLinkLabel.TabIndex = 24;
+            this.draftEmailLinkLabel.TabStop = true;
+            this.draftEmailLinkLabel.Text = "link";
+            this.draftEmailLinkLabel.LinkClicked += new System.Windows.Forms.LinkLabelLinkClickedEventHandler(this.draftEmailLinkLabel_LinkClicked);
+            // 
             // ProgressForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.Color.White;
             this.ClientSize = new System.Drawing.Size(1163, 740);
+            this.Controls.Add(this.draftEmailLinkLabel);
             this.Controls.Add(this.cancelButton);
             this.Controls.Add(this.okButton);
             this.Controls.Add(this.groupBox1);
@@ -378,5 +392,6 @@
         private System.Windows.Forms.Label progressLabel;
         private System.Windows.Forms.Button okButton;
         private System.Windows.Forms.Button cancelButton;
+        private System.Windows.Forms.LinkLabel draftEmailLinkLabel;
     }
 }
