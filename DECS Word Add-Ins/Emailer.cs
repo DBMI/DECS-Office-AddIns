@@ -14,6 +14,7 @@ namespace DecsWordAddIns
         OneDrive,
         VRD
     }
+
     // https://csharpexamples.com/c-send-an-email-using-outlook-program/
     internal class Emailer
     {
@@ -23,10 +24,12 @@ namespace DecsWordAddIns
         private const string SALUTATION = "{{ cookiecutter.__requestor_salutation }}";
         private const string TASK_NUMBER = "{{ cookiecutter.task_number }}";
 
-        internal Emailer(DeliveryType deliveryType, 
-                         string projectDirectory,    
-                         string requestorSalutation, 
-                         string taskNumber)
+        internal Emailer(
+            DeliveryType deliveryType,
+            string projectDirectory,
+            string requestorSalutation,
+            string taskNumber
+        )
         {
             // Read in the boilerplate HTML & substitute actual values for the placeholders.
             ReadEmailBody(deliveryType);
@@ -61,7 +64,8 @@ namespace DecsWordAddIns
                     return false;
 
                 // create a new mail item.
-                MsOutlook.MailItem mail = (MsOutlook.MailItem)outlookApp.CreateItem(MsOutlook.OlItemType.olMailItem);
+                MsOutlook.MailItem mail = (MsOutlook.MailItem)
+                    outlookApp.CreateItem(MsOutlook.OlItemType.olMailItem);
 
                 // add the body of the email
                 mail.HTMLBody = this.htmlBody;

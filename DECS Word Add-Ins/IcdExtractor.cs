@@ -25,21 +25,28 @@ namespace DecsWordAddIns
         private readonly string[] FALSE_CODES = { "A1C", "L1T", "R001442" };
 
         // Accommodate both condition - code ("Alzheimer’s disease – G30") and code = condition ("F12 = cannabis") formats.
-        private readonly string[] LINE_PATTERNS = { @"(?<condition>[\w ',]+) +[-=:]? *(?<code>[A-Z]\d+[A-Z]?\.?\d*)",
-                                                    @"(?<code>[A-Z]\d+[A-Z]?\.?\d*) +[-=:]? *(?<condition>[\w ',]+)" };
+        private readonly string[] LINE_PATTERNS =
+        {
+            @"(?<condition>[\w ',]+) +[-=:]? *(?<code>[A-Z]\d+[A-Z]?\.?\d*)",
+            @"(?<code>[A-Z]\d+[A-Z]?\.?\d*) +[-=:]? *(?<condition>[\w ',]+)"
+        };
 
         // The numerical part of an ICD-10 code.
         private const string NUMBER_PATTERN = @"\d+\.?\d*";
 
         // Detect instruction like "M30 – M36".
         private const string SERIES_PATTERN = @"([A-Z]\d+\.?\d*) +[-=:] *([A-Z]\d+\.?\d*)";
+
         //
         // SQL snippets
         //
-        private const string EXTRA_CODE_LINE = "\r\n                                          OR CODE LIKE ";
+        private const string EXTRA_CODE_LINE =
+            "\r\n                                          OR CODE LIKE ";
         private const string PREAMBLE = "\r\nSELECT DISTINCT\r\n        MRN,";
-        private const string PREFIX = "\r\n        CASE\r\n              WHEN\r\n                    (\r\n                        SELECT TOP 1\r\n                               DX_ID\r\n                        FROM   problem_list\r\n                        WHERE  PAT_ID = pat.PAT_ID\r\n                        AND    DX_ID IN\r\n                               (\r\n                                      SELECT DX_ID\r\n                                      FROM   EDG_CURRENT_ICD10\r\n                                      WHERE  CODE LIKE ";
-        private const string SUFFIX = "\r\n                    ) IS NOT NULL THEN 'Y'\r\n                      ELSE 'N'\r\n        END AS ";
+        private const string PREFIX =
+            "\r\n        CASE\r\n              WHEN\r\n                    (\r\n                        SELECT TOP 1\r\n                               DX_ID\r\n                        FROM   problem_list\r\n                        WHERE  PAT_ID = pat.PAT_ID\r\n                        AND    DX_ID IN\r\n                               (\r\n                                      SELECT DX_ID\r\n                                      FROM   EDG_CURRENT_ICD10\r\n                                      WHERE  CODE LIKE ";
+        private const string SUFFIX =
+            "\r\n                    ) IS NOT NULL THEN 'Y'\r\n                      ELSE 'N'\r\n        END AS ";
 
         private Regex alphaRegex;
         private Regex codeRegex;
@@ -51,6 +58,7 @@ namespace DecsWordAddIns
         {
             BuildRegex();
         }
+
         // Create all the reusable Regex objects.
         private void BuildRegex()
         {
@@ -67,6 +75,7 @@ namespace DecsWordAddIns
             this.numberRegex = new Regex(NUMBER_PATTERN);
             this.seriesRegex = new Regex(SERIES_PATTERN);
         }
+
         // Expand text like "M30 - M35" into a comma-separated string "M30, M31, M32, M33, M34, M35".
         private string ExpandSeries(string text)
         {
@@ -84,19 +93,25 @@ namespace DecsWordAddIns
                     // The thing we need to replace.
                     string series_definition = match.Groups[0].Value;
                     Match start_match = this.numberRegex.Match(match.Groups[1].Value);
-                    
-                    if (!Int32.TryParse(start_match.Groups[0].Value, out startNumber)) continue;
+
+                    if (!Int32.TryParse(start_match.Groups[0].Value, out startNumber))
+                        continue;
 
                     Match end_match = this.numberRegex.Match(match.Groups[2].Value);
 
-                    if (!Int32.TryParse(end_match.Groups[0].Value, out endNumber)) continue;
+                    if (!Int32.TryParse(end_match.Groups[0].Value, out endNumber))
+                        continue;
 
                     int sequence_count = endNumber - startNumber;
                     Match alpha_match = this.alphaRegex.Match(match.Groups[1].Value);
                     alpha = alpha_match.Groups[0].Value;
 
-                    int[] codeNumberSequence = Enumerable.Range(startNumber, sequence_count + 1).ToArray();
-                    string[] codes_with_alpha = codeNumberSequence.Select(i => alpha + i.ToString()).ToArray();
+                    int[] codeNumberSequence = Enumerable
+                        .Range(startNumber, sequence_count + 1)
+                        .ToArray();
+                    string[] codes_with_alpha = codeNumberSequence
+                        .Select(i => alpha + i.ToString())
+                        .ToArray();
                     string codes = String.Join(",", codes_with_alpha);
                     expanded_text = text.Replace(series_definition, codes);
                     break;
@@ -105,6 +120,7 @@ namespace DecsWordAddIns
 
             return expanded_text;
         }
+
         // Handle a paragraph, which is probably just one line (since it ends with a newline.)
         internal void ProcessParagraph(string text, StreamWriter writer)
         {
@@ -125,17 +141,23 @@ namespace DecsWordAddIns
                         bool first_match = true;
                         condition_name = line_match.Groups["condition"].Value;
 
-                        if (condition_name == null) continue;
+                        if (condition_name == null)
+                            continue;
 
-                        if (Utilities.IsJustListOfCodes(name: condition_name, matches: code_matches)) continue;
+                        if (
+                            Utilities.IsJustListOfCodes(name: condition_name, matches: code_matches)
+                        )
+                            continue;
 
                         foreach (Match code_match in code_matches)
                         {
                             string code_value = code_match.Groups[0].Value;
 
-                            if (code_value == null) continue;
+                            if (code_value == null)
+                                continue;
 
-                            if (FALSE_CODES.Contains(code_value)) continue;
+                            if (FALSE_CODES.Contains(code_value))
+                                continue;
 
                             found_match = true;
 
@@ -165,20 +187,26 @@ namespace DecsWordAddIns
                 }
             }
         }
+
         // Main method. Accepts a Document object & writes out the .sql file.
         internal void Scan(Document doc)
         {
-            (StreamWriter writer, string outputFilename) = Utilities.OpenOutput(input_filename: doc.FullName, filetype: ".sql");
+            (StreamWriter writer, string outputFilename) = Utilities.OpenOutput(
+                input_filename: doc.FullName,
+                filetype: ".sql"
+            );
 
             writer.WriteLine(PREAMBLE);
 
             foreach (Paragraph para in doc.Paragraphs)
             {
-                if (para == null) continue;
+                if (para == null)
+                    continue;
 
                 string text = para.Range.Text.ToString().Trim();
 
-                if (text == null) continue;
+                if (text == null)
+                    continue;
 
                 text = Utilities.CleanText(text);
 
@@ -186,7 +214,7 @@ namespace DecsWordAddIns
 
                 ProcessParagraph(textExpanded, writer);
             }
-            
+
             writer.Close();
             Utilities.ShowResults(outputFilename);
         }

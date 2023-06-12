@@ -17,7 +17,7 @@ namespace DecsWordAddIns
     {
         private const string CHECKED_BOX = "☑";
         private const string RED_X = "❌";
-        
+
         private bool stopExecution = false;
 
         internal ProgressForm()
@@ -148,15 +148,23 @@ namespace DecsWordAddIns
 
         private void ShowVersion()
         {
-            System.Version version = System.Reflection.Assembly.GetExecutingAssembly().GetName().Version;
-            string ver = String.Format("{0}.{1}.{2}", version.Major, version.Minor, version.Revision);
+            System.Version version = System.Reflection.Assembly
+                .GetExecutingAssembly()
+                .GetName()
+                .Version;
+            string ver = String.Format(
+                "{0}.{1}.{2}",
+                version.Major,
+                version.Minor,
+                version.Revision
+            );
 
             string filename = Assembly.GetExecutingAssembly().Location;
             FileInfo fi = new FileInfo(filename);
             DateTime modifiedDate = fi.LastWriteTime;
             this.versionLabel.Text = "ver. " + ver + " " + modifiedDate.ToString("yyyy-MM-dd");
         }
-        
+
         internal bool StopSignaled()
         {
             return this.stopExecution;

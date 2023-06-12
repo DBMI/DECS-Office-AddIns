@@ -37,8 +37,10 @@ namespace DecsWordAddIns
         private const string DATA_SET_NAME_HEADING = "Data Set Name:";
         private const string DATA_SOURCE_HEADING = "Data Source:";
         private const int MAX_STRING_LENGTH = 32;
-        private const string PEOPLE_PATTERN = @"(?<surname>[\w ]+), ?(?<given_name>[\w \.]+?) ?(?<email>[\d\w\.]+@[\d\w\.]+)";
-        private const string PRINCIPAL_INVESTIGATOR_HEADING = "Principal Investigator (Name, E-mail):";
+        private const string PEOPLE_PATTERN =
+            @"(?<surname>[\w ]+), ?(?<given_name>[\w \.]+?) ?(?<email>[\d\w\.]+@[\d\w\.]+)";
+        private const string PRINCIPAL_INVESTIGATOR_HEADING =
+            "Principal Investigator (Name, E-mail):";
         private const string REQUESTER_HEADING = "Requester (Name, E-mail):";
         private const string STUDY_NAME_HEADING = "Study Name:";
         private const string TASK_NUMBER_HEADING = "DECS Request #:";
@@ -50,14 +52,15 @@ namespace DecsWordAddIns
         private const string SLICER_DICER_GROUP_BY = "GROUP BY";
         private const string SLICER_DICER_ISOLATION = "SET TRANSACTION ISOLATION LEVEL SNAPSHOT";
 
-
         private Regex decsNumberRegex;
         private Regex peopleRegex;
 
         private ProgressForm progressForm;
 
         // https://stackoverflow.com/a/28546547/18749636
-        private static readonly log4net.ILog log = log4net.LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
+        private static readonly log4net.ILog log = log4net.LogManager.GetLogger(
+            System.Reflection.MethodBase.GetCurrentMethod().DeclaringType
+        );
 
         internal ScopeOfWorkParser()
         {
@@ -77,7 +80,10 @@ namespace DecsWordAddIns
 
         private bool BuildSqlFile()
         {
-            this.sqlFilename = Path.Combine(this.projectDirectory.FullName, this.projectTriple + ".sql");
+            this.sqlFilename = Path.Combine(
+                this.projectDirectory.FullName,
+                this.projectTriple + ".sql"
+            );
             log.Debug("Will build file '" + this.sqlFilename + "'.");
 
             if (!InsertSqlHeader())
@@ -106,7 +112,7 @@ namespace DecsWordAddIns
                 return false;
             }
 
-            // Can't do this in SetupProject, because it can't tell if this method returned true 
+            // Can't do this in SetupProject, because it can't tell if this method returned true
             // because it converted the SlicerDicer file or because there isn't one.
             this.progressForm.CheckOffConvertSlicerDicer();
             this.progressForm.LinkConvertedSlicerDicerFile(this.sqlFilename);
@@ -172,9 +178,9 @@ namespace DecsWordAddIns
 
                 return true;
             }
-            catch 
-            { 
-                return false; 
+            catch
+            {
+                return false;
             }
         }
 
@@ -183,10 +189,17 @@ namespace DecsWordAddIns
             try
             {
                 log.Debug("About to copy file to '" + projectDirectory.FullName + "'.");
-                this.outputFileName = Path.Combine(projectDirectory.FullName, this.projectTriple + ".xlsx");
+                this.outputFileName = Path.Combine(
+                    projectDirectory.FullName,
+                    this.projectTriple + ".xlsx"
+                );
 
                 // Copy results template to project directory, allowing overwrite.
-                var fullpath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Resources", "results_template.xlsx");
+                var fullpath = Path.Combine(
+                    AppDomain.CurrentDomain.BaseDirectory,
+                    "Resources",
+                    "results_template.xlsx"
+                );
 
                 if (File.Exists(fullpath))
                 {
@@ -213,15 +226,16 @@ namespace DecsWordAddIns
 
         private bool Done()
         {
-            bool haveStudyNameOrDataSetName = !string.IsNullOrEmpty(this.studyName) || !string.IsNullOrEmpty(this.dataSetName);
-            return haveStudyNameOrDataSetName && 
-                !string.IsNullOrEmpty(this.dataSource) &&
-                !string.IsNullOrEmpty(this.principalInvestigatorEmail) &&
-                !string.IsNullOrEmpty(this.principalInvestigatorGivenName) &&
-                !string.IsNullOrEmpty(this.principalInvestigatorSurname) &&
-                !string.IsNullOrEmpty(this.requesterEmail) &&
-                !string.IsNullOrEmpty(this.requesterName) &&
-                !string.IsNullOrEmpty(this.taskNumber);
+            bool haveStudyNameOrDataSetName =
+                !string.IsNullOrEmpty(this.studyName) || !string.IsNullOrEmpty(this.dataSetName);
+            return haveStudyNameOrDataSetName
+                && !string.IsNullOrEmpty(this.dataSource)
+                && !string.IsNullOrEmpty(this.principalInvestigatorEmail)
+                && !string.IsNullOrEmpty(this.principalInvestigatorGivenName)
+                && !string.IsNullOrEmpty(this.principalInvestigatorSurname)
+                && !string.IsNullOrEmpty(this.requesterEmail)
+                && !string.IsNullOrEmpty(this.requesterName)
+                && !string.IsNullOrEmpty(this.taskNumber);
         }
 
         private void ExtractDecsNumber(string text)
@@ -240,8 +254,12 @@ namespace DecsWordAddIns
 
             if (piMatch.Success)
             {
-                this.principalInvestigatorGivenName = piMatch.Groups["given_name"].Value.ToString().Trim();
-                this.principalInvestigatorSurname = piMatch.Groups["surname"].Value.ToString().Trim();
+                this.principalInvestigatorGivenName = piMatch.Groups["given_name"].Value
+                    .ToString()
+                    .Trim();
+                this.principalInvestigatorSurname = piMatch.Groups["surname"].Value
+                    .ToString()
+                    .Trim();
                 this.principalInvestigatorEmail = piMatch.Groups["email"].Value.ToString().Trim();
             }
         }
@@ -253,7 +271,9 @@ namespace DecsWordAddIns
             if (requesterMatch.Success)
             {
                 string requesterSurname = requesterMatch.Groups["surname"].Value.ToString().Trim();
-                string requesterGivenName = requesterMatch.Groups["given_name"].Value.ToString().Trim();
+                string requesterGivenName = requesterMatch.Groups["given_name"].Value
+                    .ToString()
+                    .Trim();
                 this.requesterName = requesterGivenName + " " + requesterSurname;
                 this.requesterEmail = requesterMatch.Groups["email"].Value.ToString().Trim();
             }
@@ -300,7 +320,7 @@ namespace DecsWordAddIns
             return filePath;
         }
 
-        private bool InsertSqlHeader() 
+        private bool InsertSqlHeader()
         {
             try
             {
@@ -311,21 +331,30 @@ namespace DecsWordAddIns
                     writer.WriteLine("/*");
                     writer.WriteLine("** " + this.projectTriple + ".sql");
                     writer.WriteLine("** Task: " + this.taskNumber);
-                    writer.WriteLine("** Principal Investigator: " +
-                        this.principalInvestigatorGivenName + " " +
-                        this.principalInvestigatorSurname + ", " +
-                        this.principalInvestigatorEmail);
-                    writer.WriteLine("** Requester: " +
-                        this.requesterName + ", " +
-                        this.requesterEmail);
-                    writer.WriteLine("** Author: " + Environment.UserName + ", " + UserPrincipal.Current.EmailAddress);
+                    writer.WriteLine(
+                        "** Principal Investigator: "
+                            + this.principalInvestigatorGivenName
+                            + " "
+                            + this.principalInvestigatorSurname
+                            + ", "
+                            + this.principalInvestigatorEmail
+                    );
+                    writer.WriteLine(
+                        "** Requester: " + this.requesterName + ", " + this.requesterEmail
+                    );
+                    writer.WriteLine(
+                        "** Author: "
+                            + Environment.UserName
+                            + ", "
+                            + UserPrincipal.Current.EmailAddress
+                    );
                     writer.WriteLine("** Created: " + DateTime.Now.ToString("yyyy-MM-dd"));
                     writer.WriteLine("** Database: " + this.dataSource);
                     writer.WriteLine("*/");
                     writer.WriteLine("");
                     writer.WriteLine("USE [" + this.dataSource.ToUpper() + "];");
                 }
-                
+
                 return true;
             }
             catch (Exception ex)
@@ -405,11 +434,17 @@ namespace DecsWordAddIns
 
         private string ProjectTriple()
         {
-            log.Debug("Building project triple from" + 
-                      " surname: " + this.principalInvestigatorSurname + 
-                      " task number: " + this.taskNumber + 
-                      " study name: " + StudyName());
-            string triple = this.principalInvestigatorSurname + "-" + this.taskNumber + "-" + StudyName();
+            log.Debug(
+                "Building project triple from"
+                    + " surname: "
+                    + this.principalInvestigatorSurname
+                    + " task number: "
+                    + this.taskNumber
+                    + " study name: "
+                    + StudyName()
+            );
+            string triple =
+                this.principalInvestigatorSurname + "-" + this.taskNumber + "-" + StudyName();
             triple = triple.Replace("&", "and");
             triple = triple.Replace(' ', '_');
             triple = triple.Replace(',', '_');
@@ -432,7 +467,8 @@ namespace DecsWordAddIns
             string message;
             DialogResult result;
 
-            if (this.progressForm.StopSignaled()) return;
+            if (this.progressForm.StopSignaled())
+                return;
 
             // 1. Extract key information from Scope of Work.
             if (!Parse())
@@ -448,7 +484,8 @@ namespace DecsWordAddIns
                 }
             }
 
-            if (this.progressForm.StopSignaled()) return;
+            if (this.progressForm.StopSignaled())
+                return;
 
             // 2. Create project directory.
             if (!CreateProjectDirectory())
@@ -465,7 +502,8 @@ namespace DecsWordAddIns
                 }
             }
 
-            if (this.progressForm.StopSignaled()) return;
+            if (this.progressForm.StopSignaled())
+                return;
 
             this.progressForm.CheckOffCreateProjectDirectory();
             this.progressForm.LinkProjectDirectory(this.documentDirectoryName);
@@ -485,13 +523,14 @@ namespace DecsWordAddIns
                 }
             }
 
-            if (this.progressForm.StopSignaled()) return;
+            if (this.progressForm.StopSignaled())
+                return;
 
             this.progressForm.CheckOffInitializeExcelFile();
             this.progressForm.LinkExcelFile(this.outputFileName);
 
             // 4. Initialize SQL file with project info in header.
-            if (!BuildSqlFile()) 
+            if (!BuildSqlFile())
             {
                 message = "Unable to build SQL file.";
                 this.progressForm.MarkFailedInitializeSqlFile();
@@ -505,7 +544,8 @@ namespace DecsWordAddIns
                 }
             }
 
-            if (this.progressForm.StopSignaled()) return;
+            if (this.progressForm.StopSignaled())
+                return;
 
             this.progressForm.CheckOffInitializeSqlFile();
             this.progressForm.LinkSqlFile(this.sqlFilename);
@@ -530,10 +570,13 @@ namespace DecsWordAddIns
                 }
             }
 
-            if (this.progressForm.StopSignaled()) return;
+            if (this.progressForm.StopSignaled())
+                return;
 
             // Since it's a web address, use Uri class to convert path separators to fwd slash.
-            Uri gitLabProjectAddress = new Uri(Path.Combine(GitLabHandler.Address(), this.projectTriple));
+            Uri gitLabProjectAddress = new Uri(
+                Path.Combine(GitLabHandler.Address(), this.projectTriple)
+            );
             this.progressForm.CheckOffPushToGitLab();
             this.progressForm.LinkGitLab(gitLabProjectAddress.ToString());
 
@@ -558,16 +601,23 @@ namespace DecsWordAddIns
                 }
             }
 
-            if (this.progressForm.StopSignaled()) return;
+            if (this.progressForm.StopSignaled())
+                return;
 
             // 7. Draft email reporting project completion.
-            Emailer emailer = new Emailer(deliveryType: deliveryType,
-                                          projectDirectory: this.projectDirectory.ToString(),
-                                          requestorSalutation: Utilities.SalutationFromName(this.requesterName),
-                                          taskNumber: this.taskNumber);
+            Emailer emailer = new Emailer(
+                deliveryType: deliveryType,
+                projectDirectory: this.projectDirectory.ToString(),
+                requestorSalutation: Utilities.SalutationFromName(this.requesterName),
+                taskNumber: this.taskNumber
+            );
 
-            if (!emailer.DraftOutlookEmail(subject: "Your DECS Request is Ready: DECS-" + this.taskNumber,
-                                           recipients: this.requesterEmail))
+            if (
+                !emailer.DraftOutlookEmail(
+                    subject: "Your DECS Request is Ready: DECS-" + this.taskNumber,
+                    recipients: this.requesterEmail
+                )
+            )
             {
                 message = "Unable to draft email.";
                 this.progressForm.MarkFailedDraftEmail();
@@ -608,22 +658,32 @@ namespace DecsWordAddIns
                     writer.WriteLine("FROM #resultSet rs");
                     writer.WriteLine("JOIN dbo.PatientDim p\n    ON p.durableKey=rs.durableKey");
                     writer.WriteLine("-- Get MRN:");
-                    writer.WriteLine("JOIN dbo.PatientIdentityDimX pid \n    ON pid.patientId=p.PatientEpicId AND pid.identityTypeId=2");
+                    writer.WriteLine(
+                        "JOIN dbo.PatientIdentityDimX pid \n    ON pid.patientId=p.PatientEpicId AND pid.identityTypeId=2"
+                    );
                     writer.WriteLine("-- Research-Eligble:");
-                    writer.WriteLine("JOIN [prd-clarity].[clarity_prod].dbo.REGISTRY_DATA_INFO rdi");
+                    writer.WriteLine(
+                        "JOIN [prd-clarity].[clarity_prod].dbo.REGISTRY_DATA_INFO rdi"
+                    );
                     writer.WriteLine("    ON rdi.NETWORKED_ID = p.PatientEpicId");
-                    writer.WriteLine("JOIN [prd-clarity].[clarity_prod].dbo.REG_DATA_MEMBERSHP rdm");
-                    writer.WriteLine("    ON rdm.RECORD_ID = rdi.RECORD_ID AND rdm.REGISTRY_ID = '100468'");
+                    writer.WriteLine(
+                        "JOIN [prd-clarity].[clarity_prod].dbo.REG_DATA_MEMBERSHP rdm"
+                    );
+                    writer.WriteLine(
+                        "    ON rdm.RECORD_ID = rdi.RECORD_ID AND rdm.REGISTRY_ID = '100468'"
+                    );
                     writer.WriteLine("WHERE");
                     writer.WriteLine("	p.PatientEpicId NOT IN");
-                    writer.WriteLine("        (SELECT pat_id from \n[prd-clarity].[clarity_prod].ucsd_research.unconsented_patient)");
+                    writer.WriteLine(
+                        "        (SELECT pat_id from \n[prd-clarity].[clarity_prod].ucsd_research.unconsented_patient)"
+                    );
                 }
 
                 return true;
             }
-            catch 
-            { 
-                return false; 
+            catch
+            {
+                return false;
             }
         }
     }

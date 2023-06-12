@@ -16,7 +16,7 @@ namespace DecsWordAddIns
     internal static class Utilities
     {
         // Convert fancy Windows stuff so later Regexs work more simply.
-        internal static string CleanText(string text) 
+        internal static string CleanText(string text)
         {
             string text_cleaned = text.Trim();
             text_cleaned = text_cleaned.Replace(@"–", "-"); // Replace Windows dash with simple hyphen.
@@ -51,7 +51,11 @@ namespace DecsWordAddIns
         }
 
         // Turn the statement of work filename into a .sql filename.
-        internal static string FormOutputFilename(string filename, string filetype = ".sql", bool short_version = false)
+        internal static string FormOutputFilename(
+            string filename,
+            string filetype = ".sql",
+            bool short_version = false
+        )
         {
             string dir = Path.GetDirectoryName(filename);
             string just_the_filename = Path.GetFileNameWithoutExtension(filename);
@@ -61,7 +65,7 @@ namespace DecsWordAddIns
             {
                 sql_filename = just_the_filename + filetype;
             }
-            
+
             return sql_filename;
         }
 
@@ -76,7 +80,8 @@ namespace DecsWordAddIns
             {
                 string code_value = match.Groups[0].Value;
 
-                if (code_value == null) continue;
+                if (code_value == null)
+                    continue;
 
                 name = name.Replace(code_value, "");
             }
@@ -91,9 +96,16 @@ namespace DecsWordAddIns
         // Open the output StreamWriter object,
         // understanding that we might have to substitute a shorter version of the output filename
         // if the default filename is too long.
-        internal static (StreamWriter writer, string opened_filename) OpenOutput(string input_filename, string filetype = ".sql")
+        internal static (StreamWriter writer, string opened_filename) OpenOutput(
+            string input_filename,
+            string filetype = ".sql"
+        )
         {
-            string output_filename = Utilities.FormOutputFilename(filename: input_filename, filetype: filetype, short_version: false);
+            string output_filename = Utilities.FormOutputFilename(
+                filename: input_filename,
+                filetype: filetype,
+                short_version: false
+            );
             StreamWriter writer_obj;
 
             try
@@ -101,11 +113,14 @@ namespace DecsWordAddIns
                 writer_obj = new StreamWriter(output_filename);
             }
             // https://stackoverflow.com/a/19329123/18749636
-            catch (Exception ex) when (
-                ex is System.IO.PathTooLongException
-                || ex is System.NotSupportedException)
+            catch (Exception ex)
+                when (ex is System.IO.PathTooLongException || ex is System.NotSupportedException)
             {
-                output_filename = Utilities.FormOutputFilename(filename: input_filename, filetype: filetype, short_version: true);
+                output_filename = Utilities.FormOutputFilename(
+                    filename: input_filename,
+                    filetype: filetype,
+                    short_version: true
+                );
                 writer_obj = new StreamWriter(output_filename);
             }
 
@@ -114,9 +129,9 @@ namespace DecsWordAddIns
 
         // From a text file, build a dictionary of login names, nice names.
         // gwashington, George Washington
-        internal static Dictionary<string,string> ReadUserNamesFile()
+        internal static Dictionary<string, string> ReadUserNamesFile()
         {
-            Dictionary<string,string> userNames = new Dictionary<string,string>();
+            Dictionary<string, string> userNames = new Dictionary<string, string>();
             string allUserNames = Resources.usernames;
             string[] lines = allUserNames.Split('\n');
 
@@ -181,6 +196,7 @@ namespace DecsWordAddIns
                 Process.Start(output_filename);
             }
         }
+
         internal static string TranslateLoginName(string loginName)
         {
             Dictionary<string, string> userNamesList = ReadUserNamesFile();

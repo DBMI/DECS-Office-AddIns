@@ -18,14 +18,15 @@ namespace DecsWordAddIns
         private const string PREAMBLE = "USE [REL_CLARITY];\r\n\r\n";
         private const string SEGMENT_START = "INSERT INTO #MRN_LIST (MRN)\r\nVALUES\r\n";
 
-        public ListImporter() 
-        {
-        }
+        public ListImporter() { }
 
         public void Scan(Document doc)
         {
             // Initialize the output .SQL file.
-            (StreamWriter writer, string output_filename) = Utilities.OpenOutput(input_filename: doc.FullName, filetype: ".sql");
+            (StreamWriter writer, string output_filename) = Utilities.OpenOutput(
+                input_filename: doc.FullName,
+                filetype: ".sql"
+            );
 
             writer.Write(PREAMBLE + SEGMENT_START);
             int num_lines = doc.Paragraphs.Count;
@@ -34,14 +35,17 @@ namespace DecsWordAddIns
 
             foreach (Paragraph para in doc.Paragraphs)
             {
-                if (para == null) continue;
+                if (para == null)
+                    continue;
 
                 string line = para.Range.Text.ToString().Trim();
 
-                if (line == null) continue;
+                if (line == null)
+                    continue;
 
                 // If the line is just "MRN", ignore it.
-                if (IGNORED_WORDS.Contains(line)) continue;
+                if (IGNORED_WORDS.Contains(line))
+                    continue;
 
                 string line_ending;
 
@@ -72,5 +76,5 @@ namespace DecsWordAddIns
             writer.Close();
             Utilities.ShowResults(output_filename);
         }
-}
+    }
 }

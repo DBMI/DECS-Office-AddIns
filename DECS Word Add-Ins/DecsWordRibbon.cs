@@ -24,7 +24,7 @@ using Office = Microsoft.Office.Core;
 //    move your code from the event handlers to the callback methods and modify the code to work with the
 //    Ribbon extensibility (RibbonX) programming model.
 
-// 3. Assign attributes to the control tags in the Ribbon XML file to identify the appropriate callback methods in your code.  
+// 3. Assign attributes to the control tags in the Ribbon XML file to identify the appropriate callback methods in your code.
 
 // For more information, see the Ribbon XML documentation in the Visual Studio Tools for Office Help.
 
@@ -37,36 +37,41 @@ namespace DecsWordAddIns
     {
         private Office.IRibbonUI ribbon;
 
-        public DecsWordRibbon()
-        {
-        }
+        public DecsWordRibbon() { }
+
         public void OnBuildMRN(Office.IRibbonControl control)
         {
             ListImporter importer = new ListImporter();
             importer.Scan(Globals.ThisAddIn.Application.ActiveDocument);
         }
+
         public void OnExtractICD(Office.IRibbonControl control)
         {
             IcdExtractor extractor = new IcdExtractor();
             extractor.Scan(Globals.ThisAddIn.Application.ActiveDocument);
         }
+
         public void OnParseSOW(Office.IRibbonControl control)
         {
             ScopeOfWorkParser parser = new ScopeOfWorkParser();
             parser.SetupProject(Globals.ThisAddIn.Application.ActiveDocument);
         }
+
         public Bitmap buildMrnsButton_GetImage(IRibbonControl control)
         {
             return Resources.clipboard;
         }
+
         public Bitmap icdExtractButton_GetImage(IRibbonControl control)
         {
             return Resources.icd_10_zoom;
         }
+
         public Bitmap scopeOfWorkParserButton_GetImage(IRibbonControl control)
         {
             return Resources.crane;
         }
+
         #region IRibbonExtensibility Members
 
         public string GetCustomUI(string ribbonID)
@@ -94,9 +99,19 @@ namespace DecsWordAddIns
             string[] resourceNames = asm.GetManifestResourceNames();
             for (int i = 0; i < resourceNames.Length; ++i)
             {
-                if (string.Compare(resourceName, resourceNames[i], StringComparison.OrdinalIgnoreCase) == 0)
+                if (
+                    string.Compare(
+                        resourceName,
+                        resourceNames[i],
+                        StringComparison.OrdinalIgnoreCase
+                    ) == 0
+                )
                 {
-                    using (StreamReader resourceReader = new StreamReader(asm.GetManifestResourceStream(resourceNames[i])))
+                    using (
+                        StreamReader resourceReader = new StreamReader(
+                            asm.GetManifestResourceStream(resourceNames[i])
+                        )
+                    )
                     {
                         if (resourceReader != null)
                         {
