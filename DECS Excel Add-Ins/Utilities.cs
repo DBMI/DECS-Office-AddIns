@@ -41,19 +41,23 @@ namespace DECS_Excel_Add_Ins
             DetachEvents(textBox);
         }
 
-        public static void DetachEvents(TextBox textBox)
+        // Convert Excel-formatted date to SQL style.
+        internal static string ConvertExcelDate(string cellContents)
         {
-            object objNew = textBox
-                .GetType()
-                .GetConstructor(new Type[] { })
-                .Invoke(new object[] { });
-            PropertyInfo propEvents = textBox
-                .GetType()
-                .GetProperty("Events", BindingFlags.NonPublic | BindingFlags.Instance);
+            string convertedContents = null;
 
-            EventHandlerList eventHandlerList_obj = (EventHandlerList)
-                propEvents.GetValue(textBox, null);
-            eventHandlerList_obj.Dispose();
+            try
+            {
+                double d = double.Parse(cellContents);
+                DateTime conv = DateTime.FromOADate(d);
+                convertedContents = conv.ToString("yyyy-MM-dd");
+            }
+            catch (System.FormatException)
+            {
+                // Probably trying to convert the name "Date" to a Double in order to create DateTime object.
+            }
+
+            return convertedContents;
         }
 
         internal static int CountCellsWithData(Range rng, int lastRow)
@@ -79,6 +83,21 @@ namespace DECS_Excel_Add_Ins
             }
 
             return numCellsWithData;
+        }
+
+        public static void DetachEvents(TextBox textBox)
+        {
+            object objNew = textBox
+                .GetType()
+                .GetConstructor(new Type[] { })
+                .Invoke(new object[] { });
+            PropertyInfo propEvents = textBox
+                .GetType()
+                .GetProperty("Events", BindingFlags.NonPublic | BindingFlags.Instance);
+
+            EventHandlerList eventHandlerList_obj = (EventHandlerList)
+                propEvents.GetValue(textBox, null);
+            eventHandlerList_obj.Dispose();
         }
 
         // https://stackoverflow.com/a/22151620/18749636
@@ -128,23 +147,24 @@ namespace DECS_Excel_Add_Ins
             return toolTip;
         }
 
-        // Turn the statement of work filename into a .sql filename.
+        // Turn the scope-of-work filename into a .sql filename.
         internal static string FormOutputFilename(
             string filename,
+            string filenameAddon = "",
             string filetype = ".sql",
-            bool short_version = false
+            bool shortVersion = false
         )
         {
             string dir = Path.GetDirectoryName(filename);
-            string just_the_filename = Path.GetFileNameWithoutExtension(filename);
-            string sql_filename = Path.Combine(dir, just_the_filename + filetype);
+            string justTheFilename = Path.GetFileNameWithoutExtension(filename) + filenameAddon;
+            string sqlFilename = Path.Combine(dir, justTheFilename + filetype);
 
-            if (short_version)
+            if (shortVersion)
             {
-                sql_filename = just_the_filename + filetype;
+                sqlFilename = justTheFilename + filetype;
             }
 
-            return sql_filename;
+            return sqlFilename;
         }
 
         internal static List<string> GetColumnNames(Worksheet sheet)
@@ -165,13 +185,60 @@ namespace DECS_Excel_Add_Ins
             return names;
         }
 
+        internal static List<string> GetColumnNames(List<Range> selectedColumns)
+        {
+            List<string> names = new List<string>();
+
+            if (selectedColumns != null && selectedColumns.Count > 0)
+            {
+                // Search along row 1.
+                foreach (Range col in selectedColumns)
+                {
+                    Range topCell = col.Cells[1, 1];
+
+                    try
+                    {
+                        names.Add(topCell.Value.ToString());
+                    }
+                    catch (Microsoft.CSharp.RuntimeBinder.RuntimeBinderException)
+                    {
+                        continue;
+                    }
+                }
+            }
+
+            return names;
+        }
+
         // https://stackoverflow.com/q/21219797/18749636
         internal static string GetTimestamp()
         {
             return DateTime.Now.ToString("yyyyMMddHHmmss");
         }
 
-        internal static Range InsertnewColumn(Range range, string newColumnName)
+        internal static bool HasData(Range rng, int lastRow)
+        {
+            bool hasData = false;
+            Range thisCell;
+
+            for (int rowNumber = 1; rowNumber <= lastRow; rowNumber++)
+            {
+                thisCell = rng.Cells[rowNumber];
+                string cell_contents;
+
+                try
+                {
+                    cell_contents = thisCell.Value2.ToString();
+                    hasData = true;
+                    break;
+                }
+                catch (Microsoft.CSharp.RuntimeBinder.RuntimeBinderException) { }
+            }
+
+            return hasData;
+        }
+
+        internal static Range InsertNewColumn(Range range, string newColumnName)
         {
             int columnNumber = range.Column;
             Worksheet sheet = range.Worksheet;
@@ -225,14 +292,16 @@ namespace DECS_Excel_Add_Ins
         // have to substitute a shorter version of the output filename
         // if the default filename is too long.
         internal static (StreamWriter writer, string openedFilename) OpenOutput(
-            string input_filename,
+            string inputFilename,
+            string filenameAddon = "",
             string filetype = ".sql"
         )
         {
             string outputFilename = Utilities.FormOutputFilename(
-                filename: input_filename,
+                filename: inputFilename,
                 filetype: filetype,
-                short_version: false
+                filenameAddon: filenameAddon,
+                shortVersion: false
             );
             StreamWriter writer_obj;
 
@@ -245,9 +314,9 @@ namespace DECS_Excel_Add_Ins
                 when (ex is System.IO.PathTooLongException || ex is System.NotSupportedException)
             {
                 outputFilename = Utilities.FormOutputFilename(
-                    filename: input_filename,
+                    filename: inputFilename,
                     filetype: filetype,
-                    short_version: true
+                    shortVersion: true
                 );
                 writer_obj = new StreamWriter(outputFilename);
             }

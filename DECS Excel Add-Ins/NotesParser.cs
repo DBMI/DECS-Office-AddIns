@@ -251,7 +251,7 @@ namespace DECS_Excel_Add_Ins
                     if (targetRng == null)
                     {
                         log.Debug("Creating new column '" + rule.newColumn + "'.");
-                        targetRng = Utilities.InsertnewColumn(
+                        targetRng = Utilities.InsertNewColumn(
                             range: this.sourceColumn,
                             newColumnName: rule.newColumn
                         );
