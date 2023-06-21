@@ -1,6 +1,7 @@
 ﻿using Microsoft.Office.Interop.Excel;
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
@@ -12,95 +13,241 @@ using Excel = Microsoft.Office.Interop.Excel;
 
 namespace DECS_Excel_Add_Ins
 {
+    internal enum DataType
+    {
+        Date,
+        Varchar
+    }
+
     internal class ListImporter
     {
         private Application application;
-        private readonly string[] IGNORED_WORDS = { "MRN" };
-        private const int MAX_LINES_PER_IMPORT = 1000;
-        private const string PREAMBLE = "USE [REL_CLARITY];\r\n\r\n";
-        private const string SEGMENT_START = "INSERT INTO #MRN_LIST (MRN)\r\nVALUES\r\n";
+        private List<string> columnNames;
+        private int lastRow;
+        private List<string> sqlVariableNames;
+        private IDictionary<string, DataType> supportedDataTypes;
 
-        public ListImporter()
+        private const int MAX_LINES_PER_IMPORT = 1000;
+
+        // If these cells are empty, we'll skip the rest of the columns.
+        private readonly string[] INDEX_ROW_NAMES = { "MRN", "PAT_ID" };
+
+        private const string MAIN_TABLE_CREATE =
+            "DROP TABLE IF EXISTS #PATIENT_LIST;\r\nCREATE TABLE #PATIENT_LIST (";
+        private const string MAIN_TABLE_USE =
+            ":setvar path \"F:\\DECS\\<task folder name>\"\r\n:r $(path)\\";
+        private const string PREAMBLE = "USE [REL_CLARITY];\r\n\r\n";
+        private const string QUOTE = "'";
+        private const string SEGMENT_START_I = "INSERT INTO #DATA_LIST (";
+        private const string SEGMENT_START_II = ")\r\nVALUES\r\n";
+
+        internal ListImporter()
         {
             this.application = Globals.ThisAddIn.Application;
+
+            // Initialize dictionary to translate column names like "Date of Procedure" to DataType.Date.
+            this.supportedDataTypes = new Dictionary<string, DataType>();
+            this.supportedDataTypes.Add("Date", DataType.Date);
         }
 
-        private Range GetMrnColumn(Worksheet worksheet, int lastRow)
+        // Turn the column name (in row 1) into a enum data type.
+        private DataType DetermineDataType(Range col)
         {
-            Excel.Range column = GetSelectedCol();
-            int numDataPointsInSelectedColumn = Utilities.CountCellsWithData(column, lastRow);
+            DataType dataType = DataType.Varchar;
 
-            // If selected column is empty, can we just use the first column?
-            if (numDataPointsInSelectedColumn <= 1)
+            try
             {
-                column = worksheet.Columns[1].EntireColumn;
+                // What's in the top cell?
+                string colName = col.Cells[1].Value2.ToString();
+
+                dataType = NameToDataType(colName);
+            }
+            catch (Microsoft.CSharp.RuntimeBinder.RuntimeBinderException)
+            {
+                return dataType;
             }
 
-            return column;
+            return dataType;
         }
 
-        private Range GetSelectedCol()
+        // Build a list of the cell contents for this row.
+        private List<string> ExtractRow(List<Range> columns, int rowNum)
         {
-            Excel.Range rng = (Excel.Range)this.application.Selection;
-            Excel.Range selectedColumn = null;
+            List<string> rowContents = new List<string>();
 
-            foreach (Range col in rng.Columns)
+            foreach (Range col in columns)
             {
-                selectedColumn = col;
-                break;
-            }
+                DataType dataType = DetermineDataType(col);
 
-            return selectedColumn;
-        }
-
-        public void Scan(Worksheet worksheet)
-        {
-            // Initialize the output .SQL file.
-            Workbook workbook = worksheet.Parent;
-            string filename = workbook.FullName;
-
-            (StreamWriter writer, string outputFilename) = Utilities.OpenOutput(
-                input_filename: filename,
-                filetype: ".sql"
-            );
-            writer.Write(PREAMBLE + SEGMENT_START);
-
-            int lastRow = Utilities.FindLastRow(worksheet);
-            Range mrnColumn = GetMrnColumn(worksheet, lastRow);
-
-            int lines_written = 0;
-            int lines_written_this_chunk = 0;
-            Range thisCell;
-
-            for (int rowNumber = 1; rowNumber <= lastRow; rowNumber++)
-            {
-                thisCell = mrnColumn.Cells[rowNumber];
-                string cell_contents;
+                Range thisCell = col.Cells[rowNum];
+                string cellContents;
 
                 try
                 {
-                    cell_contents = thisCell.Value2.ToString();
+                    cellContents = thisCell.Value2.ToString();
+
+                    // If the line is just the column name, skip this row.
+                    if (this.columnNames.Contains(cellContents))
+                        break;
+
+                    switch (dataType)
+                    {
+                        // Turn dates into something SQL will understand.
+                        case DataType.Date:
+                            cellContents = Utilities.ConvertExcelDate(cellContents);
+
+                            if (string.IsNullOrEmpty(cellContents))
+                            {
+                                continue;
+                            }
+
+                            break;
+
+                        case DataType.Varchar:
+                            break;
+
+                        default:
+                            break;
+                    }
+
+                    // Put quotes here because we DON'T want to wrap Null in quotes.
+                    cellContents = QUOTE + cellContents + QUOTE;
                 }
-                catch
+                catch (Microsoft.CSharp.RuntimeBinder.RuntimeBinderException)
                 {
                     // There's nothing in this cell.
+                    // If it's an index column, skip the whole row.
+                    if (IsIndexColumn(col))
+                    {
+                        break;
+                    }
+
+                    // Else leave a placeholder.
+                    cellContents = "NULL";
+                }
+
+                rowContents.Add(cellContents);
+            }
+
+            return rowContents;
+        }
+
+        // Which columns has the user selected to export to SQL?
+        private List<Range> GetSelectedCols()
+        {
+            Range rng = (Range)this.application.Selection;
+            List<Range> selectedColumns = new List<Range>();
+
+            foreach (Range col in rng.Columns)
+            {
+                // Don't add BLANK columns.
+                if (Utilities.HasData(col, this.lastRow))
+                {
+                    selectedColumns.Add(col);
+                }
+            }
+
+            return selectedColumns;
+        }
+
+        // Based on the column name (in row 1) is this a special "index" column?
+        private bool IsIndexColumn(Range col)
+        {
+            bool isIndexColumn = false;
+
+            try
+            {
+                // What's in the top cell?
+                string colName = col.Cells[1].Value2.ToString();
+
+                isIndexColumn = INDEX_ROW_NAMES.Contains(colName);
+            }
+            catch (Microsoft.CSharp.RuntimeBinder.RuntimeBinderException) { }
+
+            return isIndexColumn;
+        }
+
+        private DataType NameToDataType(string colName)
+        {
+            DataType dataType = DataType.Varchar;
+
+            foreach (KeyValuePair<string, DataType> entry in this.supportedDataTypes)
+            {
+                if (colName.Contains(entry.Key))
+                {
+                    dataType = entry.Value;
+                    break;
+                }
+            }
+
+            return dataType;
+        }
+
+        // Initializes the SQL INSERT INTO statement.
+        private (List<Range> columns, string segmentStart) PrepSegmentStart(Worksheet worksheet)
+        {
+            string segmentStart = SEGMENT_START_I;
+
+            // Any columns selected?
+            List<Range> selectedColumns = GetSelectedCols();
+
+            if (selectedColumns.Count == 0)
+            {
+                // Just take the first column & hope for the best!
+                selectedColumns.Add(worksheet.Columns[1].EntireColumn);
+            }
+
+            // Build the list of column names.
+            this.columnNames = Utilities.GetColumnNames(selectedColumns);
+
+            // Turn "Date of consult" into "DATE_OF_CONSULT".
+            this.sqlVariableNames = this.columnNames
+                .Select(s => s.Replace(" ", "_").ToUpper())
+                .ToList();
+            segmentStart += string.Join(", ", this.sqlVariableNames);
+            segmentStart += SEGMENT_START_II;
+            return (selectedColumns, segmentStart);
+        }
+
+        // Scans the worksheet & creates the SQL file that lists the patient data to be imported.
+        internal void Scan(Worksheet worksheet)
+        {
+            // We'll use this in a lot of places, so let's just look it up once.
+            this.lastRow = Utilities.FindLastRow(worksheet);
+
+            // Initialize the output .SQL file.
+            Workbook workbook = worksheet.Parent;
+            string workbookFilename = workbook.FullName;
+
+            (StreamWriter writer, string outputFilename) = Utilities.OpenOutput(
+                inputFilename: workbookFilename,
+                filenameAddon: "_list",
+                filetype: ".sql"
+            );
+
+            var selection = PrepSegmentStart(worksheet);
+            writer.Write(PREAMBLE + selection.segmentStart);
+
+            int lines_written_this_chunk = 0;
+
+            for (int rowNumber = 1; rowNumber <= this.lastRow; rowNumber++)
+            {
+                List<string> rowContents = ExtractRow(selection.columns, rowNumber);
+
+                if (!rowContents.Any())
+                {
                     continue;
                 }
 
-                if (string.IsNullOrEmpty(cell_contents))
-                    continue;
-
-                // If the line is just "MRN", ignore it.
-                if (IGNORED_WORDS.Contains(cell_contents))
-                    continue;
-
+                writer.Write("(" + string.Join(", ", rowContents) + ")");
+                lines_written_this_chunk++;
                 string line_ending;
 
-                writer.Write("('" + cell_contents + "')");
-                lines_written++;
-                lines_written_this_chunk++;
-
-                if (lines_written < lastRow)
+                if (rowNumber == this.lastRow)
+                {
+                    line_ending = ";\r\n";
+                }
+                else
                 {
                     if (lines_written_this_chunk < MAX_LINES_PER_IMPORT)
                     {
@@ -108,18 +255,40 @@ namespace DECS_Excel_Add_Ins
                     }
                     else
                     {
-                        line_ending = ";\r\n\r\n" + SEGMENT_START;
+                        line_ending = ";\r\n\r\n" + selection.segmentStart;
                         lines_written_this_chunk = 0;
                     }
-                }
-                else
-                {
-                    line_ending = ";\r\n";
                 }
 
                 writer.Write(line_ending);
             }
 
+            writer.Close();
+            Process.Start(outputFilename);
+            WriteMainHeader(workbookFilename);
+        }
+
+        // Writes the part of the main SQL script that creates a temp table from the patient list file.
+        private void WriteMainHeader(string filename)
+        {
+            // Build list of variables & types like "PAT_ID varchar, PROCEDURE_DATE date"
+            List<string> variableNamesAndTypes = new List<string>();
+
+            foreach (string varName in this.sqlVariableNames)
+            {
+                DataType dataType = NameToDataType(varName);
+                variableNamesAndTypes.Add(varName + " " + dataType.ToString().ToLower());
+            }
+
+            (StreamWriter writer, string outputFilename) = Utilities.OpenOutput(
+                inputFilename: filename,
+                filetype: ".sql"
+            );
+
+            writer.Write(PREAMBLE);
+            writer.Write(MAIN_TABLE_CREATE + string.Join(", ", variableNamesAndTypes) + ")\r\n");
+            string justTheFilenameAndExt = Path.GetFileName(outputFilename);
+            writer.Write(MAIN_TABLE_USE + justTheFilenameAndExt + "\r\n");
             writer.Close();
             Process.Start(outputFilename);
         }
