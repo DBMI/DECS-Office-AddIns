@@ -2,9 +2,11 @@
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.ComponentModel;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
@@ -13,9 +15,14 @@ using Excel = Microsoft.Office.Interop.Excel;
 
 namespace DECS_Excel_Add_Ins
 {
+    // https://stackoverflow.com/a/479417/18749636
     internal enum DataType
     {
+        [Description("date")]
         Date,
+
+        // How we need to describe data type in SQL import statement.
+        [Description("varchar(18)")]
         Varchar
     }
 
@@ -87,7 +94,7 @@ namespace DECS_Excel_Add_Ins
                     cellContents = thisCell.Value2.ToString();
 
                     // If the line is just the column name, skip this row.
-                    if (this.columnNames.Contains(cellContents))
+                    if (this.columnNames.Any(cellContents.Contains))
                         break;
 
                     switch (dataType)
@@ -160,7 +167,7 @@ namespace DECS_Excel_Add_Ins
                 // What's in the top cell?
                 string colName = col.Cells[1].Value2.ToString();
 
-                isIndexColumn = INDEX_ROW_NAMES.Contains(colName);
+                isIndexColumn = INDEX_ROW_NAMES.Any(colName.Contains);
             }
             catch (Microsoft.CSharp.RuntimeBinder.RuntimeBinderException) { }
 
@@ -173,7 +180,8 @@ namespace DECS_Excel_Add_Ins
 
             foreach (KeyValuePair<string, DataType> entry in this.supportedDataTypes)
             {
-                if (colName.Contains(entry.Key))
+                // Make case-insensitive match.
+                if (colName.ToLower().Contains(entry.Key.ToLower()))
                 {
                     dataType = entry.Value;
                     break;
@@ -277,7 +285,7 @@ namespace DECS_Excel_Add_Ins
             foreach (string varName in this.sqlVariableNames)
             {
                 DataType dataType = NameToDataType(varName);
-                variableNamesAndTypes.Add(varName + " " + dataType.ToString().ToLower());
+                variableNamesAndTypes.Add(varName + " " + dataType.GetDescription());
             }
 
             (StreamWriter writer, string outputFilename) = Utilities.OpenOutput(
