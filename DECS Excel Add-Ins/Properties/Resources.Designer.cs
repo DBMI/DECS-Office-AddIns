@@ -83,6 +83,16 @@ namespace DECS_Excel_Add_Ins.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
+        internal static System.Drawing.Bitmap paint_roller {
+            get {
+                object obj = ResourceManager.GetObject("paint_roller", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
         internal static System.Drawing.Bitmap regex_search_icon {
             get {
                 object obj = ResourceManager.GetObject("regex_search_icon", resourceCulture);
