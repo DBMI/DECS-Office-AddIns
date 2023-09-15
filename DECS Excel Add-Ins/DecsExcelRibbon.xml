@@ -30,6 +30,16 @@
 							size="large"
 							supertip="Build SQL code that imports MRN list." />
 				</group>
+				<group id="FormatGroup"
+					   label="Format">
+					<button id="formatSheet"
+							getImage="formatButton_GetImage"
+							label="Format Results"
+							onAction="OnFormat"
+							screentip="Formats current sheet"
+							size="large"
+							supertip="Nice formatting for results sheet" />
+				</group>
 			</tab>
 		</tabs>
 	</ribbon>

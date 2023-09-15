@@ -44,11 +44,23 @@ namespace DECS_Excel_Add_Ins
             return Resources.clipboard;
         }
 
+        public Bitmap formatButton_GetImage(IRibbonControl control)
+        {
+            return Resources.paint_roller;
+        }
+
         public void OnBuildMRN(Office.IRibbonControl control)
         {
             ListImporter importer = new ListImporter();
             Excel.Worksheet wksheet = (Excel.Worksheet)Globals.ThisAddIn.Application.ActiveSheet;
             importer.Scan(wksheet);
+        }
+
+        public void OnFormat(Office.IRibbonControl control)
+        {
+            Formatter formatter = new Formatter();
+            Excel.Worksheet wksheet = (Excel.Worksheet)Globals.ThisAddIn.Application.ActiveSheet;
+            formatter.Format(wksheet);
         }
 
         public void OnSearchConfig(Office.IRibbonControl control)
