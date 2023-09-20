@@ -62,6 +62,7 @@ namespace DECS_Excel_Add_Ins
             log.Debug("Processing " + this.rowsToProcess.NumRows().ToString() + " rows.");
 
             // Remember what it looked like before any additional extracted columns were added.
+            this.originalSourceColumnEntries = new List<string>();
             this.originalColumnNames = Utilities.GetColumnNames(worksheet);
 
             if (withConfigFile)
@@ -381,6 +382,9 @@ namespace DECS_Excel_Add_Ins
         private void RestoreOriginalSourceColumn()
         {
             if (!HasConfig() || !this.rulesValid)
+                return;
+
+            if (originalSourceColumnEntries.Count == 0)
                 return;
 
             Range thisCell;

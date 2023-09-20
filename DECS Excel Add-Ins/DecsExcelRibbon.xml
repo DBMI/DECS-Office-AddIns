@@ -38,7 +38,14 @@
 							onAction="OnFormat"
 							screentip="Formats current sheet"
 							size="large"
-							supertip="Nice formatting for results sheet" />
+							supertip="Nice formatting for results sheet." />
+					<button id="convertDate"
+							getImage="dateConvertButton_GetImage"
+							label="Convert Dates"
+							onAction="OnConvertDates"
+							screentip="Convert MUMPS Dates"
+							size="large"
+							supertip="Adds new column with converted dates." />
 				</group>
 			</tab>
 		</tabs>

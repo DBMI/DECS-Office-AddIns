@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<NotesConfig xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <CleaningRules>
+    <CleaningRule>
+      <enabled>false</enabled>
+    </CleaningRule>
+  </CleaningRules>
+  <DateConversionRule>
+    <enabled>false</enabled>
+    <desiredDateFormat>MM/dd/yyyy</desiredDateFormat>
+  </DateConversionRule>
+  <ExtractRules>
+    <ExtractRule>
+      <displayName>complications</displayName>
+      <enabled>true</enabled>
+      <pattern>(?:Complications|COMPLICATIONS):\s?([\d\w ]+) ?(?:PLAN|DISPOSITION):</pattern>
+      <newColumn>Complications</newColumn>
+    </ExtractRule>
+  </ExtractRules>
+  <SourceColumnName>Notes:</SourceColumnName>
+</NotesConfig>

@@ -7,6 +7,7 @@ using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Runtime.InteropServices;
+using System.Runtime.Serialization;
 using System.Text;
 using Excel = Microsoft.Office.Interop.Excel;
 using Office = Microsoft.Office.Core;
@@ -44,6 +45,11 @@ namespace DECS_Excel_Add_Ins
             return Resources.clipboard;
         }
 
+        public Bitmap dateConvertButton_GetImage(IRibbonControl control)
+        {
+            return Resources.calendar_with_gear;
+        }
+
         public Bitmap formatButton_GetImage(IRibbonControl control)
         {
             return Resources.paint_roller;
@@ -54,6 +60,13 @@ namespace DECS_Excel_Add_Ins
             ListImporter importer = new ListImporter();
             Excel.Worksheet wksheet = (Excel.Worksheet)Globals.ThisAddIn.Application.ActiveSheet;
             importer.Scan(wksheet);
+        }
+
+        public void OnConvertDates(Office.IRibbonControl control)
+        {
+            MumpsDateConverter converter = new MumpsDateConverter();
+            Excel.Worksheet wksheet = (Excel.Worksheet)Globals.ThisAddIn.Application.ActiveSheet;
+            converter.ConvertColumn(wksheet);
         }
 
         public void OnFormat(Office.IRibbonControl control)
