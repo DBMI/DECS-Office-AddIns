@@ -1,26 +1,25 @@
 ﻿using DecsWordAddIns.Properties;
+using Microsoft.Office.Interop.Word;
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Globalization;
 using System.IO;
 using System.Linq;
-using System.Runtime.Remoting.Messaging;
-using System.Text;
 using System.Text.RegularExpressions;
-using System.Threading.Tasks;
-using System.Windows.Forms;
 
 namespace DecsWordAddIns
 {
     internal static class Utilities
     {
-        // Convert fancy Windows stuff so later Regexs work more simply.
+        // Convert/remove stuff so later Regexs don't have to allow for them.
         internal static string CleanText(string text)
         {
             string text_cleaned = text.Trim();
             text_cleaned = text_cleaned.Replace(@"–", "-"); // Replace Windows dash with simple hyphen.
             text_cleaned = text_cleaned.Replace(@"’", "'"); // Replace Windows apostrophe with simple apostrophe.
+            char verticalTab = '\u000B';
+            text_cleaned = text_cleaned.Replace(verticalTab.ToString(), " "); // Remove \v chars.
+            text_cleaned = text_cleaned.Replace(Environment.NewLine, "");
             return text_cleaned;
         }
 
@@ -181,6 +180,72 @@ namespace DecsWordAddIns
             }
 
             return name_depunctuated;
+        }
+
+        // https://stackoverflow.com/a/11025539/18749636
+        internal static Paragraphs SelectedParagraphs(Document doc)
+        {
+            Paragraphs paragraphs = null;
+            Application app = doc.Application;
+            Selection wordSelection = app.Selection;
+
+            if (wordSelection != null && 
+                wordSelection.Text != null && 
+                wordSelection.Text.Length > 1)
+            {
+                paragraphs = wordSelection.Paragraphs;
+            }
+
+            return paragraphs;
+        }
+
+        // https://stackoverflow.com/a/11025539/18749636
+        internal static List<string> SelectedText(Document doc)
+        {
+            List<string> textBlocks = new List<string>();
+
+            Application app = doc.Application;
+            Selection wordSelection = app.Selection;
+
+            if (wordSelection != null &&
+                wordSelection.Text != null &&
+                wordSelection.Text.Length > 1)
+            {
+                textBlocks = SplitAtBlankLines(wordSelection.Text);
+            }
+            else
+            {
+                // Splice together text from all paragraphs.
+                foreach (Paragraph paragraph in doc.Paragraphs)
+                {
+                    List<string> newTextBlocks = SplitAtBlankLines(paragraph.Range.Text);
+
+                    foreach(string textBlock in newTextBlocks)
+                    {
+                        textBlocks.Add(textBlock);
+                    }
+                }
+            }
+
+            return textBlocks;
+        }
+
+        private static List<string> SplitAtBlankLines(string text)
+        {
+            List<string> textBlocks = new List<string>();
+            
+            if (text == null || string.IsNullOrEmpty(text))
+            {
+                return textBlocks;
+            }
+
+            // Split at EITHER double NewLines OR double VerticalTabs.
+            char verticalTab = '\u000B';
+            string vt = verticalTab.ToString();
+            string[] doubleReturns = new string[] { vt + vt,
+                                                    Environment.NewLine + Environment.NewLine};
+            textBlocks = text.Split(doubleReturns, StringSplitOptions.RemoveEmptyEntries).ToList();
+            return textBlocks;
         }
 
         internal static string TranslateLoginName(string loginName)
