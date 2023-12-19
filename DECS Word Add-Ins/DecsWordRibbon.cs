@@ -1,13 +1,10 @@
 ﻿using DecsWordAddIns.Properties;
 using Microsoft.Office.Core;
 using System;
-using System.Collections.Generic;
 using System.Drawing;
 using System.IO;
-using System.Linq;
 using System.Reflection;
 using System.Runtime.InteropServices;
-using System.Text;
 using Office = Microsoft.Office.Core;
 
 // TODO:  Follow these steps to enable the Ribbon (XML) item:
@@ -27,8 +24,6 @@ using Office = Microsoft.Office.Core;
 // 3. Assign attributes to the control tags in the Ribbon XML file to identify the appropriate callback methods in your code.
 
 // For more information, see the Ribbon XML documentation in the Visual Studio Tools for Office Help.
-
-using Word = Microsoft.Office.Interop.Word;
 
 namespace DecsWordAddIns
 {

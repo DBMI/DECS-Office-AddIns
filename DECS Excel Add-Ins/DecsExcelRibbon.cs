@@ -109,7 +109,8 @@ namespace DECS_Excel_Add_Ins
 
         public string GetCustomUI(string ribbonID)
         {
-            return GetResourceText("DECS_Excel_Add_Ins.DecsExcelRibbon.xml");
+            string txt = GetResourceText("DECS_Excel_Add_Ins.DecsExcelRibbon.xml");
+            return txt;
         }
 
         #endregion
