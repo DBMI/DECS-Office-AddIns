@@ -1,16 +1,29 @@
 <html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8" /><title></title></head><body><h1>DECS Office Add-Ins</h1>
 <p><img src="./.github/badges/last-commit-badge.svg?dummy=8484744" alt="Last Commit Date" /></p>
-<p>Creates a custom buttons in Microsoft Excel &amp; Word that allows user to:</p>
+<p>Creates custom buttons in Microsoft Excel &amp; Word that allow user to:</p>
 <h3>Excel:</h3>
 <p><img src="./DECS%20Excel%20Add-Ins/pictures/toolbar.png" alt="image info" /></p>
 <ul>
 <li>Scan <code>Notes</code> fields for keywords, creating new columns.</li>
+<li>Turn a column of MRNs into a SQL snippet that imports the column into a query.</li>
+<li>Format a page of results with bold &amp; centered header, NULLs grayed out, etc.</li>
 </ul>
 <h3>Word:</h3>
 <p><img src="./DECS%20Word%20Add-Ins/pictures/toolbar.png" alt="image info" /></p>
 <ul>
-<li>Scan a statement of work file &amp; create SQL code that searches for the ICD-10 codes and names listed in the SoW.</li>
+<li>Scan a Scope of Work (SoW) file &amp; create SQL code that searches for the ICD-10 codes and names listed in the SoW.</li>
 <li>Turn a list of MRNs into a SQL snippet that imports the list into a query.</li>
+<li>Setup a DECS project using the info in a Scope of Work file:
+<ul>
+<li>Build the DECS project directory.</li>
+<li>Initialize the Excel output file, including disclaimer.</li>
+<li>Initialize the SQL file.</li>
+<li>Modify a Slicer/Dicer SQL file to include patient consent, etc.</li>
+<li>Push the SQL file to GitLab.</li>
+<li>Creates a project folder in Outlook.</li>
+<li>Draft the completion email.</li>
+</ul>
+</li>
 </ul>
 <h2>Installation</h2>
 <ul>
