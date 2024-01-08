@@ -127,6 +127,12 @@
   <data name="icd_10_zoom" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\pictures\icd-10_zoom.jpg;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
+  <data name="ICD_case_statements" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\pictures\ICD case statements.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="ICD_list_statement" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\pictures\ICD list statement.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
   <data name="one_drive_email_body" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\one_drive_email_body.html;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;utf-8</value>
   </data>

@@ -18,6 +18,7 @@ Creates custom buttons in Microsoft Excel & Word that allow user to:
     - Initialize the SQL file.
     - Modify a Slicer/Dicer SQL file to include patient consent, etc.
     - Push the SQL file to GitLab.
+    - Creates a project folder in Outlook.
     - Draft the completion email.
 
 ## Installation
