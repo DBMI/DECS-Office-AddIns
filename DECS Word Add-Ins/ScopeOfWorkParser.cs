@@ -1,18 +1,15 @@
-﻿using DecsWordAddIns.Properties;
-using log4net;
+﻿using log4net;
 using log4net.Core;
 using Microsoft.Office.Interop.Word;
 using System;
-using System.Collections.Generic;
-using System.Diagnostics;
 using System.DirectoryServices.AccountManagement;
 using System.IO;
 using System.Linq;
-using System.Text;
+using System.Linq.Expressions;
 using System.Text.RegularExpressions;
-using System.Threading.Tasks;
 using System.Windows.Forms;
-using static System.Net.Mime.MediaTypeNames;
+using static System.Windows.Forms.VisualStyles.VisualStyleElement.StartPanel;
+using MsOutlook = Microsoft.Office.Interop.Outlook;
 
 namespace DecsWordAddIns
 {
@@ -67,24 +64,24 @@ namespace DecsWordAddIns
             LogManager.GetRepository().Threshold = Level.Debug;
             log.Debug("Instantiating ScopeOfWorkParser.");
             BuildRegex();
-            this.progressForm = new ProgressForm();
-            this.progressForm.Show();
+            progressForm = new ProgressForm();
+            progressForm.Show();
         }
 
         // Create all the reusable Regex objects.
         private void BuildRegex()
         {
-            this.decsNumberRegex = new Regex(TASK_NUMBER_PATTERN);
-            this.peopleRegex = new Regex(PEOPLE_PATTERN);
+            decsNumberRegex = new Regex(TASK_NUMBER_PATTERN);
+            peopleRegex = new Regex(PEOPLE_PATTERN);
         }
 
         private bool BuildSqlFile()
         {
-            this.sqlFilename = Path.Combine(
-                this.projectDirectory.FullName,
-                this.projectTriple + ".sql"
+            sqlFilename = Path.Combine(
+                projectDirectory.FullName,
+                projectTriple + ".sql"
             );
-            log.Debug("Will build file '" + this.sqlFilename + "'.");
+            log.Debug("Will build file '" + sqlFilename + "'.");
 
             if (!InsertSqlHeader())
             {
@@ -100,7 +97,7 @@ namespace DecsWordAddIns
             }
 
             // Since there IS a SlicerDicer file to convert, enable this section.
-            this.progressForm.EnableSlicerDicer();
+            progressForm.EnableSlicerDicer();
 
             if (!CopySqlBody(slicerDicerFilename))
             {
@@ -114,8 +111,8 @@ namespace DecsWordAddIns
 
             // Can't do this in SetupProject, because it can't tell if this method returned true
             // because it converted the SlicerDicer file or because there isn't one.
-            this.progressForm.CheckOffConvertSlicerDicer();
-            this.progressForm.LinkConvertedSlicerDicerFile(this.sqlFilename);
+            progressForm.CheckOffConvertSlicerDicer();
+            progressForm.LinkConvertedSlicerDicerFile(sqlFilename);
 
             return true;
         }
@@ -130,7 +127,7 @@ namespace DecsWordAddIns
         {
             try
             {
-                using (StreamWriter writer = new StreamWriter(this.sqlFilename, append: true))
+                using (StreamWriter writer = new StreamWriter(sqlFilename, append: true))
                 {
                     foreach (var line in File.ReadLines(slicerDicerFile))
                     {
@@ -189,9 +186,9 @@ namespace DecsWordAddIns
             try
             {
                 log.Debug("About to copy file to '" + projectDirectory.FullName + "'.");
-                this.outputFileName = Path.Combine(
+                outputFileName = Path.Combine(
                     projectDirectory.FullName,
-                    this.projectTriple + ".xlsx"
+                    projectTriple + ".xlsx"
                 );
 
                 // Copy results template to project directory, allowing overwrite.
@@ -203,7 +200,7 @@ namespace DecsWordAddIns
 
                 if (File.Exists(fullpath))
                 {
-                    File.Copy(fullpath, this.outputFileName, true);
+                    File.Copy(fullpath, outputFileName, true);
                     return true;
                 }
 
@@ -219,54 +216,54 @@ namespace DecsWordAddIns
 
         private bool CreateProjectDirectory()
         {
-            string targetDirectory = Path.Combine(this.documentDirectoryName, this.projectTriple);
-            this.projectDirectory = Directory.CreateDirectory(targetDirectory);
+            string targetDirectory = Path.Combine(documentDirectoryName, projectTriple);
+            projectDirectory = Directory.CreateDirectory(targetDirectory);
             return projectDirectory.Exists;
         }
 
         private bool Done()
         {
             bool haveStudyNameOrDataSetName =
-                !string.IsNullOrEmpty(this.studyName) || !string.IsNullOrEmpty(this.dataSetName);
+                !string.IsNullOrEmpty(studyName) || !string.IsNullOrEmpty(dataSetName);
             return haveStudyNameOrDataSetName
-                && !string.IsNullOrEmpty(this.dataSource)
-                && !string.IsNullOrEmpty(this.principalInvestigatorEmail)
-                && !string.IsNullOrEmpty(this.principalInvestigatorGivenName)
-                && !string.IsNullOrEmpty(this.principalInvestigatorSurname)
-                && !string.IsNullOrEmpty(this.requesterEmail)
-                && !string.IsNullOrEmpty(this.requesterName)
-                && !string.IsNullOrEmpty(this.taskNumber);
+                && !string.IsNullOrEmpty(dataSource)
+                && !string.IsNullOrEmpty(principalInvestigatorEmail)
+                && !string.IsNullOrEmpty(principalInvestigatorGivenName)
+                && !string.IsNullOrEmpty(principalInvestigatorSurname)
+                && !string.IsNullOrEmpty(requesterEmail)
+                && !string.IsNullOrEmpty(requesterName)
+                && !string.IsNullOrEmpty(taskNumber);
         }
 
         private void ExtractDecsNumber(string text)
         {
-            Match decsNumberMatch = this.decsNumberRegex.Match(text);
+            Match decsNumberMatch = decsNumberRegex.Match(text);
 
             if (decsNumberMatch.Success)
             {
-                this.taskNumber = decsNumberMatch.Groups[1].Value.ToString().Trim();
+                taskNumber = decsNumberMatch.Groups[1].Value.ToString().Trim();
             }
         }
 
         private void ExtractPI(string text)
         {
-            Match piMatch = this.peopleRegex.Match(text);
+            Match piMatch = peopleRegex.Match(text);
 
             if (piMatch.Success)
             {
-                this.principalInvestigatorGivenName = piMatch.Groups["given_name"].Value
+                principalInvestigatorGivenName = piMatch.Groups["given_name"].Value
                     .ToString()
                     .Trim();
-                this.principalInvestigatorSurname = piMatch.Groups["surname"].Value
+                principalInvestigatorSurname = piMatch.Groups["surname"].Value
                     .ToString()
                     .Trim();
-                this.principalInvestigatorEmail = piMatch.Groups["email"].Value.ToString().Trim();
+                principalInvestigatorEmail = piMatch.Groups["email"].Value.ToString().Trim();
             }
         }
 
         private void ExtractRequester(string text)
         {
-            Match requesterMatch = this.peopleRegex.Match(text);
+            Match requesterMatch = peopleRegex.Match(text);
 
             if (requesterMatch.Success)
             {
@@ -274,8 +271,8 @@ namespace DecsWordAddIns
                 string requesterGivenName = requesterMatch.Groups["given_name"].Value
                     .ToString()
                     .Trim();
-                this.requesterName = requesterGivenName + " " + requesterSurname;
-                this.requesterEmail = requesterMatch.Groups["email"].Value.ToString().Trim();
+                requesterName = requesterGivenName + " " + requesterSurname;
+                requesterEmail = requesterMatch.Groups["email"].Value.ToString().Trim();
             }
         }
 
@@ -283,9 +280,9 @@ namespace DecsWordAddIns
         {
             string nextLine = String.Empty;
 
-            if (desiredIndex >= 0 && desiredIndex < this.scopeOfWork.Paragraphs.Count)
+            if (desiredIndex >= 0 && desiredIndex < scopeOfWork.Paragraphs.Count)
             {
-                nextLine = Clean(this.scopeOfWork.Paragraphs[desiredIndex].Range.Text.ToString());
+                nextLine = Clean(scopeOfWork.Paragraphs[desiredIndex].Range.Text.ToString());
             }
 
             return nextLine;
@@ -326,21 +323,21 @@ namespace DecsWordAddIns
             {
                 log.Debug("About to use Streamwriter to create SQL file.");
 
-                using (StreamWriter writer = new StreamWriter(this.sqlFilename))
+                using (StreamWriter writer = new StreamWriter(sqlFilename))
                 {
                     writer.WriteLine("/*");
-                    writer.WriteLine("** " + this.projectTriple + ".sql");
-                    writer.WriteLine("** Task: " + this.taskNumber);
+                    writer.WriteLine("** " + projectTriple + ".sql");
+                    writer.WriteLine("** Task: " + taskNumber);
                     writer.WriteLine(
                         "** Principal Investigator: "
-                            + this.principalInvestigatorGivenName
+                            + principalInvestigatorGivenName
                             + " "
-                            + this.principalInvestigatorSurname
+                            + principalInvestigatorSurname
                             + ", "
-                            + this.principalInvestigatorEmail
+                            + principalInvestigatorEmail
                     );
                     writer.WriteLine(
-                        "** Requester: " + this.requesterName + ", " + this.requesterEmail
+                        "** Requester: " + requesterName + ", " + requesterEmail
                     );
                     writer.WriteLine(
                         "** Author: "
@@ -349,10 +346,10 @@ namespace DecsWordAddIns
                             + UserPrincipal.Current.EmailAddress
                     );
                     writer.WriteLine("** Created: " + DateTime.Now.ToString("yyyy-MM-dd"));
-                    writer.WriteLine("** Database: " + this.dataSource);
+                    writer.WriteLine("** Database: " + dataSource);
                     writer.WriteLine("*/");
                     writer.WriteLine("");
-                    writer.WriteLine("USE [" + this.dataSource.ToUpper() + "];");
+                    writer.WriteLine("USE [" + dataSource.ToUpper() + "];");
                 }
 
                 return true;
@@ -369,9 +366,9 @@ namespace DecsWordAddIns
             int index = 1;
             string nextLine;
 
-            while (!Done() && index < this.scopeOfWork.Paragraphs.Count)
+            while (!Done() && index < scopeOfWork.Paragraphs.Count)
             {
-                Paragraph paragraph = this.scopeOfWork.Paragraphs[index];
+                Paragraph paragraph = scopeOfWork.Paragraphs[index];
 
                 if (paragraph != null)
                 {
@@ -386,13 +383,13 @@ namespace DecsWordAddIns
                             case DATA_SET_NAME_HEADING:
                                 index++;
                                 nextLine = GetNextLine(index);
-                                this.dataSetName = nextLine;
+                                dataSetName = nextLine;
                                 break;
 
                             case DATA_SOURCE_HEADING:
                                 index++;
                                 nextLine = GetNextLine(index);
-                                this.dataSource = nextLine;
+                                dataSource = nextLine;
                                 break;
 
                             case PRINCIPAL_INVESTIGATOR_HEADING:
@@ -410,7 +407,7 @@ namespace DecsWordAddIns
                             case STUDY_NAME_HEADING:
                                 index++;
                                 nextLine = GetNextLine(index);
-                                this.studyName = nextLine;
+                                studyName = nextLine;
                                 break;
 
                             case TASK_NUMBER_HEADING:
@@ -428,7 +425,7 @@ namespace DecsWordAddIns
                 index++;
             }
 
-            this.projectTriple = ProjectTriple();
+            projectTriple = ProjectTriple();
             return Done();
         }
 
@@ -437,14 +434,14 @@ namespace DecsWordAddIns
             log.Debug(
                 "Building project triple from"
                     + " surname: "
-                    + this.principalInvestigatorSurname
+                    + principalInvestigatorSurname
                     + " task number: "
-                    + this.taskNumber
+                    + taskNumber
                     + " study name: "
                     + StudyName()
             );
             string triple =
-                this.principalInvestigatorSurname + "-" + this.taskNumber + "-" + StudyName();
+                principalInvestigatorSurname + "-" + taskNumber + "-" + StudyName();
             triple = triple.Replace("&", "and");
             triple = triple.Replace(' ', '_');
             triple = triple.Replace(',', '_');
@@ -461,20 +458,20 @@ namespace DecsWordAddIns
         internal void SetupProject(Document doc)
         {
             log.Debug("Setting up project.");
-            this.scopeOfWork = doc;
-            this.documentDirectoryName = Path.GetDirectoryName(doc.FullName);
+            scopeOfWork = doc;
+            documentDirectoryName = Path.GetDirectoryName(doc.FullName);
             MessageBoxButtons buttons = MessageBoxButtons.OK;
             string message;
             DialogResult result;
 
-            if (this.progressForm.StopSignaled())
+            if (progressForm.StopSignaled())
                 return;
 
             // 1. Extract key information from Scope of Work.
             if (!Parse())
             {
                 message = "Unable to parse document.";
-                this.progressForm.ReportProgress(message);
+                progressForm.ReportProgress(message);
                 log.Error(message);
                 result = MessageBox.Show(message, "Parse Failed", buttons);
 
@@ -484,15 +481,15 @@ namespace DecsWordAddIns
                 }
             }
 
-            if (this.progressForm.StopSignaled())
+            if (progressForm.StopSignaled())
                 return;
 
             // 2. Create project directory.
             if (!CreateProjectDirectory())
             {
                 message = "Unable to create project directory.";
-                this.progressForm.MarkFailedCreateProjectDirectory();
-                this.progressForm.ReportProgress(message);
+                progressForm.MarkFailedCreateProjectDirectory();
+                progressForm.ReportProgress(message);
                 log.Error(message);
                 result = MessageBox.Show(message, "Create Directory Failed", buttons);
 
@@ -502,18 +499,18 @@ namespace DecsWordAddIns
                 }
             }
 
-            if (this.progressForm.StopSignaled())
+            if (progressForm.StopSignaled())
                 return;
 
-            this.progressForm.CheckOffCreateProjectDirectory();
-            this.progressForm.LinkProjectDirectory(this.documentDirectoryName);
+            progressForm.CheckOffCreateProjectDirectory();
+            progressForm.LinkProjectDirectory(documentDirectoryName);
 
             // 3. Create Excel file to hold output.
             if (!CreateOutputFile())
             {
                 message = "Unable to create output file.";
-                this.progressForm.MarkFailedInitializeExcelFile();
-                this.progressForm.ReportProgress(message);
+                progressForm.MarkFailedInitializeExcelFile();
+                progressForm.ReportProgress(message);
                 log.Error(message);
                 result = MessageBox.Show(message, "Create Output File Failed", buttons);
 
@@ -523,18 +520,18 @@ namespace DecsWordAddIns
                 }
             }
 
-            if (this.progressForm.StopSignaled())
+            if (progressForm.StopSignaled())
                 return;
 
-            this.progressForm.CheckOffInitializeExcelFile();
-            this.progressForm.LinkExcelFile(this.outputFileName);
+            progressForm.CheckOffInitializeExcelFile();
+            progressForm.LinkExcelFile(outputFileName);
 
             // 4. Initialize SQL file with project info in header.
             if (!BuildSqlFile())
             {
                 message = "Unable to build SQL file.";
-                this.progressForm.MarkFailedInitializeSqlFile();
-                this.progressForm.ReportProgress(message);
+                progressForm.MarkFailedInitializeSqlFile();
+                progressForm.ReportProgress(message);
                 log.Error(message);
                 result = MessageBox.Show(message, "Create SQL File Failed", buttons);
 
@@ -544,11 +541,11 @@ namespace DecsWordAddIns
                 }
             }
 
-            if (this.progressForm.StopSignaled())
+            if (progressForm.StopSignaled())
                 return;
 
-            this.progressForm.CheckOffInitializeSqlFile();
-            this.progressForm.LinkSqlFile(this.sqlFilename);
+            progressForm.CheckOffInitializeSqlFile();
+            progressForm.LinkSqlFile(sqlFilename);
 
             // 5. Ask user how results will be delivered.
             DeliveryType deliveryType;
@@ -565,33 +562,73 @@ namespace DecsWordAddIns
                 {
                     // User declined to specify, so we can't proceed.
                     message = "User did not specify the project delivery type.";
-                    this.progressForm.ReportProgress(message);
+                    progressForm.ReportProgress(message);
                     log.Error(message);
                     return;
                 }
             }
 
-            if (this.progressForm.StopSignaled())
+            if (progressForm.StopSignaled())
                 return;
 
-            // 6. Draft email reporting project completion.
+            // 6. Add taskNumber folder to Outlook.
+            MsOutlook.Application app = new MsOutlook.Application();
+            MsOutlook.Folder folder = app.Session.GetDefaultFolder(
+            MsOutlook.OlDefaultFolders.olFolderInbox) as MsOutlook.Folder;
+            MsOutlook.Folders folders = folder.Folders;
+            MsOutlook.Folder decsFolder = null;
+
+            try
+            {
+                decsFolder = (MsOutlook.Folder)folders.Add("DECS");
+            }
+            catch (System.Runtime.InteropServices.COMException)
+            {
+                // That's OK--probably already exists.
+            }
+
+            // Now work in the DECS folder.
+            try
+            {
+                decsFolder = folders["DECS"] as MsOutlook.Folder;
+
+                if (decsFolder != null)
+                {
+                    try
+                    {
+                        decsFolder.Folders.Add(taskNumber);
+                    }
+                    catch (System.Runtime.InteropServices.COMException ex)
+                    {
+                        log.Error(ex.Message);
+                        result = MessageBox.Show(ex.Message, "Create folder Failed", buttons);
+                    }
+                }
+            }
+            catch (System.Runtime.InteropServices.COMException ex)
+            {
+                log.Error(ex.Message);
+                result = MessageBox.Show(ex.Message, "Create folder Failed", buttons);
+            }
+
+            // 7. Draft email reporting project completion.
             Emailer emailer = new Emailer(
                 deliveryType: deliveryType,
-                projectDirectory: this.projectDirectory.ToString(),
-                requestorSalutation: Utilities.SalutationFromName(this.requesterName),
-                taskNumber: this.taskNumber
+                projectDirectory: projectDirectory.ToString(),
+                requestorSalutation: Utilities.SalutationFromName(requesterName),
+                taskNumber: taskNumber
             );
 
             if (
                 !emailer.DraftOutlookEmail(
-                    subject: "Your DECS Request is Ready: DECS-" + this.taskNumber,
-                    recipients: this.requesterEmail
+                    subject: "Your DECS Request is Ready: DECS-" + taskNumber,
+                    recipients: requesterEmail
                 )
             )
             {
                 message = "Unable to draft email.";
-                this.progressForm.MarkFailedDraftEmail();
-                this.progressForm.ReportProgress(message);
+                progressForm.MarkFailedDraftEmail();
+                progressForm.ReportProgress(message);
                 log.Error(message);
                 result = MessageBox.Show(message, "Create email Failed", buttons);
 
@@ -601,10 +638,10 @@ namespace DecsWordAddIns
                 }
             }
 
-            this.progressForm.CheckOffDraftEmail();
-            this.progressForm.LinkEmail(emailer);
+            progressForm.CheckOffDraftEmail();
+            progressForm.LinkEmail(emailer);
 
-            // 7. Push SQL file to GitLab.
+            // 8. Push SQL file to GitLab.
             GitLabHandler gitLabHandler = new GitLabHandler();
 
             if (gitLabHandler.Ready())
@@ -612,8 +649,8 @@ namespace DecsWordAddIns
                 if (!gitLabHandler.PushFileExe(sqlFilename))
                 {
                     message = "Unable to upload SQL file to GitLab.";
-                    this.progressForm.MarkFailedPushToGitLab();
-                    this.progressForm.ReportProgress(message);
+                    progressForm.MarkFailedPushToGitLab();
+                    progressForm.ReportProgress(message);
                     log.Error(message);
                     result = MessageBox.Show(message, "GitLab upload Failed", buttons);
 
@@ -624,35 +661,35 @@ namespace DecsWordAddIns
                 }
             }
 
-            if (this.progressForm.StopSignaled())
+            if (progressForm.StopSignaled())
                 return;
 
             // Since it's a web address, use Uri class to convert path separators to fwd slash.
             Uri gitLabProjectAddress = new Uri(
-                Path.Combine(GitLabHandler.Address(), this.projectTriple)
+                Path.Combine(GitLabHandler.Address(), projectTriple)
             );
-            this.progressForm.CheckOffPushToGitLab();
-            this.progressForm.LinkGitLab(gitLabProjectAddress.ToString());
+            progressForm.CheckOffPushToGitLab();
+            progressForm.LinkGitLab(gitLabProjectAddress.ToString());
 
-            this.progressForm.EnableOkButton();
-            this.progressForm.ReportProgress("Completed project " + this.taskNumber + " setup.");
+            progressForm.EnableOkButton();
+            progressForm.ReportProgress("Completed project " + taskNumber + " setup.");
         }
 
         private string StudyName()
         {
-            if (string.IsNullOrEmpty(this.studyName))
+            if (string.IsNullOrEmpty(studyName))
             {
-                return this.dataSetName;
+                return dataSetName;
             }
 
-            return this.studyName;
+            return studyName;
         }
 
         private bool WriteConsentSection()
         {
             try
             {
-                using (StreamWriter writer = new StreamWriter(this.sqlFilename, append: true))
+                using (StreamWriter writer = new StreamWriter(sqlFilename, append: true))
                 {
                     writer.WriteLine("\n-- FINAL OUTPUT:");
                     writer.WriteLine("SELECT DISTINCT");
