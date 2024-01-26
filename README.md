@@ -47,9 +47,15 @@ The `Extract` tab lets us define the Regular Expressions that extract data from 
 
 ![image info](./DECS%20Excel%20Add-Ins/pictures/extraction%20rules.png)
 
-Here's an example of the results:
+Starting with these free-text notes:
+
+![image info](./DECS%20Excel%20Add-Ins/pictures/notes%20raw.png)
+
+Here's an example of the extracted data:
 
 ![image info](./DECS%20Excel%20Add-Ins/pictures/notes%20results.png)
+
+Notice how the original dates--in multiple formats--were automatically converted to a standard date format before extraction.
 
 ### Word: Extract ICD codes
 Sometimes Statements of Work (SoW) contain lists of medical conditions and ICD-10 codes to be reported on.

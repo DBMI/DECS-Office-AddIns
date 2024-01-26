@@ -28,13 +28,13 @@
     <ExtractRule>
       <displayName>Get date</displayName>
       <enabled>true</enabled>
-      <pattern>Date of Exam:\s*(?:\d{1,2}/\d{1,2}/\d{4}, ?)*(\d{1,2}/\d{1,2}/\d{4})</pattern>
+      <pattern>Date of Exam:\s*(?:\d{1,2}/\d{1,2}/\d{4}(?:,|\.) ?)*(\d{1,2}/\d{1,2}/\d{4})</pattern>
       <newColumn>Date of Exam</newColumn>
     </ExtractRule>
     <ExtractRule>
 	  <displayName>Get date that won't match</displayName>
 	  <enabled>true</enabled>
-	  <pattern>I received the vaccine on\s*(?:\d{1,2}/\d{1,2}/\d{4}, ?)*(\d{1,2}/\d{1,2}/\d{4})</pattern>
+	  <pattern>I received the vaccine on\s*(?:\d{1,2}/\d{1,2}/\d{4}(?:,|\.) ?)*(\d{1,2}/\d{1,2}/\d{4})</pattern>
 	  <newColumn>Date of Exam</newColumn>
 	</ExtractRule>
 	<ExtractRule>
