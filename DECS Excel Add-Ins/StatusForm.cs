@@ -26,60 +26,60 @@ namespace DECS_Excel_Add_Ins
             System.Reflection.MethodBase.GetCurrentMethod().DeclaringType
         );
 
-        public StatusForm(int numRepetitions, Action parentStopAction)
+        public StatusForm(int _numRepetitions, Action parentStopAction)
         {
             InitializeComponent();
-            this.externalStopAction = parentStopAction;
+            externalStopAction = parentStopAction;
             log.Debug("Status form instantiated.");
-            this.count = 0;
-            this.numRepetitions = numRepetitions;
-            this.stopWatch = new Stopwatch();
-            this.stopWatch.Start();
+            count = 0;
+            numRepetitions = _numRepetitions;
+            stopWatch = new Stopwatch();
+            stopWatch.Start();
         }
 
-        internal void Reset(int numRepetitions)
+        internal void Reset(int _numRepetitions)
         {
-            this.count = 0;
-            this.numRepetitions = numRepetitions;
-            this.stopWatch.Stop();
-            this.stopWatch.Start();
+            count = 0;
+            numRepetitions = _numRepetitions;
+            stopWatch.Stop();
+            stopWatch.Start();
         }
 
         internal void UpdateCount(int increment = 1)
         {
-            this.count += increment;
+            count += increment;
 
             int progressPercentage = 100;
 
-            if (this.numRepetitions > 1)
+            if (numRepetitions > 1)
             {
-                progressPercentage = 100 * this.count / this.numRepetitions;
+                progressPercentage = 100 * count / numRepetitions;
             }
 
             UpdateProgressBar(progressPercentage);
-            UpdatePredictedCompletion(this.stopWatch.GetEta(this.count, this.numRepetitions));
+            UpdatePredictedCompletion(stopWatch.GetEta(count, numRepetitions));
         }
 
         private void UpdatePredictedCompletion(TimeSpan timeRemaining)
         {
             string predictedCompletion =
-                "Completion in " + timeRemaining.ToString(@"hh\:mm\:ss", this.culture);
-            this.predictedCompletionLabel.Text = predictedCompletion;
+                "Completion in " + timeRemaining.ToString(@"hh\:mm\:ss", culture);
+            predictedCompletionLabel.Text = predictedCompletion;
         }
 
         private void UpdateProgressBar(int percentage)
         {
-            if (this.progressBar.InvokeRequired)
+            if (progressBar.InvokeRequired)
             {
                 Action setProgress = delegate
                 {
                     UpdateProgressBar(percentage);
                 };
-                this.progressBar.Invoke(setProgress);
+                progressBar.Invoke(setProgress);
             }
             else
             {
-                this.progressBar.Value = percentage;
+                progressBar.Value = percentage;
             }
 
             Application.DoEvents();
@@ -87,17 +87,17 @@ namespace DECS_Excel_Add_Ins
 
         internal void UpdateProgressBarLabel(string text)
         {
-            if (this.progressBarLabel.InvokeRequired)
+            if (progressBarLabel.InvokeRequired)
             {
                 Action setLabel = delegate
                 {
                     UpdateProgressBarLabel(text);
                 };
-                this.progressBarLabel.Invoke(setLabel);
+                progressBarLabel.Invoke(setLabel);
             }
             else
             {
-                this.progressBarLabel.Text = text;
+                progressBarLabel.Text = text;
             }
 
             Application.DoEvents();
@@ -105,17 +105,17 @@ namespace DECS_Excel_Add_Ins
 
         internal void UpdateStatusLabel(string text)
         {
-            if (this.statusLabel.InvokeRequired)
+            if (statusLabel.InvokeRequired)
             {
                 Action setLabel = delegate
                 {
                     UpdateStatusLabel(text);
                 };
-                this.statusLabel.Invoke(setLabel);
+                statusLabel.Invoke(setLabel);
             }
             else
             {
-                this.statusLabel.Text = text;
+                statusLabel.Text = text;
             }
 
             Application.DoEvents();
@@ -126,7 +126,7 @@ namespace DECS_Excel_Add_Ins
             log.Debug("Stop ordered.");
 
             // Let calling class know user has requested STOP.
-            this.externalStopAction();
+            externalStopAction();
         }
     }
 }

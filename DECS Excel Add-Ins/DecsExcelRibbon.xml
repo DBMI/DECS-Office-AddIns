@@ -30,6 +30,16 @@
 							size="large"
 							supertip="Build SQL code that imports MRN list." />
 				</group>
+				<group id ="SviGroup"
+					   label="SVI">
+					<button id="addSVI"
+							getImage="sviButton_GetImage"
+							label="Add SVI"
+							onAction="OnAddSVI"
+							screentip="Looks up Social Vulnerability Index"
+							size="large"
+							supertip="Gets Census Tract from address, then looks up SVI from .csv file." />
+				</group>
 				<group id="FormatGroup"
 					   label="Format">
 					<button id="formatSheet"

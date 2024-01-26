@@ -28,440 +28,440 @@
         /// </summary>
         private void InitializeComponent()
         {
-            this.components = new System.ComponentModel.Container();
+            components = new System.ComponentModel.Container();
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(DefineRulesForm));
-            this.headline = new System.Windows.Forms.Label();
-            this.sourceColumnGroupBox = new System.Windows.Forms.GroupBox();
-            this.sourceColumnListBox = new System.Windows.Forms.ListBox();
-            this.saveButton = new System.Windows.Forms.Button();
-            this.discardButton = new System.Windows.Forms.Button();
-            this.clearButton = new System.Windows.Forms.Button();
-            this.menuStrip1 = new System.Windows.Forms.MenuStrip();
-            this.fileToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.loadToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.saveToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.saveAsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.runButton = new System.Windows.Forms.Button();
-            this.selectedRowsGroupBox = new System.Windows.Forms.GroupBox();
-            this.selectedRowsLabel = new System.Windows.Forms.Label();
-            this.extractRulesPanel = new System.Windows.Forms.Panel();
-            this.extractRulesAddButton = new System.Windows.Forms.Button();
-            this.rulesTabControl = new System.Windows.Forms.TabControl();
-            this.cleaningTabPage = new System.Windows.Forms.TabPage();
-            this.label6 = new System.Windows.Forms.Label();
-            this.label4 = new System.Windows.Forms.Label();
-            this.label1 = new System.Windows.Forms.Label();
-            this.cleaningRulesPanel = new System.Windows.Forms.Panel();
-            this.cleaningRulesAddButton = new System.Windows.Forms.Button();
-            this.dateFormatTabPage = new System.Windows.Forms.TabPage();
-            this.groupBox1 = new System.Windows.Forms.GroupBox();
-            this.dateFormatsListBox = new System.Windows.Forms.ListBox();
-            this.dateConversionEnabledCheckBox = new System.Windows.Forms.CheckBox();
-            this.extractTabPage = new System.Windows.Forms.TabPage();
-            this.label5 = new System.Windows.Forms.Label();
-            this.label3 = new System.Windows.Forms.Label();
-            this.label2 = new System.Windows.Forms.Label();
-            this.toolTipBox = new System.Windows.Forms.ToolTip(this.components);
-            this.label7 = new System.Windows.Forms.Label();
-            this.label8 = new System.Windows.Forms.Label();
-            this.sourceColumnGroupBox.SuspendLayout();
-            this.menuStrip1.SuspendLayout();
-            this.selectedRowsGroupBox.SuspendLayout();
-            this.extractRulesPanel.SuspendLayout();
-            this.rulesTabControl.SuspendLayout();
-            this.cleaningTabPage.SuspendLayout();
-            this.cleaningRulesPanel.SuspendLayout();
-            this.dateFormatTabPage.SuspendLayout();
-            this.groupBox1.SuspendLayout();
-            this.extractTabPage.SuspendLayout();
-            this.SuspendLayout();
+            headline = new System.Windows.Forms.Label();
+            sourceColumnGroupBox = new System.Windows.Forms.GroupBox();
+            sourceColumnListBox = new System.Windows.Forms.ListBox();
+            saveButton = new System.Windows.Forms.Button();
+            discardButton = new System.Windows.Forms.Button();
+            clearButton = new System.Windows.Forms.Button();
+            menuStrip1 = new System.Windows.Forms.MenuStrip();
+            fileToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            loadToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            saveToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            saveAsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            runButton = new System.Windows.Forms.Button();
+            selectedRowsGroupBox = new System.Windows.Forms.GroupBox();
+            selectedRowsLabel = new System.Windows.Forms.Label();
+            extractRulesPanel = new System.Windows.Forms.Panel();
+            extractRulesAddButton = new System.Windows.Forms.Button();
+            rulesTabControl = new System.Windows.Forms.TabControl();
+            cleaningTabPage = new System.Windows.Forms.TabPage();
+            label6 = new System.Windows.Forms.Label();
+            label4 = new System.Windows.Forms.Label();
+            label1 = new System.Windows.Forms.Label();
+            cleaningRulesPanel = new System.Windows.Forms.Panel();
+            cleaningRulesAddButton = new System.Windows.Forms.Button();
+            dateFormatTabPage = new System.Windows.Forms.TabPage();
+            groupBox1 = new System.Windows.Forms.GroupBox();
+            dateFormatsListBox = new System.Windows.Forms.ListBox();
+            dateConversionEnabledCheckBox = new System.Windows.Forms.CheckBox();
+            extractTabPage = new System.Windows.Forms.TabPage();
+            label5 = new System.Windows.Forms.Label();
+            label3 = new System.Windows.Forms.Label();
+            label2 = new System.Windows.Forms.Label();
+            toolTipBox = new System.Windows.Forms.ToolTip(components);
+            label7 = new System.Windows.Forms.Label();
+            label8 = new System.Windows.Forms.Label();
+            sourceColumnGroupBox.SuspendLayout();
+            menuStrip1.SuspendLayout();
+            selectedRowsGroupBox.SuspendLayout();
+            extractRulesPanel.SuspendLayout();
+            rulesTabControl.SuspendLayout();
+            cleaningTabPage.SuspendLayout();
+            cleaningRulesPanel.SuspendLayout();
+            dateFormatTabPage.SuspendLayout();
+            groupBox1.SuspendLayout();
+            extractTabPage.SuspendLayout();
+            SuspendLayout();
             // 
             // headline
             // 
-            this.headline.AutoSize = true;
-            this.headline.Font = new System.Drawing.Font("Microsoft Sans Serif", 15.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.headline.Location = new System.Drawing.Point(582, 27);
-            this.headline.Name = "headline";
-            this.headline.Size = new System.Drawing.Size(147, 25);
-            this.headline.TabIndex = 0;
-            this.headline.Text = "Define Rules";
+            headline.AutoSize = true;
+            headline.Font = new System.Drawing.Font("Microsoft Sans Serif", 15.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            headline.Location = new System.Drawing.Point(582, 27);
+            headline.Name = "headline";
+            headline.Size = new System.Drawing.Size(147, 25);
+            headline.TabIndex = 0;
+            headline.Text = "Define Rules";
             // 
             // sourceColumnGroupBox
             // 
-            this.sourceColumnGroupBox.Controls.Add(this.sourceColumnListBox);
-            this.sourceColumnGroupBox.FlatStyle = System.Windows.Forms.FlatStyle.System;
-            this.sourceColumnGroupBox.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.sourceColumnGroupBox.Location = new System.Drawing.Point(31, 70);
-            this.sourceColumnGroupBox.Name = "sourceColumnGroupBox";
-            this.sourceColumnGroupBox.Size = new System.Drawing.Size(277, 86);
-            this.sourceColumnGroupBox.TabIndex = 1;
-            this.sourceColumnGroupBox.TabStop = false;
-            this.sourceColumnGroupBox.Text = "Source Column";
+            sourceColumnGroupBox.Controls.Add(sourceColumnListBox);
+            sourceColumnGroupBox.FlatStyle = System.Windows.Forms.FlatStyle.System;
+            sourceColumnGroupBox.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            sourceColumnGroupBox.Location = new System.Drawing.Point(31, 70);
+            sourceColumnGroupBox.Name = "sourceColumnGroupBox";
+            sourceColumnGroupBox.Size = new System.Drawing.Size(277, 86);
+            sourceColumnGroupBox.TabIndex = 1;
+            sourceColumnGroupBox.TabStop = false;
+            sourceColumnGroupBox.Text = "Source Column";
             // 
             // sourceColumnListBox
             // 
-            this.sourceColumnListBox.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.sourceColumnListBox.FormattingEnabled = true;
-            this.sourceColumnListBox.ItemHeight = 15;
-            this.sourceColumnListBox.Location = new System.Drawing.Point(25, 33);
-            this.sourceColumnListBox.Name = "sourceColumnListBox";
-            this.sourceColumnListBox.Size = new System.Drawing.Size(225, 34);
-            this.sourceColumnListBox.TabIndex = 0;
-            this.sourceColumnListBox.SelectedIndexChanged += new System.EventHandler(this.sourceColumnListBox_Selected);
+            sourceColumnListBox.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            sourceColumnListBox.FormattingEnabled = true;
+            sourceColumnListBox.ItemHeight = 15;
+            sourceColumnListBox.Location = new System.Drawing.Point(25, 33);
+            sourceColumnListBox.Name = "sourceColumnListBox";
+            sourceColumnListBox.Size = new System.Drawing.Size(225, 34);
+            sourceColumnListBox.TabIndex = 0;
+            sourceColumnListBox.SelectedIndexChanged += new System.EventHandler(sourceColumnListBox_Selected);
             // 
             // saveButton
             // 
-            this.saveButton.BackColor = System.Drawing.Color.White;
-            this.saveButton.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.saveButton.Location = new System.Drawing.Point(461, 662);
-            this.saveButton.Name = "saveButton";
-            this.saveButton.Size = new System.Drawing.Size(120, 40);
-            this.saveButton.TabIndex = 4;
-            this.saveButton.Text = "Save";
-            this.saveButton.UseVisualStyleBackColor = false;
-            this.saveButton.Click += new System.EventHandler(this.saveButton_Click);
+            saveButton.BackColor = System.Drawing.Color.White;
+            saveButton.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            saveButton.Location = new System.Drawing.Point(461, 662);
+            saveButton.Name = "saveButton";
+            saveButton.Size = new System.Drawing.Size(120, 40);
+            saveButton.TabIndex = 4;
+            saveButton.Text = "Save";
+            saveButton.UseVisualStyleBackColor = false;
+            saveButton.Click += new System.EventHandler(saveButton_Click);
             // 
             // discardButton
             // 
-            this.discardButton.BackColor = System.Drawing.Color.White;
-            this.discardButton.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.discardButton.Location = new System.Drawing.Point(863, 662);
-            this.discardButton.Name = "discardButton";
-            this.discardButton.Size = new System.Drawing.Size(120, 40);
-            this.discardButton.TabIndex = 5;
-            this.discardButton.Text = "Quit";
-            this.discardButton.UseVisualStyleBackColor = false;
-            this.discardButton.Click += new System.EventHandler(this.discardButton_Click);
+            discardButton.BackColor = System.Drawing.Color.White;
+            discardButton.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            discardButton.Location = new System.Drawing.Point(863, 662);
+            discardButton.Name = "discardButton";
+            discardButton.Size = new System.Drawing.Size(120, 40);
+            discardButton.TabIndex = 5;
+            discardButton.Text = "Quit";
+            discardButton.UseVisualStyleBackColor = false;
+            discardButton.Click += new System.EventHandler(discardButton_Click);
             // 
             // clearButton
             // 
-            this.clearButton.BackColor = System.Drawing.Color.White;
-            this.clearButton.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.clearButton.Location = new System.Drawing.Point(662, 662);
-            this.clearButton.Name = "clearButton";
-            this.clearButton.Size = new System.Drawing.Size(120, 40);
-            this.clearButton.TabIndex = 6;
-            this.clearButton.Text = "Clear";
-            this.clearButton.UseVisualStyleBackColor = false;
-            this.clearButton.Click += new System.EventHandler(this.clearButton_Click);
+            clearButton.BackColor = System.Drawing.Color.White;
+            clearButton.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            clearButton.Location = new System.Drawing.Point(662, 662);
+            clearButton.Name = "clearButton";
+            clearButton.Size = new System.Drawing.Size(120, 40);
+            clearButton.TabIndex = 6;
+            clearButton.Text = "Clear";
+            clearButton.UseVisualStyleBackColor = false;
+            clearButton.Click += new System.EventHandler(clearButton_Click);
             // 
             // menuStrip1
             // 
-            this.menuStrip1.ImageScalingSize = new System.Drawing.Size(20, 20);
-            this.menuStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.fileToolStripMenuItem});
-            this.menuStrip1.Location = new System.Drawing.Point(0, 0);
-            this.menuStrip1.Name = "menuStrip1";
-            this.menuStrip1.Size = new System.Drawing.Size(1414, 24);
-            this.menuStrip1.TabIndex = 7;
-            this.menuStrip1.Text = "menuStrip1";
+            menuStrip1.ImageScalingSize = new System.Drawing.Size(20, 20);
+            menuStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            fileToolStripMenuItem});
+            menuStrip1.Location = new System.Drawing.Point(0, 0);
+            menuStrip1.Name = "menuStrip1";
+            menuStrip1.Size = new System.Drawing.Size(1414, 24);
+            menuStrip1.TabIndex = 7;
+            menuStrip1.Text = "menuStrip1";
             // 
             // fileToolStripMenuItem
             // 
-            this.fileToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.loadToolStripMenuItem,
-            this.saveToolStripMenuItem,
-            this.saveAsToolStripMenuItem});
-            this.fileToolStripMenuItem.Name = "fileToolStripMenuItem";
-            this.fileToolStripMenuItem.Size = new System.Drawing.Size(37, 20);
-            this.fileToolStripMenuItem.Text = "File";
+            fileToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            loadToolStripMenuItem,
+            saveToolStripMenuItem,
+            saveAsToolStripMenuItem});
+            fileToolStripMenuItem.Name = "fileToolStripMenuItem";
+            fileToolStripMenuItem.Size = new System.Drawing.Size(37, 20);
+            fileToolStripMenuItem.Text = "File";
             // 
             // loadToolStripMenuItem
             // 
-            this.loadToolStripMenuItem.Name = "loadToolStripMenuItem";
-            this.loadToolStripMenuItem.Size = new System.Drawing.Size(111, 22);
-            this.loadToolStripMenuItem.Text = "Load";
-            this.loadToolStripMenuItem.Click += new System.EventHandler(this.loadToolStripMenuItem_Click);
+            loadToolStripMenuItem.Name = "loadToolStripMenuItem";
+            loadToolStripMenuItem.Size = new System.Drawing.Size(111, 22);
+            loadToolStripMenuItem.Text = "Load";
+            loadToolStripMenuItem.Click += new System.EventHandler(loadToolStripMenuItem_Click);
             // 
             // saveToolStripMenuItem
             // 
-            this.saveToolStripMenuItem.Name = "saveToolStripMenuItem";
-            this.saveToolStripMenuItem.Size = new System.Drawing.Size(111, 22);
-            this.saveToolStripMenuItem.Text = "Save";
-            this.saveToolStripMenuItem.Click += new System.EventHandler(this.saveToolStripMenuItem_Click);
+            saveToolStripMenuItem.Name = "saveToolStripMenuItem";
+            saveToolStripMenuItem.Size = new System.Drawing.Size(111, 22);
+            saveToolStripMenuItem.Text = "Save";
+            saveToolStripMenuItem.Click += new System.EventHandler(saveToolStripMenuItem_Click);
             // 
             // saveAsToolStripMenuItem
             // 
-            this.saveAsToolStripMenuItem.Name = "saveAsToolStripMenuItem";
-            this.saveAsToolStripMenuItem.Size = new System.Drawing.Size(111, 22);
-            this.saveAsToolStripMenuItem.Text = "SaveAs";
-            this.saveAsToolStripMenuItem.Click += new System.EventHandler(this.saveAsToolStripMenuItem_Click);
+            saveAsToolStripMenuItem.Name = "saveAsToolStripMenuItem";
+            saveAsToolStripMenuItem.Size = new System.Drawing.Size(111, 22);
+            saveAsToolStripMenuItem.Text = "SaveAs";
+            saveAsToolStripMenuItem.Click += new System.EventHandler(saveAsToolStripMenuItem_Click);
             // 
             // runButton
             // 
-            this.runButton.BackColor = System.Drawing.Color.White;
-            this.runButton.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.runButton.ForeColor = System.Drawing.Color.DarkBlue;
-            this.runButton.Location = new System.Drawing.Point(662, 103);
-            this.runButton.Name = "runButton";
-            this.runButton.Size = new System.Drawing.Size(120, 40);
-            this.runButton.TabIndex = 8;
-            this.runButton.Text = "Run";
-            this.runButton.UseVisualStyleBackColor = false;
-            this.runButton.Click += new System.EventHandler(this.runButton_Click);
+            runButton.BackColor = System.Drawing.Color.White;
+            runButton.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            runButton.ForeColor = System.Drawing.Color.DarkBlue;
+            runButton.Location = new System.Drawing.Point(662, 103);
+            runButton.Name = "runButton";
+            runButton.Size = new System.Drawing.Size(120, 40);
+            runButton.TabIndex = 8;
+            runButton.Text = "Run";
+            runButton.UseVisualStyleBackColor = false;
+            runButton.Click += new System.EventHandler(runButton_Click);
             // 
             // selectedRowsGroupBox
             // 
-            this.selectedRowsGroupBox.Controls.Add(this.selectedRowsLabel);
-            this.selectedRowsGroupBox.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.selectedRowsGroupBox.Location = new System.Drawing.Point(1104, 70);
-            this.selectedRowsGroupBox.Name = "selectedRowsGroupBox";
-            this.selectedRowsGroupBox.Size = new System.Drawing.Size(277, 86);
-            this.selectedRowsGroupBox.TabIndex = 9;
-            this.selectedRowsGroupBox.TabStop = false;
-            this.selectedRowsGroupBox.Text = "Rows Selected for Processing";
+            selectedRowsGroupBox.Controls.Add(selectedRowsLabel);
+            selectedRowsGroupBox.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            selectedRowsGroupBox.Location = new System.Drawing.Point(1104, 70);
+            selectedRowsGroupBox.Name = "selectedRowsGroupBox";
+            selectedRowsGroupBox.Size = new System.Drawing.Size(277, 86);
+            selectedRowsGroupBox.TabIndex = 9;
+            selectedRowsGroupBox.TabStop = false;
+            selectedRowsGroupBox.Text = "Rows Selected for Processing";
             // 
             // selectedRowsLabel
             // 
-            this.selectedRowsLabel.AutoSize = true;
-            this.selectedRowsLabel.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.selectedRowsLabel.Location = new System.Drawing.Point(7, 33);
-            this.selectedRowsLabel.Name = "selectedRowsLabel";
-            this.selectedRowsLabel.Size = new System.Drawing.Size(0, 15);
-            this.selectedRowsLabel.TabIndex = 0;
+            selectedRowsLabel.AutoSize = true;
+            selectedRowsLabel.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            selectedRowsLabel.Location = new System.Drawing.Point(7, 33);
+            selectedRowsLabel.Name = "selectedRowsLabel";
+            selectedRowsLabel.Size = new System.Drawing.Size(0, 15);
+            selectedRowsLabel.TabIndex = 0;
             // 
             // extractRulesPanel
             // 
-            this.extractRulesPanel.AutoScroll = true;
-            this.extractRulesPanel.Controls.Add(this.extractRulesAddButton);
-            this.extractRulesPanel.Location = new System.Drawing.Point(6, 38);
-            this.extractRulesPanel.Name = "extractRulesPanel";
-            this.extractRulesPanel.Size = new System.Drawing.Size(1373, 412);
-            this.extractRulesPanel.TabIndex = 4;
+            extractRulesPanel.AutoScroll = true;
+            extractRulesPanel.Controls.Add(extractRulesAddButton);
+            extractRulesPanel.Location = new System.Drawing.Point(6, 38);
+            extractRulesPanel.Name = "extractRulesPanel";
+            extractRulesPanel.Size = new System.Drawing.Size(1373, 412);
+            extractRulesPanel.TabIndex = 4;
             // 
             // extractRulesAddButton
             // 
-            this.extractRulesAddButton.Font = new System.Drawing.Font("Microsoft Sans Serif", 14.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.extractRulesAddButton.Location = new System.Drawing.Point(1266, 23);
-            this.extractRulesAddButton.Name = "extractRulesAddButton";
-            this.extractRulesAddButton.Size = new System.Drawing.Size(40, 30);
-            this.extractRulesAddButton.TabIndex = 8;
-            this.extractRulesAddButton.Text = "+";
-            this.extractRulesAddButton.UseVisualStyleBackColor = true;
-            this.extractRulesAddButton.Click += new System.EventHandler(this.extractRulesAddButton_Click);
+            extractRulesAddButton.Font = new System.Drawing.Font("Microsoft Sans Serif", 14.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            extractRulesAddButton.Location = new System.Drawing.Point(1266, 23);
+            extractRulesAddButton.Name = "extractRulesAddButton";
+            extractRulesAddButton.Size = new System.Drawing.Size(40, 30);
+            extractRulesAddButton.TabIndex = 8;
+            extractRulesAddButton.Text = "+";
+            extractRulesAddButton.UseVisualStyleBackColor = true;
+            extractRulesAddButton.Click += new System.EventHandler(extractRulesAddButton_Click);
             // 
             // rulesTabControl
             // 
-            this.rulesTabControl.Controls.Add(this.cleaningTabPage);
-            this.rulesTabControl.Controls.Add(this.dateFormatTabPage);
-            this.rulesTabControl.Controls.Add(this.extractTabPage);
-            this.rulesTabControl.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.rulesTabControl.Location = new System.Drawing.Point(12, 172);
-            this.rulesTabControl.Name = "rulesTabControl";
-            this.rulesTabControl.SelectedIndex = 0;
-            this.rulesTabControl.Size = new System.Drawing.Size(1393, 484);
-            this.rulesTabControl.TabIndex = 10;
+            rulesTabControl.Controls.Add(cleaningTabPage);
+            rulesTabControl.Controls.Add(dateFormatTabPage);
+            rulesTabControl.Controls.Add(extractTabPage);
+            rulesTabControl.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            rulesTabControl.Location = new System.Drawing.Point(12, 172);
+            rulesTabControl.Name = "rulesTabControl";
+            rulesTabControl.SelectedIndex = 0;
+            rulesTabControl.Size = new System.Drawing.Size(1393, 484);
+            rulesTabControl.TabIndex = 10;
             // 
             // cleaningTabPage
             // 
-            this.cleaningTabPage.Controls.Add(this.label7);
-            this.cleaningTabPage.Controls.Add(this.label6);
-            this.cleaningTabPage.Controls.Add(this.label4);
-            this.cleaningTabPage.Controls.Add(this.label1);
-            this.cleaningTabPage.Controls.Add(this.cleaningRulesPanel);
-            this.cleaningTabPage.Location = new System.Drawing.Point(4, 24);
-            this.cleaningTabPage.Name = "cleaningTabPage";
-            this.cleaningTabPage.Padding = new System.Windows.Forms.Padding(3);
-            this.cleaningTabPage.Size = new System.Drawing.Size(1385, 456);
-            this.cleaningTabPage.TabIndex = 0;
-            this.cleaningTabPage.Text = "Cleaning";
-            this.cleaningTabPage.UseVisualStyleBackColor = true;
+            cleaningTabPage.Controls.Add(label7);
+            cleaningTabPage.Controls.Add(label6);
+            cleaningTabPage.Controls.Add(label4);
+            cleaningTabPage.Controls.Add(label1);
+            cleaningTabPage.Controls.Add(cleaningRulesPanel);
+            cleaningTabPage.Location = new System.Drawing.Point(4, 24);
+            cleaningTabPage.Name = "cleaningTabPage";
+            cleaningTabPage.Padding = new System.Windows.Forms.Padding(3);
+            cleaningTabPage.Size = new System.Drawing.Size(1385, 456);
+            cleaningTabPage.TabIndex = 0;
+            cleaningTabPage.Text = "Cleaning";
+            cleaningTabPage.UseVisualStyleBackColor = true;
             // 
             // label6
             // 
-            this.label6.AutoSize = true;
-            this.label6.Location = new System.Drawing.Point(1125, 20);
-            this.label6.Name = "label6";
-            this.label6.Size = new System.Drawing.Size(60, 15);
-            this.label6.TabIndex = 11;
-            this.label6.Text = "Replace";
+            label6.AutoSize = true;
+            label6.Location = new System.Drawing.Point(1125, 20);
+            label6.Name = "label6";
+            label6.Size = new System.Drawing.Size(60, 15);
+            label6.TabIndex = 11;
+            label6.Text = "Replace";
             // 
             // label4
             // 
-            this.label4.AutoSize = true;
-            this.label4.Location = new System.Drawing.Point(570, 20);
-            this.label4.Name = "label4";
-            this.label4.Size = new System.Drawing.Size(53, 15);
-            this.label4.TabIndex = 10;
-            this.label4.Text = "Pattern";
+            label4.AutoSize = true;
+            label4.Location = new System.Drawing.Point(570, 20);
+            label4.Name = "label4";
+            label4.Size = new System.Drawing.Size(53, 15);
+            label4.TabIndex = 10;
+            label4.Text = "Pattern";
             // 
             // label1
             // 
-            this.label1.AutoSize = true;
-            this.label1.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label1.Location = new System.Drawing.Point(1, 20);
-            this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(60, 15);
-            this.label1.TabIndex = 7;
-            this.label1.Text = "Enabled";
+            label1.AutoSize = true;
+            label1.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            label1.Location = new System.Drawing.Point(1, 20);
+            label1.Name = "label1";
+            label1.Size = new System.Drawing.Size(60, 15);
+            label1.TabIndex = 7;
+            label1.Text = "Enabled";
             // 
             // cleaningRulesPanel
             // 
-            this.cleaningRulesPanel.AutoScroll = true;
-            this.cleaningRulesPanel.Controls.Add(this.cleaningRulesAddButton);
-            this.cleaningRulesPanel.Location = new System.Drawing.Point(6, 38);
-            this.cleaningRulesPanel.Name = "cleaningRulesPanel";
-            this.cleaningRulesPanel.Size = new System.Drawing.Size(1373, 412);
-            this.cleaningRulesPanel.TabIndex = 6;
+            cleaningRulesPanel.AutoScroll = true;
+            cleaningRulesPanel.Controls.Add(cleaningRulesAddButton);
+            cleaningRulesPanel.Location = new System.Drawing.Point(6, 38);
+            cleaningRulesPanel.Name = "cleaningRulesPanel";
+            cleaningRulesPanel.Size = new System.Drawing.Size(1373, 412);
+            cleaningRulesPanel.TabIndex = 6;
             // 
             // cleaningRulesAddButton
             // 
-            this.cleaningRulesAddButton.Font = new System.Drawing.Font("Microsoft Sans Serif", 14.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.cleaningRulesAddButton.Location = new System.Drawing.Point(1266, 23);
-            this.cleaningRulesAddButton.Name = "cleaningRulesAddButton";
-            this.cleaningRulesAddButton.Size = new System.Drawing.Size(40, 30);
-            this.cleaningRulesAddButton.TabIndex = 5;
-            this.cleaningRulesAddButton.Text = "+";
-            this.cleaningRulesAddButton.UseVisualStyleBackColor = true;
-            this.cleaningRulesAddButton.Click += new System.EventHandler(this.cleaningRulesAddButton_Click);
+            cleaningRulesAddButton.Font = new System.Drawing.Font("Microsoft Sans Serif", 14.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            cleaningRulesAddButton.Location = new System.Drawing.Point(1266, 23);
+            cleaningRulesAddButton.Name = "cleaningRulesAddButton";
+            cleaningRulesAddButton.Size = new System.Drawing.Size(40, 30);
+            cleaningRulesAddButton.TabIndex = 5;
+            cleaningRulesAddButton.Text = "+";
+            cleaningRulesAddButton.UseVisualStyleBackColor = true;
+            cleaningRulesAddButton.Click += new System.EventHandler(cleaningRulesAddButton_Click);
             // 
             // dateFormatTabPage
             // 
-            this.dateFormatTabPage.Controls.Add(this.groupBox1);
-            this.dateFormatTabPage.Controls.Add(this.dateConversionEnabledCheckBox);
-            this.dateFormatTabPage.Location = new System.Drawing.Point(4, 24);
-            this.dateFormatTabPage.Name = "dateFormatTabPage";
-            this.dateFormatTabPage.Padding = new System.Windows.Forms.Padding(3);
-            this.dateFormatTabPage.Size = new System.Drawing.Size(1385, 456);
-            this.dateFormatTabPage.TabIndex = 2;
-            this.dateFormatTabPage.Text = "Date Format";
-            this.dateFormatTabPage.UseVisualStyleBackColor = true;
+            dateFormatTabPage.Controls.Add(groupBox1);
+            dateFormatTabPage.Controls.Add(dateConversionEnabledCheckBox);
+            dateFormatTabPage.Location = new System.Drawing.Point(4, 24);
+            dateFormatTabPage.Name = "dateFormatTabPage";
+            dateFormatTabPage.Padding = new System.Windows.Forms.Padding(3);
+            dateFormatTabPage.Size = new System.Drawing.Size(1385, 456);
+            dateFormatTabPage.TabIndex = 2;
+            dateFormatTabPage.Text = "Date Format";
+            dateFormatTabPage.UseVisualStyleBackColor = true;
             // 
             // groupBox1
             // 
-            this.groupBox1.Controls.Add(this.dateFormatsListBox);
-            this.groupBox1.Location = new System.Drawing.Point(40, 93);
-            this.groupBox1.Name = "groupBox1";
-            this.groupBox1.Size = new System.Drawing.Size(285, 198);
-            this.groupBox1.TabIndex = 2;
-            this.groupBox1.TabStop = false;
-            this.groupBox1.Text = "Desired Date Format";
+            groupBox1.Controls.Add(dateFormatsListBox);
+            groupBox1.Location = new System.Drawing.Point(40, 93);
+            groupBox1.Name = "groupBox1";
+            groupBox1.Size = new System.Drawing.Size(285, 198);
+            groupBox1.TabIndex = 2;
+            groupBox1.TabStop = false;
+            groupBox1.Text = "Desired Date Format";
             // 
             // dateFormatsListBox
             // 
-            this.dateFormatsListBox.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.dateFormatsListBox.FormattingEnabled = true;
-            this.dateFormatsListBox.ItemHeight = 15;
-            this.dateFormatsListBox.Location = new System.Drawing.Point(14, 20);
-            this.dateFormatsListBox.Name = "dateFormatsListBox";
-            this.dateFormatsListBox.Size = new System.Drawing.Size(253, 169);
-            this.dateFormatsListBox.TabIndex = 1;
-            this.dateFormatsListBox.SelectedIndexChanged += new System.EventHandler(this.dateFormatsListBox_SelectedIndexChanged);
+            dateFormatsListBox.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            dateFormatsListBox.FormattingEnabled = true;
+            dateFormatsListBox.ItemHeight = 15;
+            dateFormatsListBox.Location = new System.Drawing.Point(14, 20);
+            dateFormatsListBox.Name = "dateFormatsListBox";
+            dateFormatsListBox.Size = new System.Drawing.Size(253, 169);
+            dateFormatsListBox.TabIndex = 1;
+            dateFormatsListBox.SelectedIndexChanged += new System.EventHandler(dateFormatsListBox_SelectedIndexChanged);
             // 
             // dateConversionEnabledCheckBox
             // 
-            this.dateConversionEnabledCheckBox.AutoSize = true;
-            this.dateConversionEnabledCheckBox.Location = new System.Drawing.Point(40, 59);
-            this.dateConversionEnabledCheckBox.Name = "dateConversionEnabledCheckBox";
-            this.dateConversionEnabledCheckBox.Size = new System.Drawing.Size(79, 19);
-            this.dateConversionEnabledCheckBox.TabIndex = 0;
-            this.dateConversionEnabledCheckBox.Text = "Enabled";
-            this.dateConversionEnabledCheckBox.UseVisualStyleBackColor = true;
-            this.dateConversionEnabledCheckBox.Click += new System.EventHandler(this.dateConversionEnabledCheckBox_Click);
+            dateConversionEnabledCheckBox.AutoSize = true;
+            dateConversionEnabledCheckBox.Location = new System.Drawing.Point(40, 59);
+            dateConversionEnabledCheckBox.Name = "dateConversionEnabledCheckBox";
+            dateConversionEnabledCheckBox.Size = new System.Drawing.Size(79, 19);
+            dateConversionEnabledCheckBox.TabIndex = 0;
+            dateConversionEnabledCheckBox.Text = "Enabled";
+            dateConversionEnabledCheckBox.UseVisualStyleBackColor = true;
+            dateConversionEnabledCheckBox.Click += new System.EventHandler(dateConversionEnabledCheckBox_Click);
             // 
             // extractTabPage
             // 
-            this.extractTabPage.Controls.Add(this.label8);
-            this.extractTabPage.Controls.Add(this.label5);
-            this.extractTabPage.Controls.Add(this.label3);
-            this.extractTabPage.Controls.Add(this.label2);
-            this.extractTabPage.Controls.Add(this.extractRulesPanel);
-            this.extractTabPage.Location = new System.Drawing.Point(4, 24);
-            this.extractTabPage.Name = "extractTabPage";
-            this.extractTabPage.Padding = new System.Windows.Forms.Padding(3);
-            this.extractTabPage.Size = new System.Drawing.Size(1385, 456);
-            this.extractTabPage.TabIndex = 1;
-            this.extractTabPage.Text = "Extract";
-            this.extractTabPage.UseVisualStyleBackColor = true;
+            extractTabPage.Controls.Add(label8);
+            extractTabPage.Controls.Add(label5);
+            extractTabPage.Controls.Add(label3);
+            extractTabPage.Controls.Add(label2);
+            extractTabPage.Controls.Add(extractRulesPanel);
+            extractTabPage.Location = new System.Drawing.Point(4, 24);
+            extractTabPage.Name = "extractTabPage";
+            extractTabPage.Padding = new System.Windows.Forms.Padding(3);
+            extractTabPage.Size = new System.Drawing.Size(1385, 456);
+            extractTabPage.TabIndex = 1;
+            extractTabPage.Text = "Extract";
+            extractTabPage.UseVisualStyleBackColor = true;
             // 
             // label5
             // 
-            this.label5.AutoSize = true;
-            this.label5.Location = new System.Drawing.Point(1125, 20);
-            this.label5.Name = "label5";
-            this.label5.Size = new System.Drawing.Size(88, 15);
-            this.label5.TabIndex = 10;
-            this.label5.Text = "New Column";
+            label5.AutoSize = true;
+            label5.Location = new System.Drawing.Point(1125, 20);
+            label5.Name = "label5";
+            label5.Size = new System.Drawing.Size(88, 15);
+            label5.TabIndex = 10;
+            label5.Text = "New Column";
             // 
             // label3
             // 
-            this.label3.AutoSize = true;
-            this.label3.Location = new System.Drawing.Point(570, 20);
-            this.label3.Name = "label3";
-            this.label3.Size = new System.Drawing.Size(53, 15);
-            this.label3.TabIndex = 9;
-            this.label3.Text = "Pattern";
+            label3.AutoSize = true;
+            label3.Location = new System.Drawing.Point(570, 20);
+            label3.Name = "label3";
+            label3.Size = new System.Drawing.Size(53, 15);
+            label3.TabIndex = 9;
+            label3.Text = "Pattern";
             // 
             // label2
             // 
-            this.label2.AutoSize = true;
-            this.label2.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label2.Location = new System.Drawing.Point(1, 20);
-            this.label2.Name = "label2";
-            this.label2.Size = new System.Drawing.Size(60, 15);
-            this.label2.TabIndex = 8;
-            this.label2.Text = "Enabled";
+            label2.AutoSize = true;
+            label2.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            label2.Location = new System.Drawing.Point(1, 20);
+            label2.Name = "label2";
+            label2.Size = new System.Drawing.Size(60, 15);
+            label2.TabIndex = 8;
+            label2.Text = "Enabled";
             // 
             // toolTipBox
             // 
-            this.toolTipBox.AutoPopDelay = 1000;
-            this.toolTipBox.InitialDelay = 250;
-            this.toolTipBox.ReshowDelay = 100;
+            toolTipBox.AutoPopDelay = 1000;
+            toolTipBox.InitialDelay = 250;
+            toolTipBox.ReshowDelay = 100;
             // 
             // label7
             // 
-            this.label7.AutoSize = true;
-            this.label7.Location = new System.Drawing.Point(75, 20);
-            this.label7.Name = "label7";
-            this.label7.Size = new System.Drawing.Size(79, 15);
-            this.label7.TabIndex = 12;
-            this.label7.Text = "Rule Name";
+            label7.AutoSize = true;
+            label7.Location = new System.Drawing.Point(75, 20);
+            label7.Name = "label7";
+            label7.Size = new System.Drawing.Size(79, 15);
+            label7.TabIndex = 12;
+            label7.Text = "Rule Name";
             // 
             // label8
             // 
-            this.label8.AutoSize = true;
-            this.label8.Location = new System.Drawing.Point(75, 20);
-            this.label8.Name = "label8";
-            this.label8.Size = new System.Drawing.Size(79, 15);
-            this.label8.TabIndex = 13;
-            this.label8.Text = "Rule Name";
+            label8.AutoSize = true;
+            label8.Location = new System.Drawing.Point(75, 20);
+            label8.Name = "label8";
+            label8.Size = new System.Drawing.Size(79, 15);
+            label8.TabIndex = 13;
+            label8.Text = "Rule Name";
             // 
             // DefineRulesForm
             // 
-            this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
-            this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.BackColor = System.Drawing.SystemColors.Window;
-            this.ClientSize = new System.Drawing.Size(1414, 714);
-            this.Controls.Add(this.selectedRowsGroupBox);
-            this.Controls.Add(this.runButton);
-            this.Controls.Add(this.clearButton);
-            this.Controls.Add(this.discardButton);
-            this.Controls.Add(this.saveButton);
-            this.Controls.Add(this.sourceColumnGroupBox);
-            this.Controls.Add(this.headline);
-            this.Controls.Add(this.menuStrip1);
-            this.Controls.Add(this.rulesTabControl);
-            this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
-            this.MainMenuStrip = this.menuStrip1;
-            this.Name = "DefineRulesForm";
-            this.Text = "Define Data Rules";
-            this.sourceColumnGroupBox.ResumeLayout(false);
-            this.menuStrip1.ResumeLayout(false);
-            this.menuStrip1.PerformLayout();
-            this.selectedRowsGroupBox.ResumeLayout(false);
-            this.selectedRowsGroupBox.PerformLayout();
-            this.extractRulesPanel.ResumeLayout(false);
-            this.rulesTabControl.ResumeLayout(false);
-            this.cleaningTabPage.ResumeLayout(false);
-            this.cleaningTabPage.PerformLayout();
-            this.cleaningRulesPanel.ResumeLayout(false);
-            this.dateFormatTabPage.ResumeLayout(false);
-            this.dateFormatTabPage.PerformLayout();
-            this.groupBox1.ResumeLayout(false);
-            this.extractTabPage.ResumeLayout(false);
-            this.extractTabPage.PerformLayout();
-            this.ResumeLayout(false);
-            this.PerformLayout();
+            AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
+            AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
+            BackColor = System.Drawing.SystemColors.Window;
+            ClientSize = new System.Drawing.Size(1414, 714);
+            Controls.Add(selectedRowsGroupBox);
+            Controls.Add(runButton);
+            Controls.Add(clearButton);
+            Controls.Add(discardButton);
+            Controls.Add(saveButton);
+            Controls.Add(sourceColumnGroupBox);
+            Controls.Add(headline);
+            Controls.Add(menuStrip1);
+            Controls.Add(rulesTabControl);
+            Icon = ((System.Drawing.Icon)(resources.GetObject("$Icon")));
+            MainMenuStrip = menuStrip1;
+            Name = "DefineRulesForm";
+            Text = "Define Data Rules";
+            sourceColumnGroupBox.ResumeLayout(false);
+            menuStrip1.ResumeLayout(false);
+            menuStrip1.PerformLayout();
+            selectedRowsGroupBox.ResumeLayout(false);
+            selectedRowsGroupBox.PerformLayout();
+            extractRulesPanel.ResumeLayout(false);
+            rulesTabControl.ResumeLayout(false);
+            cleaningTabPage.ResumeLayout(false);
+            cleaningTabPage.PerformLayout();
+            cleaningRulesPanel.ResumeLayout(false);
+            dateFormatTabPage.ResumeLayout(false);
+            dateFormatTabPage.PerformLayout();
+            groupBox1.ResumeLayout(false);
+            extractTabPage.ResumeLayout(false);
+            extractTabPage.PerformLayout();
+            ResumeLayout(false);
+            PerformLayout();
 
         }
 
