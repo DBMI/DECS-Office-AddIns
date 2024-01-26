@@ -41,13 +41,13 @@ namespace DECS_Excel_Add_Ins {
         [global::System.ComponentModel.EditorBrowsableAttribute(global::System.ComponentModel.EditorBrowsableState.Never)]
         protected override void Initialize() {
             base.Initialize();
-            this.Application = this.GetHostItem<Microsoft.Office.Interop.Excel.Application>(typeof(Microsoft.Office.Interop.Excel.Application), "Application");
+            Application = GetHostItem<Microsoft.Office.Interop.Excel.Application>(typeof(Microsoft.Office.Interop.Excel.Application), "Application");
             Globals.ThisAddIn = this;
             global::System.Windows.Forms.Application.EnableVisualStyles();
-            this.InitializeCachedData();
-            this.InitializeControls();
-            this.InitializeComponents();
-            this.InitializeData();
+            InitializeCachedData();
+            InitializeControls();
+            InitializeComponents();
+            InitializeData();
         }
         
         /// 
@@ -55,8 +55,8 @@ namespace DECS_Excel_Add_Ins {
         [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.VisualStudio.Tools.Office.ProgrammingModel.dll", "17.0.0.0")]
         [global::System.ComponentModel.EditorBrowsableAttribute(global::System.ComponentModel.EditorBrowsableState.Never)]
         protected override void FinishInitialization() {
-            this.InternalStartup();
-            this.OnStartup();
+            InternalStartup();
+            OnStartup();
         }
         
         /// 
@@ -64,9 +64,9 @@ namespace DECS_Excel_Add_Ins {
         [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.VisualStudio.Tools.Office.ProgrammingModel.dll", "17.0.0.0")]
         [global::System.ComponentModel.EditorBrowsableAttribute(global::System.ComponentModel.EditorBrowsableState.Never)]
         protected override void InitializeDataBindings() {
-            this.BeginInitialization();
-            this.BindToData();
-            this.EndInitialization();
+            BeginInitialization();
+            BindToData();
+            EndInitialization();
         }
         
         /// 
@@ -74,11 +74,11 @@ namespace DECS_Excel_Add_Ins {
         [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.VisualStudio.Tools.Office.ProgrammingModel.dll", "17.0.0.0")]
         [global::System.ComponentModel.EditorBrowsableAttribute(global::System.ComponentModel.EditorBrowsableState.Never)]
         private void InitializeCachedData() {
-            if ((this.DataHost == null)) {
+            if ((DataHost == null)) {
                 return;
             }
-            if (this.DataHost.IsCacheInitialized) {
-                this.DataHost.FillCachedData(this);
+            if (DataHost.IsCacheInitialized) {
+                DataHost.FillCachedData(this);
             }
         }
         
@@ -100,21 +100,21 @@ namespace DECS_Excel_Add_Ins {
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.ComponentModel.EditorBrowsableAttribute(global::System.ComponentModel.EditorBrowsableState.Advanced)]
         private void StartCaching(string MemberName) {
-            this.DataHost.StartCaching(this, MemberName);
+            DataHost.StartCaching(this, MemberName);
         }
         
         /// 
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.ComponentModel.EditorBrowsableAttribute(global::System.ComponentModel.EditorBrowsableState.Advanced)]
         private void StopCaching(string MemberName) {
-            this.DataHost.StopCaching(this, MemberName);
+            DataHost.StopCaching(this, MemberName);
         }
         
         /// 
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.ComponentModel.EditorBrowsableAttribute(global::System.ComponentModel.EditorBrowsableState.Advanced)]
         private bool IsCached(string MemberName) {
-            return this.DataHost.IsCached(this, MemberName);
+            return DataHost.IsCached(this, MemberName);
         }
         
         /// 
@@ -122,9 +122,9 @@ namespace DECS_Excel_Add_Ins {
         [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.VisualStudio.Tools.Office.ProgrammingModel.dll", "17.0.0.0")]
         [global::System.ComponentModel.EditorBrowsableAttribute(global::System.ComponentModel.EditorBrowsableState.Never)]
         private void BeginInitialization() {
-            this.BeginInit();
-            this.CustomTaskPanes.BeginInit();
-            this.VstoSmartTags.BeginInit();
+            BeginInit();
+            CustomTaskPanes.BeginInit();
+            VstoSmartTags.BeginInit();
         }
         
         /// 
@@ -132,9 +132,9 @@ namespace DECS_Excel_Add_Ins {
         [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.VisualStudio.Tools.Office.ProgrammingModel.dll", "17.0.0.0")]
         [global::System.ComponentModel.EditorBrowsableAttribute(global::System.ComponentModel.EditorBrowsableState.Never)]
         private void EndInitialization() {
-            this.VstoSmartTags.EndInit();
-            this.CustomTaskPanes.EndInit();
-            this.EndInit();
+            VstoSmartTags.EndInit();
+            CustomTaskPanes.EndInit();
+            EndInit();
         }
         
         /// 
@@ -142,8 +142,8 @@ namespace DECS_Excel_Add_Ins {
         [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.VisualStudio.Tools.Office.ProgrammingModel.dll", "17.0.0.0")]
         [global::System.ComponentModel.EditorBrowsableAttribute(global::System.ComponentModel.EditorBrowsableState.Never)]
         private void InitializeControls() {
-            this.CustomTaskPanes = Globals.Factory.CreateCustomTaskPaneCollection(null, null, "CustomTaskPanes", "CustomTaskPanes", this);
-            this.VstoSmartTags = Globals.Factory.CreateSmartTagCollection(null, null, "VstoSmartTags", "VstoSmartTags", this);
+            CustomTaskPanes = Globals.Factory.CreateCustomTaskPaneCollection(null, null, "CustomTaskPanes", "CustomTaskPanes", this);
+            VstoSmartTags = Globals.Factory.CreateSmartTagCollection(null, null, "VstoSmartTags", "VstoSmartTags", this);
         }
         
         /// 
@@ -157,7 +157,7 @@ namespace DECS_Excel_Add_Ins {
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.ComponentModel.EditorBrowsableAttribute(global::System.ComponentModel.EditorBrowsableState.Advanced)]
         private bool NeedsFill(string MemberName) {
-            return this.DataHost.NeedsFill(this, MemberName);
+            return DataHost.NeedsFill(this, MemberName);
         }
         
         /// 
@@ -165,8 +165,8 @@ namespace DECS_Excel_Add_Ins {
         [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.VisualStudio.Tools.Office.ProgrammingModel.dll", "17.0.0.0")]
         [global::System.ComponentModel.EditorBrowsableAttribute(global::System.ComponentModel.EditorBrowsableState.Never)]
         protected override void OnShutdown() {
-            this.VstoSmartTags.Dispose();
-            this.CustomTaskPanes.Dispose();
+            VstoSmartTags.Dispose();
+            CustomTaskPanes.Dispose();
             base.OnShutdown();
         }
     }

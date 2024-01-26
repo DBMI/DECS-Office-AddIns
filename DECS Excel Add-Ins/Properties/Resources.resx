@@ -121,11 +121,17 @@
   <data name="calendar_with_gear" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\pictures\calendar with gear.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
+  <data name="California" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\data\California.csv;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;Windows-1252</value>
+  </data>
   <data name="clipboard" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\pictures\clipboard.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
   <data name="decs_logo" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\pictures\decs_logo.ico;System.Drawing.Icon, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="ENV_EPHT_social" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\pictures\ENV_EPHT-social.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
   <data name="paint_roller" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\paint roller.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>

@@ -55,6 +55,23 @@ namespace DECS_Excel_Add_Ins
             return Resources.paint_roller;
         }
 
+        public Bitmap notesConfigButton_GetImage(IRibbonControl control)
+        {
+            return Resources.regex_setup_icon;
+        }
+
+        public Bitmap sviButton_GetImage(IRibbonControl control)
+        {
+            return Resources.ENV_EPHT_social;
+        }
+
+        public void OnAddSVI(Office.IRibbonControl control)
+        {
+            SviProcessor sviProcessor = new SviProcessor();
+            Excel.Worksheet wksheet = (Excel.Worksheet)Globals.ThisAddIn.Application.ActiveSheet;
+            sviProcessor.Scan(wksheet);
+        }
+
         public void OnBuildMRN(Office.IRibbonControl control)
         {
             ListImporter importer = new ListImporter();
@@ -80,7 +97,7 @@ namespace DECS_Excel_Add_Ins
         {
             Excel.Worksheet wksheet = (Excel.Worksheet)Globals.ThisAddIn.Application.ActiveSheet;
             NotesParser parser = new NotesParser(
-                worksheet: wksheet,
+                _worksheet: wksheet,
                 withConfigFile: false,
                 allRows: false
             );
@@ -88,15 +105,10 @@ namespace DECS_Excel_Add_Ins
             form.Visible = true;
         }
 
-        public Bitmap notesConfigButton_GetImage(IRibbonControl control)
-        {
-            return Resources.regex_setup_icon;
-        }
-
         public void OnSearchNotes(Office.IRibbonControl control)
         {
             Excel.Worksheet wksheet = (Excel.Worksheet)Globals.ThisAddIn.Application.ActiveSheet;
-            NotesParser parser = new NotesParser(worksheet: wksheet);
+            NotesParser parser = new NotesParser(_worksheet: wksheet);
             parser.Parse();
         }
 
@@ -120,7 +132,7 @@ namespace DECS_Excel_Add_Ins
 
         public void Ribbon_Load(Office.IRibbonUI ribbonUI)
         {
-            this.ribbon = ribbonUI;
+            ribbon = ribbonUI;
         }
 
         #endregion

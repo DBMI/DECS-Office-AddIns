@@ -30,19 +30,19 @@ namespace DECS_Excel_Add_Ins
         {
             if (ex != null)
             {
-                this.valid = false;
-                this.message = ex.Message;
+                valid = false;
+                message = ex.Message;
             }
         }
 
         public override string ToString()
         {
-            return this.message;
+            return message;
         }
 
         internal bool Valid()
         {
-            return this.valid;
+            return valid;
         }
     }
 
@@ -55,16 +55,16 @@ namespace DECS_Excel_Add_Ins
         private RuleComponent ruleComponent;
 
         public RuleValidationError(
-            RuleType ruleType,
-            int index,
-            RuleComponent ruleComponent,
-            string message
+            RuleType _ruleType,
+            int _index,
+            RuleComponent _ruleComponent,
+            string _message
         )
         {
-            this.ruleType = ruleType;
-            this.index = index;
-            this.ruleComponent = ruleComponent;
-            this.message = message;
+            ruleType = _ruleType;
+            index = _index;
+            ruleComponent = _ruleComponent;
+            message = _message;
         }
 
         public override string ToString()
@@ -77,13 +77,13 @@ namespace DECS_Excel_Add_Ins
                 + ruleComponent.ToString()
                 + " component";
 
-            if (string.IsNullOrEmpty(this.message))
+            if (string.IsNullOrEmpty(message))
             {
                 explanation += ".";
             }
             else
             {
-                explanation += " because " + this.message;
+                explanation += " because " + message;
             }
 
             return explanation;

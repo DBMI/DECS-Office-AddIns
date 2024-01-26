@@ -222,8 +222,8 @@ namespace DECS_Excel_Add_Ins
 
         internal bool HasDateConversionRule()
         {
-            return this.DateConversionRule.enabled
-                && !string.IsNullOrEmpty(this.DateConversionRule.desiredDateFormat);
+            return DateConversionRule.enabled
+                && !string.IsNullOrEmpty(DateConversionRule.desiredDateFormat);
         }
 
         internal bool HasExtractRules()
@@ -290,10 +290,10 @@ namespace DECS_Excel_Add_Ins
                 if (!result.Valid())
                 {
                     RuleValidationError ruleValidationError = new RuleValidationError(
-                        ruleType: RuleType.Cleaning,
-                        index: index,
-                        ruleComponent: RuleComponent.Pattern,
-                        message: result.ToString()
+                        _ruleType: RuleType.Cleaning,
+                        _index: index,
+                        _ruleComponent: RuleComponent.Pattern,
+                        _message: result.ToString()
                     );
                     errorReports.Add(ruleValidationError);
                 }
@@ -303,10 +303,10 @@ namespace DECS_Excel_Add_Ins
                 if (!result.Valid())
                 {
                     RuleValidationError ruleValidationError = new RuleValidationError(
-                        ruleType: RuleType.Cleaning,
-                        index: index,
-                        ruleComponent: RuleComponent.Replace,
-                        message: result.ToString()
+                        _ruleType: RuleType.Cleaning,
+                        _index: index,
+                        _ruleComponent: RuleComponent.Replace,
+                        _message: result.ToString()
                     );
                     errorReports.Add(ruleValidationError);
                 }
@@ -320,10 +320,10 @@ namespace DECS_Excel_Add_Ins
                 if (!result.Valid())
                 {
                     RuleValidationError ruleValidationError = new RuleValidationError(
-                        ruleType: RuleType.Extract,
-                        index: index,
-                        ruleComponent: RuleComponent.Pattern,
-                        message: result.ToString()
+                        _ruleType: RuleType.Extract,
+                        _index: index,
+                        _ruleComponent: RuleComponent.Pattern,
+                        _message: result.ToString()
                     );
                     errorReports.Add(ruleValidationError);
                 }
@@ -331,10 +331,10 @@ namespace DECS_Excel_Add_Ins
                 if (string.IsNullOrEmpty(rule.newColumn))
                 {
                     RuleValidationError ruleValidationError = new RuleValidationError(
-                        ruleType: RuleType.Extract,
-                        index: index,
-                        ruleComponent: RuleComponent.NewColumn,
-                        message: "newColumn is empty."
+                        _ruleType: RuleType.Extract,
+                        _index: index,
+                        _ruleComponent: RuleComponent.NewColumn,
+                        _message: "newColumn is empty."
                     );
                     errorReports.Add(ruleValidationError);
                 }

@@ -13,7 +13,9 @@ using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using System.Xml.Linq;
+using static System.Net.Mime.MediaTypeNames;
 using static System.Windows.Forms.VisualStyles.VisualStyleElement;
+using Excel = Microsoft.Office.Interop.Excel;
 using TextBox = System.Windows.Forms.TextBox;
 using ToolTip = System.Windows.Forms.ToolTip;
 
@@ -210,6 +212,65 @@ namespace DECS_Excel_Add_Ins
             return names;
         }
 
+        internal static Dictionary<string, Range> GetColumnNamesDictionary(Worksheet sheet)
+        {
+            Dictionary<string, Range> columns = new Dictionary<string, Range>();
+            Range range = (Range) sheet.Cells[1, 1];
+            int lastUsedCol = Utilities.FindLastCol(sheet);
+
+            // Search along row 1.
+            for (int col_index = 1; col_index <= lastUsedCol; col_index++)
+            {
+                columns.Add(range.Value.ToString(), range);
+
+                // Move over one column.
+                range = range.Offset[0, 1];
+            }
+
+            return columns;
+        }
+
+        // Has the user selected a column? And just one?
+        internal static Range GetSelectedCol(Microsoft.Office.Interop.Excel.Application application, int lastRow)
+        {
+            Range selectedColumn = null;
+            Range rng = (Range) application.Selection;
+
+            // Whole column? Just one? And containing data?
+            if (rng.Count > 1000 && 
+                rng.Columns.Count == 1 && 
+                Utilities.HasData(rng.Columns[1], lastRow))
+            {
+                // We want the TOP of the column.
+                Worksheet sheet = application.Selection.Worksheet;
+                int columnNumber = rng.Columns[1].Column;
+                selectedColumn = (Range) sheet.Cells[1, columnNumber];
+            }
+
+            return selectedColumn;
+        }
+
+        // Which columns has the user selected to export to SQL?
+        internal static List<Range> GetSelectedCols(Microsoft.Office.Interop.Excel.Application application, int lastRow)
+        {
+            Range rng = (Range) application.Selection;
+            List<Range> selectedColumns = new List<Range>();
+            Worksheet sheet = application.Selection.Worksheet;
+
+            foreach (Range col in rng.Columns)
+            {
+                // Don't add BLANK columns.
+                if (Utilities.HasData(col, lastRow))
+                {
+                    // Want the TOP of the column.
+                    int columnNumber = col.Column;
+                    selectedColumns.Add((Range)sheet.Cells[1, columnNumber]);
+                }
+            }
+
+            return selectedColumns;
+        }
+
         // https://stackoverflow.com/q/21219797/18749636
         internal static string GetTimestamp()
         {
@@ -238,13 +299,14 @@ namespace DECS_Excel_Add_Ins
             return hasData;
         }
 
+        // Inserts new column to the right of the provided Range.
         internal static Range InsertNewColumn(Range range, string newColumnName)
         {
             int columnNumber = range.Column;
             Worksheet sheet = range.Worksheet;
-            sheet.Columns[columnNumber].Insert();
+            sheet.Columns[columnNumber + 1].EntireColumn.Insert();
 
-            Range newRange = range.Offset[0, -1];
+            Range newRange = range.Offset[0, 1];
             newRange.Value2 = newColumnName;
             return newRange;
         }

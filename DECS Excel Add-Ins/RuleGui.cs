@@ -75,80 +75,80 @@ namespace DECS_Excel_Add_Ins
             System.Reflection.MethodBase.GetCurrentMethod().DeclaringType
         );
 
-        public RuleGui(int x, int y, int index, Panel parentObj, string ruleType)
+        public RuleGui(int x, int y, int _index, Panel parentObj, string ruleType)
         {
-            this.index = index; // zero-based
-            this.parent = parentObj;
-            this.keyword = ruleType;
+            index = _index; // zero-based
+            parent = parentObj;
+            keyword = ruleType;
 
-            this.panel = new Panel();
-            this.panel.Height = height;
-            this.panel.Location = new Point(x, y);
-            this.panel.Name = this.keyword;
-            this.panel.Parent = parent;
-            this.panel.Tag = this; // So that, if we find the Panel object, we can find its associated RuleGui object.
-            this.panel.Width = width;
-            this.parent.Controls.Add(this.panel);
+            panel = new Panel();
+            panel.Height = height;
+            panel.Location = new Point(x, y);
+            panel.Name = keyword;
+            panel.Parent = parent;
+            panel.Tag = this; // So that, if we find the Panel object, we can find its associated RuleGui object.
+            panel.Width = width;
+            parent.Controls.Add(panel);
 
             // Create enable checkbox.
-            this.checkBox = new CheckBox();
-            this.checkBox.Checked = true;
-            this.checkBox.Click += CheckBoxClicked;
-            this.checkBox.Font = CHECKBOX_FONT;
-            this.checkBox.Height = BUTTON_HEIGHT;
-            System.Drawing.Size checkBoxSize = this.checkBox.Size;
+            checkBox = new CheckBox();
+            checkBox.Checked = true;
+            checkBox.Click += CheckBoxClicked;
+            checkBox.Font = CHECKBOX_FONT;
+            checkBox.Height = BUTTON_HEIGHT;
+            System.Drawing.Size checkBoxSize = checkBox.Size;
             checkBoxSize.Width = CHECKBOX_WIDTH;
-            this.checkBox.Size = checkBoxSize;
+            checkBox.Size = checkBoxSize;
             int checkBoxYoffset = (int)(BOX_HEIGHT - checkBoxSize.Height) / 2;
             Point checkBoxPosit = new Point(CHECKBOX_X, BOX_Y + checkBoxYoffset);
-            this.checkBox.Location = checkBoxPosit;
-            this.checkBox.Parent = this.panel;
-            this.checkBox.Text = "";
+            checkBox.Location = checkBoxPosit;
+            checkBox.Parent = panel;
+            checkBox.Text = "";
 
             // Create and position boxes.
-            this.leftTextBox = new TextBox();
-            this.leftTextBox.Parent = this.panel;
-            this.leftTextBox.Font = BOX_FONT;
-            this.leftTextBox.Height = BOX_HEIGHT;
+            leftTextBox = new TextBox();
+            leftTextBox.Parent = panel;
+            leftTextBox.Font = BOX_FONT;
+            leftTextBox.Height = BOX_HEIGHT;
             Point leftPosit = new Point(LEFT_BOX_X, BOX_Y);
-            this.leftTextBox.Location = leftPosit;
-            this.leftTextBox.Name = this.keyword + "LeftTextBox";
-            this.leftTextBox.Width = LEFT_BOX_WIDTH;
+            leftTextBox.Location = leftPosit;
+            leftTextBox.Name = keyword + "LeftTextBox";
+            leftTextBox.Width = LEFT_BOX_WIDTH;
 
-            this.centerTextBox = new TextBox();
-            this.centerTextBox.Parent = this.panel;
-            this.centerTextBox.Font = BOX_FONT;
-            this.centerTextBox.Height = BOX_HEIGHT;
+            centerTextBox = new TextBox();
+            centerTextBox.Parent = panel;
+            centerTextBox.Font = BOX_FONT;
+            centerTextBox.Height = BOX_HEIGHT;
             Point centerPosit = new Point(CENTER_BOX_X, BOX_Y);
-            this.centerTextBox.Location = centerPosit;
-            this.centerTextBox.Name = this.keyword + "CenterTextBox";
-            this.centerTextBox.Width = CENTER_BOX_WIDTH;
+            centerTextBox.Location = centerPosit;
+            centerTextBox.Name = keyword + "CenterTextBox";
+            centerTextBox.Width = CENTER_BOX_WIDTH;
 
-            this.rightTextBox = new TextBox();
-            this.rightTextBox.Parent = this.panel;
-            this.rightTextBox.Font = BOX_FONT;
-            this.rightTextBox.Height = BOX_HEIGHT;
+            rightTextBox = new TextBox();
+            rightTextBox.Parent = panel;
+            rightTextBox.Font = BOX_FONT;
+            rightTextBox.Height = BOX_HEIGHT;
             Point rightHandPosit = new Point(RIGHT_BOX_X, BOX_Y);
-            this.rightTextBox.Location = rightHandPosit;
-            this.rightTextBox.Name = this.keyword + "RightTextBox";
-            this.rightTextBox.Width = RIGHT_BOX_WIDTH;
+            rightTextBox.Location = rightHandPosit;
+            rightTextBox.Name = keyword + "RightTextBox";
+            rightTextBox.Width = RIGHT_BOX_WIDTH;
 
             // Create new delete button.
-            this.deleteButton = new Button();
-            this.deleteButton.Click += Delete;
-            this.deleteButton.Font = BUTTON_FONT;
-            this.deleteButton.Height = BUTTON_HEIGHT;
+            deleteButton = new Button();
+            deleteButton.Click += Delete;
+            deleteButton.Font = BUTTON_FONT;
+            deleteButton.Height = BUTTON_HEIGHT;
             Point deleteButtonPosit = new Point(BUTTON_X, BOX_Y + BUTTON_Y_OFFSET);
-            this.deleteButton.Location = deleteButtonPosit;
-            this.deleteButton.Parent = this.panel;
-            this.deleteButton.Text = "−";
-            this.deleteButton.Width = BUTTON_WIDTH;
+            deleteButton.Location = deleteButtonPosit;
+            deleteButton.Parent = panel;
+            deleteButton.Text = "−";
+            deleteButton.Width = BUTTON_WIDTH;
 
             // Add to controls.
-            this.panel.Controls.Add(this.leftTextBox);
-            this.panel.Controls.Add(this.centerTextBox);
-            this.panel.Controls.Add(this.rightTextBox);
-            this.panel.Controls.Add(this.deleteButton);
+            panel.Controls.Add(leftTextBox);
+            panel.Controls.Add(centerTextBox);
+            panel.Controls.Add(rightTextBox);
+            panel.Controls.Add(deleteButton);
         }
 
         // This class creates the Delete button and handles disposing of the GUI elements
@@ -180,7 +180,7 @@ namespace DECS_Excel_Add_Ins
 
             if (checkBox.Checked)
             {
-                log.Debug("Checkbox " + this.index.ToString() + " checked.");
+                log.Debug("Checkbox " + index.ToString() + " checked.");
 
                 if (parentClassEnableAction != null)
                 {
@@ -189,7 +189,7 @@ namespace DECS_Excel_Add_Ins
             }
             else
             {
-                log.Debug("Checkbox " + this.index.ToString() + " unchecked.");
+                log.Debug("Checkbox " + index.ToString() + " unchecked.");
 
                 if (parentClassDisableAction != null)
                 {
@@ -249,7 +249,7 @@ namespace DECS_Excel_Add_Ins
 
         internal int Index()
         {
-            return this.index;
+            return index;
         }
 
         private void MoveUpInLine()
@@ -260,22 +260,22 @@ namespace DECS_Excel_Add_Ins
             nextInLine?.MoveUpInLine();
 
             // Decrement my index.
-            this.index -= 1;
+            index -= 1;
         }
 
         private RuleGui NextRuleGui()
         {
-            return FindNth(this.index + 1);
+            return FindNth(index + 1);
         }
 
         public Panel PanelObj
         {
-            get { return this.panel; }
+            get { return panel; }
         }
 
         internal void ResetLocation(int x, int y)
         {
-            this.panel.Location = new Point(x, y);
+            panel.Location = new Point(x, y);
         }
     }
 }

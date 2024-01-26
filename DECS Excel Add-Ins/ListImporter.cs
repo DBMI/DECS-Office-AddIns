@@ -50,11 +50,11 @@ namespace DECS_Excel_Add_Ins
 
         internal ListImporter()
         {
-            this.application = Globals.ThisAddIn.Application;
+            application = Globals.ThisAddIn.Application;
 
             // Initialize dictionary to translate column names like "Date of Procedure" to DataType.Date.
-            this.supportedDataTypes = new Dictionary<string, DataType>();
-            this.supportedDataTypes.Add("Date", DataType.Date);
+            supportedDataTypes = new Dictionary<string, DataType>();
+            supportedDataTypes.Add("Date", DataType.Date);
         }
 
         // Turn the column name (in row 1) into a enum data type.
@@ -94,7 +94,7 @@ namespace DECS_Excel_Add_Ins
                     cellContents = thisCell.Value2.ToString();
 
                     // If the line is just the column name, skip this row.
-                    if (this.columnNames.Any(cellContents.Contains))
+                    if (columnNames.Any(cellContents.Contains))
                         break;
 
                     switch (dataType)
@@ -139,24 +139,6 @@ namespace DECS_Excel_Add_Ins
             return rowContents;
         }
 
-        // Which columns has the user selected to export to SQL?
-        private List<Range> GetSelectedCols()
-        {
-            Range rng = (Range)this.application.Selection;
-            List<Range> selectedColumns = new List<Range>();
-
-            foreach (Range col in rng.Columns)
-            {
-                // Don't add BLANK columns.
-                if (Utilities.HasData(col, this.lastRow))
-                {
-                    selectedColumns.Add(col);
-                }
-            }
-
-            return selectedColumns;
-        }
-
         // Based on the column name (in row 1) is this a special "index" column?
         private bool IsIndexColumn(Range col)
         {
@@ -178,7 +160,7 @@ namespace DECS_Excel_Add_Ins
         {
             DataType dataType = DataType.Varchar;
 
-            foreach (KeyValuePair<string, DataType> entry in this.supportedDataTypes)
+            foreach (KeyValuePair<string, DataType> entry in supportedDataTypes)
             {
                 // Make case-insensitive match.
                 if (colName.ToLower().Contains(entry.Key.ToLower()))
@@ -197,7 +179,7 @@ namespace DECS_Excel_Add_Ins
             string segmentStart = SEGMENT_START_I;
 
             // Any columns selected?
-            List<Range> selectedColumns = GetSelectedCols();
+            List<Range> selectedColumns = Utilities.GetSelectedCols(application, lastRow);
 
             if (selectedColumns.Count == 0)
             {
@@ -206,13 +188,13 @@ namespace DECS_Excel_Add_Ins
             }
 
             // Build the list of column names.
-            this.columnNames = Utilities.GetColumnNames(selectedColumns);
+            columnNames = Utilities.GetColumnNames(selectedColumns);
 
             // Turn "Date of consult" into "DATE_OF_CONSULT".
-            this.sqlVariableNames = this.columnNames
+            sqlVariableNames = columnNames
                 .Select(s => s.Replace(" ", "_").ToUpper())
                 .ToList();
-            segmentStart += string.Join(", ", this.sqlVariableNames);
+            segmentStart += string.Join(", ", sqlVariableNames);
             segmentStart += SEGMENT_START_II;
             return (selectedColumns, segmentStart);
         }
@@ -221,7 +203,7 @@ namespace DECS_Excel_Add_Ins
         internal void Scan(Worksheet worksheet)
         {
             // We'll use this in a lot of places, so let's just look it up once.
-            this.lastRow = Utilities.FindLastRow(worksheet);
+            lastRow = Utilities.FindLastRow(worksheet);
 
             // Initialize the output .SQL file.
             Workbook workbook = worksheet.Parent;
@@ -238,7 +220,7 @@ namespace DECS_Excel_Add_Ins
 
             int lines_written_this_chunk = 0;
 
-            for (int rowNumber = 1; rowNumber <= this.lastRow; rowNumber++)
+            for (int rowNumber = 1; rowNumber <= lastRow; rowNumber++)
             {
                 List<string> rowContents = ExtractRow(selection.columns, rowNumber);
 
@@ -251,7 +233,7 @@ namespace DECS_Excel_Add_Ins
                 lines_written_this_chunk++;
                 string line_ending;
 
-                if (rowNumber == this.lastRow)
+                if (rowNumber == lastRow)
                 {
                     line_ending = ";\r\n";
                 }
@@ -282,7 +264,7 @@ namespace DECS_Excel_Add_Ins
             // Build list of variables & types like "PAT_ID varchar, PROCEDURE_DATE date"
             List<string> variableNamesAndTypes = new List<string>();
 
-            foreach (string varName in this.sqlVariableNames)
+            foreach (string varName in sqlVariableNames)
             {
                 DataType dataType = NameToDataType(varName);
                 variableNamesAndTypes.Add(varName + " " + dataType.GetDescription());

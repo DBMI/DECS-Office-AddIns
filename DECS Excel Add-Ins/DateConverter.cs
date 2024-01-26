@@ -21,17 +21,17 @@ namespace DECS_Excel_Add_Ins
 
         internal DateConverter()
         {
-            this.supportedDateFormats = new Dictionary<string, string>();
-            this.supportedDateFormats.Add("MM/dd/yyyy", "(\\d{1,2}\\/\\d{1,2}\\/\\d{4})");
-            this.supportedDateFormats.Add("MM-dd-yyyy", "(\\d{1,2}-\\d{1,2}-\\d{4})");
-            this.supportedDateFormats.Add("dd MMMM yyyy", "(\\d{1,2} \\w{3,9}\\.? \\d{4})");
-            this.supportedDateFormats.Add("MMMM dd yyyy", "(\\w{3,9}\\.? \\d{1,2},? \\d{4})");
-            this.supportedDateFormats.Add("MMMM dd", "(\\w{3,9}\\.? \\d{1,2})");
+            supportedDateFormats = new Dictionary<string, string>();
+            supportedDateFormats.Add("MM/dd/yyyy", "(\\d{1,2}\\/\\d{1,2}\\/\\d{4})");
+            supportedDateFormats.Add("MM-dd-yyyy", "(\\d{1,2}-\\d{1,2}-\\d{4})");
+            supportedDateFormats.Add("dd MMMM yyyy", "(\\d{1,2} \\w{3,9}\\.? \\d{4})");
+            supportedDateFormats.Add("MMMM dd yyyy", "(\\w{3,9}\\.? \\d{1,2},? \\d{4})");
+            supportedDateFormats.Add("MMMM dd", "(\\w{3,9}\\.? \\d{1,2})");
         }
 
         internal string Convert(string note, string desiredFormat)
         {
-            foreach (KeyValuePair<string, string> entry in this.supportedDateFormats)
+            foreach (KeyValuePair<string, string> entry in supportedDateFormats)
             {
                 if (entry.Key == desiredFormat)
                     continue;
@@ -58,7 +58,7 @@ namespace DECS_Excel_Add_Ins
 
         internal List<string> SupportedDateFormats()
         {
-            return new List<string>(this.supportedDateFormats.Keys);
+            return new List<string>(supportedDateFormats.Keys);
         }
     }
 }

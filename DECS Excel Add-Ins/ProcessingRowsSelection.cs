@@ -10,14 +10,14 @@ namespace DECS_Excel_Add_Ins
     internal class ProcessingRowsSelection
     {
         private bool allRows;
-        private Excel.Range rows; // From (Excel.Range)this.application.Selection.Rows;
+        private Excel.Range rows; // From (Excel.Range)application.Selection.Rows;
         private string reason;
 
-        public ProcessingRowsSelection(Excel.Range rows, string reason, bool allRows = false)
+        public ProcessingRowsSelection(Excel.Range _rows, string _reason, bool _allRows = false)
         {
-            this.rows = rows;
-            this.reason = reason;
-            this.allRows = allRows;
+            rows = _rows;
+            reason = _reason;
+            allRows = _allRows;
         }
 
         internal bool AllRows()
@@ -42,7 +42,7 @@ namespace DECS_Excel_Add_Ins
 
         public override string ToString()
         {
-            return this.rows.Count.ToString() + " rows selected.";
+            return rows.Count.ToString() + " rows selected.";
         }
     }
 }

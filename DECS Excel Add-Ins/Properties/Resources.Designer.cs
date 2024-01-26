@@ -71,6 +71,15 @@ namespace DECS_Excel_Add_Ins.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to ST	STATE	ST_ABBR	STCNTY	COUNTY	FIPS	LOCATION	AREA_SQMI	E_TOTPOP	M_TOTPOP	E_HU	M_HU	E_HH	M_HH	E_POV150	M_POV150	E_UNEMP	M_UNEMP	E_HBURD	M_HBURD	E_NOHSDP	M_NOHSDP	E_UNINSUR	M_UNINSUR	E_AGE65	M_AGE65	E_AGE17	M_AGE17	E_DISABL	M_DISABL	E_SNGPNT	M_SNGPNT	E_LIMENG	M_LIMENG	E_MINRTY	M_MINRTY	E_MUNIT	M_MUNIT	E_MOBILE	M_MOBILE	E_CROWD	M_CROWD	E_NOVEH	M_NOVEH	E_GROUPQ	M_GROUPQ	EP_POV150	MP_POV150	EP_UNEMP	MP_UNEMP	EP_HBURD	MP_HBURD	EP_NOHSDP	MP_NOHSDP	EP_UNINSUR	MP_UNINSUR	EP_AGE65	MP_AGE65	EP_AGE17	MP_AGE17	EP_DISABL [rest of string was truncated]&quot;;.
+        /// </summary>
+        internal static string California {
+            get {
+                return ResourceManager.GetString("California", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
         internal static System.Drawing.Bitmap clipboard {
@@ -87,6 +96,16 @@ namespace DECS_Excel_Add_Ins.Properties {
             get {
                 object obj = ResourceManager.GetObject("decs_logo", resourceCulture);
                 return ((System.Drawing.Icon)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap ENV_EPHT_social {
+            get {
+                object obj = ResourceManager.GetObject("ENV_EPHT_social", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
             }
         }
         

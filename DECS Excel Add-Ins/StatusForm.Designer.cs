@@ -29,115 +29,115 @@
         private void InitializeComponent()
         {
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(StatusForm));
-            this.progressGroupBox = new System.Windows.Forms.GroupBox();
-            this.progressBarLabel = new System.Windows.Forms.Label();
-            this.progressBar = new System.Windows.Forms.ProgressBar();
-            this.statusGroupBox = new System.Windows.Forms.GroupBox();
-            this.statusLabel = new System.Windows.Forms.Label();
-            this.processingStopButton = new System.Windows.Forms.Button();
-            this.predictedCompletionLabel = new System.Windows.Forms.Label();
-            this.progressGroupBox.SuspendLayout();
-            this.statusGroupBox.SuspendLayout();
-            this.SuspendLayout();
+            progressGroupBox = new System.Windows.Forms.GroupBox();
+            progressBarLabel = new System.Windows.Forms.Label();
+            progressBar = new System.Windows.Forms.ProgressBar();
+            statusGroupBox = new System.Windows.Forms.GroupBox();
+            statusLabel = new System.Windows.Forms.Label();
+            processingStopButton = new System.Windows.Forms.Button();
+            predictedCompletionLabel = new System.Windows.Forms.Label();
+            progressGroupBox.SuspendLayout();
+            statusGroupBox.SuspendLayout();
+            SuspendLayout();
             // 
             // progressGroupBox
             // 
-            this.progressGroupBox.Controls.Add(this.predictedCompletionLabel);
-            this.progressGroupBox.Controls.Add(this.progressBarLabel);
-            this.progressGroupBox.Controls.Add(this.progressBar);
-            this.progressGroupBox.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.progressGroupBox.Location = new System.Drawing.Point(98, 68);
-            this.progressGroupBox.Margin = new System.Windows.Forms.Padding(4);
-            this.progressGroupBox.Name = "progressGroupBox";
-            this.progressGroupBox.Padding = new System.Windows.Forms.Padding(4);
-            this.progressGroupBox.Size = new System.Drawing.Size(416, 136);
-            this.progressGroupBox.TabIndex = 10;
-            this.progressGroupBox.TabStop = false;
-            this.progressGroupBox.Text = "Progress";
+            progressGroupBox.Controls.Add(predictedCompletionLabel);
+            progressGroupBox.Controls.Add(progressBarLabel);
+            progressGroupBox.Controls.Add(progressBar);
+            progressGroupBox.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            progressGroupBox.Location = new System.Drawing.Point(98, 68);
+            progressGroupBox.Margin = new System.Windows.Forms.Padding(4);
+            progressGroupBox.Name = "progressGroupBox";
+            progressGroupBox.Padding = new System.Windows.Forms.Padding(4);
+            progressGroupBox.Size = new System.Drawing.Size(416, 136);
+            progressGroupBox.TabIndex = 10;
+            progressGroupBox.TabStop = false;
+            progressGroupBox.Text = "Progress";
             // 
             // progressBarLabel
             // 
-            this.progressBarLabel.AutoSize = true;
-            this.progressBarLabel.Location = new System.Drawing.Point(136, 27);
-            this.progressBarLabel.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
-            this.progressBarLabel.Name = "progressBarLabel";
-            this.progressBarLabel.Size = new System.Drawing.Size(97, 15);
-            this.progressBarLabel.TabIndex = 9;
-            this.progressBarLabel.Text = "Applying rules";
-            this.progressBarLabel.TextAlign = System.Drawing.ContentAlignment.TopCenter;
+            progressBarLabel.AutoSize = true;
+            progressBarLabel.Location = new System.Drawing.Point(136, 27);
+            progressBarLabel.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            progressBarLabel.Name = "progressBarLabel";
+            progressBarLabel.Size = new System.Drawing.Size(97, 15);
+            progressBarLabel.TabIndex = 9;
+            progressBarLabel.Text = "Applying rules";
+            progressBarLabel.TextAlign = System.Drawing.ContentAlignment.TopCenter;
             // 
             // progressBar
             // 
-            this.progressBar.Location = new System.Drawing.Point(28, 63);
-            this.progressBar.Margin = new System.Windows.Forms.Padding(4);
-            this.progressBar.Name = "progressBar";
-            this.progressBar.Size = new System.Drawing.Size(358, 28);
-            this.progressBar.TabIndex = 8;
+            progressBar.Location = new System.Drawing.Point(28, 63);
+            progressBar.Margin = new System.Windows.Forms.Padding(4);
+            progressBar.Name = "progressBar";
+            progressBar.Size = new System.Drawing.Size(358, 28);
+            progressBar.TabIndex = 8;
             // 
             // statusGroupBox
             // 
-            this.statusGroupBox.Controls.Add(this.statusLabel);
-            this.statusGroupBox.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.statusGroupBox.Location = new System.Drawing.Point(98, 212);
-            this.statusGroupBox.Margin = new System.Windows.Forms.Padding(4);
-            this.statusGroupBox.Name = "statusGroupBox";
-            this.statusGroupBox.Padding = new System.Windows.Forms.Padding(4);
-            this.statusGroupBox.Size = new System.Drawing.Size(416, 101);
-            this.statusGroupBox.TabIndex = 11;
-            this.statusGroupBox.TabStop = false;
-            this.statusGroupBox.Text = "Status";
+            statusGroupBox.Controls.Add(statusLabel);
+            statusGroupBox.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            statusGroupBox.Location = new System.Drawing.Point(98, 212);
+            statusGroupBox.Margin = new System.Windows.Forms.Padding(4);
+            statusGroupBox.Name = "statusGroupBox";
+            statusGroupBox.Padding = new System.Windows.Forms.Padding(4);
+            statusGroupBox.Size = new System.Drawing.Size(416, 101);
+            statusGroupBox.TabIndex = 11;
+            statusGroupBox.TabStop = false;
+            statusGroupBox.Text = "Status";
             // 
             // statusLabel
             // 
-            this.statusLabel.AutoSize = true;
-            this.statusLabel.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.statusLabel.Location = new System.Drawing.Point(24, 43);
-            this.statusLabel.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
-            this.statusLabel.Name = "statusLabel";
-            this.statusLabel.Size = new System.Drawing.Size(130, 15);
-            this.statusLabel.TabIndex = 0;
-            this.statusLabel.Text = "status of the apparatus";
+            statusLabel.AutoSize = true;
+            statusLabel.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            statusLabel.Location = new System.Drawing.Point(24, 43);
+            statusLabel.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            statusLabel.Name = "statusLabel";
+            statusLabel.Size = new System.Drawing.Size(130, 15);
+            statusLabel.TabIndex = 0;
+            statusLabel.Text = "status of the apparatus";
             // 
             // processingStopButton
             // 
-            this.processingStopButton.BackColor = System.Drawing.Color.White;
-            this.processingStopButton.Location = new System.Drawing.Point(278, 335);
-            this.processingStopButton.Name = "processingStopButton";
-            this.processingStopButton.Size = new System.Drawing.Size(75, 33);
-            this.processingStopButton.TabIndex = 12;
-            this.processingStopButton.Text = "Stop";
-            this.processingStopButton.UseVisualStyleBackColor = false;
-            this.processingStopButton.Click += new System.EventHandler(this.processingStopButton_Click);
+            processingStopButton.BackColor = System.Drawing.Color.White;
+            processingStopButton.Location = new System.Drawing.Point(278, 335);
+            processingStopButton.Name = "processingStopButton";
+            processingStopButton.Size = new System.Drawing.Size(75, 33);
+            processingStopButton.TabIndex = 12;
+            processingStopButton.Text = "Stop";
+            processingStopButton.UseVisualStyleBackColor = false;
+            processingStopButton.Click += new System.EventHandler(processingStopButton_Click);
             // 
             // predictedCompletionLabel
             // 
-            this.predictedCompletionLabel.AutoSize = true;
-            this.predictedCompletionLabel.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.predictedCompletionLabel.Location = new System.Drawing.Point(25, 108);
-            this.predictedCompletionLabel.Name = "predictedCompletionLabel";
-            this.predictedCompletionLabel.Size = new System.Drawing.Size(149, 15);
-            this.predictedCompletionLabel.TabIndex = 10;
-            this.predictedCompletionLabel.Text = "predicted completion time";
+            predictedCompletionLabel.AutoSize = true;
+            predictedCompletionLabel.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            predictedCompletionLabel.Location = new System.Drawing.Point(25, 108);
+            predictedCompletionLabel.Name = "predictedCompletionLabel";
+            predictedCompletionLabel.Size = new System.Drawing.Size(149, 15);
+            predictedCompletionLabel.TabIndex = 10;
+            predictedCompletionLabel.Text = "predicted completion time";
             // 
             // StatusForm
             // 
-            this.AutoScaleDimensions = new System.Drawing.SizeF(9F, 16F);
-            this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.BackColor = System.Drawing.Color.White;
-            this.ClientSize = new System.Drawing.Size(638, 384);
-            this.Controls.Add(this.processingStopButton);
-            this.Controls.Add(this.statusGroupBox);
-            this.Controls.Add(this.progressGroupBox);
-            this.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
-            this.Margin = new System.Windows.Forms.Padding(4);
-            this.Name = "StatusForm";
-            this.Text = "Processing Status";
-            this.progressGroupBox.ResumeLayout(false);
-            this.progressGroupBox.PerformLayout();
-            this.statusGroupBox.ResumeLayout(false);
-            this.statusGroupBox.PerformLayout();
-            this.ResumeLayout(false);
+            AutoScaleDimensions = new System.Drawing.SizeF(9F, 16F);
+            AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
+            BackColor = System.Drawing.Color.White;
+            ClientSize = new System.Drawing.Size(638, 384);
+            Controls.Add(processingStopButton);
+            Controls.Add(statusGroupBox);
+            Controls.Add(progressGroupBox);
+            Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            Icon = ((System.Drawing.Icon)(resources.GetObject("$Icon")));
+            Margin = new System.Windows.Forms.Padding(4);
+            Name = "StatusForm";
+            Text = "Processing Status";
+            progressGroupBox.ResumeLayout(false);
+            progressGroupBox.PerformLayout();
+            statusGroupBox.ResumeLayout(false);
+            statusGroupBox.PerformLayout();
+            ResumeLayout(false);
 
         }
 

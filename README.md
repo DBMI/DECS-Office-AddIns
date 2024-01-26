@@ -7,7 +7,9 @@ Creates custom buttons in Microsoft Excel & Word that allow user to:
 
 * Scan `Notes` fields for keywords, creating new columns.
 * Turn a column of MRNs into a SQL snippet that imports the column into a query.
+* Lookup Social Vulnerability Index ([SVI](https://www.atsdr.cdc.gov/placeandhealth/svi/index.html)) from address.
 * Format a page of results with bold & centered header, NULLs grayed out, etc.
+* Convert dates from [MUMPS](https://en.wikipedia.org/wiki/MUMPS) to Excel standard.
 ### Word: 
 ![image info](./DECS%20Word%20Add-Ins/pictures/toolbar.png)
 * Scan a Scope of Work (SoW) file & create SQL code that searches for the ICD-10 codes and names listed in the SoW.
