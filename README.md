@@ -28,6 +28,27 @@ Creates custom buttons in Microsoft Excel & Word that allow user to:
 * Run `setup.exe`.
 
 ## Operation
+### Excel: Extract data from notes
+In cases where we want to extract data from free-text columns, we can use the `Notes` tools to define & run extraction rules.
+#### Cleaning
+We start in the `Cleaning` tab, defining cleaning rules to:
+* fix misspellings
+* enforce standard naming
+
+These rules are run *before* the data extraction rules.
+
+![image info](./DECS%20Excel%20Add-Ins/pictures/cleaning%20rules.png)
+#### Date formats
+Using the `DateFormat` tab, we can select which date format we want for output columns.
+![image info](./DECS%20Excel%20Add-Ins/pictures/date%20formats.png)
+#### Extraction rules
+The `Extract` tab lets us define the Regular Expressions that extract data from free text.
+![image info](./DECS%20Excel%20Add-Ins/pictures/extraction%20rules.png)
+
+Here's an example of the results:
+
+![image info](./DECS%20Excel%20Add-Ins/pictures/notes%20results.png)
+
 ### Word: Extract ICD codes
 Sometimes Statements of Work (SoW) contain lists of medical conditions and ICD-10 codes to be reported on.
 Pressing the `Extract ICD` button causes the app to scan the open Word document for lines that look like medical conditions and their associated ICD-10 codes. SQL code is generated that searches the `problem_list` table for the associated codes, as shown here:![image info](./DECS%20Word%20Add-Ins/pictures/ICD%20to%20sql%20basic.png)
