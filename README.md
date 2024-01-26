@@ -40,9 +40,11 @@ These rules are run *before* the data extraction rules.
 ![image info](./DECS%20Excel%20Add-Ins/pictures/cleaning%20rules.png)
 #### Date formats
 Using the `DateFormat` tab, we can select which date format we want for output columns.
+
 ![image info](./DECS%20Excel%20Add-Ins/pictures/date%20formats.png)
 #### Extraction rules
 The `Extract` tab lets us define the Regular Expressions that extract data from free text.
+
 ![image info](./DECS%20Excel%20Add-Ins/pictures/extraction%20rules.png)
 
 Here's an example of the results:
