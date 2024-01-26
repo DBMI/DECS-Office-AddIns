@@ -87,6 +87,7 @@ namespace DECS_Excel_Add_Ins
 
             if (!HasConfig() || !rulesValid)
                 return true;
+
             CreateStatusForm();
 
             log.Debug("Ordering StatusForm object .Show().");
@@ -321,6 +322,8 @@ namespace DECS_Excel_Add_Ins
                 return;
             }
 
+            ConvertDatesToStandardFormat();
+
             // Apply extraction rules.
             keepProcessing = Extract();
 
@@ -439,7 +442,7 @@ namespace DECS_Excel_Add_Ins
             string justTheFilename = System.IO.Path.GetFileNameWithoutExtension(filename);
             string newFilename = System.IO.Path.Combine(
                 directory,
-                justTheFilename + "_revised.xlsx"
+                justTheFilename + "_extracted.xlsx"
             );
 
             var thread = new Thread(() =>
@@ -591,7 +594,11 @@ namespace DECS_Excel_Add_Ins
         private void WorksheetSelectionChanged(Range Target)
         {
             rowsToProcess = WhichRowsToProcess();
-            worksheetChangedCallback(rowsToProcess);
+
+            if (worksheetChangedCallback != null)
+            {
+                worksheetChangedCallback(rowsToProcess);
+            }
         }
     }
 }
