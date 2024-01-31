@@ -40,7 +40,7 @@ namespace DECS_Excel_Add_Ins
 
         public DecsExcelRibbon() { }
 
-        public Bitmap buildMrnsButton_GetImage(IRibbonControl control)
+        public Bitmap buildListButton_GetImage(IRibbonControl control)
         {
             return Resources.clipboard;
         }
@@ -72,7 +72,7 @@ namespace DECS_Excel_Add_Ins
             sviProcessor.Scan(wksheet);
         }
 
-        public void OnBuildMRN(Office.IRibbonControl control)
+        public void OnBuildList(Office.IRibbonControl control)
         {
             ListImporter importer = new ListImporter();
             Excel.Worksheet wksheet = (Excel.Worksheet)Globals.ThisAddIn.Application.ActiveSheet;
