@@ -20,13 +20,13 @@
 							size="large"
 							supertip="Configure search of notes." />
 				</group>
-				<group id="MrnGroup"
-					   label="MRNs">
-					<button id="buildMrnsButton"
-							getImage="buildMrnsButton_GetImage"
-							label="Import list"
-							onAction="OnBuildMRN"
-							screentip="Build MRN import code"
+				<group id="ListGroup"
+					   label="Lists">
+					<button id="buildListButton"
+							getImage="buildListButton_GetImage"
+							label="Import List"
+							onAction="OnBuildList"
+							screentip="Build list import code"
 							size="large"
 							supertip="Build SQL code to import a list." />
 				</group>
