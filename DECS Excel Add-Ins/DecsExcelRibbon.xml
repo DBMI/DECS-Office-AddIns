@@ -24,11 +24,11 @@
 					   label="MRNs">
 					<button id="buildMrnsButton"
 							getImage="buildMrnsButton_GetImage"
-							label="Build MRN import"
+							label="Import list"
 							onAction="OnBuildMRN"
 							screentip="Build MRN import code"
 							size="large"
-							supertip="Build SQL code that imports MRN list." />
+							supertip="Build SQL code to import a list." />
 				</group>
 				<group id ="SviGroup"
 					   label="SVI">
