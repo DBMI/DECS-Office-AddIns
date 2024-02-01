@@ -11,6 +11,22 @@ namespace DecsWordAddIns
 {
     internal static class Utilities
     {
+        // Pull together ALL the Document's text.
+        internal static string AllText(Document doc)
+        {
+            string combinedText = string.Empty;
+
+            // Splice together text from all paragraphs.
+            foreach (Paragraph paragraph in doc.Paragraphs)
+            {
+                combinedText += paragraph.Range.Text;
+            }
+
+            // Remove "/a" `alert` characters.
+            char alert = '\u0007';
+            return combinedText.Replace(alert.ToString(), "");
+        }
+
         // Convert/remove stuff so later Regexs don't have to allow for them.
         internal static string CleanText(string text)
         {
@@ -126,6 +142,19 @@ namespace DecsWordAddIns
             return (writer: writer_obj, openedFilename: outputFilename);
         }
 
+        internal static string PrependWithHypens(string conditionName, string separator = "")
+        {
+            string conditionNameWithHyphens = "";
+
+            // Prepend with "---".
+            if (conditionName.Length > 0)
+            {
+                conditionNameWithHyphens = separator + " --- " + conditionName;
+            }
+
+            return conditionNameWithHyphens;
+        }
+
         // From a text file, build a dictionary of login names, nice names.
         // gwashington, George Washington
         internal static Dictionary<string, string> ReadUserNamesFile()
@@ -147,6 +176,28 @@ namespace DecsWordAddIns
             return userNames;
         }
 
+        internal static string ReplaceUntilNoMore(string text, string pattern, string replacement, bool isRegex = false)
+        {
+            string textCleaned = text;
+            long cleanedLength = long.MaxValue;
+
+            while (textCleaned.Length < cleanedLength)
+            {
+                cleanedLength = textCleaned.Length;
+
+                if (isRegex)
+                {
+                    textCleaned = Regex.Replace(textCleaned, pattern, replacement);
+                }
+                else
+                {
+                    textCleaned = textCleaned.Replace(pattern, replacement);
+                }
+            }
+
+            return textCleaned;
+        }
+
         internal static string SalutationFromName(string name)
         {
             bool isProfessor = name.Contains("Prof");
@@ -161,6 +212,10 @@ namespace DecsWordAddIns
             name_detitled = name_detitled.Replace("Assoc", "");
             name_detitled = name_detitled.Replace("MD", "");
             name_detitled = name_detitled.Replace("DO", "");
+            name_detitled = name_detitled.Replace("PharmD", "");
+            name_detitled = name_detitled.Replace("Pharm.D", "");
+            name_detitled = name_detitled.Replace("Pharm.D.", "");
+            name_detitled = name_detitled.Replace("PharmD.", "");
             name_detitled = name_detitled.Replace("PhD", "");
             name_detitled = name_detitled.Replace("Ph.D.", "");
             name_detitled = name_detitled.Replace("PHD", "");
@@ -206,27 +261,23 @@ namespace DecsWordAddIns
 
             Application app = doc.Application;
             Selection wordSelection = app.Selection;
+            string allText;
 
             if (wordSelection != null &&
                 wordSelection.Text != null &&
-                wordSelection.Text.Length > 1)
+                wordSelection.Text.Length > 10)
             {
-                textBlocks = SplitAtBlankLines(wordSelection.Text);
+                allText = wordSelection.Text;
             }
             else
             {
-                // Splice together text from all paragraphs.
-                foreach (Paragraph paragraph in doc.Paragraphs)
-                {
-                    List<string> newTextBlocks = SplitAtBlankLines(paragraph.Range.Text);
-
-                    foreach(string textBlock in newTextBlocks)
-                    {
-                        textBlocks.Add(textBlock);
-                    }
-                }
+                // Ignore how Word defines "Paragraphs".
+                // We'll concatentate all the text...
+                allText = AllText(doc);
             }
 
+            // ...then split it how WE define paragraphs.
+            textBlocks = SplitAtBlankLines(allText);
             return textBlocks;
         }
 
@@ -239,12 +290,22 @@ namespace DecsWordAddIns
                 return textBlocks;
             }
 
-            // Split at EITHER double NewLines OR double VerticalTabs.
+            char carriageReturn = '\u000D';
+            string cr = carriageReturn.ToString();
+
+            // Replace /r/r/r/r with just /r/r.
+            string fourCarriageReturns = cr + cr + cr + cr;
+            string doubleCarriageReturns = cr + cr;
+            string textCleaned = ReplaceUntilNoMore(text, fourCarriageReturns, doubleCarriageReturns);
+
+            // https://learn.microsoft.com/en-us/dotnet/csharp/programming-guide/strings/
+            // Split at EITHER double NewLines OR double VerticalTabs OR double carriage returns.
             char verticalTab = '\u000B';
             string vt = verticalTab.ToString();
             string[] doubleReturns = new string[] { vt + vt,
+                                                    cr + cr,
                                                     Environment.NewLine + Environment.NewLine};
-            textBlocks = text.Split(doubleReturns, StringSplitOptions.RemoveEmptyEntries).ToList();
+            textBlocks = textCleaned.Split(doubleReturns, StringSplitOptions.RemoveEmptyEntries).ToList();
             return textBlocks;
         }
 
