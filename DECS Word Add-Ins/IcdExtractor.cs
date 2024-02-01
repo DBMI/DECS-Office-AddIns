@@ -1,5 +1,6 @@
 ﻿using Microsoft.Office.Interop.Word;
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
@@ -26,18 +27,20 @@ namespace DecsWordAddIns
         //  condition - code "Alzheimer’s disease – G30"
         //  condition: code "Unspecified sensorineural hearing loss( ICD-10-CM: H90.5 )"
         //  code = condition "F12 = cannabis"
-        private readonly string[] LINE_PATTERNS =
+        //  code only "I70.8"
+        private readonly string[] LINE_PATTERNS_ICD10 =
         {
-            @"(?<condition>[\w ',]+) +[-=:]? *(?<code>[A-Z]\d+[A-Z]?\.?\d*)",
-            @"(?<condition>[\w, \-\(\)]+) *(?:\(CMS-HCC\))?\( *ICD-10-CM: *(?<code>[A-Z]\d+[A-Z\.\d\*]*)",
-            @"(?<code>[A-Z]\d+[A-Z]?\.?\d*) +[-=:]? *(?<condition>[\w ',]+)"
+            @"(?<condition>[a-zA-Z ’'-]+)?[–=: ]+(?<code>[A-Z]\d+[A-Z]?\.?\d*\*?)",
+            @"(?<condition>[a-zA-Z, ’'-]+) *(?:\(CMS-HCC\))?\( *ICD-10-CM: *(?<code>[A-Z]\d+[A-Z\.\d\*\*?]*)",
+            @"(?<code>[A-Z]\d+[A-Z]?\.?\d*\*?)[–=: ]+(?<condition>[a-zA-Z ’'-]+)?",
+            @"(?<code>[A-Z]\d+[A-Z]?\.?\d*\*?)",
         };
 
         // The numerical part of an ICD-10 code.
         private const string NUMBER_PATTERN = @"\d+\.?\d*";
 
         // Detect instruction like "M30 – M36".
-        private const string SERIES_PATTERN = @"([A-Z]\d+\.?\d*) +[-=:] *([A-Z]\d+\.?\d*)";
+        private const string SERIES_PATTERN = @"([A-Z]\d+\.?\d*)?[-=: ]+([A-Z]\d+\.?\d*)";
         //
         // SQL snippets
         //
@@ -49,7 +52,7 @@ namespace DecsWordAddIns
         private const string EXTRA_CODE_LINE =
             "\r\n                                          OR CODE LIKE ";
         private const string LIKE_PREFIX = "OR CODE LIKE ";
-        private const string LIST_PREAMBLE = "\r\n\r\nDROP TABLE IF EXISTS #ICD_CODES;\r\nSELECT DISTINCT DX_ID\r\nINTO #ICD_CODES\r\nFROM EDG_CURRENT_ICD10\r\nWHERE ";
+        private const string LIST_PREAMBLE_ICD10 = "\r\n\r\nDROP TABLE IF EXISTS #ICD_CODES;\r\nSELECT DISTINCT DX_ID\r\nINTO #ICD_CODES\r\nFROM EDG_CURRENT_ICD10\r\nWHERE ";
         private const string LIST_PREFIX = "   CODE IN (";
         private Regex alphaRegex;
         private Regex codeRegex;
@@ -94,11 +97,11 @@ namespace DecsWordAddIns
             alphaRegex = new Regex(ALPHA_PATTERN);
             codeRegex = new Regex(CODE_PATTERN);
 
-            lineRegexes = new Regex[LINE_PATTERNS.Length];
+            lineRegexes = new Regex[LINE_PATTERNS_ICD10.Length];
 
-            for (int i = 0; i < LINE_PATTERNS.Length; i++)
+            for (int i = 0; i < LINE_PATTERNS_ICD10.Length; i++)
             {
-                lineRegexes[i] = new Regex(LINE_PATTERNS[i]);
+                lineRegexes[i] = new Regex(LINE_PATTERNS_ICD10[i]);
             }
 
             numberRegex = new Regex(NUMBER_PATTERN);
@@ -232,11 +235,11 @@ namespace DecsWordAddIns
                 return;
             }
 
-            // Only once we know there is text to process.
-            writer.WriteLine(LIST_PREAMBLE);
-
             List<string> likeCodes = new List<string>();
             List<string> likeConditions = new List<string>();
+
+            // Code, condition pairs.
+            Dictionary<string, string> extractedPairs = new Dictionary<string, string>();
 
             foreach (Regex lineRegex in lineRegexes)
             {
@@ -255,63 +258,30 @@ namespace DecsWordAddIns
                     {
                         string codeValue = thisMatch.Groups["code"].Value;
                         string conditionName = thisMatch.Groups["condition"].Value;
-                        
+
                         // Strip off leftovers from previous condition name.
-                        conditionName = Regex.Replace(conditionName, LEADING_PAREN, "");
+                        conditionName = Utilities.ReplaceUntilNoMore(conditionName, LEADING_PAREN, "", true);
 
-                        if (conditionName == null || codeValue == null)
+                        if (String.IsNullOrEmpty(conditionName) && String.IsNullOrEmpty(codeValue))
                             continue;
 
-                        // As we find codes like "G20.*", save them
-                        // & we'll process them all at once at the end.
-                        if (codeValue.Contains("*"))
+                        if (extractedPairs.ContainsKey(codeValue))
                         {
-                            likeCodes.Add(codeValue);
-                            likeConditions.Add(conditionName);
-                            continue;
-                        }
-
-                        if (i == 0)
-                        {
-                            if (i < (lineMatches.Count - 1))
+                            // Don't overwrite an existing condition name with a null.
+                            if (conditionName != null)
                             {
-                                writer.Write(LIST_PREFIX + "'" + codeValue + "',  --- " + conditionName);
-                            }
-                            else
-                            {
-                                writer.Write(LIST_PREFIX + "'" + codeValue + "'  --- " + conditionName);
+                                extractedPairs[codeValue] = conditionName;
                             }
                         }
-                        else
+                        else                            
                         {
-                            if (i < (lineMatches.Count - 1))
-                            {
-                                writer.Write("\r\n            '" + codeValue + "',  --- " + conditionName);
-                            }
-                            else
-                            {
-                                writer.Write("\r\n            '" + codeValue + "')  --- " + conditionName);
-                            }
+                            extractedPairs[codeValue] = conditionName;
                         }
                     }
                 }
             }
 
-            if (likeCodes.Count > 0)
-            {
-                // Now list all the "Like" rules.
-                for (int i = 0; i < likeCodes.Count - 1; i++)
-                {
-                    string codeValue = likeCodes[i].ToString();
-                    string conditionName = likeConditions[i].ToString();
-                    writer.Write(")\r\n" + LIKE_PREFIX + "'" + codeValue.Replace("*", "%") + "'   --- " + conditionName);
-                }
-
-                // Different formatting for last one.
-                string lastCodeValue = likeCodes[likeCodes.Count - 1].ToString();
-                string lastConditionName = likeConditions[likeCodes.Count - 1].ToString();
-                writer.Write(")\r\n" + LIKE_PREFIX + "'" + lastCodeValue.Replace("*", "%") + "';   --- " + lastConditionName);
-            }
+            WriteParagraphList(extractedPairs, writer);
         }
 
         // Main method. Accepts a Document object & writes out the .sql file.
@@ -359,6 +329,79 @@ namespace DecsWordAddIns
 
             writer.Close();
             Process.Start(outputFilename);
+        }
+
+        private void WriteParagraphList(Dictionary<string, string> extractedPairs, StreamWriter writer)
+        {
+            if (extractedPairs == null || extractedPairs.Count == 0)
+            {
+                return;
+            }
+
+            writer.WriteLine(LIST_PREAMBLE_ICD10);
+
+            List<string> likeCodes = new List<string>();
+            List<string> likeConditions = new List<string>();
+            int i = 0;
+            bool haveWrittenPrefix = false;
+
+            foreach (var item in extractedPairs)
+            {
+                // As we find codes like "G20.*", save them
+                // & we'll process them all at once at the end.
+                if (item.Key.Contains("*"))
+                {
+                    likeCodes.Add(item.Key);
+                    likeConditions.Add(item.Value);
+                    i++;
+                    continue;
+                }
+
+                if (haveWrittenPrefix)
+                {
+                    if (i < (extractedPairs.Count - 1))
+                    {
+                        writer.Write("\r\n            '" + item.Key + "'," + Utilities.PrependWithHypens(item.Value));
+                    }
+                    else
+                    {
+                        writer.Write("\r\n            '" + item.Key + "')" + Utilities.PrependWithHypens(item.Value));
+                    }
+                }
+                else
+                {
+                    if (i < (extractedPairs.Count - 1))
+                    {
+                        writer.Write(LIST_PREFIX + "'" + item.Key + "'," + Utilities.PrependWithHypens(item.Value));
+                    }
+                    else
+                    {
+                        writer.Write(LIST_PREFIX + "'" + item.Key + "')" + Utilities.PrependWithHypens(item.Value));
+                    }
+
+                    haveWrittenPrefix = true;
+                }
+
+                i++;
+            }
+
+            if (likeCodes.Count > 0)
+            {
+                writer.Write("\r\n");
+
+                // Now list all the "Like" rules.
+                for (int index = 0; index < likeCodes.Count - 1; index++)
+                {
+                    string codeValue = likeCodes[index].ToString();
+                    string conditionName = likeConditions[index].ToString();
+                    writer.WriteLine(LIKE_PREFIX + "'" + codeValue.Replace("*", "%") + "'" + Utilities.PrependWithHypens(conditionName));
+                }
+
+                // Different formatting for last one.
+                string lastCodeValue = likeCodes[likeCodes.Count - 1].ToString();
+                string lastConditionName = likeConditions[likeCodes.Count - 1].ToString();
+                writer.WriteLine(LIKE_PREFIX + "'" + lastCodeValue.Replace("*", "%") + "';" + Utilities.PrependWithHypens(lastConditionName));
+            }
         }
     }
 }
