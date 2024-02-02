@@ -241,7 +241,7 @@ namespace DECS_Excel_Add_Ins
                 foreach (ExtractRule rule in config.ValidExtractRules())
                 {
                     // Don't create new columns with blank names.
-                    if (rule.newColumn is null || rule.newColumn.Length == 0)
+                    if (rule.newColumn == null || rule.newColumn.Length == 0)
                         continue;
                     log.Debug("Extracting to column '" + rule.newColumn + "'.");
 

@@ -148,5 +148,20 @@ namespace DECS_Excel_Add_Ins.Properties {
                 return ((System.Drawing.Icon)(obj));
             }
         }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to ZIP,TRACT,USPS_ZIP_PREF_CITY,USPS_ZIP_PREF_STATE,RES_RATIO,BUS_RATIO,OTH_RATIO,TOT_RATIO
+        ///00501,36103158607,HOLTSVILLE,NY,0.000000000,1.000000000,0.000000000,1.000000000
+        ///00601,72001956800,ADJUNTAS,PR,0.014529915,0.012468828,0.042682927,0.015120811
+        ///00601,72113071700,ADJUNTAS,PR,0.158290598,0.199501247,0.128048780,0.160093531
+        ///00601,72001956600,ADJUNTAS,PR,0.180512821,0.351620948,0.378048780,0.196258769
+        ///00601,72001956700,ADJUNTAS,PR,0.646666667,0.436408978,0.451219512,0.628526890
+        ///00602,72005400300,AGUADA, [rest of string was truncated]&quot;;.
+        /// </summary>
+        internal static string ZIP_TRACT_122023 {
+            get {
+                return ResourceManager.GetString("ZIP_TRACT_122023", resourceCulture);
+            }
+        }
     }
 }
