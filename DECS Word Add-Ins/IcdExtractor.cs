@@ -39,13 +39,13 @@ namespace DecsWordAddIns
         //  condition - code "Alzheimer’s disease – 331.0"
         //  condition: code "Unspecified sensorineural hearing loss( ICD-9-CM: 389.10 )"
         //  code = condition "304.30 = cannabis"
-        //  code only "440.4"
+        //  code only "440.4" (Insist on a preceeding space, so we DON'T match "W440.4".
         private readonly string[] LINE_PATTERNS_ICD9 =
         {
             @"(?<condition>[a-zA-Z ’'-]+)?[–=: ]+(?<code>\d+\.\d*\*?)",
             @"(?<condition>[a-zA-Z, ’'-]+) *(?:\(CMS-HCC\))?\( *ICD-9-CM: *(?<code>\d+\.\d*\*?)",
-            @"(?<code>\d+\.\d*\*?)[–=: ]+(?<condition>[a-zA-Z ’'-]+)?",
-            @"(?<code>\d+\.\d*\*?)",
+            @"[,\r ](?<code>\d+\.\d*\*?)[–=: ]+(?<condition>[a-zA-Z ’'-]+)?",
+            @"[,\r ](?<code>\d+\.\d*\*?)",
         };
 
         // Accommodate formats:
@@ -55,10 +55,10 @@ namespace DecsWordAddIns
         //  code only "I70.8"
         private readonly string[] LINE_PATTERNS_ICD10 =
         {
-            @"(?<condition>[a-zA-Z ’'-]+)?[–=: ]+(?<code>[A-Z]\d+[A-Z]?\.?\d*\*?)",
-            @"(?<condition>[a-zA-Z, ’'-]+) *(?:\(CMS-HCC\))?\( *ICD-10-CM: *(?<code>[A-Z]\d+[A-Z\.\d\*\*?]*)",
-            @"(?<code>[A-Z]\d+[A-Z]?\.?\d*\*?)[–=: ]+(?<condition>[a-zA-Z ’'-]+)?",
-            @"(?<code>[A-Z]\d+[A-Z]?\.?\d*\*?)",
+            @"(?<condition>[a-zA-Z ’'-]+)?[–=: ]+(?<code>[A-Z]\d+[A-Z]?\.?[A-Z]?\d*\*?)",
+            @"(?<condition>[a-zA-Z, ’'-]+) *(?:\(CMS-HCC\))?\( *ICD-10-CM: *(?<code>[A-Z]\d+[A-Z\.[A-Z]?\d\*\*?]*)",
+            @"(?<code>[A-Z]\d+[A-Z]?\.?[A-Z]?\d*\*?)[–=: ]+(?<condition>[a-zA-Z ’'-]+)?",
+            @"(?<code>[A-Z]\d+[A-Z]?\.?[A-Z]?\d*\*?)",
         };
 
         // The numerical part of an ICD-10 code.
@@ -273,7 +273,7 @@ namespace DecsWordAddIns
             List<string> likeConditions = new List<string>();
 
             // Code, condition pairs.
-            Dictionary<string, string> extractedPairs = new Dictionary<string, string>();
+            SortedDictionary<string, string> extractedPairs = new SortedDictionary<string, string>();
 
             foreach (Regex lineRegex in lineRegexes)
             {
@@ -374,7 +374,7 @@ namespace DecsWordAddIns
             Process.Start(outputFilename);
         }
 
-        private void WriteParagraphList(Dictionary<string, string> extractedPairs, StreamWriter writer, IcdSeries icdSeries)
+        private void WriteParagraphList(SortedDictionary<string, string> extractedPairs, StreamWriter writer, IcdSeries icdSeries)
         {
             if (extractedPairs == null || extractedPairs.Count == 0)
             {
