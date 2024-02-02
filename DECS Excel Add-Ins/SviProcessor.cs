@@ -2,8 +2,10 @@
 using Microsoft.Office.Interop.Excel;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.IO;
 using System.Linq;
+using System.Net;
 using System.Reflection;
 using System.Text;
 using System.Text.RegularExpressions;
@@ -13,6 +15,16 @@ using Excel = Microsoft.Office.Interop.Excel;
 
 namespace DECS_Excel_Add_Ins
 {
+    internal enum LocationSource
+    {
+        [Description("Address")]
+        Address = 1,
+        [Description("Zip")]
+        Zip = 2,
+        [Description("Unknown")]
+        Unknown = 0,
+    }
+
     internal class SviProcessor
     {
         private Application application;
@@ -27,33 +39,45 @@ namespace DECS_Excel_Add_Ins
             application = Globals.ThisAddIn.Application;
         }
 
-        private Range FindAddressColumn(Worksheet worksheet, int lastRowNumber)
+        private Range FindNamedColumn(Worksheet worksheet, int lastRowNumber, string desiredName)
         {
-            Range addressColumn = Utilities.GetSelectedCol(application, lastRowNumber);
+            Regex desiredPattern = new Regex(desiredName.ToLower());
+            Range selectedColumn = Utilities.GetSelectedCol(application, lastRowNumber);
 
             // If user didn't select a column, find it by name.
-            if (addressColumn is null)
+            if (selectedColumn == null)
             {
-                Regex addressPattern = new Regex(@"address");
                 Dictionary<string, Range> columns = Utilities.GetColumnNamesDictionary(worksheet);
 
                 foreach (KeyValuePair<string, Range> column in columns)
                 {
-                    Match match = addressPattern.Match(column.Key.ToLower());
+                    Match match = desiredPattern.Match(column.Key.ToLower());
 
                     if (match.Success)
                     {
-                        addressColumn = column.Value;
+                        selectedColumn = column.Value;
                         break;
                     }
                 }
             }
+            else
+            {
+                // What's the heading of this column say?
+                string header = selectedColumn.Value2;
+                Match match = desiredPattern.Match(header.ToLower());
 
-            return addressColumn;
+                if (!match.Success)
+                {
+                    return null;
+                }
+            }
+
+            return selectedColumn;
         }
 
         // Scans the worksheet:
-        // 1) Finds the address column, either using the selected column or finding it by name.
+        // 1) Finds the address column (or the zip column, if address not found),
+        //    either using the selected column or finding it by name.
         // 2) Reads data file California.csv & populates a dictionary mapping census tract # to SVI values.
         // 3) Uses online geocode service to retrieve the census tract for each address.
         // 4) Looks up the SVI values from the tract dictionary.
@@ -62,13 +86,29 @@ namespace DECS_Excel_Add_Ins
             // We'll use this in a lot of places, so let's just look it up once.
             int lastRowNumber = Utilities.FindLastRow(worksheet);
 
-            // 1) Find the address column.
-            Range addressColumn = FindAddressColumn(worksheet, lastRowNumber);
+            // 1) Find the address column (or the zip column, as a fallback).
+            Range locationColumn = FindNamedColumn(worksheet, lastRowNumber, "address");
+            LocationSource locationSource = LocationSource.Unknown;
+            ZipCodeConverter zipCodeConverter = null;
+            Geocode geocoder = null;
 
-            if (addressColumn is null)
+            if (locationColumn == null)
             {
-                Utilities.WarnColumnNotFound("address");
-                return;
+                locationColumn = FindNamedColumn(worksheet, lastRowNumber, "zip");
+
+                if (locationColumn == null)
+                {
+                    Utilities.WarnColumnNotFound("address or zip");
+                    return;
+                }
+
+                locationSource = LocationSource.Zip;
+                zipCodeConverter = new ZipCodeConverter();
+            }
+            else
+            {
+                locationSource = LocationSource.Address;
+                geocoder = new Geocode();
             }
 
             // 2) Populate the SVI dictionary from data file.
@@ -76,22 +116,31 @@ namespace DECS_Excel_Add_Ins
 
             if (sviTable.ready)
             {
-                // 3) Convert each address to census tract FIPS number, then lookup SVI.
-                Range sviPercentileColumn = Utilities.InsertNewColumn(addressColumn, "SVI %");
-                Range sviScoreColumn = Utilities.InsertNewColumn(addressColumn, "SVI score");
-                Range censusColumn = Utilities.InsertNewColumn(addressColumn, "Census FIPS");
-                Geocode geocoder = new Geocode();
+                // Build output columns.
+                Range sviPercentileColumn = Utilities.InsertNewColumn(locationColumn, "SVI %");
+                Range sviScoreColumn = Utilities.InsertNewColumn(locationColumn, "SVI score");
+                Range censusColumn = Utilities.InsertNewColumn(locationColumn, "Census FIPS");
+                ulong fips;
 
+                // 3) Convert each address or zip to census tract FIPS number, then lookup SVI.
                 for (int rowOffset = 1; rowOffset <= lastRowNumber; rowOffset++)
                 {
                     try
                     {
-                        string address = addressColumn.Offset[rowOffset, 0].Value2;
+                        string location = locationColumn.Offset[rowOffset, 0].Text;
 
-                        if (!string.IsNullOrEmpty(address))
+                        if (!string.IsNullOrEmpty(location))
                         {
-                            CensusData data = geocoder.Convert(address);
-                            ulong fips = data.FIPS();
+                            if (locationSource == LocationSource.Address)
+                            {
+                                CensusData data = geocoder.Convert(location);
+                                fips = data.FIPS();
+                            }
+                            else
+                            {
+                                fips = zipCodeConverter.Convert(location);
+                            }
+
                             censusColumn.Offset[rowOffset, 0].Value2 = fips;
                             sviPercentileColumn.Offset[rowOffset, 0].Value2 = sviTable.percentile(fips);
                             sviScoreColumn.Offset[rowOffset, 0].Value2 = sviTable.raw(fips);
