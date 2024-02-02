@@ -2,14 +2,26 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Text.RegularExpressions;
 using System.Windows.Forms;
+using static log4net.Appender.ColoredConsoleAppender;
 
 namespace DecsWordAddIns
 {
+    internal enum IcdSeries
+    {
+        [Description("ICD-9")]
+        ICD9,
+
+        [Description("ICD-10")]
+        ICD10
+    }
+
+
     internal class IcdExtractor
     {
         // Extract the alpha part ("M") of an ICD-10 code ("M30").
@@ -19,9 +31,22 @@ namespace DecsWordAddIns
         private const string CODE_PATTERN = @"[A-Z]\d+[A-Z]?\.?\d*";
 
         // These strings may be present in the Statement of Work documents, but aren't ICD codes.
-        private readonly string[] FALSE_CODES = { "A1C", "L1T", "R001442" };
+        private readonly string[] FALSE_CODES = { "A1C", "D9", "L1T", "R001442" };
 
         private readonly string LEADING_PAREN = @"^ ?\)? ?,? ?";
+
+        // Accommodate formats:
+        //  condition - code "Alzheimer’s disease – 331.0"
+        //  condition: code "Unspecified sensorineural hearing loss( ICD-9-CM: 389.10 )"
+        //  code = condition "304.30 = cannabis"
+        //  code only "440.4"
+        private readonly string[] LINE_PATTERNS_ICD9 =
+        {
+            @"(?<condition>[a-zA-Z ’'-]+)?[–=: ]+(?<code>\d+\.\d*\*?)",
+            @"(?<condition>[a-zA-Z, ’'-]+) *(?:\(CMS-HCC\))?\( *ICD-9-CM: *(?<code>\d+\.\d*\*?)",
+            @"(?<code>\d+\.\d*\*?)[–=: ]+(?<condition>[a-zA-Z ’'-]+)?",
+            @"(?<code>\d+\.\d*\*?)",
+        };
 
         // Accommodate formats:
         //  condition - code "Alzheimer’s disease – G30"
@@ -52,6 +77,7 @@ namespace DecsWordAddIns
         private const string EXTRA_CODE_LINE =
             "\r\n                                          OR CODE LIKE ";
         private const string LIKE_PREFIX = "OR CODE LIKE ";
+        private const string LIST_PREAMBLE_ICD9 = "\r\n\r\nDROP TABLE IF EXISTS #ICD_CODES;\r\nSELECT DISTINCT DX_ID\r\nINTO #ICD_CODES\r\nFROM EDG_CURRENT_ICD9\r\nWHERE ";
         private const string LIST_PREAMBLE_ICD10 = "\r\n\r\nDROP TABLE IF EXISTS #ICD_CODES;\r\nSELECT DISTINCT DX_ID\r\nINTO #ICD_CODES\r\nFROM EDG_CURRENT_ICD10\r\nWHERE ";
         private const string LIST_PREFIX = "   CODE IN (";
         private Regex alphaRegex;
@@ -62,9 +88,7 @@ namespace DecsWordAddIns
         private Regex seriesRegex;
 
         internal IcdExtractor()
-        {
-            BuildRegex();
-            
+        {          
             // Ask user for output style & return quietly if they cancel.
             if (!AskStyle())
             {
@@ -92,16 +116,26 @@ namespace DecsWordAddIns
         }
 
         // Create all the reusable Regex objects.
-        private void BuildRegex()
+        private void BuildRegex(IcdSeries icdSeries)
         {
             alphaRegex = new Regex(ALPHA_PATTERN);
             codeRegex = new Regex(CODE_PATTERN);
+            string[] linePatterns;
 
-            lineRegexes = new Regex[LINE_PATTERNS_ICD10.Length];
-
-            for (int i = 0; i < LINE_PATTERNS_ICD10.Length; i++)
+            if (icdSeries == IcdSeries.ICD9)
             {
-                lineRegexes[i] = new Regex(LINE_PATTERNS_ICD10[i]);
+                linePatterns = LINE_PATTERNS_ICD9;
+            }
+            else
+            {
+                linePatterns = LINE_PATTERNS_ICD10;
+            }
+
+            lineRegexes = new Regex[linePatterns.Length];
+
+            for (int i = 0; i < linePatterns.Length; i++)
+            {
+                lineRegexes[i] = new Regex(linePatterns[i]);
             }
 
             numberRegex = new Regex(NUMBER_PATTERN);
@@ -174,61 +208,61 @@ namespace DecsWordAddIns
                 foreach (Regex lineRegex in lineRegexes)
                 {
                     Match line_match = lineRegex.Match(text);
-                    string condition_name = "";
+                    string conditionName = "";
 
                     if (line_match.Success)
                     {
                         bool first_match = true;
-                        condition_name = line_match.Groups["condition"].Value;
+                        conditionName = line_match.Groups["condition"].Value;
 
-                        if (condition_name == null)
+                        if (conditionName == null)
                             continue;
 
                         if (
-                            Utilities.IsJustListOfCodes(name: condition_name, matches: code_matches)
+                            Utilities.IsJustListOfCodes(name: conditionName, matches: code_matches)
                         )
                             continue;
 
                         foreach (Match code_match in code_matches)
                         {
-                            string code_value = code_match.Groups[0].Value;
+                            string codeValue = code_match.Groups[0].Value;
 
-                            if (code_value == null)
+                            if (codeValue == null)
                                 continue;
 
-                            if (FALSE_CODES.Contains(code_value))
+                            if (FALSE_CODES.Contains(codeValue))
                                 continue;
 
                             found_match = true;
 
                             if (first_match)
                             {
-                                writer.Write(CASE_PREFIX + "'" + code_value + "%'");
+                                writer.Write(CASE_PREFIX + "'" + codeValue + "%'");
                                 first_match = false;
                             }
                             else
                             {
-                                writer.Write(EXTRA_CODE_LINE + "'" + code_value + "%'");
+                                writer.Write(EXTRA_CODE_LINE + "'" + codeValue + "%'");
                             }
 
                             // Remove code values ("J42") from the code name.
-                            condition_name = condition_name.Replace(code_value, "");
-                            condition_name = condition_name.Replace(",", "");
-                            condition_name = condition_name.Trim();
+                            conditionName = conditionName.Replace(codeValue, "");
+                            conditionName = conditionName.Replace(",", "");
+                            conditionName = conditionName.Trim();
                         }
                     }
 
                     if (found_match)
                     {
-                        writer.WriteLine(") -- " + condition_name);
-                        writer.WriteLine(CASE_SUFFIX + Utilities.CleanNameForSql(condition_name));
+                        writer.WriteLine(") -- " + conditionName);
+                        writer.WriteLine(CASE_SUFFIX + Utilities.CleanNameForSql(conditionName));
                         break;
                     }
                 }
             }
         }
 
-        private void ProcessParagraphList(string text, StreamWriter writer)
+        private void ProcessParagraphList(string text, StreamWriter writer, IcdSeries icdSeries)
         {
             if (text == null || string.IsNullOrEmpty(text))
             {
@@ -259,6 +293,9 @@ namespace DecsWordAddIns
                         string codeValue = thisMatch.Groups["code"].Value;
                         string conditionName = thisMatch.Groups["condition"].Value;
 
+                        if (FALSE_CODES.Contains(codeValue))
+                            continue;
+
                         // Strip off leftovers from previous condition name.
                         conditionName = Utilities.ReplaceUntilNoMore(conditionName, LEADING_PAREN, "", true);
 
@@ -281,7 +318,7 @@ namespace DecsWordAddIns
                 }
             }
 
-            WriteParagraphList(extractedPairs, writer);
+            WriteParagraphList(extractedPairs, writer, icdSeries);
         }
 
         // Main method. Accepts a Document object & writes out the .sql file.
@@ -303,27 +340,33 @@ namespace DecsWordAddIns
             if (textBlocks == null || textBlocks.Count == 0)
             {
                 return;
-            }            
+            }
 
-            foreach (string textBlock in textBlocks)
+            foreach (IcdSeries icdSeries in Enum.GetValues (typeof(IcdSeries)))
             {
-                if (string.IsNullOrEmpty(textBlock))
+                // Build the Regular Expressions specific for ICD type.
+                BuildRegex(icdSeries);
+
+                foreach (string textBlock in textBlocks)
                 {
-                    continue;
-                }
+                    if (string.IsNullOrEmpty(textBlock))
+                    {
+                        continue;
+                    }
 
-                // Remove junk that confuses the Regular Expressions.
-                string textBlockCleaned = Utilities.CleanText(textBlock);
+                    // Remove junk that confuses the Regular Expressions.
+                    string textBlockCleaned = Utilities.CleanText(textBlock);
 
-                switch (icdStyle)
-                {
-                    case IcdStyle.Case:
-                        ProcessParagraphCase(textBlockCleaned, writer);
-                        break;
+                    switch (icdStyle)
+                    {
+                        case IcdStyle.Case:
+                            ProcessParagraphCase(textBlockCleaned, writer);
+                            break;
 
-                    case IcdStyle.List:
-                        ProcessParagraphList(textBlockCleaned, writer);
-                        break;
+                        case IcdStyle.List:
+                            ProcessParagraphList(textBlockCleaned, writer, icdSeries);
+                            break;
+                    }
                 }
             }
 
@@ -331,14 +374,21 @@ namespace DecsWordAddIns
             Process.Start(outputFilename);
         }
 
-        private void WriteParagraphList(Dictionary<string, string> extractedPairs, StreamWriter writer)
+        private void WriteParagraphList(Dictionary<string, string> extractedPairs, StreamWriter writer, IcdSeries icdSeries)
         {
             if (extractedPairs == null || extractedPairs.Count == 0)
             {
                 return;
             }
 
-            writer.WriteLine(LIST_PREAMBLE_ICD10);
+            if (icdSeries == IcdSeries.ICD9)
+            {
+                writer.WriteLine(LIST_PREAMBLE_ICD9);
+            }
+            else
+            {
+                writer.WriteLine(LIST_PREAMBLE_ICD10);
+            }
 
             List<string> likeCodes = new List<string>();
             List<string> likeConditions = new List<string>();
