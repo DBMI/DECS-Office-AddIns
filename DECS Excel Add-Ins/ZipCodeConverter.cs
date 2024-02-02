@@ -1,11 +1,14 @@
-﻿using System;
+﻿using Microsoft.Office.Interop.Excel;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Reflection.Emit;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
+using System.Xml.Linq;
 
 namespace DECS_Excel_Add_Ins
 {
@@ -60,7 +63,10 @@ namespace DECS_Excel_Add_Ins
                         if (ulong.TryParse(pieces[TRACT_index], out ulong fips))
                         {
                             zip = pieces[ZIP_index];
-                            
+
+                            // Force it to have five digits.
+                            zip = zip.PadLeft(5, '0');
+
                             if (!zipToTractTable.ContainsKey(zip))
                             {
                                 zipToTractTable.Add(zip, fips);
@@ -75,6 +81,19 @@ namespace DECS_Excel_Add_Ins
 
         internal ulong Convert(string zip)
         {
+            // Strip out any other text (like "NJ 07003").
+            zip = Regex.Replace(zip, @"\D", "");
+            zip = zip.Trim();
+
+            // Limit zip string to be five digits to be compatible with lookup table.
+            if (zip.Length > 5)
+            {
+                zip = zip.Substring(0, 5);
+            }
+
+            // Force it to have five digits.
+            zip = zip.PadLeft(5, '0');
+
             if (ready && zipToTractTable.ContainsKey(zip))
             {
                 return zipToTractTable[zip];

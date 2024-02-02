@@ -8,25 +8,38 @@ using System.Threading.Tasks;
 
 namespace DECS_Excel_Add_Ins
 {
-    // Both the raw score (from "SPL_THEMES" column) and percentile ranking ("RPL_THEMES").
+    // Both the raw score (from "SPL_THEMES" column) and fractional ranking ("RPL_THEMES").
     internal class SviScore
     {
         internal double rawScore { get; }
-        internal int percentile { get; }
+        internal double rank { get; }
 
-        internal SviScore(string rawStr, string pctStr)
+        internal SviScore(string rawStr, string rankingStr)
         {
-            if (double.TryParse(rawStr, out double dTemp))
+            if (double.TryParse(rawStr, out double dScore))
             {
-                rawScore = dTemp;
+                rawScore = dScore;
             }
 
-            if (int.TryParse(pctStr.TrimEnd('%'), out int iTemp))
+            // The California-only table reports ranking in interger percents, but the all-US table uses fractions.
+            if (rankingStr.Contains("%"))
             {
-                percentile = iTemp;
+                if (int.TryParse(rankingStr.TrimEnd('%'), out int iRank))
+                {
+                    // Convert 3% to 0.03
+                    rank = iRank * 0.01;
+                }
+            }
+            else
+            {
+                if (double.TryParse(rankingStr, out double dRank))
+                {
+                    rank = dRank;
+                }
             }
         }
     }
+
     internal class SviTable
     {
         private Dictionary<ulong, SviScore> sviTable;
@@ -42,17 +55,17 @@ namespace DECS_Excel_Add_Ins
             sviTable = new Dictionary<ulong, SviScore>();
 
             var assembly = Assembly.GetExecutingAssembly();
-            var resourceName = assembly.GetManifestResourceNames().Single(str => str.EndsWith("California.csv"));
+            var resourceName = assembly.GetManifestResourceNames().Single(str => str.EndsWith("SVI_2020_US.csv"));
 
             using (StreamReader reader = new StreamReader(assembly.GetManifestResourceStream(resourceName)))
             {
                 string[] lines = reader.ReadToEnd().Split('\n');
 
                 // Find FIPS and RPL_THEMES in the first row.
-                string[] headers = lines[0].Split('\t');
+                string[] headers = lines[0].Split(',');
                 int FIPS_index = Array.IndexOf(headers, "FIPS");
 
-                if (FIPS_index == 0)
+                if (FIPS_index < 0)
                 {
                     log.Error("Unable to find 'FIPS' in header.");
                     return;
@@ -60,7 +73,7 @@ namespace DECS_Excel_Add_Ins
 
                 int SPL_THEMES_index = Array.IndexOf(headers, "SPL_THEMES");
 
-                if (SPL_THEMES_index == 0)
+                if (SPL_THEMES_index < 0)
                 {
                     log.Error("Unable to find 'SPL_THEMES' in header.");
                     return;
@@ -68,7 +81,7 @@ namespace DECS_Excel_Add_Ins
 
                 int RPL_THEMES_index = Array.IndexOf(headers, "RPL_THEMES");
 
-                if (RPL_THEMES_index == 0)
+                if (RPL_THEMES_index < 0)
                 {
                     log.Error("Unable to find 'RPL_THEMES' in header.");
                     return;
@@ -78,7 +91,7 @@ namespace DECS_Excel_Add_Ins
 
                 foreach (string line in lines.Skip(1))
                 {
-                    string[] pieces = line.Split('\t');
+                    string[] pieces = line.Split(',');
 
                     if (pieces.Length > maxIndex)
                     {
@@ -94,14 +107,14 @@ namespace DECS_Excel_Add_Ins
             }
         }
 
-        internal int percentile(ulong tract)
+        internal double rank(ulong tract)
         {
             if (sviTable.ContainsKey(tract))
             {
-                return sviTable[tract].percentile;
+                return sviTable[tract].rank;
             }
 
-            return 0;
+            return 0.0;
         }
 
         internal double raw(ulong tract)
@@ -111,7 +124,7 @@ namespace DECS_Excel_Add_Ins
                 return sviTable[tract].rawScore;
             }
 
-            return 0;
+            return 0.0;
         }
     }
 }

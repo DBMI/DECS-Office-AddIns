@@ -103,21 +103,24 @@ namespace DECS_Excel_Add_Ins
                 }
 
                 locationSource = LocationSource.Zip;
+                application.StatusBar = "Reading zip code table.";
                 zipCodeConverter = new ZipCodeConverter();
             }
             else
             {
                 locationSource = LocationSource.Address;
+                application.StatusBar = "Creating census Geocoder object.";
                 geocoder = new Geocode();
             }
 
             // 2) Populate the SVI dictionary from data file.
+            application.StatusBar = "Building SVI table.";
             SviTable sviTable = new SviTable();
 
             if (sviTable.ready)
             {
                 // Build output columns.
-                Range sviPercentileColumn = Utilities.InsertNewColumn(locationColumn, "SVI %");
+                Range sviRankColumn = Utilities.InsertNewColumn(locationColumn, "SVI rank");
                 Range sviScoreColumn = Utilities.InsertNewColumn(locationColumn, "SVI score");
                 Range censusColumn = Utilities.InsertNewColumn(locationColumn, "Census FIPS");
                 ulong fips;
@@ -142,17 +145,23 @@ namespace DECS_Excel_Add_Ins
                             }
 
                             censusColumn.Offset[rowOffset, 0].Value2 = fips;
-                            sviPercentileColumn.Offset[rowOffset, 0].Value2 = sviTable.percentile(fips);
                             sviScoreColumn.Offset[rowOffset, 0].Value2 = sviTable.raw(fips);
+                            sviRankColumn.Offset[rowOffset, 0].Value2 = sviTable.rank(fips);
                         }
                     }
                     catch
                     {
                         break;
                     }
-                }
-            }
 
+                    if (rowOffset % 100 == 0)
+                    {
+                        application.StatusBar = "Processed " + rowOffset.ToString() + "/" + lastRowNumber.ToString() + " patients.";
+                    }
+                }
+
+                application.StatusBar = "Complete";
+            }
         }
     }
 }
