@@ -122,8 +122,8 @@ namespace DECS_Excel_Add_Ins
                 // Build output columns.
                 Range sviRankColumn = Utilities.InsertNewColumn(locationColumn, "SVI rank");
                 Range sviScoreColumn = Utilities.InsertNewColumn(locationColumn, "SVI score");
-                Range censusColumn = Utilities.InsertNewColumn(locationColumn, "Census FIPS");
-                ulong fips;
+                //Range censusColumn = Utilities.InsertNewColumn(locationColumn, "Census FIPS");
+                List<ulong> fipsList;
 
                 // 3) Convert each address or zip to census tract FIPS number, then lookup SVI.
                 for (int rowOffset = 1; rowOffset <= lastRowNumber; rowOffset++)
@@ -137,16 +137,32 @@ namespace DECS_Excel_Add_Ins
                             if (locationSource == LocationSource.Address)
                             {
                                 CensusData data = geocoder.Convert(location);
-                                fips = data.FIPS();
+                                ulong fips = data.FIPS();
+                                fipsList = new List<ulong>();
+                                fipsList.Add(fips);
                             }
                             else
                             {
-                                fips = zipCodeConverter.Convert(location);
+                                fipsList = zipCodeConverter.Convert(location);
                             }
 
-                            censusColumn.Offset[rowOffset, 0].Value2 = fips;
-                            sviScoreColumn.Offset[rowOffset, 0].Value2 = sviTable.raw(fips);
-                            sviRankColumn.Offset[rowOffset, 0].Value2 = sviTable.rank(fips);
+                            //censusColumn.Offset[rowOffset, 0].Value2 = fips;
+
+                            // Don't display nonsense numbers (represented by -1).
+
+                            double rawScore = sviTable.raw(fipsList);
+
+                            if (rawScore >= 0)
+                            {
+                                sviScoreColumn.Offset[rowOffset, 0].Value2 = rawScore;
+                            }
+
+                            double rank = sviTable.rank(fipsList);
+
+                            if (rank >= 0)
+                            {
+                                sviRankColumn.Offset[rowOffset, 0].Value2 = rank;
+                            }
                         }
                     }
                     catch

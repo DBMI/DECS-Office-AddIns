@@ -107,24 +107,50 @@ namespace DECS_Excel_Add_Ins
             }
         }
 
-        internal double rank(ulong tract)
+        internal double rank(List<ulong> tractList)
         {
-            if (sviTable.ContainsKey(tract))
+            double sum = 0;
+            int numValues = 0;
+
+            foreach (ulong tract in tractList)
             {
-                return sviTable[tract].rank;
+                // Don't average in N/A values like -999.
+                if (sviTable.ContainsKey(tract) && sviTable[tract].rank >= 0)
+                {
+                    sum += sviTable[tract].rank;
+                    numValues++;
+                }                
             }
 
-            return 0.0;
+            if (numValues > 0)
+            {
+                return sum / numValues;
+            }
+
+            return -1.0;
         }
 
-        internal double raw(ulong tract)
+        internal double raw(List<ulong> tractList)
         {
-            if (sviTable.ContainsKey(tract))
+            double sum = 0;
+            int numValues = 0;
+
+            foreach (ulong tract in tractList)
             {
-                return sviTable[tract].rawScore;
+                // Don't average in N/A values like -999.
+                if (sviTable.ContainsKey(tract) && sviTable[tract].rawScore >= 0)
+                {
+                    sum += sviTable[tract].rawScore;
+                    numValues++;
+                }
             }
 
-            return 0.0;
+            if (numValues > 0)
+            {
+                return sum / numValues;
+            }
+
+            return -1.0;
         }
     }
 }
