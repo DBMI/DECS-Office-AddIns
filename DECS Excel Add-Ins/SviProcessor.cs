@@ -122,7 +122,13 @@ namespace DECS_Excel_Add_Ins
                 // Build output columns.
                 Range sviRankColumn = Utilities.InsertNewColumn(locationColumn, "SVI rank");
                 Range sviScoreColumn = Utilities.InsertNewColumn(locationColumn, "SVI score");
-                //Range censusColumn = Utilities.InsertNewColumn(locationColumn, "Census FIPS");
+                Range censusColumn = null;
+
+                if (locationSource == LocationSource.Address)
+                {
+                    censusColumn = Utilities.InsertNewColumn(locationColumn, "Census FIPS");
+                }
+
                 List<ulong> fipsList;
 
                 // 3) Convert each address or zip to census tract FIPS number, then lookup SVI.
@@ -138,6 +144,7 @@ namespace DECS_Excel_Add_Ins
                             {
                                 CensusData data = geocoder.Convert(location);
                                 ulong fips = data.FIPS();
+                                censusColumn.Offset[rowOffset, 0].Value2 = fips;
                                 fipsList = new List<ulong>();
                                 fipsList.Add(fips);
                             }
@@ -145,8 +152,6 @@ namespace DECS_Excel_Add_Ins
                             {
                                 fipsList = zipCodeConverter.Convert(location);
                             }
-
-                            //censusColumn.Offset[rowOffset, 0].Value2 = fips;
 
                             // Don't display nonsense numbers (represented by -1).
 
