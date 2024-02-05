@@ -69,3 +69,15 @@ When researchers provide lists of Medical Record Numbers (MRNs) to be used in a 
 Since there is a limit on the number of values (1000) that can be inserted in one statement, the app automatically breaks up the insertion into multiple statements:
 
 ![image info](./DECS%20Word%20Add-Ins/pictures/MRN%20list%20break.png)
+
+## Algorithm Description
+### Excel: Lookup Social Vulnerability Index (SVI)
+According to the [US Centers for Disease Control](https://www.atsdr.cdc.gov/placeandhealth/svi/index.html), 
+>*Social vulnerability* refers to the potential negative effects on communities caused by external stresses on human health. Such stresses include natural or human-caused disasters, or disease outbreaks. Reducing social vulnerability can decrease both human suffering and economic loss.
+
+The CDC provides Census 2020 SVI data by census tract number in the file `SVI_2020_US.csv`. This Add-In converts either patient address (preferred) or zip code to census tract, then looks up the columns `SPL_THEMES` and `RPL_THEMES` from `SVI_2020_US.csv` to get the SVI score and rank. (See file `SVI2020Documentation_08.05.22.pdf`, available on the above website, for an explanation of each column.)
+
+If address is available, its corresponding census tract is looked up via the online [Census Geocoder API.](https://geocoding.geo.census.gov/geocoder/Geocoding_Services_API.html) If only zip code is available, it is converted to census tract using the US Housing & Urban Development agency's [HUD-USPS ZIP Code Crosswalk files](https://www.huduser.gov/portal/datasets/usps_crosswalk.html), which lists all the census tracts present in any zip code. Since more than one census tract (and therefore SVI score/rank) could be returned for a zip code, the Add-In returns the average score and rank across all the tracts listed for that zip code in the "crosswalk" file. Accordingly, using zip code is less precise that using the full address.
+
+
+### Word:
