@@ -14,7 +14,7 @@ namespace DECS_Excel_Add_Ins
 {
     internal class ZipCodeConverter
     {
-        private Dictionary<string, ulong> zipToTractTable;
+        private Dictionary<string, List<ulong>> zipToTractTable;
         internal bool ready { get; } = false;
 
         // https://stackoverflow.com/a/28546547/18749636
@@ -24,7 +24,7 @@ namespace DECS_Excel_Add_Ins
 
         internal ZipCodeConverter()
         {
-            zipToTractTable = new Dictionary<string, ulong>();
+            zipToTractTable = new Dictionary<string, List<ulong>>();
 
             var assembly = Assembly.GetExecutingAssembly();
             var resourceName = assembly.GetManifestResourceNames().Single(str => str.EndsWith("ZIP_TRACT_122023.csv"));
@@ -53,6 +53,7 @@ namespace DECS_Excel_Add_Ins
 
                 int maxIndex = Math.Max(ZIP_index, TRACT_index);
                 string zip;
+                List<ulong> fipsList = new List<ulong>();
 
                 foreach (string line in lines.Skip(1))
                 {
@@ -67,10 +68,22 @@ namespace DECS_Excel_Add_Ins
                             // Force it to have five digits.
                             zip = zip.PadLeft(5, '0');
 
-                            if (!zipToTractTable.ContainsKey(zip))
+                            if (zipToTractTable.ContainsKey(zip))
                             {
-                                zipToTractTable.Add(zip, fips);
+                                // Get the existing list of FIPS codes for this zip code.
+                                fipsList = zipToTractTable[zip];
                             }
+                            else
+                            {
+                                // Create a new blank list;
+                                fipsList = new List<ulong>();
+                            }
+
+                            // Tack this FIPS code onto the list...
+                            fipsList.Add(fips);
+
+                            // ...and replace the dictionary value for this zip code.
+                            zipToTractTable[zip] = fipsList;
                         }
                     }
                 }
@@ -79,7 +92,7 @@ namespace DECS_Excel_Add_Ins
             }
         }
 
-        internal ulong Convert(string zip)
+        internal List<ulong> Convert(string zip)
         {
             // Strip out any other text (like "NJ 07003").
             zip = Regex.Replace(zip, @"\D", "");
@@ -99,7 +112,7 @@ namespace DECS_Excel_Add_Ins
                 return zipToTractTable[zip];
             }
 
-            return 0;
+            return new List<ulong>(0);
         }
     }
 }
