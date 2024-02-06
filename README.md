@@ -85,7 +85,8 @@ If we have a patient's address, we can lookup their exact census tract number us
 Query:
 https://geocoding.geo.census.gov/geocoder/geographies/onelineaddress?address=1600%20PENNSYLVANIA%20AVE%2C%20WASHINGTON%20DC%2020500&benchmark=2020&vintage=2020&format=json
 
-Response :
+Response:
+
 ![image info](./DECS%20Excel%20Add-Ins/pictures/json%20response.png)
 
 **Zip code**
