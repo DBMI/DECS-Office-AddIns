@@ -76,7 +76,7 @@ namespace DECS_Excel_Add_Ins
 
         /// <summary>
         /// Callback for when a @c DisplayNameTextBox object's text is changed.
-        /// Insert or update Nth cleaning rule with this display Name.
+        /// Insert or update Nth cleaning rule with this display name.
         /// </summary>
         /// <param name="sender">Whatever object trigged this callback.</param>
         /// <param name="e">The EventArgs that accompanied this callback.</param>
@@ -195,7 +195,7 @@ namespace DECS_Excel_Add_Ins
         /// <summary>
         /// Populate this GUI with a @c CleaningRule object.
         /// </summary>
-        /// <param name="rule">A CleaningRule object to be visualized</param>
+        /// <param name="rule">A @c CleaningRule object to be visualized</param>
         /// <returns>void</returns>
         public void Populate(CleaningRule rule)
         {
