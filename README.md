@@ -72,12 +72,34 @@ Since there is a limit on the number of values (1000) that can be inserted in on
 
 ## Algorithm Description
 ### Excel: Lookup Social Vulnerability Index (SVI)
-According to the [US Centers for Disease Control](https://www.atsdr.cdc.gov/placeandhealth/svi/index.html), 
->*Social vulnerability* refers to the potential negative effects on communities caused by external stresses on human health. Such stresses include natural or human-caused disasters, or disease outbreaks. Reducing social vulnerability can decrease both human suffering and economic loss.
+Researchers sometimes ask for the [Social Vulnerability Index](https://www.atsdr.cdc.gov/placeandhealth/svi/index.html) of a patient's neighborhood in order to provide a fuller picture of their [social determinants of health](https://health.gov/healthypeople/priority-areas/social-determinants-health). According to the US Centers for Disease Control's Agency for Toxic Substances and Disease Registry (CDC/ATSDR):
 
-The CDC provides Census 2020 SVI data by census tract number in the file `SVI_2020_US.csv`. This Add-In converts either patient address (preferred) or zip code to census tract, then looks up the columns `SPL_THEMES` and `RPL_THEMES` from `SVI_2020_US.csv` to get the SVI score and rank. (See file `SVI2020Documentation_08.05.22.pdf`, available on the above website, for an explanation of each column.)
+> Social vulnerability refers to the potential negative effects on communities caused by external stresses on human health. Such stresses include natural or human-caused disasters, or disease outbreaks. Reducing social vulnerability can decrease both human suffering and economic loss.
 
-If address is available, its corresponding census tract is looked up via the online [Census Geocoder API.](https://geocoding.geo.census.gov/geocoder/Geocoding_Services_API.html) If only zip code is available, it is converted to census tract using the US Housing & Urban Development agency's [HUD-USPS ZIP Code Crosswalk files](https://www.huduser.gov/portal/datasets/usps_crosswalk.html), which lists all the census tracts present in any zip code. Since more than one census tract (and therefore SVI score/rank) could be returned for a zip code, the Add-In returns the average score and rank across all the tracts listed for that zip code in the "crosswalk" file. Accordingly, using zip code is less precise that using the full address.
+We can provide this information by using the patient's address (preferred) or zip code to look up their [census tract number](https://www.census.gov/programs-surveys/geography/about/glossary.html#par_textimage_13), then retrieving their SVI info from a [document](https://www.atsdr.cdc.gov/placeandhealth/svi/data_documentation_download.html) published by the CDC/ATDSR, which lists the SVI information for each census tract (called a [Federal Information Processing Standard (FIPS)](https://nitaac.nih.gov/resources/frequently-asked-questions/what-fips-code-and-why-do-i-need-one#:~:text=The%20Federal%20Information%20Processing%20Standard,equivalents%20in%20the%20United%20States.) code in the data files).
+
+#### Finding the census tract number:
+**Address**
+If we have a patient's address, we can lookup their exact census tract number using the US Census Bureau's [online geocoding service](https://geocoding.geo.census.gov/geocoder/Geocoding_Services_API.html). Here's an example of the query & response (the census tract number is here called *GEOID*):
+
+Query:
+https://geocoding.geo.census.gov/geocoder/geographies/onelineaddress?address=1600%20PENNSYLVANIA%20AVE%2C%20WASHINGTON%20DC%2020500&benchmark=2020&vintage=2020&format=json
+
+Response :
+![image info](./DECS%20Excel%20Add-Ins/pictures/json%20response.png)
+
+**Zip code**
+Using just a zip code is less exact than a full address, as a zip code may contain many census tracts, and tracts may overlap with more than one zip code. However, we can use [*crosswalk*](https://www.huduser.gov/portal/datasets/usps_crosswalk.html) files provided by the US Department of Housing and Urban Development to lookup all the census tracts present in a given zip code. Here's an example from the file ZIP_TRACT_122023.csv (available [here](https://www.huduser.gov/portal/datasets/usps_crosswalk.html)). Notice the large number of census tracts which cross to a typical San Diego County zip code:
+
+![image info](./DECS%20Excel%20Add-Ins/pictures/crosswalk%20multiple%20tracts.png)
+
+#### Extracting SVI information
+The data files published by CDC/ATDSR have one row of social vulnerability data for each census tract. The meaning of each column is explained [here](https://www.atsdr.cdc.gov/placeandhealth/svi/documentation/SVI_documentation_2020.html); we extract the column SPL_THEMES as the SVI score, and RPL_THEMES as the SVI ranking. While both single-state and entire-USA files are available, we've used the entire-USA file to be able to provide data both within & outside of California. If single-state files are used, please review the section *Caveat for SVI State Databases* in [SVI documentation](https://www.atsdr.cdc.gov/placeandhealth/svi/documentation/SVI_documentation_2020.html) for important statistical concerns.
+
+Here's an example of the SVI data from file SVI_2020_US.csv (available [here](https://www.atsdr.cdc.gov/placeandhealth/svi/data_documentation_download.html)) for the census tract 11001980000 returned in the example query above:
+
+![image info](./DECS%20Excel%20Add-Ins/pictures/SVI%20example.png)
+
+In cases where we're using only zip code information and have multiple census tracts, we return the average SVI score and ranking across all tracts associated with the zip code.
 
 
-### Word:

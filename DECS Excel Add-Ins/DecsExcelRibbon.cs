@@ -1,4 +1,10 @@
-﻿using DECS_Excel_Add_Ins.Properties;
+﻿/**
+ * @brief Main class for DECS Excel Tools.
+ *
+ * The @c On methods assign actions for each ribbon button push.
+ *
+ */
+using DECS_Excel_Add_Ins.Properties;
 using Microsoft.Office.Core;
 using System;
 using System.Collections.Generic;
@@ -65,6 +71,11 @@ namespace DECS_Excel_Add_Ins
             return Resources.ENV_EPHT_social;
         }
 
+        /// <summary>
+        /// When @c AddSVI button is pressed, instantiates a @c SviProcessor object & calls its @c Scan method.
+        /// <summary>
+        /// <param name="control">Reference to the IRibbonControl object.</param>
+        /// <returns>void</returns>
         public void OnAddSVI(Office.IRibbonControl control)
         {
             SviProcessor sviProcessor = new SviProcessor();
@@ -72,6 +83,11 @@ namespace DECS_Excel_Add_Ins
             sviProcessor.Scan(wksheet);
         }
 
+        /// <summary>
+        /// When @c ImportList button is pressed, instantiates a @c ListImporter object & calls its @c Scan method.
+        /// <summary>
+        /// <param name="control">Reference to the IRibbonControl object.</param>
+        /// <returns>void</returns>
         public void OnBuildList(Office.IRibbonControl control)
         {
             ListImporter importer = new ListImporter();
@@ -79,6 +95,11 @@ namespace DECS_Excel_Add_Ins
             importer.Scan(wksheet);
         }
 
+        /// <summary>
+        /// When @c ConvertDates button is pressed, instantiates a @c MumpsDateConverter object & calls its @c ConvertColumn method.
+        /// <summary>
+        /// <param name="control">Reference to the IRibbonControl object.</param>
+        /// <returns>void</returns>
         public void OnConvertDates(Office.IRibbonControl control)
         {
             MumpsDateConverter converter = new MumpsDateConverter();
@@ -86,6 +107,11 @@ namespace DECS_Excel_Add_Ins
             converter.ConvertColumn(wksheet);
         }
 
+        /// <summary>
+        /// When @c FormatResults button is pressed, instantiates a @c ListImporter object & calls its @c Scan method.
+        /// <summary>
+        /// <param name="control">Reference to the IRibbonControl object.</param>
+        /// <returns>void</returns>
         public void OnFormat(Office.IRibbonControl control)
         {
             Formatter formatter = new Formatter();
