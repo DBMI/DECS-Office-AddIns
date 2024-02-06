@@ -23,6 +23,9 @@ namespace DECS_Excel_Add_Ins
             System.Reflection.MethodBase.GetCurrentMethod().DeclaringType
         );
 
+        /*
+         * @brief A version of @c RuleGui that's tailed for a data extraction rule.
+         */
         public ExtractRuleGui(
             int x,
             int y,
@@ -51,16 +54,30 @@ namespace DECS_Excel_Add_Ins
             base.AssignDelete(DeleteRule);
         }
 
+        /// <summary>
+        /// Lets an external class assign this object's @c parentDeleteAction property.
+        /// </summary>
+        /// <param name="deleteAction">Action</param>
+        /// <returns>void</returns>
         public void AssignExternalDelete(Action<RuleGui> deleteAction)
         {
             parentDeleteAction = deleteAction;
         }
 
+        /// <summary>
+        /// Lets an external class assign this object's @c parentRuleChangedAction property.
+        /// </summary>
+        /// <param name="ruleChangedAction">Action</param>
+        /// <returns>void</returns>
         public void AssignExternalRuleChanged(Action ruleChangedAction)
         {
             parentRuleChangedAction = ruleChangedAction;
         }
 
+        /// <summary>
+        /// Clears the GUI.
+        /// </summary>
+        /// <returns>void</returns>
         public override void Clear()
         {
             textChangedCallbackEnabled = false;
@@ -69,16 +86,27 @@ namespace DECS_Excel_Add_Ins
             textChangedCallbackEnabled = true;
         }
 
-        // The RuleGui class handles the GUI stuff but this derived class needs to 'talk' to the NotesConfig structure
-        // because we know it's an >extract< rule.
-        // Also, because the DefineRules class creates THIS class (and not the parent RuleGui class),
-        // we'll pass the delete action along to the DefineRules class to tell it to bump the extract Add button upwards.
+        /// <summary>
+        /// The parent RuleGui class handles the GUI stuff but this derived class needs to 'talk' to the NotesConfig structure
+        /// because WE know it's an >extract< rule.
+        /// Also, because the DefineRules class creates THIS class (and not the parent RuleGui class),
+        /// we'll pass the delete action along to the DefineRules class to tell it to bump the cleaning Add button upwards.
+        /// </summary>
+        /// <param name="ruleGui">Our parent object</param>
+        /// <returns>void</returns>
         protected void DeleteRule(RuleGui ruleGui)
         {
             config.DeleteExtractRule(index: base.index);
             parentDeleteAction(ruleGui);
         }
 
+        /// <summary>
+        /// Callback for when a @c DisplayNameTextBox object's text is changed.
+        /// Insert or update Nth extract rule with this display name.
+        /// </summary>
+        /// <param name="sender">Whatever object trigged this callback.</param>
+        /// <param name="e">The EventArgs that accompanied this callback.</param>
+        /// <returns>void</returns>
         private void extractRulesDisplayNameTextBox_TextChanged(object sender, EventArgs e)
         {
             if (!textChangedCallbackEnabled)
@@ -87,10 +115,17 @@ namespace DECS_Excel_Add_Ins
             log.Debug("extractRulesDisplayNameTextBox_TextChanged");
             TextBox textBox = (TextBox)sender;
 
-            // Insert or update Nth cleaning rule with this display Name.
+            // Insert or update Nth extract rule with this display Name.
             config.ChangeExtractRuleDisplayName(index: base.index, displayName: textBox.Text);
         }
 
+        /// <summary>
+        /// Callback for when a @c PatternTextBox object's text is changed.
+        /// Extract the text & add to this extract rule.
+        /// </summary>
+        /// <param name="sender">Whatever object trigged this callback.</param>
+        /// <param name="e">The EventArgs that accompanied this callback.</param>
+        /// <returns>void</returns>
         private void extractRulesPatternTextBox_TextChanged(object sender, EventArgs e)
         {
             if (!textChangedCallbackEnabled)
@@ -116,11 +151,18 @@ namespace DECS_Excel_Add_Ins
                 // Highlight box to show RegEx is invalid.
                 Utilities.MarkRegexInvalid(textBox: textBox, message: result.ToString());
 
-                // Clear Nth cleaning rule's pattern.
+                // Clear Nth extract rule's pattern.
                 config.ChangeExtractRulePattern(index: base.index, pattern: string.Empty);
             }
         }
 
+        /// <summary>
+        /// Callback for when a @c newColumnTextBox object's text is changed.
+        /// Extract the text & add to this extract rule.
+        /// </summary>
+        /// <param name="sender">Whatever object trigged this callback.</param>
+        /// <param name="e">The EventArgs that accompanied this callback.</param>
+        /// <returns>void</returns>
         private void extractRulesnewColumnTextBox_TextChanged(object sender, EventArgs e)
         {
             if (!textChangedCallbackEnabled)
@@ -136,6 +178,11 @@ namespace DECS_Excel_Add_Ins
             parentRuleChangedAction();
         }
 
+        /// <summary>
+        /// Populate this GUI with a @c ExtractRule object.
+        /// </summary>
+        /// <param name="rule">A @c ExtractRule object to be visualized</param>
+        /// <returns>void</returns>
         public void Populate(ExtractRule rule)
         {
             if (rule == null)
