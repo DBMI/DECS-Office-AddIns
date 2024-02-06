@@ -8,7 +8,9 @@ using System.Threading.Tasks;
 
 namespace DECS_Excel_Add_Ins
 {
-    // Both the raw score (from "SPL_THEMES" column) and fractional ranking ("RPL_THEMES").
+    /**
+     * @brief Holds both the raw score (from "SPL_THEMES" column) and fractional ranking ("RPL_THEMES").
+     */
     internal class SviScore
     {
         internal double rawScore { get; }
@@ -40,6 +42,9 @@ namespace DECS_Excel_Add_Ins
         }
     }
 
+    /**
+     * @brief Builds & uses a Dictionary that maps the FIPS code to the SVI information.
+     */
     internal class SviTable
     {
         private Dictionary<ulong, SviScore> sviTable;
@@ -107,6 +112,11 @@ namespace DECS_Excel_Add_Ins
             }
         }
 
+        /// <summary>
+        /// Returns the average rank across all the census tracts provided.
+        /// <summary>
+        /// <param name="tractList">List of ulong census tract numbers.</param>
+        /// <returns>double</returns>
         internal double rank(List<ulong> tractList)
         {
             double sum = 0;
@@ -130,6 +140,11 @@ namespace DECS_Excel_Add_Ins
             return -1.0;
         }
 
+        /// <summary>
+        /// Returns the average raw score across all the census tracts provided.
+        /// <summary>
+        /// <param name="tractList">List of ulong census tract numbers.</param>
+        /// <returns>double</returns>
         internal double raw(List<ulong> tractList)
         {
             double sum = 0;

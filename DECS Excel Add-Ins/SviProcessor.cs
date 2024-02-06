@@ -15,6 +15,9 @@ using Excel = Microsoft.Office.Interop.Excel;
 
 namespace DECS_Excel_Add_Ins
 {
+    /**
+     * @brief Are we using full address or just the zip code?
+     */
     internal enum LocationSource
     {
         [Description("Address")]
@@ -25,6 +28,9 @@ namespace DECS_Excel_Add_Ins
         Unknown = 0,
     }
 
+    /**
+     * @brief Main class for @c AddSVI tool.
+     */
     internal class SviProcessor
     {
         private Application application;
@@ -39,6 +45,13 @@ namespace DECS_Excel_Add_Ins
             application = Globals.ThisAddIn.Application;
         }
 
+        /// <summary>
+        /// Finds either the user-selected column or (if none selected) column with name we expect.
+        /// <summary>
+        /// <param name="worksheet">Reference to the ActiveSheet.</param>
+        /// <param name="lastRowNumber">Number of last row containing data.</param>
+        /// <param name="desiredName">Name of column we're looking for.</param>
+        /// <returns>Range</returns>
         private Range FindNamedColumn(Worksheet worksheet, int lastRowNumber, string desiredName)
         {
             Regex desiredPattern = new Regex(desiredName.ToLower());
@@ -75,12 +88,16 @@ namespace DECS_Excel_Add_Ins
             return selectedColumn;
         }
 
-        // Scans the worksheet:
-        // 1) Finds the address column (or the zip column, if address not found),
-        //    either using the selected column or finding it by name.
-        // 2) Reads data file California.csv & populates a dictionary mapping census tract # to SVI values.
-        // 3) Uses online geocode service to retrieve the census tract for each address.
-        // 4) Looks up the SVI values from the tract dictionary.
+        /// <summary>
+        /// Scans the worksheet:
+        /// -# Finds the address column (or the zip column, if address not found),
+        ///    either using the selected column or finding it by name.
+        /// -# Reads data file SVI_2020_US.csv & populates a dictionary mapping census tract # to SVI values.
+        /// -# Uses online geocode service to retrieve the census tract for each address.
+        /// -# Looks up the SVI values from the tract dictionary.
+        /// <summary>
+        /// <param name="worksheet">Reference to the ActiveSheet.</param>
+        /// <returns>none</returns>
         internal void Scan(Worksheet worksheet)
         {
             // We'll use this in a lot of places, so let's just look it up once.

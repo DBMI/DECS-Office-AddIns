@@ -11,6 +11,9 @@ using log4net;
 
 namespace DECS_Excel_Add_Ins
 {
+    /*
+     * @brief Specific type of @ RuleGui--representing a data cleaning rule.
+     */
     internal class CleaningRuleGui : RuleGui
     {
         private NotesConfig config;
@@ -51,16 +54,33 @@ namespace DECS_Excel_Add_Ins
             base.AssignDelete(DeleteRule);
         }
 
+        /// <summary>
+        /// Lets an external class assign this object's @c parentDeleteAction property.
+        /// </summary>
+        /// <param name="deleteAction">Action</param>
+        /// <returns>void</returns>
         public void AssignExternalDelete(Action<RuleGui> deleteAction)
         {
             parentDeleteAction = deleteAction;
         }
 
+        /// <summary>
+        /// Lets an external class assign this object's @c parentRuleChangedAction property.
+        /// </summary>
+        /// <param name="ruleChangedAction">Action</param>
+        /// <returns>void</returns>
         public void AssignExternalRuleChanged(Action ruleChangedAction)
         {
             parentRuleChangedAction = ruleChangedAction;
         }
 
+        /// <summary>
+        /// Callback for when a @c DisplayNameTextBox object's text is changed.
+        /// Insert or update Nth cleaning rule with this display Name.
+        /// </summary>
+        /// <param name="sender">Whatever object trigged this callback.</param>
+        /// <param name="e">The EventArgs that accompanied this callback.</param>
+        /// <returns>void</returns>
         private void cleaningRulesDisplayNameTextBox_TextChanged(object sender, EventArgs e)
         {
             if (!textChangedCallbackEnabled)
@@ -73,7 +93,13 @@ namespace DECS_Excel_Add_Ins
             config.ChangeCleaningRuleDisplayName(index: base.index, displayName: textBox.Text);
         }
 
-        // Extract the text & add to this cleaning rule.
+        /// <summary>
+        /// Callback for when a @c PatternTextBox object's text is changed.
+        /// Extract the text & add to this cleaning rule.
+        /// </summary>
+        /// <param name="sender">Whatever object trigged this callback.</param>
+        /// <param name="e">The EventArgs that accompanied this callback.</param>
+        /// <returns>void</returns>
         private void cleaningRulesPatternTextBox_TextChanged(object sender, EventArgs e)
         {
             if (!textChangedCallbackEnabled)
@@ -104,7 +130,13 @@ namespace DECS_Excel_Add_Ins
             }
         }
 
-        // Extract the text & add to this cleaning rule.
+        /// <summary>
+        /// Callback for when a @c ReplaceTextBox object's text is changed.
+        /// Extract the text & add to this cleaning rule.
+        /// </summary>
+        /// <param name="sender">Whatever object trigged this callback.</param>
+        /// <param name="e">The EventArgs that accompanied this callback.</param>
+        /// <returns>void</returns>
         private void cleaningRulesReplaceTextBox_TextChanged(object sender, EventArgs e)
         {
             if (!textChangedCallbackEnabled)
@@ -134,6 +166,10 @@ namespace DECS_Excel_Add_Ins
             }
         }
 
+        /// <summary>
+        /// Clears the GUI.
+        /// </summary>
+        /// <returns>void</returns>
         public override void Clear()
         {
             textChangedCallbackEnabled = false;
@@ -142,16 +178,25 @@ namespace DECS_Excel_Add_Ins
             textChangedCallbackEnabled = true;
         }
 
-        // The RuleGui class handles the GUI stuff but this derived class needs to 'talk' to the NotesConfig structure
-        // because we know it's a >cleaning< rule.
-        // Also, because the DefineRules class creates THIS class (and not the parent RuleGui class),
-        // we'll pass the delete action along to the DefineRules class to tell it to bump the cleaning Add button upwards.
+        /// <summary>
+        /// The parent RuleGui class handles the GUI stuff but this derived class needs to 'talk' to the NotesConfig structure
+        /// because WE know it's a >cleaning< rule.
+        /// Also, because the DefineRules class creates THIS class (and not the parent RuleGui class),
+        /// we'll pass the delete action along to the DefineRules class to tell it to bump the cleaning Add button upwards.
+        /// </summary>
+        /// <param name="ruleGui">Our parent object</param>
+        /// <returns>void</returns>
         protected void DeleteRule(RuleGui ruleGui)
         {
             config.DeleteCleaningRule(index: base.index);
             parentDeleteAction(ruleGui);
         }
 
+        /// <summary>
+        /// Populate this GUI with a @c CleaningRule object.
+        /// </summary>
+        /// <param name="rule">A CleaningRule object to be visualized</param>
+        /// <returns>void</returns>
         public void Populate(CleaningRule rule)
         {
             if (rule == null)

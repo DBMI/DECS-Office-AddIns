@@ -21,8 +21,16 @@ using ToolTip = System.Windows.Forms.ToolTip;
 
 namespace DECS_Excel_Add_Ins
 {
+    /*
+     * @brief Useful tools
+     */
     internal class Utilities
     {
+        /// <summary>
+        /// Builds a Range object containing the first column of all rows up to the last row containing any data.
+        /// </summary>
+        /// <param name="sheet">ActiveWorksheet.</param>
+        /// <returns>Range</returns>
         internal static Range AllAvailableRows(Worksheet sheet)
         {
             Range firstCell = (Range)sheet.Cells[1, 1];
@@ -31,6 +39,11 @@ namespace DECS_Excel_Add_Ins
             return allRows;
         }
 
+        /// <summary>
+        /// Clears the "Invalid" highlighting & MouseOver eventhandler from a textbox.
+        /// </summary>
+        /// <param name="sheet">ActiveWorksheet.</param>
+        /// <returns>void</returns>
         internal static void ClearRegexInvalid(TextBox textBox)
         {
             if (textBox == null)
@@ -43,7 +56,11 @@ namespace DECS_Excel_Add_Ins
             DetachEvents(textBox);
         }
 
-        // Convert Excel-formatted date to SQL style.
+        /// <summary>
+        /// Convert Excel-formatted date to SQL style.
+        /// </summary>
+        /// <param name="cellContents">String contents of a particular cell.</param>
+        /// <returns>string</returns>
         internal static string ConvertExcelDate(string cellContents)
         {
             string convertedContents = null;
@@ -62,31 +79,42 @@ namespace DECS_Excel_Add_Ins
             return convertedContents;
         }
 
-        internal static int CountCellsWithData(Range rng, int lastRow)
-        {
-            int numCellsWithData = 0;
-            Range thisCell;
+        ///// <summary>
+        ///// Counts the number of cells containing data.
+        ///// </summary>
+        ///// <param name="rng">Range over which to count</param>
+        ///// <param name="lastRow">int number of last row with data</param>
+        ///// <returns>string</returns>
+        //internal static int CountCellsWithData(Range rng, int lastRow)
+        //{
+        //    int numCellsWithData = 0;
+        //    Range thisCell;
 
-            for (int rowNumber = 1; rowNumber <= lastRow; rowNumber++)
-            {
-                thisCell = rng.Cells[rowNumber];
-                string cell_contents;
+        //    for (int rowNumber = 1; rowNumber <= lastRow; rowNumber++)
+        //    {
+        //        thisCell = rng.Cells[rowNumber];
+        //        string cell_contents;
 
-                try
-                {
-                    cell_contents = thisCell.Value2.ToString();
-                }
-                catch
-                {
-                    // There's nothing in this cell.
-                    numCellsWithData = rowNumber;
-                    break;
-                }
-            }
+        //        try
+        //        {
+        //            cell_contents = thisCell.Value2.ToString();
+        //        }
+        //        catch
+        //        {
+        //            // There's nothing in this cell.
+        //            numCellsWithData = rowNumber;
+        //            break;
+        //        }
+        //    }
 
-            return numCellsWithData;
-        }
+        //    return numCellsWithData;
+        //}
 
+        /// <summary>
+        /// Removes event handlers from a text box.
+        /// </summary>
+        /// <param name="textBox">Handle to TextBox object</param>
+        /// <returns>void</returns>
         public static void DetachEvents(TextBox textBox)
         {
             object objNew = textBox
@@ -102,6 +130,11 @@ namespace DECS_Excel_Add_Ins
             eventHandlerList_obj.Dispose();
         }
 
+        /// <summary>
+        /// Finds last column containing anything.
+        /// </summary>
+        /// <param name="sheet">Active Worksheet.</param>
+        /// <returns>int</returns>
         // https://stackoverflow.com/a/22151620/18749636
         internal static int FindLastCol(Worksheet sheet)
         {
@@ -113,6 +146,11 @@ namespace DECS_Excel_Add_Ins
             return sheet.UsedRange.Columns.Count;
         }
 
+        /// <summary>
+        /// Finds last row containing anything.
+        /// </summary>
+        /// <param name="sheet">Active Worksheet.</param>
+        /// <returns>int</returns>
         // https://stackoverflow.com/a/22151620/18749636
         internal static int FindLastRow(Worksheet sheet)
         {
@@ -124,6 +162,11 @@ namespace DECS_Excel_Add_Ins
             return sheet.UsedRange.Rows.Count;
         }
 
+        /// <summary>
+        /// Finds the ToolTip linked to a TextBox object.
+        /// </summary>
+        /// <param name="textBox">Handle to TextBox object</param>
+        /// <returns>ToolTip</returns>
         internal static ToolTip FindToolTip(TextBox textBox)
         {
             ToolTip toolTip = null;
@@ -149,7 +192,14 @@ namespace DECS_Excel_Add_Ins
             return toolTip;
         }
 
-        // Turn the scope-of-work filename into a .sql filename.
+        /// <summary>
+        /// Turn the scope-of-work filename into a .sql filename.
+        /// </summary>
+        /// <param name="filename">Scope of work filename</param>
+        /// <param name="filenameAddOn">String we want to append to filename</param>
+        /// <param name="filetype">Desired filetype (".sql" by default)</param>
+        /// <param name="shortVersion">Bool--just filename.type? (false by default)</param>
+        /// <returns>string</returns>
         internal static string FormOutputFilename(
             string filename,
             string filenameAddon = "",
@@ -169,6 +219,11 @@ namespace DECS_Excel_Add_Ins
             return sqlFilename;
         }
 
+        /// <summary>
+        /// Pulls all the column names from the first row of a worksheet.
+        /// </summary>
+        /// <param name="sheet">Active Worksheet.</param>
+        /// <returns>List of strings</returns>
         internal static List<string> GetColumnNames(Worksheet sheet)
         {
             List<string> names = new List<string>();
@@ -187,6 +242,11 @@ namespace DECS_Excel_Add_Ins
             return names;
         }
 
+        /// <summary>
+        /// Pulls all the column names from a worksheet.
+        /// </summary>
+        /// <param name="selectedColumns">List of Range objects</param>
+        /// <returns>List of strings</returns>
         internal static List<string> GetColumnNames(List<Range> selectedColumns)
         {
             List<string> names = new List<string>();
@@ -212,6 +272,11 @@ namespace DECS_Excel_Add_Ins
             return names;
         }
 
+        /// <summary>
+        /// Builds a dictionary of the column names from the first row of a worksheet.
+        /// </summary>
+        /// <param name="sheet">Active Worksheet.</param>
+        /// <returns>Dictionary mapping string -> Range</returns>
         internal static Dictionary<string, Range> GetColumnNamesDictionary(Worksheet sheet)
         {
             Dictionary<string, Range> columns = new Dictionary<string, Range>();
@@ -230,7 +295,12 @@ namespace DECS_Excel_Add_Ins
             return columns;
         }
 
-        // Has the user selected a column? And just one?
+        /// <summary>
+        /// Has the user selected a column? And just one?
+        /// </summary>
+        /// <param name="application">Excel application</param>
+        /// <param name="lastRow">Number of last row with data</param>
+        /// <returns>Range</returns>
         internal static Range GetSelectedCol(Microsoft.Office.Interop.Excel.Application application, int lastRow)
         {
             Range selectedColumn = null;
@@ -250,7 +320,12 @@ namespace DECS_Excel_Add_Ins
             return selectedColumn;
         }
 
-        // Which columns has the user selected to export to SQL?
+        /// <summary>
+        /// Which columns has the user selected to export to SQL?
+        /// </summary>
+        /// <param name="application">Excel application</param>
+        /// <param name="lastRow">Number of last row with data</param>
+        /// <returns>List of Range objects</returns>
         internal static List<Range> GetSelectedCols(Microsoft.Office.Interop.Excel.Application application, int lastRow)
         {
             Range rng = (Range) application.Selection;
@@ -271,12 +346,22 @@ namespace DECS_Excel_Add_Ins
             return selectedColumns;
         }
 
+        /// <summary>
+        /// Current time in yyyyMMddHHmmss format
+        /// </summary>
+        /// <returns>string</returns>
         // https://stackoverflow.com/q/21219797/18749636
         internal static string GetTimestamp()
         {
             return DateTime.Now.ToString("yyyyMMddHHmmss");
         }
 
+        /// <summary>
+        /// Does this range have data?
+        /// </summary>
+        /// <param name="rng">Range to search</param>
+        /// <param name="lastRow">Number of last row with data</param>
+        /// <returns>bool</returns>
         internal static bool HasData(Range rng, int lastRow)
         {
             bool hasData = false;
@@ -299,7 +384,12 @@ namespace DECS_Excel_Add_Ins
             return hasData;
         }
 
-        // Inserts new column to the right of the provided Range.
+        /// <summary>
+        /// Inserts new column to the right of the provided Range.
+        /// </summary>
+        /// <param name="range">Range of existing column</param>
+        /// <param name="newColumnName">Name of column to be created</param>
+        /// <returns>Range</returns>
         internal static Range InsertNewColumn(Range range, string newColumnName)
         {
             int columnNumber = range.Column;
@@ -311,6 +401,11 @@ namespace DECS_Excel_Add_Ins
             return newRange;
         }
 
+        /// <summary>
+        /// Tests to see if string is a valid RegEx
+        /// </summary>
+        /// <param name="regexText">Regular Expression</param>
+        /// <returns>RuleValidationResult object</returns>
         internal static RuleValidationResult IsRegexValid(string regexText)
         {
             // Empty strings are not errors.
@@ -329,6 +424,12 @@ namespace DECS_Excel_Add_Ins
             return new RuleValidationResult();
         }
 
+        /// <summary>
+        /// Highlight textbox to show its RegEx is not valid.
+        /// </summary>
+        /// <param name="textBox">TextBox object.</param>
+        /// <param name="message">String used to fill the ToolTip.</param>
+        /// <returns>void</returns>
         internal static void MarkRegexInvalid(TextBox textBox, string message)
         {
             if (textBox == null)
@@ -350,9 +451,15 @@ namespace DECS_Excel_Add_Ins
             }
         }
 
-        // Open the output StreamWriter object, understanding that we might
-        // have to substitute a shorter version of the output filename
-        // if the default filename is too long.
+        /// <summary>
+        /// Open the output StreamWriter object, understanding that we might
+        /// have to substitute a shorter version of the output filename
+        /// if the default filename is too long.
+        /// </summary>
+        /// <param name="inputFilename">File to read</param>
+        /// <param name="filenameAddOn">String we want to append to filename</param>
+        /// <param name="filetype">Desired filetype (".sql" by default)</param>
+        /// <returns>Tuple of StreamWriter object, string</returns>
         internal static (StreamWriter writer, string openedFilename) OpenOutput(
             string inputFilename,
             string filenameAddon = "",
@@ -386,6 +493,12 @@ namespace DECS_Excel_Add_Ins
             return (writer: writer_obj, openedFilename: outputFilename);
         }
 
+        /// <summary>
+        /// Find the top cell in the named column.
+        /// </summary>
+        /// <param name="sheet">Active Worksheet.</param>
+        /// <param name="columnName">Name of desired column.</param>
+        /// <returns>Range</returns>
         internal static Range TopOfNamedColumn(Worksheet sheet, string columnName)
         {
             Range range = (Range)sheet.Cells[1, 1];
@@ -406,6 +519,11 @@ namespace DECS_Excel_Add_Ins
             return null;
         }
 
+        /// <summary>
+        /// Creates MessageBox letting user know we didn't find the named column.
+        /// </summary>
+        /// <param name="columnName">Name of desired column.</param>
+        /// <returns>void</returns>
         internal static void WarnColumnNotFound(string columnName)
         {
             string message = "Column '" + columnName + "' not found.";

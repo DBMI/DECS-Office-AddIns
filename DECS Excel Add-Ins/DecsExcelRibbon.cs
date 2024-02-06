@@ -1,10 +1,4 @@
-﻿/**
- * @brief Main class for DECS Excel Tools.
- *
- * The @c On methods assign actions for each ribbon button push.
- *
- */
-using DECS_Excel_Add_Ins.Properties;
+﻿using DECS_Excel_Add_Ins.Properties;
 using Microsoft.Office.Core;
 using System;
 using System.Collections.Generic;
@@ -39,6 +33,14 @@ using Office = Microsoft.Office.Core;
 
 namespace DECS_Excel_Add_Ins
 {
+    /**
+     * @brief Main class for DECS Excel Tools.
+     *
+     * The @c _GetImage methods specify the image used for each ribbon button.
+     *
+     * The @c On methods assign actions for each ribbon button push.
+     *
+     */
     [ComVisible(true)]
     public class DecsExcelRibbon : Office.IRibbonExtensibility
     {
@@ -46,34 +48,69 @@ namespace DECS_Excel_Add_Ins
 
         public DecsExcelRibbon() { }
 
+        /// <summary>
+        /// Lets the @c DexsExcelRibbon.xml point to the image for the @c ImportList button.
+        /// </summary>
+        /// <param name="control">Reference to the IRibbonControl object.</param>
+        /// <returns>Bitmap</returns>
         public Bitmap buildListButton_GetImage(IRibbonControl control)
         {
             return Resources.clipboard;
         }
 
+        /// <summary>
+        /// Lets the @c DexsExcelRibbon.xml point to the image for the @c ConvertDates button.
+        /// </summary>
+        /// <param name="control">Reference to the IRibbonControl object.</param>
+        /// <returns>Bitmap</returns>
         public Bitmap dateConvertButton_GetImage(IRibbonControl control)
         {
             return Resources.calendar_with_gear;
         }
 
+        /// <summary>
+        /// Lets the @c DexsExcelRibbon.xml point to the image for the @c FormatResults button.
+        /// </summary>
+        /// <param name="control">Reference to the IRibbonControl object.</param>
+        /// <returns>Bitmap</returns>
         public Bitmap formatButton_GetImage(IRibbonControl control)
         {
             return Resources.paint_roller;
         }
 
+        /// <summary>
+        /// Lets the @c DexsExcelRibbon.xml point to the image for the @c SetupConfig button.
+        /// </summary>
+        /// <param name="control">Reference to the IRibbonControl object.</param>
+        /// <returns>Bitmap</returns>
         public Bitmap notesConfigButton_GetImage(IRibbonControl control)
         {
             return Resources.regex_setup_icon;
         }
 
+        /// <summary>
+        /// Lets the @c DexsExcelRibbon.xml point to the image for the @c SearchNotes button.
+        /// </summary>
+        /// <param name="control">Reference to the IRibbonControl object.</param>
+        /// <returns>Bitmap</returns>
+        public Bitmap notesSearchButton_GetImage(IRibbonControl control)
+        {
+            return Resources.regex_search_icon;
+        }
+
+        /// <summary>
+        /// Lets the @c DexsExcelRibbon.xml point to the image for the @c AddSvi button.
+        /// </summary>
+        /// <param name="control">Reference to the IRibbonControl object.</param>
+        /// <returns>Bitmap</returns>
         public Bitmap sviButton_GetImage(IRibbonControl control)
         {
             return Resources.ENV_EPHT_social;
         }
 
         /// <summary>
-        /// When @c AddSVI button is pressed, instantiates a @c SviProcessor object & calls its @c Scan method.
-        /// <summary>
+        /// When @c AddSVI button is pressed, this method instantiates a @c SviProcessor object & calls its @c Scan method.
+        /// </summary>
         /// <param name="control">Reference to the IRibbonControl object.</param>
         /// <returns>void</returns>
         public void OnAddSVI(Office.IRibbonControl control)
@@ -85,7 +122,7 @@ namespace DECS_Excel_Add_Ins
 
         /// <summary>
         /// When @c ImportList button is pressed, instantiates a @c ListImporter object & calls its @c Scan method.
-        /// <summary>
+        /// </summary>
         /// <param name="control">Reference to the IRibbonControl object.</param>
         /// <returns>void</returns>
         public void OnBuildList(Office.IRibbonControl control)
@@ -96,8 +133,8 @@ namespace DECS_Excel_Add_Ins
         }
 
         /// <summary>
-        /// When @c ConvertDates button is pressed, instantiates a @c MumpsDateConverter object & calls its @c ConvertColumn method.
-        /// <summary>
+        /// When @c ConvertDates button is pressed, this method instantiates a @c MumpsDateConverter object & calls its @c ConvertColumn method.
+        /// </summary>
         /// <param name="control">Reference to the IRibbonControl object.</param>
         /// <returns>void</returns>
         public void OnConvertDates(Office.IRibbonControl control)
@@ -108,8 +145,8 @@ namespace DECS_Excel_Add_Ins
         }
 
         /// <summary>
-        /// When @c FormatResults button is pressed, instantiates a @c ListImporter object & calls its @c Scan method.
-        /// <summary>
+        /// When @c FormatResults button is pressed, this method instantiates a @c ListImporter object & calls its @c Scan method.
+        /// </summary>
         /// <param name="control">Reference to the IRibbonControl object.</param>
         /// <returns>void</returns>
         public void OnFormat(Office.IRibbonControl control)
@@ -119,6 +156,12 @@ namespace DECS_Excel_Add_Ins
             formatter.Format(wksheet);
         }
 
+        /// <summary>
+        /// When @c SetupConfig button is pressed, this method instantiates a @c DefineRulesForm object
+        /// for the user to review & edit notes parsing rules.
+        /// </summary>
+        /// <param name="control">Reference to the IRibbonControl object.</param>
+        /// <returns>void</returns>
         public void OnSearchConfig(Office.IRibbonControl control)
         {
             Excel.Worksheet wksheet = (Excel.Worksheet)Globals.ThisAddIn.Application.ActiveSheet;
@@ -131,16 +174,16 @@ namespace DECS_Excel_Add_Ins
             form.Visible = true;
         }
 
+        /// <summary>
+        /// When @c SearchNotes button is pressed, this method instantiates a @c NotesParser object & calls its @c Parse method.
+        /// </summary>
+        /// <param name="control">Reference to the IRibbonControl object.</param>
+        /// <returns>void</returns>
         public void OnSearchNotes(Office.IRibbonControl control)
         {
             Excel.Worksheet wksheet = (Excel.Worksheet)Globals.ThisAddIn.Application.ActiveSheet;
             NotesParser parser = new NotesParser(_worksheet: wksheet);
             parser.Parse();
-        }
-
-        public Bitmap notesSearchButton_GetImage(IRibbonControl control)
-        {
-            return Resources.regex_search_icon;
         }
 
         #region IRibbonExtensibility Members
