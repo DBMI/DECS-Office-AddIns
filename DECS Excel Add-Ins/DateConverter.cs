@@ -10,6 +10,9 @@ using System.Windows.Forms;
 
 namespace DECS_Excel_Add_Ins
 {
+    /*
+     * @brief Centralized class for all date conversion methods.
+     */
     internal class DateConverter
     {
         private IDictionary<string, string> supportedDateFormats;
@@ -29,6 +32,12 @@ namespace DECS_Excel_Add_Ins
             supportedDateFormats.Add("MMMM dd", "([a-zA-Z]\\.? \\d{1,2})");
         }
 
+        /// <summary>
+        /// Convert all dates found in the string to the desired format.
+        /// </summary>
+        /// <param name="note">Long string of patient notes.</param>
+        /// <param name="desiredFormat">Desired date format</param>
+        /// <returns>string</returns>
         internal string Convert(string note, string desiredFormat)
         {
             foreach (KeyValuePair<string, string> entry in supportedDateFormats)
@@ -56,6 +65,10 @@ namespace DECS_Excel_Add_Ins
             return note;
         }
 
+        /// <summary>
+        /// Provides all the keys from the supportedDateFormats Dictionary, for use in pull-down box.
+        /// </summary>
+        /// <returns>List of strings</returns>
         internal List<string> SupportedDateFormats()
         {
             return new List<string>(supportedDateFormats.Keys);
