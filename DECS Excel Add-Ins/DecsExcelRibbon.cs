@@ -38,7 +38,7 @@ namespace DECS_Excel_Add_Ins
      *
      * The @c _GetImage methods specify the image used for each ribbon button.
      *
-     * The @c On methods assign actions for each ribbon button push.
+     * The @c On_ methods assign actions for each ribbon button push.
      *
      */
     [ComVisible(true)]
@@ -112,7 +112,7 @@ namespace DECS_Excel_Add_Ins
         /// When @c AddSVI button is pressed, this method instantiates a @c SviProcessor object & calls its @c Scan method.
         /// </summary>
         /// <param name="control">Reference to the IRibbonControl object.</param>
-        /// <returns>void</returns>
+        
         public void OnAddSVI(Office.IRibbonControl control)
         {
             SviProcessor sviProcessor = new SviProcessor();
@@ -124,7 +124,7 @@ namespace DECS_Excel_Add_Ins
         /// When @c ImportList button is pressed, instantiates a @c ListImporter object & calls its @c Scan method.
         /// </summary>
         /// <param name="control">Reference to the IRibbonControl object.</param>
-        /// <returns>void</returns>
+        
         public void OnBuildList(Office.IRibbonControl control)
         {
             ListImporter importer = new ListImporter();
@@ -136,7 +136,7 @@ namespace DECS_Excel_Add_Ins
         /// When @c ConvertDates button is pressed, this method instantiates a @c MumpsDateConverter object & calls its @c ConvertColumn method.
         /// </summary>
         /// <param name="control">Reference to the IRibbonControl object.</param>
-        /// <returns>void</returns>
+        
         public void OnConvertDates(Office.IRibbonControl control)
         {
             MumpsDateConverter converter = new MumpsDateConverter();
@@ -148,7 +148,7 @@ namespace DECS_Excel_Add_Ins
         /// When @c FormatResults button is pressed, this method instantiates a @c ListImporter object & calls its @c Scan method.
         /// </summary>
         /// <param name="control">Reference to the IRibbonControl object.</param>
-        /// <returns>void</returns>
+        
         public void OnFormat(Office.IRibbonControl control)
         {
             Formatter formatter = new Formatter();
@@ -161,7 +161,7 @@ namespace DECS_Excel_Add_Ins
         /// for the user to review & edit notes parsing rules.
         /// </summary>
         /// <param name="control">Reference to the IRibbonControl object.</param>
-        /// <returns>void</returns>
+        
         public void OnSearchConfig(Office.IRibbonControl control)
         {
             Excel.Worksheet wksheet = (Excel.Worksheet)Globals.ThisAddIn.Application.ActiveSheet;
@@ -178,7 +178,7 @@ namespace DECS_Excel_Add_Ins
         /// When @c SearchNotes button is pressed, this method instantiates a @c NotesParser object & calls its @c Parse method.
         /// </summary>
         /// <param name="control">Reference to the IRibbonControl object.</param>
-        /// <returns>void</returns>
+        
         public void OnSearchNotes(Office.IRibbonControl control)
         {
             Excel.Worksheet wksheet = (Excel.Worksheet)Globals.ThisAddIn.Application.ActiveSheet;

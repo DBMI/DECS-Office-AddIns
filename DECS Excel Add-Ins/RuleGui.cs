@@ -22,7 +22,10 @@ using System.Web.UI.WebControls;
 
 namespace DECS_Excel_Add_Ins
 {
-    // A set of controls: two textboxes, a delete button and the panel that contains them all.
+    /**
+     * @brief A set of controls: two textboxes, a delete button and the panel that contains them all.
+     * Meant to be inherited & instantiated by @c CleaningRule and @c ExtractRule classes.
+     */
     internal abstract class RuleGui
     {
         private const int BOX_HEIGHT = 22;
@@ -75,6 +78,14 @@ namespace DECS_Excel_Add_Ins
             System.Reflection.MethodBase.GetCurrentMethod().DeclaringType
         );
 
+        /// <summary>
+        /// Constructor
+        /// </summary>
+        /// <param name="x">X position of parent @c Panel object</param>
+        /// <param name="y">Y position of parent @c Panel object</param>
+        /// <param name="_index">zero-based index of this object in list of rules</param>
+        /// <param name="parentObj">Parent @Panel object</param>
+        /// <param name="ruleType">Is it a cleaning or an extraction rule?</param>
         public RuleGui(int x, int y, int _index, Panel parentObj, string ruleType)
         {
             index = _index; // zero-based
@@ -151,29 +162,48 @@ namespace DECS_Excel_Add_Ins
             panel.Controls.Add(deleteButton);
         }
 
-        // This class creates the Delete button and handles disposing of the GUI elements
-        // but knows nothing of the NotesConfig object being built.
-        // So classes which inherit RuleGui (CleaningRuleGui & ExtractRuleGui)
-        // and DO know about NotesConfig need to be able to assign actions that fire
-        // when our our Delete button is pressed.
-        // Similarly, the DefineRule Class owns the AddButton and needs to move the
-        // button up when a rule is deleted, so it provides ITS callback to the
-        // CleaningRuleGui and ExtractRuleGui classes to invoke.
+        /// <summary>
+        /// This class creates the Delete button and handles disposing of the GUI elements
+        /// but knows nothing of the @c NotesConfig object being built.
+        /// So classes which inherit @c RuleGui (@c CleaningRuleGui & @c ExtractRuleGui)
+        /// and DO know about @c NotesConfig need to be able to assign actions that fire
+        /// when our our Delete button is pressed.
+        /// Similarly, the @c DefineRule Class owns the AddButton and needs to move the
+        /// button up when a rule is deleted, so it provides ITS callback to the
+        /// @c CleaningRuleGui and @c ExtractRuleGui classes to invoke.
+        /// </summary>
+        /// <param name="deleteAction">@c Action to perform when delete button pressed</param>
+        /// 
         protected void AssignDelete(Action<RuleGui> deleteAction)
         {
             inheritedClassDeleteAction = deleteAction;
         }
 
+        /// <summary>
+        /// Lets inherited classes @c CleaningRuleGui & @c ExtractRuleGui assign the callback for disable button.
+        /// </summary>
+        /// <param name="disableAction">Action</param>
         internal void AssignDisable(Action<RuleGui> disableAction)
         {
             parentClassDisableAction = disableAction;
         }
 
+        /// <summary>
+        /// Lets inherited classes @c CleaningRuleGui & @c ExtractRuleGui assign the callback for enable button.
+        /// </summary>
+        /// <param name="enableAction">Action</param>
         internal void AssignEnable(Action<RuleGui> enableAction)
         {
             parentClassEnableAction = enableAction;
         }
 
+
+
+        /// <summary>
+        /// Callback for when checkbox is clicked.
+        /// </summary>
+        /// <param name="sender">Object sending us the callback</param>
+        /// <param name="e">Callback arguments</param>
         private void CheckBoxClicked(object sender, EventArgs e)
         {
             CheckBox checkBox = sender as CheckBox;
@@ -198,10 +228,17 @@ namespace DECS_Excel_Add_Ins
             }
         }
 
-        // Implemented in the derived classes because the TextChanged methods are defined there
-        // and we temporarily need to disable the TextChanged methods while clearing the textboxes.
+        /// <summary>
+        /// Implemented in the derived classes because the TextChanged methods are defined there
+        /// and we temporarily need to disable the TextChanged methods while clearing the textboxes.
+        /// </summary>
         public abstract void Clear();
 
+        /// <summary>
+        /// Pass the delete order down the chain to the next panel (until there isn't one).
+        /// Then--at the last panel, invoke the inherited class' Delete() function, which removes 
+        /// the cleaning rule or extract rule for this index.
+        /// </summary>
         public void Delete()
         {
             // Pass the order down the chain to the next panel (until there isn't one).
@@ -217,11 +254,21 @@ namespace DECS_Excel_Add_Ins
             inheritedClassDeleteAction(this);
         }
 
+        /// <summary>
+        /// Delete callback. Passes it along to the @c Delete() method.
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void Delete(object sender, EventArgs e)
         {
             Delete();
         }
 
+        /// <summary>
+        /// Finds a desired @c RuleGui object by index without top-level object maintaining a list.
+        /// </summary>
+        /// <param name="desiredIndex">Index of @c Panel we want to find</param>
+        /// <returns>@c RuleGui</returns>
         private RuleGui FindNth(int desiredIndex)
         {
             // Find the underlying Panel objects of this rule type.
@@ -241,17 +288,27 @@ namespace DECS_Excel_Add_Ins
             return null;
         }
 
-        // So calling class can ask how big a RuleGui object is prior to object instantiation.
+        /// <summary>
+        /// So calling class can ask how big a RuleGui object is prior to object instantiation. 
+        /// </summary>
+        /// <returns>int</returns>
         public static int Height()
         {
             return height;
         }
 
+        /// <summary>
+        /// So calling class can for this object's index.
+        /// </summary>
+        /// <returns>int</returns>
         internal int Index()
         {
             return index;
         }
 
+        /// <summary>
+        /// Moves @c Panels up following a rule deletion.
+        /// </summary>
         private void MoveUpInLine()
         {
             // Pass the word.
@@ -263,16 +320,28 @@ namespace DECS_Excel_Add_Ins
             index -= 1;
         }
 
+        /// <summary>
+        /// Returns the next object.
+        /// </summary>
+        /// <returns>@c RuleGui</returns>
         private RuleGui NextRuleGui()
         {
             return FindNth(index + 1);
         }
 
+        /// <summary>
+        /// Allows for external reference to object's parent @c Panel object.
+        /// </summary>
         public Panel PanelObj
         {
             get { return panel; }
         }
 
+        /// <summary>
+        /// Allows @c DefineRulesForm to direct this panel to move.
+        /// </summary>
+        /// <param name="x"></param>
+        /// <param name="y"></param>
         internal void ResetLocation(int x, int y)
         {
             panel.Location = new Point(x, y);

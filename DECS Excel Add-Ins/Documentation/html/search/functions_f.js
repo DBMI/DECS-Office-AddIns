@@ -1,0 +1,24 @@
+var searchData=
+[
+  ['save_0',['Save',['../class_d_e_c_s___excel___add___ins_1_1_define_rules_form.html#a6c7bca0f052b7c4bf3c2316fb942d760',1,'DECS_Excel_Add_Ins::DefineRulesForm']]],
+  ['saveas_1',['SaveAs',['../class_d_e_c_s___excel___add___ins_1_1_define_rules_form.html#a040f6dfb9b8d213722a13c53e536ff9b',1,'DECS_Excel_Add_Ins::DefineRulesForm']]],
+  ['saveastoolstripmenuitem_5fclick_2',['saveAsToolStripMenuItem_Click',['../class_d_e_c_s___excel___add___ins_1_1_define_rules_form.html#a0ea1e8e8f9f125da1c2f9299b0db9c25',1,'DECS_Excel_Add_Ins::DefineRulesForm']]],
+  ['savebutton_5fclick_3',['saveButton_Click',['../class_d_e_c_s___excel___add___ins_1_1_define_rules_form.html#ae215bda9ddc6ffa91b193d57ec8e632a',1,'DECS_Excel_Add_Ins::DefineRulesForm']]],
+  ['saveoriginalsourcecolumn_4',['SaveOriginalSourceColumn',['../class_d_e_c_s___excel___add___ins_1_1_notes_parser.html#a4cc0a60e53b8ac5d87b9f93342c3b0ac',1,'DECS_Excel_Add_Ins::NotesParser']]],
+  ['saverevised_5',['SaveRevised',['../class_d_e_c_s___excel___add___ins_1_1_notes_parser.html#a9ad985812107a79d6e515cb5f56b2b28',1,'DECS_Excel_Add_Ins.NotesParser.SaveRevised()'],['../class_d_e_c_s___excel___add___ins_1_1_notes_parser.html#a33fbf094960bcbc9ef0a0a983b63f6f2',1,'DECS_Excel_Add_Ins.NotesParser.SaveRevised(Workbook workbook, string newFilename, string justTheFilename)']]],
+  ['savetoolstripmenuitem_5fclick_6',['saveToolStripMenuItem_Click',['../class_d_e_c_s___excel___add___ins_1_1_define_rules_form.html#a34a413f255d8fcfb34219b57fbca83a7',1,'DECS_Excel_Add_Ins::DefineRulesForm']]],
+  ['scan_7',['Scan',['../class_d_e_c_s___excel___add___ins_1_1_list_importer.html#a76a7ecc6d8e35e9eadf62e45d2dc9858',1,'DECS_Excel_Add_Ins.ListImporter.Scan()'],['../class_d_e_c_s___excel___add___ins_1_1_svi_processor.html#a26189f9653a1ba08f411e6faeb62fade',1,'DECS_Excel_Add_Ins.SviProcessor.Scan()']]],
+  ['setborders_8',['SetBorders',['../class_d_e_c_s___excel___add___ins_1_1_formatter.html#acdba81d879b82aefaca0577098bc7544',1,'DECS_Excel_Add_Ins::Formatter']]],
+  ['setrunbuttonstatus_9',['SetRunButtonStatus',['../class_d_e_c_s___excel___add___ins_1_1_define_rules_form.html#a61671da7933e5346fd64181303d42d67',1,'DECS_Excel_Add_Ins::DefineRulesForm']]],
+  ['setsourcecolumn_10',['SetSourceColumn',['../class_d_e_c_s___excel___add___ins_1_1_define_rules_form.html#a4c2e3f2ff441f9c6b72c6c464c13e43d',1,'DECS_Excel_Add_Ins::DefineRulesForm']]],
+  ['showcleaningresult_11',['ShowCleaningResult',['../class_d_e_c_s___excel___add___ins_1_1_define_rules_form.html#a90c6c7927610bad7218892bd34ace9f6',1,'DECS_Excel_Add_Ins::DefineRulesForm']]],
+  ['showdateconversionresult_12',['ShowDateConversionResult',['../class_d_e_c_s___excel___add___ins_1_1_define_rules_form.html#a7ec9ff2758183b1ca66515666814d4d5',1,'DECS_Excel_Add_Ins::DefineRulesForm']]],
+  ['showextractresult_13',['ShowExtractResult',['../class_d_e_c_s___excel___add___ins_1_1_define_rules_form.html#a2ab5f556191d1ae5c932715a99329fa4',1,'DECS_Excel_Add_Ins::DefineRulesForm']]],
+  ['showrow_14',['ShowRow',['../class_d_e_c_s___excel___add___ins_1_1_notes_parser.html#ad27da784fc7da7334dac9e758eb0d91a',1,'DECS_Excel_Add_Ins::NotesParser']]],
+  ['showselectedrows_15',['ShowSelectedRows',['../class_d_e_c_s___excel___add___ins_1_1_define_rules_form.html#abf8aa64687fc610fcc65cfcf6818798c',1,'DECS_Excel_Add_Ins.DefineRulesForm.ShowSelectedRows()'],['../class_d_e_c_s___excel___add___ins_1_1_define_rules_form.html#a0fe55fc86e268383993e105d79305547',1,'DECS_Excel_Add_Ins.DefineRulesForm.ShowSelectedRows(ProcessingRowsSelection rowSelection)']]],
+  ['sourcecolumnlistbox_5fselected_16',['sourceColumnListBox_Selected',['../class_d_e_c_s___excel___add___ins_1_1_define_rules_form.html#a6fadfef282a80a64046c5a6c5c0b7243',1,'DECS_Excel_Add_Ins::DefineRulesForm']]],
+  ['statusform_17',['StatusForm',['../class_d_e_c_s___excel___add___ins_1_1_status_form.html#a30f34cbd921493c8cf7ee41f19d4bd54',1,'DECS_Excel_Add_Ins::StatusForm']]],
+  ['stopprocessing_18',['StopProcessing',['../class_d_e_c_s___excel___add___ins_1_1_notes_parser.html#a9a11e85b3cdeb2d8a4903e10711a093a',1,'DECS_Excel_Add_Ins::NotesParser']]],
+  ['supporteddateformats_19',['SupportedDateFormats',['../class_d_e_c_s___excel___add___ins_1_1_date_converter.html#ae00ae07a16268a8342fd1e658894ed58',1,'DECS_Excel_Add_Ins::DateConverter']]],
+  ['svibutton_5fgetimage_20',['sviButton_GetImage',['../class_d_e_c_s___excel___add___ins_1_1_decs_excel_ribbon.html#ad01fa66ce601b3bd96ee9c981cbd2001',1,'DECS_Excel_Add_Ins::DecsExcelRibbon']]]
+];

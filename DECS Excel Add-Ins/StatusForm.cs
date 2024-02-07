@@ -13,6 +13,9 @@ using log4net;
 
 namespace DECS_Excel_Add_Ins
 {
+    /**
+     * @brief Custom form to show processing status.
+     */
     public partial class StatusForm : Form
     {
         private int count;
@@ -26,6 +29,11 @@ namespace DECS_Excel_Add_Ins
             System.Reflection.MethodBase.GetCurrentMethod().DeclaringType
         );
 
+        /// <summary>
+        /// Constructor
+        /// </summary>
+        /// <param name="_numRepetitions">int: How many rows will we process?</param>
+        /// <param name="parentStopAction">Action: What to do if user presses "Stop" button?</param>
         public StatusForm(int _numRepetitions, Action parentStopAction)
         {
             InitializeComponent();
@@ -37,6 +45,10 @@ namespace DECS_Excel_Add_Ins
             stopWatch.Start();
         }
 
+        /// <summary>
+        /// Resets status, resets stopwatch.
+        /// </summary>
+        /// <param name="_numRepetitions"></param>
         internal void Reset(int _numRepetitions)
         {
             count = 0;
@@ -45,6 +57,10 @@ namespace DECS_Excel_Add_Ins
             stopWatch.Start();
         }
 
+        /// <summary>
+        /// Show we've finished processing one row.
+        /// </summary>
+        /// <param name="increment">int (default = 1)</param>
         internal void UpdateCount(int increment = 1)
         {
             count += increment;
@@ -60,6 +76,10 @@ namespace DECS_Excel_Add_Ins
             UpdatePredictedCompletion(stopWatch.GetEta(count, numRepetitions));
         }
 
+        /// <summary>
+        /// Update the displayed predicted completion time.
+        /// </summary>
+        /// <param name="timeRemaining">TimeSpan object</param>
         private void UpdatePredictedCompletion(TimeSpan timeRemaining)
         {
             string predictedCompletion =
@@ -67,6 +87,10 @@ namespace DECS_Excel_Add_Ins
             predictedCompletionLabel.Text = predictedCompletion;
         }
 
+        /// <summary>
+        /// Update the displayed percent progress.
+        /// </summary>
+        /// <param name="percentage">int</param>
         private void UpdateProgressBar(int percentage)
         {
             if (progressBar.InvokeRequired)
@@ -85,6 +109,10 @@ namespace DECS_Excel_Add_Ins
             Application.DoEvents();
         }
 
+        /// <summary>
+        /// Display what processing step we're on.
+        /// </summary>
+        /// <param name="text"></param>
         internal void UpdateProgressBarLabel(string text)
         {
             if (progressBarLabel.InvokeRequired)
@@ -103,6 +131,10 @@ namespace DECS_Excel_Add_Ins
             Application.DoEvents();
         }
 
+        /// <summary>
+        /// Display what processing step we're on.
+        /// </summary>
+        /// <param name="text"></param>
         internal void UpdateStatusLabel(string text)
         {
             if (statusLabel.InvokeRequired)
@@ -121,6 +153,11 @@ namespace DECS_Excel_Add_Ins
             Application.DoEvents();
         }
 
+        /// <summary>
+        /// Callback for when user pushes "Stop" button. Passes the action to our calling class.
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void processingStopButton_Click(object sender, EventArgs e)
         {
             log.Debug("Stop ordered.");

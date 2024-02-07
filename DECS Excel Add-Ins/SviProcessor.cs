@@ -90,14 +90,14 @@ namespace DECS_Excel_Add_Ins
 
         /// <summary>
         /// Scans the worksheet:
-        /// -# Finds the address column (or the zip column, if address not found),
+        /// - Finds the address column (or the zip column, if address not found),
         ///    either using the selected column or finding it by name.
-        /// -# Reads data file SVI_2020_US.csv & populates a dictionary mapping census tract # to SVI values.
-        /// -# Uses online geocode service to retrieve the census tract for each address.
-        /// -# Looks up the SVI values from the tract dictionary.
+        /// - Reads data file SVI_2020_US.csv & populates a dictionary mapping census tract # to SVI values.
+        /// - Uses online geocode service to retrieve the census tract for each address.
+        /// - Looks up the SVI values from the tract dictionary.
         /// <summary>
         /// <param name="worksheet">Reference to the ActiveSheet.</param>
-        /// <returns>none</returns>
+        
         internal void Scan(Worksheet worksheet)
         {
             // We'll use this in a lot of places, so let's just look it up once.

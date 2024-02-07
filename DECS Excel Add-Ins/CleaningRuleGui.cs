@@ -11,7 +11,7 @@ using log4net;
 
 namespace DECS_Excel_Add_Ins
 {
-    /*
+    /**
      * @brief Specific type of @ RuleGui--representing a data cleaning rule.
      */
     internal class CleaningRuleGui : RuleGui
@@ -58,7 +58,6 @@ namespace DECS_Excel_Add_Ins
         /// Lets an external class assign this object's @c parentDeleteAction property.
         /// </summary>
         /// <param name="deleteAction">Action</param>
-        /// <returns>void</returns>
         public void AssignExternalDelete(Action<RuleGui> deleteAction)
         {
             parentDeleteAction = deleteAction;
@@ -68,7 +67,6 @@ namespace DECS_Excel_Add_Ins
         /// Lets an external class assign this object's @c parentRuleChangedAction property.
         /// </summary>
         /// <param name="ruleChangedAction">Action</param>
-        /// <returns>void</returns>
         public void AssignExternalRuleChanged(Action ruleChangedAction)
         {
             parentRuleChangedAction = ruleChangedAction;
@@ -80,7 +78,6 @@ namespace DECS_Excel_Add_Ins
         /// </summary>
         /// <param name="sender">Whatever object trigged this callback.</param>
         /// <param name="e">The EventArgs that accompanied this callback.</param>
-        /// <returns>void</returns>
         private void cleaningRulesDisplayNameTextBox_TextChanged(object sender, EventArgs e)
         {
             if (!textChangedCallbackEnabled)
@@ -99,7 +96,6 @@ namespace DECS_Excel_Add_Ins
         /// </summary>
         /// <param name="sender">Whatever object trigged this callback.</param>
         /// <param name="e">The EventArgs that accompanied this callback.</param>
-        /// <returns>void</returns>
         private void cleaningRulesPatternTextBox_TextChanged(object sender, EventArgs e)
         {
             if (!textChangedCallbackEnabled)
@@ -136,7 +132,6 @@ namespace DECS_Excel_Add_Ins
         /// </summary>
         /// <param name="sender">Whatever object trigged this callback.</param>
         /// <param name="e">The EventArgs that accompanied this callback.</param>
-        /// <returns>void</returns>
         private void cleaningRulesReplaceTextBox_TextChanged(object sender, EventArgs e)
         {
             if (!textChangedCallbackEnabled)
@@ -169,7 +164,6 @@ namespace DECS_Excel_Add_Ins
         /// <summary>
         /// Clears the GUI.
         /// </summary>
-        /// <returns>void</returns>
         public override void Clear()
         {
             textChangedCallbackEnabled = false;
@@ -185,7 +179,7 @@ namespace DECS_Excel_Add_Ins
         /// we'll pass the delete action along to the DefineRules class to tell it to bump the cleaning Add button upwards.
         /// </summary>
         /// <param name="ruleGui">Our parent object</param>
-        /// <returns>void</returns>
+        
         protected void DeleteRule(RuleGui ruleGui)
         {
             config.DeleteCleaningRule(index: base.index);
@@ -196,7 +190,7 @@ namespace DECS_Excel_Add_Ins
         /// Populate this GUI with a @c CleaningRule object.
         /// </summary>
         /// <param name="rule">A @c CleaningRule object to be visualized</param>
-        /// <returns>void</returns>
+        
         public void Populate(CleaningRule rule)
         {
             if (rule == null)

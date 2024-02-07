@@ -11,7 +11,9 @@ using log4net;
 
 namespace DECS_Excel_Add_Ins
 {
-    // Defines a single replacement rule.
+    /**
+     * @brief Defines a single replacement rule.
+     */
     public class CleaningRule
     {
         public string displayName { get; set; }
@@ -30,6 +32,9 @@ namespace DECS_Excel_Add_Ins
         }
     }
 
+    /**
+     * @brief Defines a single date conversion rule.
+     */
     public class DateConversionRule
     {
         public bool enabled { get; set; }
@@ -42,7 +47,9 @@ namespace DECS_Excel_Add_Ins
         }
     }
 
-    //  Defines a single extraction rule.
+    /**
+     * @brief Defines a single extraction rule.
+     */
     public class ExtractRule
     {
         public string displayName { get; set; }
@@ -61,7 +68,9 @@ namespace DECS_Excel_Add_Ins
         }
     }
 
-    // Defines the way the current workbook & sheet should be parsed.
+    /**
+     * @brief Defines the way the current workbook & sheet should be parsed.
+     */
     public class NotesConfig
     {
         public List<CleaningRule> CleaningRules { get; set; }
@@ -77,7 +86,6 @@ namespace DECS_Excel_Add_Ins
             System.Reflection.MethodBase.GetCurrentMethod().DeclaringType
         );
 
-        // Constructor
         internal NotesConfig()
         {
             log.Debug("Instantiating a NotesConfig object.");
@@ -87,16 +95,30 @@ namespace DECS_Excel_Add_Ins
             ExtractRules = new List<ExtractRule>();
         }
 
+        /// <summary>
+        /// Adds a new blank @c CleaningRule to the list.
+        /// </summary>
+        
         internal void AddCleaningRule()
         {
             CleaningRules.Add(new CleaningRule());
         }
 
+        /// <summary>
+        /// Adds a new blank @c ExtractRule to the list.
+        /// </summary>
+        
         internal void AddExtractRule()
         {
             ExtractRules.Add(new ExtractRule());
         }
 
+        /// <summary>
+        /// Changes the @c .displayName property of the Nth @c CleaningRule.
+        /// </summary>
+        /// <param name="index">number of the @c CleaningRule</param>
+        /// <param name="displayName">Rule's new name</param>
+        
         internal void ChangeCleaningRuleDisplayName(int index, string displayName)
         {
             if (CleaningRules.Count - 1 >= index)
@@ -105,6 +127,12 @@ namespace DECS_Excel_Add_Ins
             }
         }
 
+        /// <summary>
+        /// Changes the @c .pattern property of the Nth @c CleaningRule.
+        /// </summary>
+        /// <param name="index">number of the @c CleaningRule</param>
+        /// <param name="pattern">Rule's new pattern</param>
+        
         internal void ChangeCleaningRulePattern(int index, string pattern)
         {
             if (CleaningRules.Count - 1 >= index)
@@ -113,6 +141,12 @@ namespace DECS_Excel_Add_Ins
             }
         }
 
+        /// <summary>
+        /// Changes the @c .replace property of the Nth @c CleaningRule.
+        /// </summary>
+        /// <param name="index">number of the @c CleaningRule</param>
+        /// <param name="replace">Rule's new replace string</param>
+        
         internal void ChangeCleaningRuleReplace(int index, string replace)
         {
             if (CleaningRules.Count - 1 >= index)
@@ -121,6 +155,12 @@ namespace DECS_Excel_Add_Ins
             }
         }
 
+        /// <summary>
+        /// Changes the @c .displayName property of the Nth @c ExtractRule.
+        /// </summary>
+        /// <param name="index">number of the @c ExtractRule</param>
+        /// <param name="displayName">Rule's new name</param>
+        
         internal void ChangeExtractRuleDisplayName(int index, string displayName)
         {
             if (ExtractRules.Count - 1 >= index)
@@ -129,6 +169,12 @@ namespace DECS_Excel_Add_Ins
             }
         }
 
+        /// <summary>
+        /// Changes the @c .pattern property of the Nth @c ExtractRule.
+        /// </summary>
+        /// <param name="index">number of the @c ExtractRule</param>
+        /// <param name="pattern">Rule's new pattern</param>
+        
         internal void ChangeExtractRulePattern(int index, string pattern)
         {
             if (ExtractRules.Count - 1 >= index)
@@ -137,6 +183,12 @@ namespace DECS_Excel_Add_Ins
             }
         }
 
+        /// <summary>
+        /// Changes the @c .newColumn property of the Nth @c ExtractRule.
+        /// </summary>
+        /// <param name="index">number of the @c ExtractRule</param>
+        /// <param name="newColumn">Name of new column rule will create</param>
+        
         internal void ChangeExtractRulenewColumn(int index, string newColumn)
         {
             if (ExtractRules.Count - 1 >= index)
@@ -145,6 +197,10 @@ namespace DECS_Excel_Add_Ins
             }
         }
 
+        /// <summary>
+        /// Creates dialog allowing user to select the config file storing these rules.
+        /// </summary>
+        /// <returns>string</returns>
         internal static string ChooseConfigFile()
         {
             string filePath = string.Empty;
@@ -166,6 +222,11 @@ namespace DECS_Excel_Add_Ins
             return filePath;
         }
 
+        /// <summary>
+        /// Deletes the Nth @c CleaningRule.
+        /// </summary>
+        /// <param name="index">number of the @c CleaningRule</param>
+        
         internal void DeleteCleaningRule(int index)
         {
             if (index >= 0 && index < CleaningRules.Count)
@@ -174,6 +235,11 @@ namespace DECS_Excel_Add_Ins
             }
         }
 
+        /// <summary>
+        /// Deletes the Nth @c ExtractRule.
+        /// </summary>
+        /// <param name="index">number of the @c ExtractRule</param>
+        
         internal void DeleteExtractRule(int index)
         {
             if (index >= 0 && index < ExtractRules.Count)
@@ -182,6 +248,11 @@ namespace DECS_Excel_Add_Ins
             }
         }
 
+        /// <summary>
+        /// Disables the Nth @c CleaningRule.
+        /// </summary>
+        /// <param name="index">number of the @c CleaningRule</param>
+        
         internal void DisableCleaningRule(int index)
         {
             if (index >= 0 && index < CleaningRules.Count)
@@ -190,6 +261,11 @@ namespace DECS_Excel_Add_Ins
             }
         }
 
+        /// <summary>
+        /// Disables the Nth @c ExtractRule.
+        /// </summary>
+        /// <param name="index">number of the @c ExtractRule</param>
+        
         internal void DisableExtractRule(int index)
         {
             if (index >= 0 && index < ExtractRules.Count)
@@ -198,6 +274,11 @@ namespace DECS_Excel_Add_Ins
             }
         }
 
+        /// <summary>
+        /// Enables the Nth @c CleaningRule.
+        /// </summary>
+        /// <param name="index">number of the @c CleaningRule</param>
+        
         internal void EnableCleaningRule(int index)
         {
             if (index >= 0 && index < CleaningRules.Count)
@@ -206,6 +287,11 @@ namespace DECS_Excel_Add_Ins
             }
         }
 
+        /// <summary>
+        /// Enables the Nth @c ExtractRule.
+        /// </summary>
+        /// <param name="index">number of the @c ExtractRule</param>
+        
         internal void EnableExtractRule(int index)
         {
             if (index >= 0 && index < ExtractRules.Count)
@@ -214,24 +300,41 @@ namespace DECS_Excel_Add_Ins
             }
         }
 
+        /// <summary>
+        /// Counts the @c CleaningRules considered as valid & returns @c true if > 0.
+        /// </summary>
+        /// <returns>bool</returns>
         internal bool HasCleaningRules()
         {
             List<CleaningRule> validRules = ValidCleaningRules();
             return validRules.Count > 0;
         }
 
+        /// <summary>
+        /// Returns @c true if the @c DateConversionRule is enabled & not empty.
+        /// </summary>
+        /// <returns>bool</returns>
         internal bool HasDateConversionRule()
         {
             return DateConversionRule.enabled
                 && !string.IsNullOrEmpty(DateConversionRule.desiredDateFormat);
         }
 
+        /// <summary>
+        /// Counts the @c ExtractRules considered as valid & returns @c true if > 0.
+        /// </summary>
+        /// <returns>bool</returns>
         internal bool HasExtractRules()
         {
             List<ExtractRule> validRules = ValidExtractRules();
             return validRules.Count > 0;
         }
 
+        /// <summary>
+        /// Reads the stored config file & parses it into a @c NotesConfig object.
+        /// </summary>
+        /// <param name="filePath">Full path to config file</param>
+        /// <returns>@c NotesConfig</returns>
         internal static NotesConfig ReadConfigFile(string filePath)
         {
             // Declare this outside the 'using' block so we can access it later
@@ -250,18 +353,25 @@ namespace DECS_Excel_Add_Ins
             return config;
         }
 
-        internal int NumValidCleaningRules()
-        {
-            List<CleaningRule> validRules = ValidCleaningRules();
-            return validRules.Count;
-        }
+        //internal int NumValidCleaningRules()
+        //{
+        //    List<CleaningRule> validRules = ValidCleaningRules();
+        //    return validRules.Count;
+        //}
 
-        internal int NumValidExternalRules()
-        {
-            List<ExtractRule> validRules = ValidExtractRules();
-            return validRules.Count;
-        }
+        //internal int NumValidExternalRules()
+        //{
+        //    List<ExtractRule> validRules = ValidExtractRules();
+        //    return validRules.Count;
+        //}
 
+        /// <summary>
+        /// Returns the @c CleaningRule objects in which:
+        /// -# @c .pattern is not null
+        /// -# @c .replace is not null
+        /// -# rule is enabled
+        /// </summary>
+        /// <returns>List<CleaningRule></returns>
         internal List<CleaningRule> ValidCleaningRules()
         {
             List<CleaningRule> validRules = CleaningRules
@@ -270,6 +380,13 @@ namespace DECS_Excel_Add_Ins
             return validRules;
         }
 
+        /// <summary>
+        /// Returns the @c ExtractRule objects in which:
+        /// -# @c .pattern is not null
+        /// -# @c .newColumn is not null
+        /// -# rule is enabled
+        /// </summary>
+        /// <returns>List<ExtractRule></returns>
         internal List<ExtractRule> ValidExtractRules()
         {
             List<ExtractRule> validRules = ExtractRules
@@ -278,6 +395,10 @@ namespace DECS_Excel_Add_Ins
             return validRules;
         }
 
+        /// <summary>
+        /// Runs through all @c CleaningRules & @c ExtractRules to ensure their RegExs have valid syntax.
+        /// </summary>
+        /// <returns>List<RuleValidationError></returns>
         internal List<RuleValidationError> ValidateRules()
         {
             List<RuleValidationError> errorReports = new List<RuleValidationError>();

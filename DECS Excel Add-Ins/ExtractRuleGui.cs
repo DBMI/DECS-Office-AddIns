@@ -23,8 +23,8 @@ namespace DECS_Excel_Add_Ins
             System.Reflection.MethodBase.GetCurrentMethod().DeclaringType
         );
 
-        /*
-         * @brief A version of @c RuleGui that's tailed for a data extraction rule.
+        /**
+         * @brief A version of @c RuleGui that's tailored for a data extraction rule.
          */
         public ExtractRuleGui(
             int x,
@@ -58,7 +58,7 @@ namespace DECS_Excel_Add_Ins
         /// Lets an external class assign this object's @c parentDeleteAction property.
         /// </summary>
         /// <param name="deleteAction">Action</param>
-        /// <returns>void</returns>
+        
         public void AssignExternalDelete(Action<RuleGui> deleteAction)
         {
             parentDeleteAction = deleteAction;
@@ -68,7 +68,7 @@ namespace DECS_Excel_Add_Ins
         /// Lets an external class assign this object's @c parentRuleChangedAction property.
         /// </summary>
         /// <param name="ruleChangedAction">Action</param>
-        /// <returns>void</returns>
+        
         public void AssignExternalRuleChanged(Action ruleChangedAction)
         {
             parentRuleChangedAction = ruleChangedAction;
@@ -77,7 +77,7 @@ namespace DECS_Excel_Add_Ins
         /// <summary>
         /// Clears the GUI.
         /// </summary>
-        /// <returns>void</returns>
+        
         public override void Clear()
         {
             textChangedCallbackEnabled = false;
@@ -93,7 +93,7 @@ namespace DECS_Excel_Add_Ins
         /// we'll pass the delete action along to the DefineRules class to tell it to bump the cleaning Add button upwards.
         /// </summary>
         /// <param name="ruleGui">Our parent object</param>
-        /// <returns>void</returns>
+        
         protected void DeleteRule(RuleGui ruleGui)
         {
             config.DeleteExtractRule(index: base.index);
@@ -106,7 +106,7 @@ namespace DECS_Excel_Add_Ins
         /// </summary>
         /// <param name="sender">Whatever object trigged this callback.</param>
         /// <param name="e">The EventArgs that accompanied this callback.</param>
-        /// <returns>void</returns>
+        
         private void extractRulesDisplayNameTextBox_TextChanged(object sender, EventArgs e)
         {
             if (!textChangedCallbackEnabled)
@@ -125,7 +125,7 @@ namespace DECS_Excel_Add_Ins
         /// </summary>
         /// <param name="sender">Whatever object trigged this callback.</param>
         /// <param name="e">The EventArgs that accompanied this callback.</param>
-        /// <returns>void</returns>
+        
         private void extractRulesPatternTextBox_TextChanged(object sender, EventArgs e)
         {
             if (!textChangedCallbackEnabled)
@@ -162,7 +162,7 @@ namespace DECS_Excel_Add_Ins
         /// </summary>
         /// <param name="sender">Whatever object trigged this callback.</param>
         /// <param name="e">The EventArgs that accompanied this callback.</param>
-        /// <returns>void</returns>
+        
         private void extractRulesnewColumnTextBox_TextChanged(object sender, EventArgs e)
         {
             if (!textChangedCallbackEnabled)
@@ -182,7 +182,7 @@ namespace DECS_Excel_Add_Ins
         /// Populate this GUI with a @c ExtractRule object.
         /// </summary>
         /// <param name="rule">A @c ExtractRule object to be visualized</param>
-        /// <returns>void</returns>
+        
         public void Populate(ExtractRule rule)
         {
             if (rule == null)

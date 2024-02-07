@@ -7,24 +7,23 @@ using System.Threading.Tasks;
 
 namespace DECS_Excel_Add_Ins
 {
-    // https://stackoverflow.com/a/6822458/18749636
+    /**
+     * @brief Computes estimated time of completion.
+     * https://stackoverflow.com/a/6822458/18749636
+     */
     static class StopWatchUtils
     {
         /// <summary>
-        /// Gets estimated time on compleation.
+        /// Computes estimated time of completion.
         /// </summary>
-        /// <param name="sw"></param>
-        /// <param name="counter"></param>
-        /// <param name="counterGoal"></param>
-        /// <returns></returns>
+        /// <param name="sw">@c Stopwatch object</param>
+        /// <param name="counter">int Number of interations completed</param>
+        /// <param name="counterGoal">int Number of interations to be performed</param>
+        /// <returns>@c TimeSpan</returns>
         public static TimeSpan GetEta(this Stopwatch sw, int counter, int counterGoal)
         {
-            /* this is based on:
+            /* 
              * (TimeTaken / linesProcessed) * linesLeft=timeLeft
-             * so we have
-             * (10/100) * 200 = 20 Seconds now 10 seconds go past
-             * (20/100) * 200 = 40 Seconds left now 10 more seconds and we process 100 more lines
-             * (30/200) * 100 = 15 Seconds and now we all see why the copy file dialog jumps from 3 hours to 30 minutes :-)
              *
              * pulled from http://stackoverflow.com/questions/473355/calculate-time-remaining/473369#473369
              */

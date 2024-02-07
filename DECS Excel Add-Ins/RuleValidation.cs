@@ -7,6 +7,9 @@ using System.Web.UI;
 
 namespace DECS_Excel_Add_Ins
 {
+    /// <summary>
+    /// Enum to capture whether a GUI component holds @c NewColumn, @c Pattern or @c Replace definitions.
+    /// </summary>
     public enum RuleComponent
     {
         NewColumn,
@@ -14,18 +17,27 @@ namespace DECS_Excel_Add_Ins
         Replace
     }
 
+    /// <summary>
+    /// What's the purpose of this rule?
+    /// </summary>
     public enum RuleType
     {
         Cleaning,
         Extract
     }
 
-    // Describes result of attempting to form a RegEx.
+    /**
+     * @brief Describes result of attempting to form a RegEx.
+     */
     public class RuleValidationResult
     {
         private bool valid = true;
         private string message = string.Empty;
 
+        /// <summary>
+        /// Constructor: If @c ArgumentException is not null, then @c valid property is set to false and @c message holds the exception message.
+        /// </summary>
+        /// <param name="ex">ArgumentException object</param>
         public RuleValidationResult(ArgumentException ex = null)
         {
             if (ex != null)
@@ -35,18 +47,28 @@ namespace DECS_Excel_Add_Ins
             }
         }
 
+        /// <summary>
+        /// What's the result?
+        /// </summary>
+        /// <returns></returns>
         public override string ToString()
         {
             return message;
         }
 
+        /// <summary>
+        /// Is the rule valid?
+        /// </summary>
+        /// <returns></returns>
         internal bool Valid()
         {
             return valid;
         }
     }
 
-    // Describes just why & where a rule has been found invalid.
+    /**
+     * @brief Describes just why & where a rule has been found invalid.
+     */ 
     public class RuleValidationError
     {
         private RuleType ruleType;

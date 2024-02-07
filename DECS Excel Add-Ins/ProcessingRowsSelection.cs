@@ -7,6 +7,12 @@ using Excel = Microsoft.Office.Interop.Excel;
 
 namespace DECS_Excel_Add_Ins
 {
+    /**
+     * @brief Holds information from the user's selection of which rows to process:
+     * - bool @c allRows Are we doing all rows? (Or just a selection?)
+     * - Range @c rows Range including all the rows to process.
+     * - string @c reason Code-generated explanation like "Selected row outside data area."
+     */
     internal class ProcessingRowsSelection
     {
         private bool allRows;
@@ -20,29 +26,45 @@ namespace DECS_Excel_Add_Ins
             allRows = _allRows;
         }
 
+        /// <summary>
+        /// Allows external code to ask if we're processing all rows.
+        /// </summary>
+        /// <returns>bool</returns>
         internal bool AllRows()
         {
             return allRows;
         }
 
+        /// <summary>
+        /// Allows external code to ask reason for processing decision.
+        /// </summary>
+        /// <returns>bool</returns>
         internal string GetReason()
         {
             return reason;
         }
 
+        /// <summary>
+        /// Allows external code to get the Range of rows to process.
+        /// </summary>
+        /// <returns>bool</returns>
         internal Excel.Range GetRows()
         {
             return rows;
         }
 
+        /// <summary>
+        /// Allows external code to ask the number of rows to process.
+        /// </summary>
+        /// <returns>bool</returns>
         internal int NumRows()
         {
             return rows.Count;
         }
 
-        public override string ToString()
-        {
-            return rows.Count.ToString() + " rows selected.";
-        }
+        //public override string ToString()
+        //{
+        //    return rows.Count.ToString() + " rows selected.";
+        //}
     }
 }

@@ -5,7 +5,7 @@ using System.Web.UI;
 
 namespace DECS_Excel_Add_Ins
 {
-    /*
+    /**
      * @brief Used to deserialize JSON returned from US Census Bureau geocoding service.
      */
     public class CensusData
@@ -34,7 +34,7 @@ namespace DECS_Excel_Add_Ins
         }
     }
 
-    /*
+    /**
      * @brief First-level class to deserialize JSON returned from US Census Bureau geocoding service.
      */
     public class Result
@@ -43,7 +43,7 @@ namespace DECS_Excel_Add_Ins
         public Addressmatch[] addressMatches { get; set; }
     }
 
-    /*
+    /**
      * @brief Second-level class to deserialize JSON returned from US Census Bureau geocoding service.
      */
     public class Input
@@ -51,7 +51,7 @@ namespace DECS_Excel_Add_Ins
         public Address address { get; set; }
     }
 
-    /*
+    /**
      * @brief Third-level class to deserialize JSON returned from US Census Bureau geocoding service.
      */
     public class Address
@@ -59,7 +59,7 @@ namespace DECS_Excel_Add_Ins
         public string address { get; set; }
     }
 
-    /*
+    /**
      * @brief Second-level class to deserialize JSON returned from US Census Bureau geocoding service.
      */
     public class Addressmatch
@@ -68,7 +68,7 @@ namespace DECS_Excel_Add_Ins
         public string matchedAddress { get; set; }
     }
 
-    /*
+    /**
      * @brief Third-level class to deserialize JSON returned from US Census Bureau geocoding service.
      */
     public class Geographies
@@ -77,7 +77,7 @@ namespace DECS_Excel_Add_Ins
         public CensusTract[] CensusTracts { get; set; }
     }
 
-    /*
+    /**
      * @brief Fourth-level class to deserialize JSON returned from US Census Bureau geocoding service.
      */
     public class CensusTract

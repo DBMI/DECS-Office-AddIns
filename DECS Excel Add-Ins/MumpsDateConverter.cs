@@ -11,10 +11,17 @@ using System.Globalization;
 
 namespace DECS_Excel_Add_Ins
 {
+    /**
+     * @brief Converts <a href="https://en.wikipedia.org/wiki/MUMPS">MUMPS dates</a> used in Epic to the Excel standard.
+     */
     internal class MumpsDateConverter
     {
         internal MumpsDateConverter() { }
 
+        /// <summary>
+        /// Converts dates in each user-selected column.
+        /// </summary>
+        /// <param name="worksheet">Active worksheet</param>        
         internal void ConvertColumn(Worksheet worksheet)
         {
             List<int> selectedCols = GetSelectedColumns(worksheet);
@@ -24,10 +31,17 @@ namespace DECS_Excel_Add_Ins
                 ConvertThisColumn(col, worksheet);
             }
         }
+
+        /// <summary>
+        /// Converts dates in this column.
+        /// </summary>
+        /// <param name="colNum">int number of column to convert</param>
+        /// <param name="worksheet">Active worksheet</param>        
         private void ConvertThisColumn(int colNum, Worksheet sheet)
         {
             Range origCol = sheet.Columns[colNum];
-            Range newCol = AddColumn(origCol);
+            string origName = origCol.Cells[1].Value2;
+            Range newCol = Utilities.InsertNewColumn(origCol, origName + " converted");
 
             Range allRows = Utilities.AllAvailableRows(sheet);
 
@@ -48,28 +62,12 @@ namespace DECS_Excel_Add_Ins
             newCol.EntireColumn.NumberFormat = CultureInfo.InvariantCulture.DateTimeFormat.ShortDatePattern;
             origCol.Hidden = true;
         }
-        internal Range AddColumn(Range col)
-        {
-            string origName = col.Cells[1].Value2;
-            col.EntireColumn.Insert();
 
-            Worksheet worksheet = col.Worksheet;
-            Range newCol = (Range)worksheet.Columns[col.Column - 1];
-            newCol.Cells[1].Value2 = origName + " converted";
-            return newCol;
-        }
-
-        internal Range GetSelectedColumn(Worksheet worksheet)
-        {
-            Range rng = (Range)worksheet.Application.ActiveCell;
-
-            // Get the selected columns.
-            int column = rng.Column;
-
-            Range origCol = (Range)worksheet.Columns[column];
-            return origCol;
-        }
-
+        /// <summary>
+        /// Gets the numbers of the selected columns.
+        /// </summary>
+        /// <param name="worksheet">Active worksheet</param>
+        /// <returns>List<int></returns>
         internal List<int> GetSelectedColumns(Worksheet worksheet)
         {
             List<int> columns = new List<int>();

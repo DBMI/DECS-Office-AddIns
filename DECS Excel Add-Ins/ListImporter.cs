@@ -15,6 +15,9 @@ using Excel = Microsoft.Office.Interop.Excel;
 
 namespace DECS_Excel_Add_Ins
 {
+    /**
+     * @brief Some information needs to be encoded in SQL as a date, the rest can use varchar.
+    */
     // https://stackoverflow.com/a/479417/18749636
     internal enum DataType
     {
@@ -26,6 +29,9 @@ namespace DECS_Excel_Add_Ins
         Varchar
     }
 
+    /**
+     * @brief Handles importing an Excel column of MRN, ICD codes, etc. into SQL format.
+     */
     internal class ListImporter
     {
         private Application application;
@@ -48,6 +54,10 @@ namespace DECS_Excel_Add_Ins
         private const string SEGMENT_START_I = "INSERT INTO #DATA_LIST (";
         private const string SEGMENT_START_II = ")\r\nVALUES\r\n";
 
+        /// <summary>
+        /// Constructor
+        /// </summary>
+        
         internal ListImporter()
         {
             application = Globals.ThisAddIn.Application;
@@ -57,7 +67,11 @@ namespace DECS_Excel_Add_Ins
             supportedDataTypes.Add("Date", DataType.Date);
         }
 
-        // Turn the column name (in row 1) into a enum data type.
+        /// <summary>
+        /// Turn the column name (in row 1) into a enum data type.
+        /// </summary>
+        /// <param name="col">Range of column to search</param>
+        /// <returns>DataType</returns>
         private DataType DetermineDataType(Range col)
         {
             DataType dataType = DataType.Varchar;
@@ -77,7 +91,12 @@ namespace DECS_Excel_Add_Ins
             return dataType;
         }
 
-        // Build a list of the cell contents for this row.
+        /// <summary>
+        /// Build a list of the cell contents across this row.
+        /// </summary>
+        /// <param name="columns">List<Range> of columns to search</param>
+        /// <param name="rowNum">int row number to search</param>
+        /// <returns>List<string></returns>
         private List<string> ExtractRow(List<Range> columns, int rowNum)
         {
             List<string> rowContents = new List<string>();
@@ -139,7 +158,11 @@ namespace DECS_Excel_Add_Ins
             return rowContents;
         }
 
-        // Based on the column name (in row 1) is this a special "index" column?
+        /// <summary>
+        /// Based on the column name (in row 1) is this a special "index" column?
+        /// </summary>
+        /// <param name="col">Range of column to search</param>
+        /// <returns>bool</returns>
         private bool IsIndexColumn(Range col)
         {
             bool isIndexColumn = false;
@@ -156,6 +179,11 @@ namespace DECS_Excel_Add_Ins
             return isIndexColumn;
         }
 
+        /// <summary>
+        /// Figure out which DataType to use based on the column's name.
+        /// </summary>
+        /// <param name="colName">string column name</param>
+        /// <returns>DataType</returns>
         private DataType NameToDataType(string colName)
         {
             DataType dataType = DataType.Varchar;
@@ -173,7 +201,11 @@ namespace DECS_Excel_Add_Ins
             return dataType;
         }
 
-        // Initializes the SQL INSERT INTO statement.
+        /// <summary>
+        /// Initializes the SQL INSERT INTO statement.
+        /// </summary>
+        /// <param name="worksheet">Active worksheet</param>
+        /// <returns>List<Range>, string</returns>
         private (List<Range> columns, string segmentStart) PrepSegmentStart(Worksheet worksheet)
         {
             string segmentStart = SEGMENT_START_I;
@@ -199,7 +231,11 @@ namespace DECS_Excel_Add_Ins
             return (selectedColumns, segmentStart);
         }
 
-        // Scans the worksheet & creates the SQL file that lists the patient data to be imported.
+        /// <summary>
+        /// Scans the worksheet & creates the SQL file that lists the patient data to be imported.
+        /// </summary>
+        /// <param name="worksheet">Active worksheet</param>
+        
         internal void Scan(Worksheet worksheet)
         {
             // We'll use this in a lot of places, so let's just look it up once.
@@ -258,7 +294,11 @@ namespace DECS_Excel_Add_Ins
             WriteMainHeader(workbookFilename);
         }
 
-        // Writes the part of the main SQL script that creates a temp table from the patient list file.
+        /// <summary>
+        /// Writes the part of the main SQL script that creates a temp table from the patient list file.
+        /// </summary>
+        /// <param name="filename">Name of output file</param>
+        
         private void WriteMainHeader(string filename)
         {
             // Build list of variables & types like "PAT_ID varchar, PROCEDURE_DATE date"

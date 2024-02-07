@@ -21,7 +21,7 @@ using ToolTip = System.Windows.Forms.ToolTip;
 
 namespace DECS_Excel_Add_Ins
 {
-    /*
+    /**
      * @brief Useful tools
      */
     internal class Utilities
@@ -43,7 +43,7 @@ namespace DECS_Excel_Add_Ins
         /// Clears the "Invalid" highlighting & MouseOver eventhandler from a textbox.
         /// </summary>
         /// <param name="sheet">ActiveWorksheet.</param>
-        /// <returns>void</returns>
+        
         internal static void ClearRegexInvalid(TextBox textBox)
         {
             if (textBox == null)
@@ -79,42 +79,10 @@ namespace DECS_Excel_Add_Ins
             return convertedContents;
         }
 
-        ///// <summary>
-        ///// Counts the number of cells containing data.
-        ///// </summary>
-        ///// <param name="rng">Range over which to count</param>
-        ///// <param name="lastRow">int number of last row with data</param>
-        ///// <returns>string</returns>
-        //internal static int CountCellsWithData(Range rng, int lastRow)
-        //{
-        //    int numCellsWithData = 0;
-        //    Range thisCell;
-
-        //    for (int rowNumber = 1; rowNumber <= lastRow; rowNumber++)
-        //    {
-        //        thisCell = rng.Cells[rowNumber];
-        //        string cell_contents;
-
-        //        try
-        //        {
-        //            cell_contents = thisCell.Value2.ToString();
-        //        }
-        //        catch
-        //        {
-        //            // There's nothing in this cell.
-        //            numCellsWithData = rowNumber;
-        //            break;
-        //        }
-        //    }
-
-        //    return numCellsWithData;
-        //}
-
         /// <summary>
         /// Removes event handlers from a text box.
         /// </summary>
-        /// <param name="textBox">Handle to TextBox object</param>
-        /// <returns>void</returns>
+        /// <param name="textBox">Handle to TextBox object</param>        
         public static void DetachEvents(TextBox textBox)
         {
             object objNew = textBox
@@ -223,7 +191,7 @@ namespace DECS_Excel_Add_Ins
         /// Pulls all the column names from the first row of a worksheet.
         /// </summary>
         /// <param name="sheet">Active Worksheet.</param>
-        /// <returns>List of strings</returns>
+        /// <returns>List<string></returns>
         internal static List<string> GetColumnNames(Worksheet sheet)
         {
             List<string> names = new List<string>();
@@ -245,8 +213,8 @@ namespace DECS_Excel_Add_Ins
         /// <summary>
         /// Pulls all the column names from a worksheet.
         /// </summary>
-        /// <param name="selectedColumns">List of Range objects</param>
-        /// <returns>List of strings</returns>
+        /// <param name="selectedColumns">List<Range></param>
+        /// <returns>List<string></returns>
         internal static List<string> GetColumnNames(List<Range> selectedColumns)
         {
             List<string> names = new List<string>();
@@ -325,7 +293,7 @@ namespace DECS_Excel_Add_Ins
         /// </summary>
         /// <param name="application">Excel application</param>
         /// <param name="lastRow">Number of last row with data</param>
-        /// <returns>List of Range objects</returns>
+        /// <returns>List<Range></returns>
         internal static List<Range> GetSelectedCols(Microsoft.Office.Interop.Excel.Application application, int lastRow)
         {
             Range rng = (Range) application.Selection;
@@ -429,7 +397,7 @@ namespace DECS_Excel_Add_Ins
         /// </summary>
         /// <param name="textBox">TextBox object.</param>
         /// <param name="message">String used to fill the ToolTip.</param>
-        /// <returns>void</returns>
+        
         internal static void MarkRegexInvalid(TextBox textBox, string message)
         {
             if (textBox == null)
@@ -523,7 +491,7 @@ namespace DECS_Excel_Add_Ins
         /// Creates MessageBox letting user know we didn't find the named column.
         /// </summary>
         /// <param name="columnName">Name of desired column.</param>
-        /// <returns>void</returns>
+        
         internal static void WarnColumnNotFound(string columnName)
         {
             string message = "Column '" + columnName + "' not found.";
