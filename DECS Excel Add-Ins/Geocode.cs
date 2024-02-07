@@ -13,6 +13,9 @@ using System.Net;
 
 namespace DECS_Excel_Add_Ins
 {
+    /**
+     * @brief Connects to US Census Bureau's online geocoding service, queries for census info & parses the output.
+     */
     internal class Geocode
     {
         private const string URL = @"https://geocoding.geo.census.gov/geocoder/geographies/onelineaddress?address=";
@@ -23,6 +26,11 @@ namespace DECS_Excel_Add_Ins
             System.Reflection.MethodBase.GetCurrentMethod().DeclaringType
         );
 
+        /// <summary>
+        /// Sends HTTP query containing address & converts response to a @c CensusData object.
+        /// </summary>
+        /// <param name="address">Address to query</param>
+        
         internal CensusData Convert(string address)
         {
             ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12 | SecurityProtocolType.Tls11 | SecurityProtocolType.Tls;
@@ -44,7 +52,7 @@ namespace DECS_Excel_Add_Ins
                     response.EnsureSuccessStatusCode();
                     string responseBody = response.Content.ReadAsStringAsync().Result;
 
-                    // Convert "Census Tracts" to "CensusTracts" for parsing into CensusData class.
+                    // Convert "Census Tracts" to "CensusTracts" (without space) for parsing into CensusData class.
                     responseBody = responseBody.Replace("Census Tracts", "CensusTracts");
 
                     var serializer = new JavaScriptSerializer();

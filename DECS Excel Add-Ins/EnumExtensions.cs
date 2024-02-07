@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace DECS_Excel_Add_Ins
 {
-    /*
+    /**
      * @brief Use fancy @c Enum descriptions.
      */
     internal static class EnumExtensions

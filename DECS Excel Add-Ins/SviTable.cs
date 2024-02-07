@@ -115,7 +115,7 @@ namespace DECS_Excel_Add_Ins
         /// <summary>
         /// Returns the average rank across all the census tracts provided.
         /// <summary>
-        /// <param name="tractList">List of ulong census tract numbers.</param>
+        /// <param name="tractList">List<ulong> census tract numbers.</param>
         /// <returns>double</returns>
         internal double rank(List<ulong> tractList)
         {
@@ -143,7 +143,7 @@ namespace DECS_Excel_Add_Ins
         /// <summary>
         /// Returns the average raw score across all the census tracts provided.
         /// <summary>
-        /// <param name="tractList">List of ulong census tract numbers.</param>
+        /// <param name="tractList">List<ulong> census tract numbers.</param>
         /// <returns>double</returns>
         internal double raw(List<ulong> tractList)
         {

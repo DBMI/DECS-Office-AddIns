@@ -19,7 +19,7 @@ using log4net;
 
 namespace DECS_Excel_Add_Ins
 {
-    /*
+    /**
      * @brief Form to allow user to define a text-parsing rule.
      */
     internal partial class DefineRulesForm : Form
@@ -68,7 +68,7 @@ namespace DECS_Excel_Add_Ins
         /// </summary>
         /// <param name="rule">CleaningRule object</param>
         /// <param name="updateConfig">Bool: Should we update the stored config file? (default: true)</param>
-        /// <returns>void</returns>
+        
         private void AddCleaningRule(CleaningRule rule = null, bool updateConfig = true)
         {
             log.Debug("Adding cleaning rule.");
@@ -112,7 +112,7 @@ namespace DECS_Excel_Add_Ins
         /// </summary>
         /// <param name="rule">ExtractRule object</param>
         /// <param name="updateConfig">Bool: Should we update the stored config file? (default: true)</param>
-        /// <returns>void</returns>
+        
         private void AddExtractRule(ExtractRule rule = null, bool updateConfig = true)
         {
             log.Debug("Adding extraction rule.");
@@ -152,9 +152,9 @@ namespace DECS_Excel_Add_Ins
         }
 
         /// <summary>
-        /// List all the rules in this GUI.
+        /// List<ulong>all the rules in this GUI.
         /// </summary>
-        /// <returns>List of RuleGui objects</returns>
+        /// <returns>List<RuleGui></returns>
         private List<RuleGui> AllRules()
         {
             List<RuleGui> rules = CleaningRules();
@@ -163,9 +163,9 @@ namespace DECS_Excel_Add_Ins
         }
 
         /// <summary>
-        /// List all the Cleaning rules in this GUI.
+        /// List<ulong>all the Cleaning rules in this GUI.
         /// </summary>
-        /// <returns>List of RuleGui objects</returns>
+        /// <returns>List<RuleGui></returns>
         // https://stackoverflow.com/a/12127025/18749636
         private List<RuleGui> CleaningRules()
         {
@@ -181,7 +181,7 @@ namespace DECS_Excel_Add_Ins
         /// </summary>
         /// <param name="sender">Whatever object trigged this callback.</param>
         /// <param name="e">The EventArgs that accompanied this callback.</param>
-        /// <returns>void</returns>
+        
         private void cleaningRulesAddButton_Click(object sender, EventArgs e)
         {
             AddCleaningRule();
@@ -192,7 +192,7 @@ namespace DECS_Excel_Add_Ins
         /// </summary>
         /// <param name="sender">Whatever object trigged this callback.</param>
         /// <param name="e">The EventArgs that accompanied this callback.</param>
-        /// <returns>void</returns>
+        
         private void clearButton_Click(object sender, EventArgs e)
         {
             DeleteAllRules();
@@ -213,7 +213,7 @@ namespace DECS_Excel_Add_Ins
         /// </summary>
         /// <param name="sender">Whatever object trigged this callback.</param>
         /// <param name="e">The EventArgs that accompanied this callback.</param>
-        /// <returns>void</returns>
+        
         private void dateConversionEnabledCheckBox_Click(object sender, EventArgs e)
         {
             CheckBox checkBox = sender as CheckBox;
@@ -227,7 +227,7 @@ namespace DECS_Excel_Add_Ins
         /// </summary>
         /// <param name="sender">Whatever object trigged this callback.</param>
         /// <param name="e">The EventArgs that accompanied this callback.</param>
-        /// <returns>void</returns>
+        
         private void dateFormatsListBox_SelectedIndexChanged(object sender, EventArgs e)
         {
             ListBox listBox = sender as ListBox;
@@ -238,7 +238,7 @@ namespace DECS_Excel_Add_Ins
         /// <summary>
         /// Deletes all the rules in the GUI.
         /// </summary>
-        /// <returns>void</returns>
+        
         private void DeleteAllRules()
         {
             List<RuleGui> rules = AllRules();
@@ -252,7 +252,7 @@ namespace DECS_Excel_Add_Ins
         /// Deletes one @c CleaningRule from the GUI.
         /// </summary>
         /// <param name="cleaningRuleGui">CleaningRule that's a part of this rule set.</param>
-        /// <returns>void</returns>
+        
         internal void DeleteCleaningRule(RuleGui cleaningRuleGui)
         {
             // Remove this RuleGui from the controls.
@@ -273,7 +273,7 @@ namespace DECS_Excel_Add_Ins
         /// Deletes one @c ExtractRule from the GUI.
         /// </summary>
         /// <param name="extractRuleGui">ExtractRule that's a part of this rule set.</param>
-        /// <returns>void</returns>
+        
         internal void DeleteExtractRule(RuleGui extractRuleGui)
         {
             // Remove this RuleGui from the controls.
@@ -294,7 +294,7 @@ namespace DECS_Excel_Add_Ins
         /// Disables one @c CleaningRule from the GUI.
         /// </summary>
         /// <param name="ruleGui">CleaningRule that's a part of this rule set.</param>
-        /// <returns>void</returns>
+        
         internal void DisableCleaningRule(RuleGui ruleGui)
         {
             log.Debug("Disabling cleaning rule " + ruleGui.Index().ToString() + ".");
@@ -309,7 +309,7 @@ namespace DECS_Excel_Add_Ins
         /// Disables one @c ExtractRule from the GUI.
         /// </summary>
         /// <param name="ruleGui">ExtractRule that's a part of this rule set.</param>
-        /// <returns>void</returns>
+        
         internal void DisableExtractRule(RuleGui ruleGui)
         {
             log.Debug("Disabling extract rule " + ruleGui.Index().ToString() + ".");
@@ -325,7 +325,7 @@ namespace DECS_Excel_Add_Ins
         /// </summary>
         /// <param name="sender">Whatever object trigged this callback.</param>
         /// <param name="e">The EventArgs that accompanied this callback.</param>
-        /// <returns>void</returns>
+        
         private void discardButton_Click(object sender, EventArgs e)
         {
             Close();
@@ -335,7 +335,7 @@ namespace DECS_Excel_Add_Ins
         /// Enables one @c CleaningRule from the GUI.
         /// </summary>
         /// <param name="ruleGui">CleaningRule that's a part of this rule set.</param>
-        /// <returns>void</returns>
+        
         internal void EnableCleaningRule(RuleGui ruleGui)
         {
             log.Debug("Enabling cleaning rule " + ruleGui.Index().ToString() + ".");
@@ -350,7 +350,7 @@ namespace DECS_Excel_Add_Ins
         /// Enables one @c ExtractRule from the GUI.
         /// </summary>
         /// <param name="ruleGui">ExtractRule that's a part of this rule set.</param>
-        /// <returns>void</returns>
+        
         internal void EnableExtractRule(RuleGui ruleGui)
         {
             log.Debug("Enabling extract rule " + ruleGui.Index().ToString() + ".");
@@ -364,7 +364,7 @@ namespace DECS_Excel_Add_Ins
         /// <summary>
         /// Assembles the list of RuleGui objects in the GUI.
         /// </summary>
-        /// <returns>List of RuleGui objects</returns>
+        /// <returns>List<RuleGui></returns>
         private List<RuleGui> ExtractRules()
         {
             List<Panel> extractRuleGuis = extractRulesPanel.Controls.OfType<Panel>().ToList();
@@ -379,7 +379,7 @@ namespace DECS_Excel_Add_Ins
         /// </summary>
         /// <param name="sender">Whatever object trigged this callback.</param>
         /// <param name="e">The EventArgs that accompanied this callback.</param>
-        /// <returns>void</returns>
+        
         private void extractRulesAddButton_Click(object sender, EventArgs e)
         {
             AddExtractRule();
@@ -398,7 +398,7 @@ namespace DECS_Excel_Add_Ins
         /// </summary>
         /// <param name="sender">Whatever object trigged this callback.</param>
         /// <param name="e">The EventArgs that accompanied this callback.</param>
-        /// <returns>void</returns>
+        
         private void loadToolStripMenuItem_Click(object sender, EventArgs e)
         {
             log.Debug("Loading config file.");
@@ -462,7 +462,7 @@ namespace DECS_Excel_Add_Ins
         /// <summary>
         /// Populates the @ DateConversionRule from the stored config file.
         /// </summary>
-        /// <returns>void</returns>
+        
         private void PopulateDateConversionRule()
         {
             dateConversionEnabledCheckBox.Checked = config.DateConversionRule.enabled;
@@ -497,7 +497,7 @@ namespace DECS_Excel_Add_Ins
         /// <summary>
         /// Populates the @c DateFormatsListBox from all date formats supported by the @c DateConverter object.
         /// </summary>
-        /// <returns>void</returns>
+        
         private void PopulateDateFormatsListBox()
         {
             dateFormatsListBox.DataSource = null;
@@ -509,7 +509,7 @@ namespace DECS_Excel_Add_Ins
         /// <summary>
         /// Populates the @c SourceColumnListBox using all available column names.
         /// </summary>
-        /// <returns>void</returns>
+        
         private void PopulateSourceColumnListBox()
         {
             sourceColumnListBox.DataSource = null;
@@ -522,7 +522,7 @@ namespace DECS_Excel_Add_Ins
         /// </summary>
         /// <param name="rules">All the RuleGui objects now present</param>
         /// <param name="addButton">The addButton just pressed</param>
-        /// <returns>void</returns>
+        
         private void RearrangeControls(List<RuleGui> rules, Button addButton)
         {
             int panelY = PANEL_Y + Y_STEP;
@@ -547,7 +547,7 @@ namespace DECS_Excel_Add_Ins
         /// <summary>
         /// Rearranges the CleaningControls now in the GUI in response to request to add a new rule.
         /// </summary>
-        /// <returns>void</returns>
+        
         internal void RearrangeCleaningControls()
         {
             RearrangeControls(rules: cleaningRules, addButton: cleaningRulesAddButton);
@@ -556,7 +556,7 @@ namespace DECS_Excel_Add_Ins
         /// <summary>
         /// Rearranges the ExtractControls now in the GUI in response to request to add a new rule.
         /// </summary>
-        /// <returns>void</returns>
+        
         internal void RearrangeExtractControls()
         {
             RearrangeControls(rules: extractRules, addButton: extractRulesAddButton);
@@ -566,7 +566,7 @@ namespace DECS_Excel_Add_Ins
         /// <summary>
         /// Update the @c NotesParser using the rules' current state.
         /// </summary>
-        /// <returns>void</returns>
+        
         internal void RegisterChanges()
         {
             if (configLoading)
@@ -583,7 +583,7 @@ namespace DECS_Excel_Add_Ins
         /// </summary>
         /// <param name="sender">Whatever object trigged this callback.</param>
         /// <param name="e">The EventArgs that accompanied this callback.</param>
-        /// <returns>void</returns>
+        
         private void runButton_Click(object sender, EventArgs e)
         {
             log.Debug("Run button clicked.");
@@ -596,7 +596,7 @@ namespace DECS_Excel_Add_Ins
         /// <summary>
         /// Scrape the GUI & save the rules' current state.
         /// </summary>
-        /// <returns>void</returns>
+        
         private void Save()
         {
             using (var writer = new System.IO.StreamWriter(configFilename))
@@ -610,7 +610,7 @@ namespace DECS_Excel_Add_Ins
         /// <summary>
         /// Scrape the GUI & save the rules' current state to a new file.
         /// </summary>
-        /// <returns>void</returns>
+        
         private void SaveAs()
         {
             SaveFileDialog dialog = new SaveFileDialog();
@@ -634,7 +634,7 @@ namespace DECS_Excel_Add_Ins
         /// </summary>
         /// <param name="sender">Whatever object trigged this callback.</param>
         /// <param name="e">The EventArgs that accompanied this callback.</param>
-        /// <returns>void</returns>
+        
         private void saveAsToolStripMenuItem_Click(object sender, EventArgs e)
         {
             SaveAs();
@@ -645,7 +645,7 @@ namespace DECS_Excel_Add_Ins
         /// </summary>
         /// <param name="sender">Whatever object trigged this callback.</param>
         /// <param name="e">The EventArgs that accompanied this callback.</param>
-        /// <returns>void</returns>
+        
         private void saveButton_Click(object sender, EventArgs e)
         {
             SaveAs();
@@ -656,7 +656,7 @@ namespace DECS_Excel_Add_Ins
         /// </summary>
         /// <param name="sender">Whatever object trigged this callback.</param>
         /// <param name="e">The EventArgs that accompanied this callback.</param>
-        /// <returns>void</returns>
+        
         private void saveToolStripMenuItem_Click(object sender, EventArgs e)
         {
             Save();
@@ -665,7 +665,7 @@ namespace DECS_Excel_Add_Ins
         /// <summary>
         /// Decide if the @c runButton can be enabled.
         /// </summary>
-        /// <returns>void</returns>
+        
         private void SetRunButtonStatus()
         {
             // If NO cleaning rules, NO date conversion rule and NO extract rules, then the button should be disabled.
@@ -693,7 +693,7 @@ namespace DECS_Excel_Add_Ins
         /// Rolls the @c sourceColumnListBox to the desired column name.
         /// </summary>
         /// <param name="sourceColumn">Name of selected column on which to run these rules</param>
-        /// <returns>void</returns>
+        
         private void SetSourceColumn(string sourceColumn)
         {
             try
@@ -706,7 +706,7 @@ namespace DECS_Excel_Add_Ins
         /// <summary>
         /// Updates the GUI to use the latest cleaning rules.
         /// </summary>
-        /// <returns>void</returns>
+        
         private void ShowCleaningResult()
         {
             log.Debug("Showing cleaning results.");
@@ -723,7 +723,7 @@ namespace DECS_Excel_Add_Ins
         /// <summary>
         /// Updates the GUI to use the latest date conversion rules.
         /// </summary>
-        /// <returns>void</returns>
+        
         private void ShowDateConversionResult()
         {
             log.Debug("Showing date conversion results.");
@@ -740,7 +740,7 @@ namespace DECS_Excel_Add_Ins
         /// <summary>
         /// Updates the GUI to use the latest data extraction rules.
         /// </summary>
-        /// <returns>void</returns>
+        
         private void ShowExtractResult()
         {
             log.Debug("Showing extraction results.");
@@ -763,7 +763,7 @@ namespace DECS_Excel_Add_Ins
         /// <summary>
         /// Updates the GUI to run the rules on just the selected rows.
         /// </summary>
-        /// <returns>void</returns>
+        
         private void ShowSelectedRows()
         {
             ProcessingRowsSelection rowSelection = parser.WhichRowsToProcess();
@@ -774,7 +774,7 @@ namespace DECS_Excel_Add_Ins
         /// Updates the GUI to run the rules on just the selected rows.
         /// </summary>
         /// <param name="rowSelection">Selected rows</param>
-        /// <returns>void</returns>
+        
         private void ShowSelectedRows(ProcessingRowsSelection rowSelection)
         {
             Excel.Range selectedRows = rowSelection.GetRows();
@@ -827,7 +827,7 @@ namespace DECS_Excel_Add_Ins
         /// </summary>
         /// <param name="sender">Whatever object trigged this callback.</param>
         /// <param name="e">The EventArgs that accompanied this callback.</param>
-        /// <returns>void</returns>
+        
         private void sourceColumnListBox_Selected(object sender, EventArgs e)
         {
             if (configLoading)

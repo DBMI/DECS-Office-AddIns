@@ -10,7 +10,7 @@ using System.Windows.Forms;
 
 namespace DECS_Excel_Add_Ins
 {
-    /*
+    /**
      * @brief Centralized class for all date conversion methods.
      */
     internal class DateConverter
@@ -68,7 +68,7 @@ namespace DECS_Excel_Add_Ins
         /// <summary>
         /// Provides all the keys from the supportedDateFormats Dictionary, for use in pull-down box.
         /// </summary>
-        /// <returns>List of strings</returns>
+        /// <returns>List<string></returns>
         internal List<string> SupportedDateFormats()
         {
             return new List<string>(supportedDateFormats.Keys);

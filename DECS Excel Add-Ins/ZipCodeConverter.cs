@@ -12,6 +12,10 @@ using System.Xml.Linq;
 
 namespace DECS_Excel_Add_Ins
 {
+    /**
+     * @brief Builds a @c Dictionary<string, List<ulong>> from the nationwide zip code-->census tract file.
+     * File available from https://www.huduser.gov/portal/datasets/usps_crosswalk.html
+     */
     internal class ZipCodeConverter
     {
         private Dictionary<string, List<ulong>> zipToTractTable;
@@ -22,6 +26,9 @@ namespace DECS_Excel_Add_Ins
             System.Reflection.MethodBase.GetCurrentMethod().DeclaringType
         );
 
+        /// <summary>
+        /// Reads the zip crosswalk file & creates @c Dictionary to map each zip code to a list of census tract numbers.
+        /// </summary>
         internal ZipCodeConverter()
         {
             zipToTractTable = new Dictionary<string, List<ulong>>();
@@ -92,6 +99,11 @@ namespace DECS_Excel_Add_Ins
             }
         }
 
+        /// <summary>
+        /// Looks up the zip code in the @c Dictionary
+        /// </summary>
+        /// <param name="zip">zip code as string</param>
+        /// <returns>List<ulong></returns>
         internal List<ulong> Convert(string zip)
         {
             // Strip out any other text (like "NJ 07003").

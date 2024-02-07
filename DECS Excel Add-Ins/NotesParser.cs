@@ -21,6 +21,9 @@ using System.Data;
 
 namespace DECS_Excel_Add_Ins
 {
+    /**
+     * @brief Applies rules to worksheet to clean, convert & extract required data.
+     */ 
     internal class NotesParser
     {
         private Application application;
@@ -43,6 +46,12 @@ namespace DECS_Excel_Add_Ins
             System.Reflection.MethodBase.GetCurrentMethod().DeclaringType
         );
 
+        /// <summary>
+        /// Constructor
+        /// </summary>
+        /// <param name="_worksheet">Active worksheet</param>
+        /// <param name="withConfigFile">bool: are we using a stored config file? (default = true)</param>
+        /// <param name="allRows">bool: are we processing ALL the rows? (default = true)</param>
         public NotesParser(Worksheet _worksheet, bool withConfigFile = true, bool allRows = true)
         {
             log.Debug("Instantiating NotesParser object.");
@@ -73,6 +82,11 @@ namespace DECS_Excel_Add_Ins
             }
         }
 
+        /// <summary>
+        /// Allows external class to assign this object's @c worksheetChangedCallback action.
+        /// </summary>
+        /// <param name="externalCallback">Action</param>
+        
         internal void AssignWorksheetChangedCallback(
             Action<ProcessingRowsSelection> externalCallback
         )
@@ -80,7 +94,10 @@ namespace DECS_Excel_Add_Ins
             worksheetChangedCallback = externalCallback;
         }
 
-        // Apply cleaning rules.
+        /// <summary>
+        /// Apply cleaning rules to the designated source column.
+        /// </summary>
+        /// <returns>bool</returns>
         internal bool Clean()
         {
             log.Debug("Starting cleaning.");
@@ -138,6 +155,11 @@ namespace DECS_Excel_Add_Ins
             return true;
         }
 
+        /// <summary>
+        /// Applies @c DateConversion rule to convert all dates found to the desired standard format.
+        /// (The idea is that this way, downstream @c ExtractRules don't have to be written to handle multiple date formats).
+        /// </summary>
+        
         internal void ConvertDatesToStandardFormat()
         {
             if (!HasConfig() || !config.HasDateConversionRule())
@@ -184,6 +206,10 @@ namespace DECS_Excel_Add_Ins
             return;
         }
 
+        /// <summary>
+        /// Instantiates a @c StatusForm, showing processing progress.
+        /// </summary>
+        
         private void CreateStatusForm()
         {
             int numRows = rowsToProcess.GetRows().Count;
@@ -202,6 +228,10 @@ namespace DECS_Excel_Add_Ins
             }
         }
 
+        /// <summary>
+        /// Apply data extraction rules to the designated source column.
+        /// </summary>
+        /// <returns>bool</returns>
         internal bool Extract()
         {
             log.Debug("Starting extraction.");
@@ -301,11 +331,22 @@ namespace DECS_Excel_Add_Ins
             return true;
         }
 
+        /// <summary>
+        /// Is there a config structure already defined?
+        /// </summary>
+        /// <returns>bool</returns>
         internal bool HasConfig()
         {
             return config != null && config.SourceColumnName != string.Empty;
         }
 
+        /// <summary>
+        /// Main method:
+        /// - Applies cleaning rules
+        /// - Converts dates to standard format
+        /// - Runs data extraction rules.
+        /// </summary>
+        
         internal void Parse()
         {
             log.Debug("Starting parsing.");
@@ -337,22 +378,33 @@ namespace DECS_Excel_Add_Ins
             SaveRevised();
         }
 
-        // Allow DefineRulesForm to tell us to go back to row 1 & close the status form.
-        // This is useful when we only had cleaning rules--no extract rules.
+        /// <summary>
+        /// Allow DefineRulesForm to tell us to go back to row 1 & close the status form.
+        /// This is useful when we only have cleaning rules--no extract rules.
+        /// </summary>
+        
         internal void ResetAfterProcessing()
         {
             ShowRow(1);
             statusForm?.Close();
         }
 
+        /// <summary>
+        /// Resets Worksheet to original state, removing new columns & undoing changes to the source column.
+        /// </summary>
+        
         internal void ResetWorksheet()
         {
             RestoreOriginalColumns();
             RestoreOriginalSourceColumn();
         }
 
-        // Can't just walk through the list of columns and delete the new ones,
-        // because--as they're deleted--the numbering changes.
+        /// <summary>
+        /// Removes columns added during processing. 
+        /// Can't just walk through the list of columns and delete the new ones,
+        /// because--as they're deleted--the numbering changes.
+        /// </summary>
+        
         private void RestoreOriginalColumns()
         {
             bool removedColumn = false;
@@ -382,6 +434,10 @@ namespace DECS_Excel_Add_Ins
             lastCol = Utilities.FindLastCol(worksheet);
         }
 
+        /// <summary>
+        /// Undoes changes to source column.
+        /// </summary>
+        
         private void RestoreOriginalSourceColumn()
         {
             if (!HasConfig() || !rulesValid)
@@ -401,6 +457,10 @@ namespace DECS_Excel_Add_Ins
             }
         }
 
+        /// <summary>
+        /// Saves the source column so we can reverse cleaning & date conversion operations.
+        /// </summary>
+        
         public void SaveOriginalSourceColumn()
         {
             if (!HasConfig() || !rulesValid)
@@ -426,6 +486,10 @@ namespace DECS_Excel_Add_Ins
             }
         }
 
+        /// <summary>
+        /// Saves the workbook as revised using a name derived from the original.
+        /// </summary>
+        
         internal void SaveRevised()
         {
             if (!HasConfig() || !rulesValid)
@@ -454,6 +518,13 @@ namespace DECS_Excel_Add_Ins
             thread.IsBackground = true;
         }
 
+        /// <summary>
+        /// Saves the workbook as revised using a new name.
+        /// </summary>
+        /// <param name="workbook">Active workbook</param>
+        /// <param name="newFilename">Desired new name for file</param>
+        /// <param name="justTheFilename">Stub of filename in case we need to synthesize filename with timestamp</param>
+        
         private void SaveRevised(Workbook workbook, string newFilename, string justTheFilename)
         {
             try
@@ -471,17 +542,31 @@ namespace DECS_Excel_Add_Ins
             MessageBox.Show("Saved in '" + newFilename + "'.");
         }
 
+        /// <summary>
+        /// Scrolls the window to the desired row.
+        /// </summary>
+        /// <param name="row">int number of desired row</param>
+        
         private void ShowRow(int row)
         {
             application.ActiveWindow.ScrollRow = row;
         }
 
+        /// <summary>
+        /// Sets the @c stopProcessing property to true.
+        /// </summary>
+        
         internal void StopProcessing()
         {
             stopProcessing = true;
         }
 
-        // Add config structure AFTER instantiation.
+        /// <summary>
+        /// Add config structure AFTER instantiation.
+        /// </summary>
+        /// <param name="configObj">@c NotesConfig object containing this set of rules</param>
+        /// <param name="updateOriginalSourceColumn">bool: should we overwrite the saved copy of the source column? (default: true)</param>
+        
         internal void UpdateConfig(NotesConfig configObj, bool updateOriginalSourceColumn = true)
         {
             // If no config already defined, we probably should offer to start defining a config file.
@@ -516,6 +601,10 @@ namespace DECS_Excel_Add_Ins
             rulesValid = ValidateAndWarn();
         }
 
+        /// <summary>
+        /// Run syntax validation on all rules & display errors found.
+        /// </summary>
+        /// <returns>bool</returns>
         private bool ValidateAndWarn()
         {
             bool rulesValid = true;
@@ -538,6 +627,10 @@ namespace DECS_Excel_Add_Ins
             return rulesValid;
         }
 
+        /// <summary>
+        /// Decide which rows to process.
+        /// </summary>
+        /// <returns>@c ProcessingRowsSelection</returns>
         internal ProcessingRowsSelection WhichRowsToProcess()
         {
             if (processAllRows)
@@ -591,6 +684,11 @@ namespace DECS_Excel_Add_Ins
             }
         }
 
+        /// <summary>
+        /// Invoke the @c worksheetChangedCallback action after detecting user changed something.
+        /// </summary>
+        /// <param name="Target">Range that was changed</param>
+        
         private void WorksheetSelectionChanged(Range Target)
         {
             rowsToProcess = WhichRowsToProcess();
