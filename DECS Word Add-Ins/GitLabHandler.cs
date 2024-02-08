@@ -21,6 +21,9 @@ using log4net;
 
 namespace DecsWordAddIns
 {
+    /**
+     * @brief Communicates with GitLab to instantiate project.
+     */ 
     internal class GitLabHandler
     {
         private const string DIVIDER = "%2F";
@@ -35,6 +38,10 @@ namespace DecsWordAddIns
             System.Reflection.MethodBase.GetCurrentMethod().DeclaringType
         );
 
+        /// <summary>
+        /// Constructor
+        /// Gets GitLab token, either by looking up saved value or asking user for it.
+        /// </summary>
         internal GitLabHandler()
         {
             LogManager.GetRepository().Threshold = Level.Debug;
@@ -42,11 +49,19 @@ namespace DecsWordAddIns
             GetGitLabToken();
         }
 
+        /// <summary>
+        /// Lets external code get the GitLab URL.
+        /// </summary>
+        /// <returns></returns>
         internal static string Address()
         {
             return VIEW_ADDRESS;
         }
 
+        /// <summary>
+        /// Gets the GitLab authorization token, either by reading the saved value (if possible) or
+        /// asking the user to provide it.
+        /// </summary>
         private void GetGitLabToken()
         {
             // If we can't read an existing token ...
@@ -70,6 +85,11 @@ namespace DecsWordAddIns
             }
         }
 
+        /// <summary>
+        /// Uses externally-compiled .exe file to push file to GitLab.
+        /// </summary>
+        /// <param name="path">path to SQL file</param>
+        /// <returns>bool</returns>
         internal bool PushFileExe(string path)
         {
             bool success = false;
@@ -116,19 +136,23 @@ namespace DecsWordAddIns
             return success;
         }
 
-        private string ReadFile(string path)
-        {
-            if (!File.Exists(path))
-            {
-                log.Error("Unable to find file '" + path + "'.");
-                throw new FileNotFoundException("Unable to find file '" + path + "'.");
-            }
+        //private string ReadFile(string path)
+        //{
+        //    if (!File.Exists(path))
+        //    {
+        //        log.Error("Unable to find file '" + path + "'.");
+        //        throw new FileNotFoundException("Unable to find file '" + path + "'.");
+        //    }
 
-            // Escape any single quotes.
-            string contents = File.ReadAllText(path).Replace("'", "\'");
-            return contents;
-        }
+        //    // Escape any single quotes.
+        //    string contents = File.ReadAllText(path).Replace("'", "\'");
+        //    return contents;
+        //}
 
+        /// <summary>
+        /// Reads GitLab token from its expected location.
+        /// </summary>
+        /// <returns>bool</returns>
         private bool ReadGitLabToken()
         {
             bool success = false;
@@ -159,11 +183,18 @@ namespace DecsWordAddIns
             return success;
         }
 
+        /// <summary>
+        /// Have we retrieved the token?
+        /// </summary>
+        /// <returns>bool</returns>
         internal bool Ready()
         {
             return !string.IsNullOrEmpty(this.token);
         }
 
+        /// <summary>
+        /// Saves a newly-provided token to the file where we can find it next time.
+        /// </summary>
         private void SaveGitLabToken()
         {
             string userName = System.Security.Principal.WindowsIdentity.GetCurrent().Name;

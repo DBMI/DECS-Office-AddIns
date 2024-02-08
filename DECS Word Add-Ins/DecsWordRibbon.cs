@@ -27,6 +27,13 @@ using Office = Microsoft.Office.Core;
 
 namespace DecsWordAddIns
 {
+    /**
+     * @brief Main class for DECS Excel Tools.
+     *
+     * The @c _GetImage methods specify the image used for each ribbon button.
+     *
+     * The @c On_ methods assign actions for each ribbon button push.
+     */
     [ComVisible(true)]
     public class DecsWordRibbon : Office.IRibbonExtensibility
     {
@@ -34,34 +41,61 @@ namespace DecsWordAddIns
 
         public DecsWordRibbon() { }
 
-        public void OnBuildMRN(Office.IRibbonControl control)
+        /// <summary>
+        /// Defines what happens when @c ImportList button is pushed.
+        /// </summary>
+        /// <param name="control">The @c IRibbon object</param>
+        public void OnImportList(Office.IRibbonControl control)
         {
             ListImporter importer = new ListImporter();
             importer.Scan(Globals.ThisAddIn.Application.ActiveDocument);
         }
 
+        /// <summary>
+        /// Defines what happens when @c ExtractICD button is pushed.
+        /// </summary>
+        /// <param name="control">The @c IRibbon object</param>
         public void OnExtractICD(Office.IRibbonControl control)
         {
             IcdExtractor extractor = new IcdExtractor();
             extractor.Scan(Globals.ThisAddIn.Application.ActiveDocument);
         }
 
+        /// <summary>
+        /// Defines what happens when @c SetupProject button is pushed.
+        /// </summary>
+        /// <param name="control">The @c IRibbon object</param>
         public void OnParseSOW(Office.IRibbonControl control)
         {
             ScopeOfWorkParser parser = new ScopeOfWorkParser();
             parser.SetupProject(Globals.ThisAddIn.Application.ActiveDocument);
         }
 
-        public Bitmap buildMrnsButton_GetImage(IRibbonControl control)
-        {
-            return Resources.clipboard;
-        }
-
+        /// <summary>
+        /// Supplies the icd_10_zoom image to the @c ExtractICD button.
+        /// </summary>
+        /// <param name="control">The @c IRibbon object</param>
+        /// <returns></returns>
         public Bitmap icdExtractButton_GetImage(IRibbonControl control)
         {
             return Resources.icd_10_zoom;
         }
 
+        /// <summary>
+        /// Supplies the clipboard image to the @c ImportList button.
+        /// </summary>
+        /// <param name="control">The @c IRibbon object</param>
+        /// <returns></returns>
+        public Bitmap importListButton_GetImage(IRibbonControl control)
+        {
+            return Resources.clipboard;
+        }
+
+        /// <summary>
+        /// Supplies the crane image to the @c SetupProject button.
+        /// </summary>
+        /// <param name="control">The @c IRibbon object</param>
+        /// <returns></returns>
         public Bitmap scopeOfWorkParserButton_GetImage(IRibbonControl control)
         {
             return Resources.crane;

@@ -9,9 +9,16 @@ using System.Text.RegularExpressions;
 
 namespace DecsWordAddIns
 {
+    /// <summary>
+    /// Useful methods.
+    /// </summary>
     internal static class Utilities
     {
-        // Pull together ALL the Document's text.
+        /// <summary>
+        /// Pull together ALL the Document's text.
+        /// </summary>
+        /// <param name="doc">Word @c Document object</param>
+        /// <returns>string</returns>
         internal static string AllText(Document doc)
         {
             string combinedText = string.Empty;
@@ -27,7 +34,11 @@ namespace DecsWordAddIns
             return combinedText.Replace(alert.ToString(), "");
         }
 
-        // Convert/remove stuff so later Regexs don't have to allow for them.
+        /// <summary>
+        /// Convert/remove stuff so later Regexs don't have to allow for them.
+        /// </summary>
+        /// <param name="text">input text</param>
+        /// <returns>string</returns>
         internal static string CleanText(string text)
         {
             string text_cleaned = text.Trim();
@@ -39,8 +50,12 @@ namespace DecsWordAddIns
             return text_cleaned;
         }
 
-        // Turn a free-text description of a condition (like "Interstitial lung disease")
-        // into a string suitable for use as a SQL column name ("Interstitial_Lung_Disease").
+        /// <summary>
+        /// Turn a free-text description of a condition (like "Interstitial lung disease")
+        /// into a string suitable for use as a SQL column name ("Interstitial_Lung_Disease").
+        /// </summary>
+        /// <param name="condition_name">string</param>
+        /// <returns>string</returns>
         internal static string CleanNameForSql(string condition_name)
         {
             string column_name = condition_name.Trim().Replace(' ', '_');
@@ -55,6 +70,10 @@ namespace DecsWordAddIns
             return textinfo.ToTitleCase(column_name);
         }
 
+        /// <summary>
+        /// Uses system utility to get the name of the user.
+        /// </summary>
+        /// <returns>string</returns>
         internal static string GetUserName()
         {
             string fullUserName = System.Security.Principal.WindowsIdentity.GetCurrent().Name;
@@ -65,7 +84,13 @@ namespace DecsWordAddIns
             return userName;
         }
 
-        // Turn the statement of work filename into a .sql filename.
+        /// <summary>
+        /// Turn the statement of work filename into a .sql filename.
+        /// </summary>
+        /// <param name="filename">SoW filename</param>
+        /// <param name="filetype">type of file to create (default = ".sql")</param>
+        /// <param name="short_version">bool: Just filename.type? (default = false)</param>
+        /// <returns></returns>
         internal static string FormOutputFilename(
             string filename,
             string filetype = ".sql",
@@ -84,8 +109,13 @@ namespace DecsWordAddIns
             return sql_filename;
         }
 
-        // Detects when a name (which should be like "Hypertension")
-        // is actually just a list of codes ("J42", "J43", "J44").
+        /// <summary>
+        /// Detects when a name (which should be like "Hypertension")
+        /// is actually just a list of codes ("J42", "J43", "J44").
+        /// </summary>
+        /// <param name="name">string to parse</param>
+        /// <param name="matches">@c MatchColllection object</param>
+        /// <returns>bool</returns>
         internal static bool IsJustListOfCodes(string name, MatchCollection matches)
         {
             name = name.Trim();
@@ -108,9 +138,14 @@ namespace DecsWordAddIns
             return name.Length == 0;
         }
 
-        // Open the output StreamWriter object,
-        // understanding that we might have to substitute a shorter version of the output filename
-        // if the default filename is too long.
+        /// <summary>
+        /// Open the output StreamWriter object,
+        /// understanding that we might have to substitute a shorter version of the output filename
+        /// if the default filename is too long.
+        /// </summary>
+        /// <param name="input_filename">SoW filename</param>
+        /// <param name="filetype">type of file to create (default = ".sql")</param>
+        /// <returns>Tuple(StreamWriter, string)</returns>
         internal static (StreamWriter writer, string openedFilename) OpenOutput(
             string input_filename,
             string filetype = ".sql"
@@ -142,6 +177,12 @@ namespace DecsWordAddIns
             return (writer: writer_obj, openedFilename: outputFilename);
         }
 
+        /// <summary>
+        /// If condition name isn't empty, return it prepended with "---".
+        /// </summary>
+        /// <param name="conditionName">string to process</param>
+        /// <param name="separator">string between previous text & hyphens (default = "")</param>
+        /// <returns>string</returns>
         internal static string PrependWithHypens(string conditionName, string separator = "")
         {
             string conditionNameWithHyphens = "";
@@ -155,8 +196,11 @@ namespace DecsWordAddIns
             return conditionNameWithHyphens;
         }
 
-        // From a text file, build a dictionary of login names, nice names.
-        // gwashington, George Washington
+        /// <summary>
+        /// From a text file, build a dictionary of login names, nice names.
+        /// Example: gwashington, George Washington
+        /// </summary>
+        /// <returns>Dictionary<string, string></returns>
         internal static Dictionary<string, string> ReadUserNamesFile()
         {
             Dictionary<string, string> userNames = new Dictionary<string, string>();
@@ -176,6 +220,15 @@ namespace DecsWordAddIns
             return userNames;
         }
 
+        /// <summary>
+        /// Run a string replacement again & again until it stops matching.
+        /// Can be either straight string @c .Replace or Regex.
+        /// </summary>
+        /// <param name="text">string to process</param>
+        /// <param name="pattern">string: Regex pattern</param>
+        /// <param name="replacement">string: what to replace matches with</param>
+        /// <param name="isRegex">bool: is this a Regex? (default = false)</param>
+        /// <returns>string</returns>
         internal static string ReplaceUntilNoMore(string text, string pattern, string replacement, bool isRegex = false)
         {
             string textCleaned = text;
@@ -198,9 +251,15 @@ namespace DecsWordAddIns
             return textCleaned;
         }
 
+        /// <summary>
+        /// Turn a name like "Prof. Able Baker Charlie, MD" into "Prof. Charlie"
+        /// </summary>
+        /// <param name="name">string to parse</param>
+        /// <returns>string</returns>
         internal static string SalutationFromName(string name)
         {
             bool isProfessor = name.Contains("Prof");
+            bool isPharmacist = name.Contains("Pharm.D.");
             bool isPhysician = name.Contains("Dr") || name.Contains("MD");
 
             string name_detitled = name.Replace("Dr", "");
@@ -224,7 +283,7 @@ namespace DecsWordAddIns
             string[] name_pieces = name_depunctuated.Split(' ');
             string last_name = name_pieces.Last();
 
-            if (isPhysician)
+            if (isPhysician || isPharmacist)
             {
                 return "Dr. " + last_name;
             }
@@ -237,23 +296,11 @@ namespace DecsWordAddIns
             return name_depunctuated;
         }
 
-        // https://stackoverflow.com/a/11025539/18749636
-        internal static Paragraphs SelectedParagraphs(Document doc)
-        {
-            Paragraphs paragraphs = null;
-            Application app = doc.Application;
-            Selection wordSelection = app.Selection;
-
-            if (wordSelection != null && 
-                wordSelection.Text != null && 
-                wordSelection.Text.Length > 1)
-            {
-                paragraphs = wordSelection.Paragraphs;
-            }
-
-            return paragraphs;
-        }
-
+        /// <summary>
+        /// Returns the user-selected portion of the document.
+        /// </summary>
+        /// <param name="doc">Word @c Document object</param>
+        /// <returns>List<string></returns>
         // https://stackoverflow.com/a/11025539/18749636
         internal static List<string> SelectedText(Document doc)
         {
@@ -281,6 +328,11 @@ namespace DecsWordAddIns
             return textBlocks;
         }
 
+        /// <summary>
+        /// Splits text into List<string>, split at blank lines.
+        /// </summary>
+        /// <param name="text">string to parse</param>
+        /// <returns>List<string></returns>
         private static List<string> SplitAtBlankLines(string text)
         {
             List<string> textBlocks = new List<string>();
@@ -309,16 +361,16 @@ namespace DecsWordAddIns
             return textBlocks;
         }
 
-        internal static string TranslateLoginName(string loginName)
-        {
-            Dictionary<string, string> userNamesList = ReadUserNamesFile();
+        //internal static string TranslateLoginName(string loginName)
+        //{
+        //    Dictionary<string, string> userNamesList = ReadUserNamesFile();
 
-            if (userNamesList != null && userNamesList.ContainsKey(loginName))
-            {
-                return userNamesList[loginName];
-            }
+        //    if (userNamesList != null && userNamesList.ContainsKey(loginName))
+        //    {
+        //        return userNamesList[loginName];
+        //    }
 
-            return loginName;
-        }
+        //    return loginName;
+        //}
     }
 }

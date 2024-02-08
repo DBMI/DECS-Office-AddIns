@@ -490,8 +490,7 @@ namespace DECS_Excel_Add_Ins
         /// <summary>
         /// Creates MessageBox letting user know we didn't find the named column.
         /// </summary>
-        /// <param name="columnName">Name of desired column.</param>
-        
+        /// <param name="columnName">Name of desired column.</param>        
         internal static void WarnColumnNotFound(string columnName)
         {
             string message = "Column '" + columnName + "' not found.";

@@ -10,6 +10,9 @@ using System.Windows.Forms;
 
 namespace DecsWordAddIns
 {
+    /// <summary>
+    /// Creates custom form to ask user if there's a SlicerDicer file to be parsed.
+    /// </summary>
     public partial class YesNoForm : Form
     {
         public bool fileExists = false;

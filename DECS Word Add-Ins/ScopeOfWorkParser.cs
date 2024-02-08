@@ -3,16 +3,27 @@ using log4net.Core;
 using Microsoft.Office.Interop.Word;
 using System;
 using System.DirectoryServices.AccountManagement;
+using System.Drawing;
 using System.IO;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Text.RegularExpressions;
 using System.Windows.Forms;
+using static System.Resources.ResXFileRef;
 using static System.Windows.Forms.VisualStyles.VisualStyleElement.StartPanel;
 using MsOutlook = Microsoft.Office.Interop.Outlook;
 
 namespace DecsWordAddIns
 {
+    /**
+     * @brief Parses the project Scope of Work document, extracts key field & sets up the DECS project:
+     * - creates local project directory
+     * - initializes output Excel file with desired disclaimer page
+     * - initializes stub of SQL file with project infomation
+     * - converts SlicerDicer code (if applicable)
+     * - drafts the completion email
+     * - pushes SQL file to GitLab
+     */ 
     internal class ScopeOfWorkParser
     {
         private string dataSetName;
@@ -68,13 +79,19 @@ namespace DecsWordAddIns
             progressForm.Show();
         }
 
-        // Create all the reusable Regex objects.
+        /// <summary>
+        /// Create all the reusable Regex objects. 
+        /// </summary>
         private void BuildRegex()
         {
             decsNumberRegex = new Regex(TASK_NUMBER_PATTERN);
             peopleRegex = new Regex(PEOPLE_PATTERN);
         }
 
+        /// <summary>
+        /// Drafts SQL file with project header.
+        /// </summary>
+        /// <returns></returns>
         private bool BuildSqlFile()
         {
             sqlFilename = Path.Combine(
@@ -117,12 +134,21 @@ namespace DecsWordAddIns
             return true;
         }
 
+        /// <summary>
+        /// Removes control characters from string.
+        /// </summary>
+        /// <param name="input"></param>
+        /// <returns></returns>
         private string Clean(string input)
         {
             return new string(input.Where(c => !char.IsControl(c)).ToArray()).Trim();
         }
 
-        // Adapt the existing Slicer Dicer SQL code.
+        /// <summary>
+        /// Copies existing SlicerDicer code, converting to proper format.
+        /// </summary>
+        /// <param name="slicerDicerFile"></param>
+        /// <returns>bool </returns>
         private bool CopySqlBody(string slicerDicerFile)
         {
             try
@@ -181,6 +207,10 @@ namespace DecsWordAddIns
             }
         }
 
+        /// <summary>
+        /// Creates draft Excel file to hold output.
+        /// </summary>
+        /// <returns>bool</returns>
         private bool CreateOutputFile()
         {
             try
@@ -214,6 +244,10 @@ namespace DecsWordAddIns
             return false;
         }
 
+        /// <summary>
+        /// Creates the project directory path. Returns whether the new directory exists.
+        /// </summary>
+        /// <returns>bool</returns>
         private bool CreateProjectDirectory()
         {
             string targetDirectory = Path.Combine(documentDirectoryName, projectTriple);
@@ -221,6 +255,10 @@ namespace DecsWordAddIns
             return projectDirectory.Exists;
         }
 
+        /// <summary>
+        /// Tests whether all setup steps were completed successfully.
+        /// </summary>
+        /// <returns>bool</returns>
         private bool Done()
         {
             bool haveStudyNameOrDataSetName =
@@ -235,6 +273,10 @@ namespace DecsWordAddIns
                 && !string.IsNullOrEmpty(taskNumber);
         }
 
+        /// <summary>
+        /// Pulls the DECS number out of text.
+        /// </summary>
+        /// <param name="text"></param>
         private void ExtractDecsNumber(string text)
         {
             Match decsNumberMatch = decsNumberRegex.Match(text);
@@ -245,6 +287,10 @@ namespace DecsWordAddIns
             }
         }
 
+        /// <summary>
+        /// Pulls the principal investigator's name & email from text.
+        /// </summary>
+        /// <param name="text"></param>
         private void ExtractPI(string text)
         {
             Match piMatch = peopleRegex.Match(text);
@@ -261,6 +307,10 @@ namespace DecsWordAddIns
             }
         }
 
+        /// <summary>
+        /// Pulls the requestor's name & email from text.
+        /// </summary>
+        /// <param name="text"></param>
         private void ExtractRequester(string text)
         {
             Match requesterMatch = peopleRegex.Match(text);
@@ -276,6 +326,11 @@ namespace DecsWordAddIns
             }
         }
 
+        /// <summary>
+        /// Gets & cleans the next paragraph.
+        /// </summary>
+        /// <param name="desiredIndex"></param>
+        /// <returns>string</returns>
         private string GetNextLine(int desiredIndex)
         {
             string nextLine = String.Empty;
@@ -288,6 +343,10 @@ namespace DecsWordAddIns
             return nextLine;
         }
 
+        /// <summary>
+        /// Creates @c OpenFileDialog form to ask for location of SlicerDicer file.
+        /// </summary>
+        /// <returns>string</returns>
         private string GetSlicerDicerFilename()
         {
             string filePath = string.Empty;
@@ -317,6 +376,17 @@ namespace DecsWordAddIns
             return filePath;
         }
 
+        /// <summary>
+        /// Initializes the SQL file with header containing:
+        /// - project triple: PI-number-description
+        /// - task number
+        /// - PI name & email
+        /// - requester name & email
+        /// - author name & email
+        /// - date created
+        /// - database name
+        /// </summary>
+        /// <returns>bool</returns>
         private bool InsertSqlHeader()
         {
             try
@@ -361,6 +431,10 @@ namespace DecsWordAddIns
             }
         }
 
+        /// <summary>
+        /// Runs through the Word document, looking for project information.
+        /// </summary>
+        /// <returns>bool</returns>
         internal bool Parse()
         {
             int index = 1;
@@ -429,6 +503,10 @@ namespace DecsWordAddIns
             return Done();
         }
 
+        /// <summary>
+        /// Forms the string PI-task number-description
+        /// </summary>
+        /// <returns>string</returns>
         private string ProjectTriple()
         {
             log.Debug(
@@ -455,6 +533,16 @@ namespace DecsWordAddIns
             return triple;
         }
 
+        /// <summary>
+        /// Main method: parses the Scope of Work, extracting project information, then:
+        /// - creates local project directory
+        /// - initializes output Excel file with desired disclaimer page
+        /// - initializes stub of SQL file with project infomation
+        /// - converts SlicerDicer code(if applicable)
+        /// - drafts the completion email
+        /// - pushes SQL file to GitLab
+        /// </summary>
+        /// <param name="doc"></param>
         internal void SetupProject(Document doc)
         {
             log.Debug("Setting up project.");
@@ -675,6 +763,10 @@ namespace DecsWordAddIns
             progressForm.ReportProgress("Completed project " + taskNumber + " setup.");
         }
 
+        /// <summary>
+        /// Returns the study name, if available. If not, the dataset name.
+        /// </summary>
+        /// <returns>string</returns>
         private string StudyName()
         {
             if (string.IsNullOrEmpty(studyName))
@@ -685,6 +777,10 @@ namespace DecsWordAddIns
             return studyName;
         }
 
+        /// <summary>
+        /// Adds patient consent section to @c SlicerDicer SQL.
+        /// </summary>
+        /// <returns>bool</returns>
         private bool WriteConsentSection()
         {
             try

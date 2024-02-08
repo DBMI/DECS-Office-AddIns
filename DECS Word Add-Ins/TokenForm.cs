@@ -10,6 +10,9 @@ using System.Windows.Forms;
 
 namespace DecsWordAddIns
 {
+    /// <summary>
+    /// Creates custom form to ask user to provide their GitLab token.
+    /// </summary>
     public partial class TokenForm : Form
     {
         public string token;
@@ -29,20 +32,20 @@ namespace DecsWordAddIns
 
         private void okButton_Click(object sender, EventArgs e)
         {
-            this.DialogResult = DialogResult.OK;
-            this.Close();
+            DialogResult = DialogResult.OK;
+            Close();
         }
 
         private void quitButton_Click(object sender, EventArgs e)
         {
-            this.token = string.Empty;
-            this.DialogResult = DialogResult.Cancel;
-            this.Close();
+            token = string.Empty;
+            DialogResult = DialogResult.Cancel;
+            Close();
         }
 
         private void tokenTextBox_TextChanged(object sender, EventArgs e)
         {
-            this.token = tokenTextBox.Text;
+            token = tokenTextBox.Text;
         }
     }
 }

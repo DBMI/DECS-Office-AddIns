@@ -13,7 +13,7 @@ Creates custom buttons in Microsoft Excel & Word that allow user to:
 ### Word: 
 ![image info](./DECS%20Word%20Add-Ins/pictures/toolbar.png)
 * Scan a Scope of Work (SoW) file & create SQL code that searches for the ICD-9/ICD-10 codes and names listed in the SoW.
-* Turn a list of MRNs into a SQL snippet that imports the list into a query.
+* Turn a list of MRNs or ICDs into a SQL snippet that imports the list into a query.
 * Setup a DECS project using the info in a Scope of Work file:
     - Build the DECS project directory.
     - Initialize the Excel output file, including disclaimer.
@@ -37,38 +37,38 @@ We start in the `Cleaning` tab, defining cleaning rules to:
 
 These rules are run *before* the data extraction rules.
 
-![image info](./DECS%20Excel%20Add-Ins/pictures/cleaning%20rules.png)
+![image info](./DECS%20Excel%20Add-Ins/pictures/cleaning_rules.png)
 #### Date formats
 Using the `DateFormat` tab, we can select which date format we want for output columns.
 
-![image info](./DECS%20Excel%20Add-Ins/pictures/date%20formats.png)
+![image info](./DECS%20Excel%20Add-Ins/pictures/date_formats.png)
 #### Extraction rules
 The `Extract` tab lets us define the Regular Expressions that extract data from free text.
 
-![image info](./DECS%20Excel%20Add-Ins/pictures/extraction%20rules.png)
+![image info](./DECS%20Excel%20Add-Ins/pictures/extraction_rules.png)
 
 Starting with these free-text notes:
 
-![image info](./DECS%20Excel%20Add-Ins/pictures/notes%20raw.png)
+![image info](./DECS%20Excel%20Add-Ins/pictures/notes_raw.png)
 
 Here's an example of the extracted data:
 
-![image info](./DECS%20Excel%20Add-Ins/pictures/notes%20results.png)
+![image info](./DECS%20Excel%20Add-Ins/pictures/notes_results.png)
 
 Notice how the original dates--in multiple formats--were automatically converted to a standard date format before extraction.
 
 ### Word: Extract ICD codes
 Sometimes Statements of Work (SoW) contain lists of medical conditions and ICD-10 codes to be reported on.
-Pressing the `Extract ICD` button causes the app to scan the open Word document for lines that look like medical conditions and their associated ICD-10 codes. SQL code is generated that searches the `problem_list` table for the associated codes, as shown here:![image info](./DECS%20Word%20Add-Ins/pictures/ICD%20to%20sql%20basic.png)
+Pressing the `Extract ICD` button causes the app to scan the open Word document for lines that look like medical conditions and their associated ICD-10 codes. SQL code is generated that searches the `problem_list` table for the associated codes, as shown here:![image info](./DECS%20Word%20Add-Ins/pictures/ICD_to_sql_basic.png)
 
-Series of ICD codes (such as `M30 - M36`) are automatically expanded into multi-code SQL statements:![image info](./DECS%20Word%20Add-Ins/pictures/series%20expansion%20sql.png)
+Series of ICD codes (such as `M30 - M36`) are automatically expanded into multi-code SQL statements:![image info](./DECS%20Word%20Add-Ins/pictures/series_expansion_sql.png)
 
-### Word: Build MRN Import
-When researchers provide lists of Medical Record Numbers (MRNs) to be used in a report, those MRNs need to be imported into SQL. Pressing the `Build MRN Import` button converts a list of numbers into SQL code which can be referenced in a query to import these MRNs:![image info](./DECS%20Word%20Add-Ins/pictures/MRN%20list%20to%20sql%20top.png)
+### Word: Build List Import
+When researchers provide lists of Medical Record Numbers (MRNs) or International Classification of Diseases (ICD) codes to be used in a report, those lists need to be imported into SQL. Pressing the `Import List` button converts a list into SQL code which can be referenced in a query to import them:![image info](./DECS%20Word%20Add-Ins/pictures/MRN_list_to_sql_top.png)
 
 Since there is a limit on the number of values (1000) that can be inserted in one statement, the app automatically breaks up the insertion into multiple statements:
 
-![image info](./DECS%20Word%20Add-Ins/pictures/MRN%20list%20break.png)
+![image info](./DECS%20Word%20Add-Ins/pictures/MRN_list_break.png)
 
 ## Algorithm Description
 ### Excel: Lookup Social Vulnerability Index (SVI)
@@ -87,19 +87,19 @@ https://geocoding.geo.census.gov/geocoder/geographies/onelineaddress?address=160
 
 Response:
 
-![image info](./DECS%20Excel%20Add-Ins/pictures/json%20response.png)
+![image info](./DECS%20Excel%20Add-Ins/pictures/json_response.png)
 
 **Zip code**
 Using just a zip code is less exact than a full address, as a zip code may contain many census tracts, and tracts may overlap with more than one zip code. However, we can use [*crosswalk*](https://www.huduser.gov/portal/datasets/usps_crosswalk.html) files provided by the US Department of Housing and Urban Development to lookup all the census tracts present in a given zip code. Here's an example from the file ZIP_TRACT_122023.csv (available [here](https://www.huduser.gov/portal/datasets/usps_crosswalk.html)). Notice the large number of census tracts which cross to a typical San Diego County zip code:
 
-![image info](./DECS%20Excel%20Add-Ins/pictures/crosswalk%20multiple%20tracts.png)
+![image info](./DECS%20Excel%20Add-Ins/pictures/crosswalk_multiple_tracts.png)
 
 #### Extracting SVI information
 The data files published by CDC/ATDSR have one row of social vulnerability data for each census tract. The meaning of each column is explained [here](https://www.atsdr.cdc.gov/placeandhealth/svi/documentation/SVI_documentation_2020.html); we extract the column SPL_THEMES as the SVI score, and RPL_THEMES as the SVI ranking. While both single-state and entire-USA files are available, we've used the entire-USA file to be able to provide data both within & outside of California. If single-state files are used, please review the section *Caveat for SVI State Databases* in [SVI documentation](https://www.atsdr.cdc.gov/placeandhealth/svi/documentation/SVI_documentation_2020.html) for important statistical concerns.
 
 Here's an example of the SVI data from file SVI_2020_US.csv (available [here](https://www.atsdr.cdc.gov/placeandhealth/svi/data_documentation_download.html)) for the census tract 11001980000 returned in the example query above:
 
-![image info](./DECS%20Excel%20Add-Ins/pictures/SVI%20example.png)
+![image info](./DECS%20Excel%20Add-Ins/pictures/SVI_example.png)
 
 In cases where we're using only zip code information and have multiple census tracts, we return the average SVI score and ranking across all tracts associated with the zip code.
 

@@ -12,6 +12,9 @@ using static log4net.Appender.ColoredConsoleAppender;
 
 namespace DecsWordAddIns
 {
+    /**
+     * @brief Enumerate which version of ICD codes are we processing.
+     */ 
     internal enum IcdSeries
     {
         [Description("ICD-9")]
@@ -21,7 +24,10 @@ namespace DecsWordAddIns
         ICD10
     }
 
-
+    /**
+     * @brief Uses Regular Expressions to find & extract ICD codes from a Word document.
+     * Drafts SQL code to define variables containing these codes.
+     */ 
     internal class IcdExtractor
     {
         // Extract the alpha part ("M") of an ICD-10 code ("M30").
@@ -87,6 +93,10 @@ namespace DecsWordAddIns
         private Regex numberRegex;
         private Regex seriesRegex;
 
+        /// <summary>
+        /// Constructor
+        /// Start by asking user whether they want a list of ICD codes or a @c CASE statement.
+        /// </summary>
         internal IcdExtractor()
         {          
             // Ask user for output style & return quietly if they cancel.
@@ -96,6 +106,10 @@ namespace DecsWordAddIns
             }
         }
 
+        /// <summary>
+        /// Asks user whether they want a list of ICD codes or a @c CASE statement.
+        /// </summary>
+        /// <returns>bool</returns>
         private bool AskStyle()
         {
             bool success = false;
@@ -115,7 +129,10 @@ namespace DecsWordAddIns
             return success;
         }
 
-        // Create all the reusable Regex objects.
+        /// <summary>
+        /// Create all the reusable Regex objects.
+        /// </summary>
+        /// <param name="icdSeries">Which variety of ICD code are we searching for?</param>
         private void BuildRegex(IcdSeries icdSeries)
         {
             alphaRegex = new Regex(ALPHA_PATTERN);
@@ -142,7 +159,11 @@ namespace DecsWordAddIns
             seriesRegex = new Regex(SERIES_PATTERN);
         }
 
-        // Expand text like "M30 - M35" into a comma-separated string "M30, M31, M32, M33, M34, M35".
+        /// <summary>
+        /// Expand text like "M30 - M35" into a comma-separated string like "M30, M31, M32, M33, M34, M35".
+        /// </summary>
+        /// <param name="text"></param>
+        /// <returns>string</returns>
         private string ExpandSeries(string text)
         {
             string expanded_text = text;
@@ -187,7 +208,11 @@ namespace DecsWordAddIns
             return expanded_text;
         }
 
-        // Handle a paragraph, which is probably just one line (since it ends with a newline.)
+        /// <summary>
+        /// Handle a paragraph, which is probably just one line (since it ends with a newline.) 
+        /// </summary>
+        /// <param name="text">Full text of paragraph</param>
+        /// <param name="writer">@c StreamWriter object</param>
         private void ProcessParagraphCase(string text, StreamWriter writer)
         {
             if (text == null || string.IsNullOrEmpty(text))
@@ -262,6 +287,12 @@ namespace DecsWordAddIns
             }
         }
 
+        /// <summary>
+        /// Pull this type of ICD codes from this paragraph.
+        /// </summary>
+        /// <param name="text">Full text of paragraph</param>
+        /// <param name="writer">@c StreamWriter object</param>
+        /// <param name="icdSeries">Which variety of ICD code are we searching for?</param>
         private void ProcessParagraphList(string text, StreamWriter writer, IcdSeries icdSeries)
         {
             if (text == null || string.IsNullOrEmpty(text))
@@ -321,7 +352,10 @@ namespace DecsWordAddIns
             WriteParagraphList(extractedPairs, writer, icdSeries);
         }
 
-        // Main method. Accepts a Document object & writes out the .sql file.
+        /// <summary>
+        /// Main method. Accepts a Document object & writes out the .sql file. 
+        /// </summary>
+        /// <param name="doc">Word @c Document object</param>
         internal void Scan(Document doc)
         {
             (StreamWriter writer, string outputFilename) = Utilities.OpenOutput(
@@ -374,6 +408,12 @@ namespace DecsWordAddIns
             Process.Start(outputFilename);
         }
 
+        /// <summary>
+        /// Writes out the codes & names extracted by method @c ProcessParagraphList
+        /// </summary>
+        /// <param name="extractedPairs">@c SortedDictionary<string, string></param>
+        /// <param name="writer"></param>
+        /// <param name="icdSeries"></param>
         private void WriteParagraphList(SortedDictionary<string, string> extractedPairs, StreamWriter writer, IcdSeries icdSeries)
         {
             if (extractedPairs == null || extractedPairs.Count == 0)

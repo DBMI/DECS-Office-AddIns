@@ -10,6 +10,9 @@ using System.Windows.Forms;
 
 namespace DecsWordAddIns
 {
+    /**
+     * @brief Form to ask user whether the results will be delivered via VRD or OneDrive.
+     */ 
     internal partial class DeliveryTypeForm : Form
     {
         internal DeliveryType deliveryType;

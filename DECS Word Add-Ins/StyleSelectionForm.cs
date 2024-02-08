@@ -3,12 +3,18 @@ using System.Windows.Forms;
 
 namespace DecsWordAddIns
 {
+    /// <summary>
+    /// Enumeration to capture which output style we want.
+    /// </summary>
     internal enum IcdStyle
     {
         Case,
         List
     }
 
+    /// <summary>
+    /// Custom form to ask user which output style is desired for ICD list.
+    /// </summary>
     internal partial class StyleSelectionForm : Form
     {
         internal IcdStyle icdStyle = IcdStyle.Case;
