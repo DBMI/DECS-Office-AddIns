@@ -25,6 +25,12 @@
 var NAVTREE =
 [
   [ "DECS Word Add-Ins", "index.html", [
+    [ "Installation", "index.html#autotoc_md2", null ],
+    [ "Operation", "index.html#autotoc_md3", [
+      [ "Word:", "index.html#autotoc_md1", null ],
+      [ "Word: Extract ICD codes", "index.html#autotoc_md4", null ],
+      [ "Word: Build List Import", "index.html#autotoc_md5", null ]
+    ] ],
     [ "Packages", "namespaces.html", [
       [ "Package List", "namespaces.html", "namespaces_dup" ],
       [ "Package Members", "namespacemembers.html", [

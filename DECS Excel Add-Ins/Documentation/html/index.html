@@ -5,7 +5,8 @@
 <meta http-equiv="X-UA-Compatible" content="IE=11"/>
 <meta name="generator" content="Doxygen 1.10.0"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
-<title>DECS Excel Add-Ins: Main Page</title>
+<title>DECS Excel Add-Ins: DECS Excel Add-Ins</title>
+<link rel="icon" href="favicon.ico" type="image/x-icon" />
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="jquery.js"></script>
 <script type="text/javascript" src="dynsections.js"></script>
@@ -92,10 +93,96 @@ $(function(){initNavTree('index.html',''); initResizable(); });
 </div>
 </div>
 
-<div class="header">
-  <div class="headertitle"><div class="title">DECS Excel Add-Ins Documentation</div></div>
+<div><div class="header">
+  <div class="headertitle"><div class="title">DECS Excel Add-Ins </div></div>
 </div><!--header-->
 <div class="contents">
+<div class="textblock"><p><a class="anchor" id="md__c_1_2_git_hub_2_d_e_c_s-_office-_add_ins_2_d_e_c_s_01_excel_01_add-_ins_2_documentation_2_d_e_c_s_01_excel_01_r_e_a_d_m_e"></a> </p><div class="image">
+<img src="toolbar.png" alt=""/>
+<div class="caption">
+DECS custom Excel toolbar</div></div>
+    <p>Creates custom buttons in Microsoft Excel that allow user to:</p>
+<ul>
+<li>Scan <code>Notes</code> fields for keywords, creating new columns.</li>
+<li>Turn a list (of MRNs, ICD codes, etc.) into a SQL snippet that imports the column into a query.</li>
+<li>Lookup Social Vulnerability Index (<a href="https://www.atsdr.cdc.gov/placeandhealth/svi/index.html">SVI</a>) from address or zip code.</li>
+<li>Format a page of results with bold &amp; centered header, NULLs grayed out, etc.</li>
+<li>Convert dates from <a href="https://en.wikipedia.org/wiki/MUMPS">MUMPS</a> to Excel standard.</li>
+</ul>
+<h1><a class="anchor" id="autotoc_md1"></a>
+Installation</h1>
+<ul>
+<li>Download the <code>Office Add-Ins</code> folder from <a href="https://ucsdhs.sharepoint.com/:f:/t/ACTRI-BMI-DECSPrivate/EhFYD_9zfX9GsNRN9enCMzABFKg6wmPh13zY_ps2qRJHSg?e=KYFZeG">Sharepoint.</a></li>
+<li>Run <code>setup.exe</code>.</li>
+</ul>
+<h1><a class="anchor" id="autotoc_md2"></a>
+Operation</h1>
+<h2><a class="anchor" id="autotoc_md3"></a>
+Extract data from notes</h2>
+<p>In cases where we want to extract data from free-text columns, we can use the <code>Notes</code> tools to define &amp; run extraction rules. </p>
+<h3><a class="anchor" id="autotoc_md4"></a>
+Cleaning</h3>
+<p>We start in the <code>Cleaning</code> tab, defining cleaning rules to:</p><ul>
+<li>fix misspellings</li>
+<li>enforce standard naming</li>
+</ul>
+<p>These rules are run <em>before</em> the data extraction rules.</p>
+<p><img src="cleaning_rules.png" alt="" class="inline" title="Example of data cleaning rules"/>     </p>
+<h3><a class="anchor" id="autotoc_md5"></a>
+Date formats</h3>
+<p>Using the <code>DateFormat</code> tab, we can select which date format we want for output columns.</p>
+<p><img src="date_formats.png" alt="" class="inline" title="Example of date format selection"/>     </p>
+<h3><a class="anchor" id="autotoc_md6"></a>
+Extraction rules</h3>
+<p>The <code>Extract</code> tab lets us define the Regular Expressions that extract data from free text.</p>
+<div class="image">
+<img src="extraction_rules.png" alt=""/>
+<div class="caption">
+Example of data extraction rules</div></div>
+    <p>Starting with these free-text notes:</p>
+<div class="image">
+<img src="notes_raw.png" alt=""/>
+<div class="caption">
+Raw patient notes</div></div>
+    <p>Here's an example of the extracted data:</p>
+<div class="image">
+<img src="notes_results.png" alt=""/>
+<div class="caption">
+Processed patient notes</div></div>
+    <p>Notice how the original dates&ndash;in multiple formats&ndash;were automatically converted to a standard date format before extraction.</p>
+<h1><a class="anchor" id="autotoc_md7"></a>
+Algorithm Description</h1>
+<h2><a class="anchor" id="autotoc_md8"></a>
+Excel: Lookup Social Vulnerability Index (SVI)</h2>
+<p>Researchers sometimes ask for the <a href="https://www.atsdr.cdc.gov/placeandhealth/svi/index.html">Social Vulnerability Index</a> of a patient's neighborhood in order to provide a fuller picture of their <a href="https://health.gov/healthypeople/priority-areas/social-determinants-health">social determinants of health</a>. According to the US Centers for Disease Control's Agency for Toxic Substances and Disease Registry (CDC/ATSDR):</p>
+<blockquote class="doxtable">
+<p>&zwj;Social vulnerability refers to the potential negative effects on communities caused by external stresses on human health. Such stresses include natural or human-caused disasters, or disease outbreaks. Reducing social vulnerability can decrease both human suffering and economic loss. </p>
+</blockquote>
+<p>We can provide this information by using the patient's address (preferred) or zip code to look up their <a href="https://www.census.gov/programs-surveys/geography/about/glossary.html#par_textimage_13">census tract number</a>, then retrieving their SVI info from a <a href="https://www.atsdr.cdc.gov/placeandhealth/svi/data_documentation_download.html">document</a> published by the CDC/ATDSR, which lists the SVI information for each census tract (called a <a href="https://nitaac.nih.gov/resources/frequently-asked-questions/what-fips-code-and-why-do-i-need-one#:~:text=The%20Federal%20Information%20Processing%20Standard,equivalents%20in%20the%20United%20States.">Federal Information Processing Standard (FIPS)</a> code in the data files).</p>
+<h3><a class="anchor" id="autotoc_md9"></a>
+Finding the census tract number:</h3>
+<p><b>Address</b> If we have a patient's address, we can lookup their exact census tract number using the US Census Bureau's <a href="https://geocoding.geo.census.gov/geocoder/Geocoding_Services_API.html">online geocoding service</a>. Here's an example of the query &amp; response (the census tract number is here called <em>GEOID</em>):</p>
+<p>Query: <a href="https://geocoding.geo.census.gov/geocoder/geographies/onelineaddress?address=1600%20PENNSYLVANIA%20AVE%2C%20WASHINGTON%20DC%2020500&benchmark=2020&vintage=2020&format=json">https://geocoding.geo.census.gov/geocoder/geographies/onelineaddress?address=1600%20PENNSYLVANIA%20AVE%2C%20WASHINGTON%20DC%2020500&amp;benchmark=2020&amp;vintage=2020&amp;format=json</a></p>
+<p>Response:</p>
+<div class="image">
+<img src="json_response.png" alt=""/>
+<div class="caption">
+JSON geocoding response</div></div>
+    <p><b>Zip code</b> Using just a zip code is less exact than a full address, as a zip code may contain many census tracts, and tracts may overlap with more than one zip code. However, we can use <a href="https://www.huduser.gov/portal/datasets/usps_crosswalk.html"><em>crosswalk</em></a> files provided by the US Department of Housing and Urban Development to lookup all the census tracts present in a given zip code. Here's an example from the file ZIP_TRACT_122023.csv (available <a href="https://www.huduser.gov/portal/datasets/usps_crosswalk.html">here</a>). Notice the large number of census tracts which cross to a typical San Diego County zip code:</p>
+<div class="image">
+<img src="crosswalk_multiple_tracts.png" alt=""/>
+<div class="caption">
+Zip crosswalk file</div></div>
+    <h3><a class="anchor" id="autotoc_md10"></a>
+Extracting SVI information</h3>
+<p>The data files published by CDC/ATDSR have one row of social vulnerability data for each census tract. The meaning of each column is explained <a href="https://www.atsdr.cdc.gov/placeandhealth/svi/documentation/SVI_documentation_2020.html">here</a>; we extract the column SPL_THEMES as the SVI score, and RPL_THEMES as the SVI ranking. While both single-state and entire-USA files are available, we've used the entire-USA file to be able to provide data both within &amp; outside of California. If single-state files are used, please review the section <em>Caveat for SVI State Databases</em> in <a href="https://www.atsdr.cdc.gov/placeandhealth/svi/documentation/SVI_documentation_2020.html">SVI documentation</a> for important statistical concerns.</p>
+<p>Here's an example of the SVI data from file SVI_2020_US.csv (available <a href="https://www.atsdr.cdc.gov/placeandhealth/svi/data_documentation_download.html">here</a>) for the census tract 11001980000 returned in the example query above:</p>
+<div class="image">
+<img src="SVI_example.png" alt=""/>
+<div class="caption">
+SVI census data</div></div>
+    <p>In cases where we're using only zip code information and have multiple census tracts, we return the average SVI score and ranking across all tracts associated with the zip code. </p>
+</div></div><!-- PageDoc -->
 <a href="doxygen_crawl.html"/>
 </div><!-- contents -->
 </div><!-- doc-content -->

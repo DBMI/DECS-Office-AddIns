@@ -20,9 +20,10 @@ var searchData=
   ['result_17',['Result',['../class_d_e_c_s___excel___add___ins_1_1_result.html',1,'DECS_Excel_Add_Ins']]],
   ['rulecomponent_18',['RuleComponent',['../namespace_d_e_c_s___excel___add___ins.html#af1a6c035e0154e98c734df6af44914ad',1,'DECS_Excel_Add_Ins']]],
   ['rulegui_19',['RuleGui',['../class_d_e_c_s___excel___add___ins_1_1_rule_gui.html',1,'DECS_Excel_Add_Ins.RuleGui'],['../class_d_e_c_s___excel___add___ins_1_1_rule_gui.html#ae8dac04b5e85dac15870ee4739152e99',1,'DECS_Excel_Add_Ins.RuleGui.RuleGui()']]],
-  ['ruleserrorform_20',['RulesErrorForm',['../class_d_e_c_s___excel___add___ins_1_1_rules_error_form.html',1,'DECS_Excel_Add_Ins']]],
-  ['ruletype_21',['RuleType',['../namespace_d_e_c_s___excel___add___ins.html#a6c2c8834ffbb281029b44e5dd63a0b95',1,'DECS_Excel_Add_Ins']]],
-  ['rulevalidationerror_22',['RuleValidationError',['../class_d_e_c_s___excel___add___ins_1_1_rule_validation_error.html',1,'DECS_Excel_Add_Ins']]],
-  ['rulevalidationresult_23',['RuleValidationResult',['../class_d_e_c_s___excel___add___ins_1_1_rule_validation_result.html',1,'DECS_Excel_Add_Ins.RuleValidationResult'],['../class_d_e_c_s___excel___add___ins_1_1_rule_validation_result.html#a39518b9d9642b82a06eff501530900a6',1,'DECS_Excel_Add_Ins.RuleValidationResult.RuleValidationResult()']]],
-  ['runbutton_5fclick_24',['runButton_Click',['../class_d_e_c_s___excel___add___ins_1_1_define_rules_form.html#a07d2d94e15eb227a5a720092ceafb82a',1,'DECS_Excel_Add_Ins::DefineRulesForm']]]
+  ['rules_20',['Extraction rules',['../index.html#autotoc_md6',1,'']]],
+  ['ruleserrorform_21',['RulesErrorForm',['../class_d_e_c_s___excel___add___ins_1_1_rules_error_form.html',1,'DECS_Excel_Add_Ins']]],
+  ['ruletype_22',['RuleType',['../namespace_d_e_c_s___excel___add___ins.html#a6c2c8834ffbb281029b44e5dd63a0b95',1,'DECS_Excel_Add_Ins']]],
+  ['rulevalidationerror_23',['RuleValidationError',['../class_d_e_c_s___excel___add___ins_1_1_rule_validation_error.html',1,'DECS_Excel_Add_Ins']]],
+  ['rulevalidationresult_24',['RuleValidationResult',['../class_d_e_c_s___excel___add___ins_1_1_rule_validation_result.html',1,'DECS_Excel_Add_Ins.RuleValidationResult'],['../class_d_e_c_s___excel___add___ins_1_1_rule_validation_result.html#a39518b9d9642b82a06eff501530900a6',1,'DECS_Excel_Add_Ins.RuleValidationResult.RuleValidationResult()']]],
+  ['runbutton_5fclick_25',['runButton_Click',['../class_d_e_c_s___excel___add___ins_1_1_define_rules_form.html#a07d2d94e15eb227a5a720092ceafb82a',1,'DECS_Excel_Add_Ins::DefineRulesForm']]]
 ];

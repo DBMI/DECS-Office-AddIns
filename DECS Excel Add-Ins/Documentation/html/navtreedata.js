@@ -25,6 +25,20 @@
 var NAVTREE =
 [
   [ "DECS Excel Add-Ins", "index.html", [
+    [ "Installation", "index.html#autotoc_md1", null ],
+    [ "Operation", "index.html#autotoc_md2", [
+      [ "Extract data from notes", "index.html#autotoc_md3", [
+        [ "Cleaning", "index.html#autotoc_md4", null ],
+        [ "Date formats", "index.html#autotoc_md5", null ],
+        [ "Extraction rules", "index.html#autotoc_md6", null ]
+      ] ]
+    ] ],
+    [ "Algorithm Description", "index.html#autotoc_md7", [
+      [ "Excel: Lookup Social Vulnerability Index (SVI)", "index.html#autotoc_md8", [
+        [ "Finding the census tract number:", "index.html#autotoc_md9", null ],
+        [ "Extracting SVI information", "index.html#autotoc_md10", null ]
+      ] ]
+    ] ],
     [ "Packages", "namespaces.html", [
       [ "Package List", "namespaces.html", "namespaces_dup" ],
       [ "Package Members", "namespacemembers.html", [
