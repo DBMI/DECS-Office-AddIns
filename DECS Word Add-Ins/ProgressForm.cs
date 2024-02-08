@@ -13,6 +13,9 @@ using System.Windows.Forms;
 
 namespace DecsWordAddIns
 {
+    /// <summary>
+    /// Creates custom form to show user the progress of DECS project setup.
+    /// </summary>
     internal partial class ProgressForm : Form
     {
         private const string CHECKED_BOX = "☑";

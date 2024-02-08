@@ -9,12 +9,18 @@ using MsOutlook = Microsoft.Office.Interop.Outlook;
 
 namespace DecsWordAddIns
 {
+    /**
+     * @brief Enumerate whether results will be delivered via OneDrive or VRD.
+     */ 
     internal enum DeliveryType
     {
         OneDrive,
         VRD
     }
 
+    /**
+     * @brief Builds project delivery email.
+     */ 
     // https://csharpexamples.com/c-send-an-email-using-outlook-program/
     internal class Emailer
     {
@@ -26,6 +32,13 @@ namespace DecsWordAddIns
 
         private MsOutlook.MailItem mail;
 
+        /// <summary>
+        /// Constructor
+        /// </summary>
+        /// <param name="deliveryType">@c DeliveryType enum</param>
+        /// <param name="projectDirectory">@c string</param>
+        /// <param name="requestorSalutation">@c string</param>
+        /// <param name="taskNumber">@c string</param>
         internal Emailer(
             DeliveryType deliveryType,
             string projectDirectory,
@@ -40,6 +53,12 @@ namespace DecsWordAddIns
             this.htmlBody = this.htmlBody.Replace(TASK_NUMBER, taskNumber);
         }
 
+        /// <summary>
+        /// Drafts email.
+        /// </summary>
+        /// <param name="subject">@c string</param>
+        /// <param name="recipients">@c string</param>
+        /// <returns>bool</returns>
         internal bool DraftOutlookEmail(string subject, string recipients)
         {
             try
@@ -71,6 +90,10 @@ namespace DecsWordAddIns
             }
         }
 
+        /// <summary>
+        /// Uses saved template depending on @c DeliveryType.
+        /// </summary>
+        /// <param name="deliveryType"></param>
         private void ReadEmailBody(DeliveryType deliveryType)
         {
             if (deliveryType == DeliveryType.OneDrive)
@@ -86,11 +109,18 @@ namespace DecsWordAddIns
             }
         }
 
+        /// <summary>
+        /// Displays the email we've drafted.
+        /// </summary>
         internal void ShowDraftEmail()
         {
             this.mail.Display(true);
         }
 
+        /// <summary>
+        /// Returns the subject line.
+        /// </summary>
+        /// <returns></returns>
         internal string Subject()
         {
             return this.mail.Subject;

@@ -11,6 +11,9 @@ using static System.Windows.Forms.LinkLabel;
 
 namespace DecsWordAddIns
 {
+    /**
+     * @brief Reads a list from this Word document & outputs as a .SQL file.
+     */ 
     internal class ListImporter
     {
         private readonly string[] IGNORED_WORDS = { "MRN" };
@@ -20,6 +23,10 @@ namespace DecsWordAddIns
 
         public ListImporter() { }
 
+        /// <summary>
+        /// Main method: Scans the document and builds the SQL file to import the list.
+        /// </summary>
+        /// <param name="doc">Word @c Document object</param>
         public void Scan(Document doc)
         {
             // Initialize the output .SQL file.
