@@ -196,12 +196,20 @@ namespace DECS_Excel_Add_Ins
         {
             List<string> names = new List<string>();
             Range range = (Range)sheet.Cells[1, 1];
+
             int lastUsedCol = Utilities.FindLastCol(sheet);
 
             // Search along row 1.
             for (int col_index = 1; col_index <= lastUsedCol; col_index++)
             {
-                names.Add(range.Value.ToString());
+                try
+                {
+                    names.Add(range.Value.ToString());
+                }
+                catch (Microsoft.CSharp.RuntimeBinder.RuntimeBinderException)
+                {
+                    break;
+                }
 
                 // Move over one column.
                 range = range.Offset[0, 1];
@@ -322,6 +330,34 @@ namespace DECS_Excel_Add_Ins
         internal static string GetTimestamp()
         {
             return DateTime.Now.ToString("yyyyMMddHHmmss");
+        }
+
+        /// <summary>
+        /// Tests to see if RegEx pattern has any capture groups.
+        /// </summary>
+        /// <param name="regexText">Regular Expression</param>
+        /// <returns>bool</returns>
+        internal static bool HasCaptureGroups(string regexText)
+        {
+            bool hasCaptureGroups = false;
+
+            // Empty strings are not errors.
+            if (!string.IsNullOrEmpty(regexText))
+            {
+                try
+                {
+                    Regex regex = new Regex(regexText);
+
+                    // https://learn.microsoft.com/en-us/dotnet/api/system.text.regularexpressions.regex.getgroupnumbers?view=net-8.0
+                    int[] groupNumbers = regex.GetGroupNumbers();
+                    hasCaptureGroups = groupNumbers.Count() > 1;
+                }
+                catch (ArgumentException)
+                {
+                }
+            }
+
+            return hasCaptureGroups;
         }
 
         /// <summary>

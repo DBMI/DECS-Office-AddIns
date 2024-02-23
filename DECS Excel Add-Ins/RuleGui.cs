@@ -23,7 +23,7 @@ using System.Web.UI.WebControls;
 namespace DECS_Excel_Add_Ins
 {
     /**
-     * @brief A set of controls: two textboxes, a delete button and the panel that contains them all.
+     * @brief A set of controls: three textboxes, a checkbox, a delete button and the panel that contains them all.
      * Meant to be inherited & instantiated by @c CleaningRule and @c ExtractRule classes.
      */
     internal abstract class RuleGui
@@ -103,7 +103,9 @@ namespace DECS_Excel_Add_Ins
 
             // Create enable checkbox.
             checkBox = new CheckBox();
-            checkBox.Checked = true;
+
+            // Start off NOT enabled--to match the initial conditions for CleaningRule & ExtractRule classes.
+            checkBox.Checked = false;
             checkBox.Click += CheckBoxClicked;
             checkBox.Font = CHECKBOX_FONT;
             checkBox.Height = BUTTON_HEIGHT;
@@ -197,8 +199,6 @@ namespace DECS_Excel_Add_Ins
             parentClassEnableAction = enableAction;
         }
 
-
-
         /// <summary>
         /// Callback for when checkbox is clicked.
         /// </summary>
@@ -229,8 +229,8 @@ namespace DECS_Excel_Add_Ins
         }
 
         /// <summary>
-        /// Implemented in the derived classes because the TextChanged methods are defined there
-        /// and we temporarily need to disable the TextChanged methods while clearing the textboxes.
+        /// Implemented in the derived classes because the Leave methods are defined there
+        /// and we temporarily need to disable the Leave methods while clearing the textboxes.
         /// </summary>
         public abstract void Clear();
 

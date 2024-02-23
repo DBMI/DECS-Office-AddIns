@@ -37,9 +37,9 @@ namespace DECS_Excel_Add_Ins
             : base(x, y, index, parent, "cleaningRules")
         {
             config = notesConfig;
-            base.leftTextBox.TextChanged += cleaningRulesDisplayNameTextBox_TextChanged;
-            base.centerTextBox.TextChanged += cleaningRulesPatternTextBox_TextChanged;
-            base.rightTextBox.TextChanged += cleaningRulesReplaceTextBox_TextChanged;
+            base.leftTextBox.Leave += cleaningRulesDisplayNameTextBox_Leave;
+            base.centerTextBox.Leave += cleaningRulesPatternTextBox_Leave;
+            base.rightTextBox.Leave += cleaningRulesReplaceTextBox_Leave;
 
             // When loading an >existing< NotesConfig object,
             // we don't want to modify the object.
@@ -78,16 +78,18 @@ namespace DECS_Excel_Add_Ins
         /// </summary>
         /// <param name="sender">Whatever object trigged this callback.</param>
         /// <param name="e">The EventArgs that accompanied this callback.</param>
-        private void cleaningRulesDisplayNameTextBox_TextChanged(object sender, EventArgs e)
+        private void cleaningRulesDisplayNameTextBox_Leave(object sender, EventArgs e)
         {
             if (!textChangedCallbackEnabled)
                 return;
 
-            log.Debug("cleaningRulesDisplayNameTextBox_TextChanged");
+            log.Debug("cleaningRulesDisplayNameTextBox_Leave");
             TextBox textBox = (TextBox)sender;
 
             // Insert or update Nth cleaning rule with this display Name.
             config.ChangeCleaningRuleDisplayName(index: base.index, displayName: textBox.Text);
+
+            base.leftTextBox.Leave += cleaningRulesDisplayNameTextBox_Leave;
         }
 
         /// <summary>
@@ -96,12 +98,12 @@ namespace DECS_Excel_Add_Ins
         /// </summary>
         /// <param name="sender">Whatever object trigged this callback.</param>
         /// <param name="e">The EventArgs that accompanied this callback.</param>
-        private void cleaningRulesPatternTextBox_TextChanged(object sender, EventArgs e)
+        private void cleaningRulesPatternTextBox_Leave(object sender, EventArgs e)
         {
             if (!textChangedCallbackEnabled)
                 return;
 
-            log.Debug("cleaningRulesPatternTextBox_TextChanged");
+            log.Debug("cleaningRulesPatternTextBox_Leave");
             TextBox textBox = (TextBox)sender;
             RuleValidationResult result = Utilities.IsRegexValid(textBox.Text);
 
@@ -124,6 +126,8 @@ namespace DECS_Excel_Add_Ins
                 // Clear Nth cleaning rule's pattern.
                 config.ChangeCleaningRulePattern(index: base.index, pattern: string.Empty);
             }
+
+            base.centerTextBox.Leave += cleaningRulesPatternTextBox_Leave;
         }
 
         /// <summary>
@@ -132,11 +136,11 @@ namespace DECS_Excel_Add_Ins
         /// </summary>
         /// <param name="sender">Whatever object trigged this callback.</param>
         /// <param name="e">The EventArgs that accompanied this callback.</param>
-        private void cleaningRulesReplaceTextBox_TextChanged(object sender, EventArgs e)
+        private void cleaningRulesReplaceTextBox_Leave(object sender, EventArgs e)
         {
             if (!textChangedCallbackEnabled)
                 return;
-            log.Debug("cleaningRulesReplaceTextBox_TextChanged");
+            log.Debug("cleaningRulesReplaceTextBox_Leave");
             TextBox textBox = (TextBox)sender;
             RuleValidationResult result = Utilities.IsRegexValid(textBox.Text);
 
@@ -159,6 +163,8 @@ namespace DECS_Excel_Add_Ins
                 // Clear Nth cleaning rule's replace string.
                 config.ChangeCleaningRuleReplace(index: base.index, replace: string.Empty);
             }
+
+            base.rightTextBox.Leave += cleaningRulesReplaceTextBox_Leave;
         }
 
         /// <summary>
@@ -200,19 +206,24 @@ namespace DECS_Excel_Add_Ins
             base.leftTextBox.Text = rule.displayName;
             base.centerTextBox.Text = rule.pattern;
             base.rightTextBox.Text = rule.replace;
-            RuleValidationResult result = Utilities.IsRegexValid(rule.pattern);
+            base.checkBox.Checked = rule.enabled;
 
-            // Validate the rule.
-            if (!result.Valid())
+            if (rule.enabled)
             {
-                Utilities.MarkRegexInvalid(textBox: base.centerTextBox, message: result.ToString());
-            }
+                RuleValidationResult result = Utilities.IsRegexValid(rule.pattern);
 
-            result = Utilities.IsRegexValid(rule.replace);
+                // Validate the rule.
+                if (!result.Valid())
+                {
+                    Utilities.MarkRegexInvalid(textBox: base.centerTextBox, message: result.ToString());
+                }
 
-            if (!result.Valid())
-            {
-                Utilities.MarkRegexInvalid(textBox: base.rightTextBox, message: result.ToString());
+                result = Utilities.IsRegexValid(rule.replace);
+
+                if (!result.Valid())
+                {
+                    Utilities.MarkRegexInvalid(textBox: base.rightTextBox, message: result.ToString());
+                }
             }
 
             textChangedCallbackEnabled = true;

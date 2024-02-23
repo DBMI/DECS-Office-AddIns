@@ -86,9 +86,8 @@ namespace DECS_Excel_Add_Ins
             );
 
             // Tell the cleaning rule panel to let us know when ITS parent (RuleGui)'s
-            // Delete button is pressed.
+            // Delete button or Enable checkbox is pressed.
             cleaningRuleGui.AssignExternalDelete(DeleteCleaningRule);
-
             cleaningRuleGui.AssignDisable(DisableCleaningRule);
             cleaningRuleGui.AssignEnable(EnableCleaningRule);
 
@@ -129,10 +128,9 @@ namespace DECS_Excel_Add_Ins
                 updateConfig: updateConfig
             );
 
-            // Tell the cleaning rule panel to let us know when ITS parent (RuleGui)'s
-            // Delete button is pressed.
+            // Tell the extract rule panel to let us know when ITS parent (RuleGui)'s
+            // Delete button or Enable checkbox is pressed.
             extractRuleGui.AssignExternalDelete(DeleteExtractRule);
-
             extractRuleGui.AssignDisable(DisableExtractRule);
             extractRuleGui.AssignEnable(EnableExtractRule);
 
@@ -160,6 +158,39 @@ namespace DECS_Excel_Add_Ins
             List<RuleGui> rules = CleaningRules();
             rules.AddRange(ExtractRules());
             return rules;
+        }
+
+        private bool CheckExtractRulesUseful()
+        {
+            List<ExtractRule> rules = config.ExtractRules;
+
+            // Alert user about enabled extract rules that have no capture groups.
+            foreach (ExtractRule rule in rules)
+            {
+                if (rule.enabled && rule.pattern != null)
+                {
+                    if (!Utilities.HasCaptureGroups(rule.pattern))
+                    {
+                        string message = "Rule '" + rule.displayName + "' does not extract any data. Run anyway?";
+                        string title = "Rule doesn't do anything.";
+                        MessageBoxButtons buttons = MessageBoxButtons.YesNo;
+                        DialogResult result = MessageBox.Show(
+                            message,
+                            title,
+                            buttons,
+                            MessageBoxIcon.Warning,
+                            MessageBoxDefaultButton.Button1
+                        );
+
+                        if (result == DialogResult.No)
+                        {
+                            return false;
+                        }
+                    }
+                }
+            }
+
+            return true;
         }
 
         /// <summary>
@@ -209,7 +240,7 @@ namespace DECS_Excel_Add_Ins
         }
 
         /// <summary>
-        /// Callback for when the @c dateConversoinEnabledCheckBox is clicked.
+        /// Callback for when the @c dateConversionEnabledCheckBox is clicked.
         /// </summary>
         /// <param name="sender">Whatever object trigged this callback.</param>
         /// <param name="e">The EventArgs that accompanied this callback.</param>
@@ -588,18 +619,32 @@ namespace DECS_Excel_Add_Ins
         {
             log.Debug("Run button clicked.");
 
-            ShowCleaningResult();
-            ShowDateConversionResult();
-            ShowExtractResult();
+            // Check to see if any enabled extract rules are missing capture groups.
+            // (If so, why are we running them?)
+            if (CheckExtractRulesUseful())
+            {
+                ShowCleaningResult();
+                ShowDateConversionResult();
+                ShowExtractResult();
+            }
         }
 
         /// <summary>
         /// Scrape the GUI & save the rules' current state.
+        /// <param name="filename">Name of file to save. Default: configFilename</param>
         /// </summary>
-        
-        private void Save()
+
+        private void Save(string filename = "")
         {
-            using (var writer = new System.IO.StreamWriter(configFilename))
+            // Scrape the GUI & get the latest config.
+            parser.UpdateConfig(configObj: config, updateOriginalSourceColumn: false);
+
+            if (String.IsNullOrEmpty(filename))
+            {
+                filename = configFilename;
+            }
+                
+            using (var writer = new System.IO.StreamWriter(filename))
             {
                 var serializer = new XmlSerializer(typeof(NotesConfig));
                 serializer.Serialize(writer, config);
@@ -620,12 +665,7 @@ namespace DECS_Excel_Add_Ins
 
             if (dialog.FileName != "")
             {
-                using (var writer = new System.IO.StreamWriter(dialog.FileName))
-                {
-                    var serializer = new XmlSerializer(typeof(NotesConfig));
-                    serializer.Serialize(writer, config);
-                    writer.Flush();
-                }
+                Save(filename: dialog.FileName);
             }
         }
 
