@@ -1,4 +1,6 @@
 ﻿using Microsoft.Office.Interop.Excel;
+using Microsoft.Office.Tools.Excel;
+using Microsoft.VisualBasic.FileIO;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -12,6 +14,8 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 using Application = Microsoft.Office.Interop.Excel.Application;
 using Excel = Microsoft.Office.Interop.Excel;
+using Workbook = Microsoft.Office.Interop.Excel.Workbook;
+using Worksheet = Microsoft.Office.Interop.Excel.Worksheet;
 
 namespace DECS_Excel_Add_Ins
 {
@@ -63,8 +67,10 @@ namespace DECS_Excel_Add_Ins
             application = Globals.ThisAddIn.Application;
 
             // Initialize dictionary to translate column names like "Date of Procedure" to DataType.Date.
-            supportedDataTypes = new Dictionary<string, DataType>();
-            supportedDataTypes.Add("Date", DataType.Date);
+            supportedDataTypes = new Dictionary<string, DataType>
+            {
+                { "Date", DataType.Date }
+            };
         }
 
         /// <summary>
@@ -231,16 +237,114 @@ namespace DECS_Excel_Add_Ins
             return (selectedColumns, segmentStart);
         }
 
+        private string PrepSegmentStart(List<string> externalColumnNames)
+        {
+            string segmentStart = SEGMENT_START_I;
+
+            // Turn "Date of consult" into "DATE_OF_CONSULT".
+            sqlVariableNames = externalColumnNames
+                .Select(s => s.Replace(" ", "_").ToUpper())
+                .ToList();
+            segmentStart += string.Join(", ", sqlVariableNames);
+            segmentStart += SEGMENT_START_II;
+            return segmentStart;
+        }
+
         /// <summary>
         /// Scans the worksheet & creates the SQL file that lists the patient data to be imported.
         /// </summary>
         /// <param name="worksheet">Active worksheet</param>
-        
+
         internal void Scan(Worksheet worksheet)
         {
             // We'll use this in a lot of places, so let's just look it up once.
             lastRow = Utilities.FindLastRow(worksheet);
 
+            if (lastRow == 1)
+            {
+                // Then perhaps the user wants to read/parse an external file.
+                ScanExternalFile();
+            }
+            else
+            {
+                // Then the data are present on this sheet.
+                ScanWorksheet(worksheet);
+            }
+        }
+
+        private void ScanExternalFile()
+        {
+            // What's the source file?
+            string externalFilename = string.Empty;
+
+            using (OpenFileDialog openFileDialog = new OpenFileDialog())
+            {
+                // Because we don't specify an opening directory,
+                // the dialog will open in the last directory used.
+                openFileDialog.Filter = "csv files (*.csv)|*.csv";
+                openFileDialog.RestoreDirectory = true;
+
+                if (openFileDialog.ShowDialog() == DialogResult.OK)
+                {
+                    // Get the path of specified file.
+                    externalFilename = openFileDialog.FileName;
+                }
+            }
+
+            if (externalFilename != string.Empty)
+            {
+
+                (StreamWriter writer, string outputFilename) = Utilities.OpenOutput(
+                    inputFilename: externalFilename,
+                    filenameAddon: "_list",
+                    filetype: ".sql"
+                );
+
+                int lines_written_this_chunk = 0;
+
+                using (TextFieldParser csvParser = new TextFieldParser(externalFilename))
+                {
+                    csvParser.CommentTokens = new string[] { "#" };
+                    csvParser.SetDelimiters(new string[] { "\t" });
+                    csvParser.HasFieldsEnclosedInQuotes = false;
+
+                    // Read the row with the column names
+                    List<string> columnHeaders = csvParser.ReadFields().ToList<string>();
+
+                    // Use the column names to write the file header.
+                    string segmentStart = PrepSegmentStart(columnHeaders);
+                    writer.Write(PREAMBLE + segmentStart);
+
+                    while (!csvParser.EndOfData)
+                    {
+                        // Read current line fields, pointer moves to the next line.
+                        List<string> rowContents = csvParser.ReadFields().ToList<string>();
+                        writer.Write("(" + string.Join(", ", rowContents) + ")");
+                        lines_written_this_chunk++;
+                        string line_ending;
+
+                        if (lines_written_this_chunk < MAX_LINES_PER_IMPORT)
+                        {
+                            line_ending = ",\r\n";
+                        }
+                        else
+                        {
+                            line_ending = ";\r\n\r\n" + segmentStart;
+                            lines_written_this_chunk = 0;
+                        }
+                        writer.Write(line_ending);
+                    }
+
+                    writer.Write(";\r\n");
+                }
+
+                writer.Close();
+                Process.Start(outputFilename);
+            }
+        }
+
+        private void ScanWorksheet(Worksheet worksheet)
+        {
             // Initialize the output .SQL file.
             Workbook workbook = worksheet.Parent;
             string workbookFilename = workbook.FullName;
