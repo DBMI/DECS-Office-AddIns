@@ -37,9 +37,9 @@ namespace DECS_Excel_Add_Ins
             : base(x, y, index, parent, "extractRules")
         {
             config = notesConfig;
-            base.leftTextBox.TextChanged += extractRulesDisplayNameTextBox_TextChanged;
-            base.centerTextBox.TextChanged += extractRulesPatternTextBox_TextChanged;
-            base.rightTextBox.LostFocus += extractRulesnewColumnTextBox_TextChanged;
+            base.leftTextBox.Leave += extractRulesDisplayNameTextBox_Leave;
+            base.centerTextBox.Leave += extractRulesPatternTextBox_Leave;
+            base.rightTextBox.Leave += extractRulesnewColumnTextBox_Leave;
 
             // When loading an >existing< NotesConfig object,
             // we don't want to modify the object.
@@ -107,16 +107,19 @@ namespace DECS_Excel_Add_Ins
         /// <param name="sender">Whatever object trigged this callback.</param>
         /// <param name="e">The EventArgs that accompanied this callback.</param>
         
-        private void extractRulesDisplayNameTextBox_TextChanged(object sender, EventArgs e)
+        private void extractRulesDisplayNameTextBox_Leave(object sender, EventArgs e)
         {
             if (!textChangedCallbackEnabled)
                 return;
 
-            log.Debug("extractRulesDisplayNameTextBox_TextChanged");
+            log.Debug("extractRulesDisplayNameTextBox_Leave");
             TextBox textBox = (TextBox)sender;
 
             // Insert or update Nth extract rule with this display Name.
             config.ChangeExtractRuleDisplayName(index: base.index, displayName: textBox.Text);
+
+            // Resubscribe.
+            base.leftTextBox.Leave += extractRulesDisplayNameTextBox_Leave;
         }
 
         /// <summary>
@@ -125,13 +128,13 @@ namespace DECS_Excel_Add_Ins
         /// </summary>
         /// <param name="sender">Whatever object trigged this callback.</param>
         /// <param name="e">The EventArgs that accompanied this callback.</param>
-        
-        private void extractRulesPatternTextBox_TextChanged(object sender, EventArgs e)
+
+        private void extractRulesPatternTextBox_Leave(object sender, EventArgs e)
         {
             if (!textChangedCallbackEnabled)
                 return;
 
-            log.Debug("extractRulesPatternTextBox_TextChanged.");
+            log.Debug("extractRulesPatternTextBox_Leave.");
             TextBox textBox = (TextBox)sender;
             RuleValidationResult result = Utilities.IsRegexValid(textBox.Text);
 
@@ -154,6 +157,9 @@ namespace DECS_Excel_Add_Ins
                 // Clear Nth extract rule's pattern.
                 config.ChangeExtractRulePattern(index: base.index, pattern: string.Empty);
             }
+
+            // Resubscribe.
+            base.centerTextBox.Leave += extractRulesPatternTextBox_Leave;
         }
 
         /// <summary>
@@ -163,12 +169,12 @@ namespace DECS_Excel_Add_Ins
         /// <param name="sender">Whatever object trigged this callback.</param>
         /// <param name="e">The EventArgs that accompanied this callback.</param>
         
-        private void extractRulesnewColumnTextBox_TextChanged(object sender, EventArgs e)
+        private void extractRulesnewColumnTextBox_Leave(object sender, EventArgs e)
         {
             if (!textChangedCallbackEnabled)
                 return;
 
-            log.Debug("extractRulesnewColumnTextBox_TextChanged.");
+            log.Debug("extractRulesnewColumnTextBox_Leave.");
             TextBox textBox = (TextBox)sender;
 
             // Insert or update Nth extract rule with this pattern.
@@ -176,13 +182,16 @@ namespace DECS_Excel_Add_Ins
 
             // Alert upper-level GUI.
             parentRuleChangedAction();
+
+            // Resubscribe.
+            base.rightTextBox.Leave += extractRulesnewColumnTextBox_Leave;
         }
 
         /// <summary>
         /// Populate this GUI with a @c ExtractRule object.
         /// </summary>
         /// <param name="rule">A @c ExtractRule object to be visualized</param>
-        
+
         public void Populate(ExtractRule rule)
         {
             if (rule == null)
@@ -192,21 +201,27 @@ namespace DECS_Excel_Add_Ins
             base.leftTextBox.Text = rule.displayName;
             base.centerTextBox.Text = rule.pattern;
             base.rightTextBox.Text = rule.newColumn;
-            RuleValidationResult result = Utilities.IsRegexValid(rule.pattern);
+            base.checkBox.Checked = rule.enabled;
 
-            // Validate the rule.
-            if (!result.Valid())
+            // Don't bother checking rules until they're enabled.
+            if (rule.enabled)
             {
-                Utilities.MarkRegexInvalid(textBox: base.centerTextBox, message: result.ToString());
-            }
+                RuleValidationResult result = Utilities.IsRegexValid(rule.pattern);
 
-            // Validate the rule.
-            if (string.IsNullOrEmpty(rule.newColumn))
-            {
-                Utilities.MarkRegexInvalid(
-                    textBox: base.rightTextBox,
-                    message: "newColumn is empty"
-                );
+                // Validate the rule.
+                if (!result.Valid())
+                {
+                    Utilities.MarkRegexInvalid(textBox: base.centerTextBox, message: result.ToString());
+                }
+
+                // Validate the rule.
+                if (string.IsNullOrEmpty(rule.newColumn))
+                {
+                    Utilities.MarkRegexInvalid(
+                        textBox: base.rightTextBox,
+                        message: "newColumn is empty"
+                    );
+                }
             }
 
             textChangedCallbackEnabled = true;

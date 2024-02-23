@@ -406,58 +406,66 @@ namespace DECS_Excel_Add_Ins
             for (int index = 0; index < CleaningRules.Count; index++)
             {
                 CleaningRule rule = CleaningRules[index];
-                RuleValidationResult result = Utilities.IsRegexValid(rule.pattern);
-
-                if (!result.Valid())
+                
+                if (rule.enabled)
                 {
-                    RuleValidationError ruleValidationError = new RuleValidationError(
-                        _ruleType: RuleType.Cleaning,
-                        _index: index,
-                        _ruleComponent: RuleComponent.Pattern,
-                        _message: result.ToString()
-                    );
-                    errorReports.Add(ruleValidationError);
-                }
+                    RuleValidationResult result = Utilities.IsRegexValid(rule.pattern);
 
-                result = Utilities.IsRegexValid(rule.replace);
+                    if (!result.Valid())
+                    {
+                        RuleValidationError ruleValidationError = new RuleValidationError(
+                            _ruleType: RuleType.Cleaning,
+                            _index: index,
+                            _ruleComponent: RuleComponent.Pattern,
+                            _message: result.ToString()
+                        );
+                        errorReports.Add(ruleValidationError);
+                    }
 
-                if (!result.Valid())
-                {
-                    RuleValidationError ruleValidationError = new RuleValidationError(
-                        _ruleType: RuleType.Cleaning,
-                        _index: index,
-                        _ruleComponent: RuleComponent.Replace,
-                        _message: result.ToString()
-                    );
-                    errorReports.Add(ruleValidationError);
+                    result = Utilities.IsRegexValid(rule.replace);
+
+                    if (!result.Valid())
+                    {
+                        RuleValidationError ruleValidationError = new RuleValidationError(
+                            _ruleType: RuleType.Cleaning,
+                            _index: index,
+                            _ruleComponent: RuleComponent.Replace,
+                            _message: result.ToString()
+                        );
+                        errorReports.Add(ruleValidationError);
+                    }
                 }
             }
 
             for (int index = 0; index < ExtractRules.Count; index++)
             {
                 ExtractRule rule = ExtractRules[index];
-                RuleValidationResult result = Utilities.IsRegexValid(rule.pattern);
 
-                if (!result.Valid())
+                if (rule.enabled)
                 {
-                    RuleValidationError ruleValidationError = new RuleValidationError(
-                        _ruleType: RuleType.Extract,
-                        _index: index,
-                        _ruleComponent: RuleComponent.Pattern,
-                        _message: result.ToString()
-                    );
-                    errorReports.Add(ruleValidationError);
-                }
+                    RuleValidationResult result = Utilities.IsRegexValid(rule.pattern);
 
-                if (string.IsNullOrEmpty(rule.newColumn))
-                {
-                    RuleValidationError ruleValidationError = new RuleValidationError(
-                        _ruleType: RuleType.Extract,
-                        _index: index,
-                        _ruleComponent: RuleComponent.NewColumn,
-                        _message: "newColumn is empty."
-                    );
-                    errorReports.Add(ruleValidationError);
+                    if (!result.Valid())
+                    {
+                        RuleValidationError ruleValidationError = new RuleValidationError(
+                            _ruleType: RuleType.Extract,
+                            _index: index,
+                            _ruleComponent: RuleComponent.Pattern,
+                            _message: result.ToString()
+                        );
+                        errorReports.Add(ruleValidationError);
+                    }
+
+                    if (string.IsNullOrEmpty(rule.newColumn))
+                    {
+                        RuleValidationError ruleValidationError = new RuleValidationError(
+                            _ruleType: RuleType.Extract,
+                            _index: index,
+                            _ruleComponent: RuleComponent.NewColumn,
+                            _message: "newColumn is empty."
+                        );
+                        errorReports.Add(ruleValidationError);
+                    }
                 }
             }
 
