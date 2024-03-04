@@ -303,28 +303,14 @@ namespace DECS_Excel_Add_Ins
                     {
                         log.Debug("Attempting match using pattern '" + rule.pattern + "'.");
 
-                        // If we get more than one extracted value, concatenate into comma-separated string.
-                        List<string> extractedValues = new List<string>();
+                        // If we get more than one extracted value, select the LAST one.
+                        Match match = Regex.Match(cell_contents, rule.pattern, RegexOptions.IgnoreCase | RegexOptions.RightToLeft);
 
-                        foreach (
-                            Match match in Regex.Matches(
-                                cell_contents,
-                                rule.pattern,
-                                RegexOptions.IgnoreCase
-                            )
-                        )
+                        if (match.Success)
                         {
-                            if (match.Success)
-                            {
-                                log.Debug("Rule matched: " + match.Value.ToString());
-                                extractedValues.Add(match.Groups[1].ToString());
-                            }
+                            log.Debug("Rule matched: " + match.Value.ToString());
+                            targetRng.Offset[rowNumber - 1, 0].Value = match.Groups[1].ToString();
                         }
-
-                        targetRng.Offset[rowNumber - 1, 0].Value += String.Join(
-                            ", ",
-                            extractedValues
-                        );
                     }
                     catch (System.ArgumentNullException)
                     {
