@@ -119,7 +119,9 @@ namespace DECS_Excel_Add_Ins
             foreach (Range row in rowsToProcess.GetRows())
             {
                 if (stopProcessing)
+                {
                     return false;
+                }
 
                 int rowNumber = row.Row;
                 log.Debug("Processing row " + rowNumber.ToString());
@@ -181,7 +183,9 @@ namespace DECS_Excel_Add_Ins
             foreach (Range row in rowsToProcess.GetRows())
             {
                 if (stopProcessing)
+                {
                     return;
+                }
 
                 int rowNumber = row.Row;
                 log.Debug("Processing row " + rowNumber.ToString());
@@ -250,7 +254,9 @@ namespace DECS_Excel_Add_Ins
             foreach (Range row in rowsToProcess.GetRows())
             {
                 if (stopProcessing)
+                {
                     return false;
+                }
 
                 int rowNumber = row.Row;
                 log.Debug("Processing row " + rowNumber.ToString());
@@ -272,7 +278,10 @@ namespace DECS_Excel_Add_Ins
                 {
                     // Don't create new columns with blank names.
                     if (rule.newColumn == null || rule.newColumn.Length == 0)
+                    {
                         continue;
+                    }
+                        
                     log.Debug("Extracting to column '" + rule.newColumn + "'.");
 
                     Range targetRng = Utilities.TopOfNamedColumn(
