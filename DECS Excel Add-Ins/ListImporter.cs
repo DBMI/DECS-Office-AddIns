@@ -319,7 +319,7 @@ namespace DECS_Excel_Add_Ins
                     {
                         // Read current line fields, pointer moves to the next line.
                         List<string> rowContents = csvParser.ReadFields().ToList<string>();
-                        writer.Write("(" + string.Join(", ", rowContents) + ")");
+                        writer.Write("(" + QUOTE + string.Join(QUOTE + ", " + QUOTE, rowContents) + QUOTE + ")");
                         lines_written_this_chunk++;
                         string line_ending;
 
