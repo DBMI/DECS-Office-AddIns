@@ -41,7 +41,8 @@ namespace DECS_Excel_Add_Ins
         {
             Range origCol = sheet.Columns[colNum];
             string origName = origCol.Cells[1].Value2;
-            Range newCol = Utilities.InsertNewColumn(origCol, origName + " converted");
+            Range newCol = Utilities.InsertNewColumn(range: origCol, 
+                                                     newColumnName: origName + " converted");
 
             Range allRows = Utilities.AllAvailableRows(sheet);
 

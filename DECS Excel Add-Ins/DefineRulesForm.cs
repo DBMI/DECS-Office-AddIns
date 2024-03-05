@@ -416,20 +416,22 @@ namespace DECS_Excel_Add_Ins
             AddExtractRule();
         }
 
-        //private List<string> GetAvailableColumnNames()
-        //{
-        //    Excel.Worksheet wksheet = (Excel.Worksheet)Globals.ThisAddIn.Application.ActiveSheet;
-        //    List<string> columnNames = Utilities.GetColumnNames(wksheet);
-        //    columnNames.Sort();
-        //    return columnNames;
-        //}
+        private void LeftRadioButton_Click(object sender, EventArgs e)
+        {
+            if (configLoading)
+                return;
+
+            // Change the left/right preference.
+            config.NewColumnLocation = InsertSide.Left;
+            parser.UpdateConfig(config);
+        }
 
         /// <summary>
         /// Callback for when the @c loadToolStripMenuItem is clicked.
         /// </summary>
         /// <param name="sender">Whatever object trigged this callback.</param>
         /// <param name="e">The EventArgs that accompanied this callback.</param>
-        
+
         private void loadToolStripMenuItem_Click(object sender, EventArgs e)
         {
             log.Debug("Loading config file.");
@@ -464,6 +466,9 @@ namespace DECS_Excel_Add_Ins
                 {
                     AddExtractRule(rule: rule, updateConfig: false);
                 }
+
+                // Show preferred location for new column.
+                SetNewColumnLocation(config.NewColumnLocation);
 
                 // Roll the source column listbox to the proper column name.
                 SetSourceColumn(config.SourceColumnName);
@@ -609,13 +614,23 @@ namespace DECS_Excel_Add_Ins
             SetRunButtonStatus();
         }
 
+        private void RightRadioButton_Click(object sender, EventArgs e)
+        {
+            if (configLoading)
+                return;
+
+            // Change the left/right preference.
+            config.NewColumnLocation = InsertSide.Right;
+            parser.UpdateConfig(config);
+        }
+
         /// <summary>
         /// Callback for when the @c runButton is clicked.
         /// </summary>
         /// <param name="sender">Whatever object trigged this callback.</param>
         /// <param name="e">The EventArgs that accompanied this callback.</param>
-        
-        private void runButton_Click(object sender, EventArgs e)
+        /// 
+        private void RunButton_Click(object sender, EventArgs e)
         {
             log.Debug("Run button clicked.");
 
@@ -700,6 +715,20 @@ namespace DECS_Excel_Add_Ins
         private void saveToolStripMenuItem_Click(object sender, EventArgs e)
         {
             Save();
+        }
+
+        private void SetNewColumnLocation(InsertSide insertSide)
+        {
+            if (insertSide == InsertSide.Right)
+            {
+                leftRadioButton.Checked = false;
+                rightRadioButton.Checked = true;
+            }
+            else
+            {
+                leftRadioButton.Checked = true;
+                rightRadioButton.Checked = false;
+            }
         }
 
         /// <summary>
