@@ -137,13 +137,13 @@ namespace DECS_Excel_Add_Ins
             if (sviTable.ready)
             {
                 // Build output columns.
-                Range sviRankColumn = Utilities.InsertNewColumn(locationColumn, "SVI rank");
-                Range sviScoreColumn = Utilities.InsertNewColumn(locationColumn, "SVI score");
+                Range sviRankColumn = Utilities.InsertNewColumn(range: locationColumn, newColumnName: "SVI rank", side: InsertSide.Right);
+                Range sviScoreColumn = Utilities.InsertNewColumn(range: locationColumn, newColumnName: "SVI score", side: InsertSide.Right);
                 Range censusColumn = null;
 
                 if (locationSource == LocationSource.Address)
                 {
-                    censusColumn = Utilities.InsertNewColumn(locationColumn, "Census FIPS");
+                    censusColumn = Utilities.InsertNewColumn(range: locationColumn, newColumnName: "Census FIPS", side: InsertSide.Right);
                 }
 
                 List<ulong> fipsList;

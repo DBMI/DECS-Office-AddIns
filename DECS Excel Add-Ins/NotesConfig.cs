@@ -81,6 +81,8 @@ namespace DECS_Excel_Add_Ins
 
         public string SourceColumnName { get; set; }
 
+        public InsertSide NewColumnLocation { get; set; }
+
         // https://stackoverflow.com/a/28546547/18749636
         private static readonly log4net.ILog log = log4net.LogManager.GetLogger(
             System.Reflection.MethodBase.GetCurrentMethod().DeclaringType
@@ -93,6 +95,7 @@ namespace DECS_Excel_Add_Ins
             CleaningRules = new List<CleaningRule>();
             DateConversionRule = new DateConversionRule();
             ExtractRules = new List<ExtractRule>();
+            NewColumnLocation = InsertSide.Left;
         }
 
         /// <summary>
@@ -352,18 +355,6 @@ namespace DECS_Excel_Add_Ins
 
             return config;
         }
-
-        //internal int NumValidCleaningRules()
-        //{
-        //    List<CleaningRule> validRules = ValidCleaningRules();
-        //    return validRules.Count;
-        //}
-
-        //internal int NumValidExternalRules()
-        //{
-        //    List<ExtractRule> validRules = ValidExtractRules();
-        //    return validRules.Count;
-        //}
 
         /// <summary>
         /// Returns the @c CleaningRule objects in which:

@@ -21,6 +21,11 @@ using ToolTip = System.Windows.Forms.ToolTip;
 
 namespace DECS_Excel_Add_Ins
 {
+    public enum InsertSide
+    {
+        Left,
+        Right
+    }
     /**
      * @brief Useful tools
      */
@@ -394,13 +399,23 @@ namespace DECS_Excel_Add_Ins
         /// <param name="range">Range of existing column</param>
         /// <param name="newColumnName">Name of column to be created</param>
         /// <returns>Range</returns>
-        internal static Range InsertNewColumn(Range range, string newColumnName)
+        internal static Range InsertNewColumn(Range range, string newColumnName, InsertSide side = InsertSide.Right)
         {
             int columnNumber = range.Column;
             Worksheet sheet = range.Worksheet;
-            sheet.Columns[columnNumber + 1].EntireColumn.Insert();
+            Range newRange;
 
-            Range newRange = range.Offset[0, 1];
+            if (side == InsertSide.Left)
+            {
+                sheet.Columns[columnNumber].EntireColumn.Insert();
+                newRange = range.Offset[0, -1];
+            }
+            else
+            {
+                sheet.Columns[columnNumber + 1].EntireColumn.Insert();
+                newRange = range.Offset[0, 1];
+            }
+
             newRange.Value2 = newColumnName;
             return newRange;
         }

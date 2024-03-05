@@ -294,7 +294,8 @@ namespace DECS_Excel_Add_Ins
                         log.Debug("Creating new column '" + rule.newColumn + "'.");
                         targetRng = Utilities.InsertNewColumn(
                             range: sourceColumn,
-                            newColumnName: rule.newColumn
+                            newColumnName: rule.newColumn,
+                            side: config.NewColumnLocation
                         );
                         log.Debug("Created new column '" + rule.newColumn + "'.");
                     }
