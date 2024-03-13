@@ -51,5 +51,5 @@
     </ExtractRule>
   </ExtractRules>
   <SourceColumnName>REPORT</SourceColumnName>
-  <NewColumnLocation>Right</NewColumnLocation>
+  <NewColumnLocation>Left</NewColumnLocation>
 </NotesConfig>

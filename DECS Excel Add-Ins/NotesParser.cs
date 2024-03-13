@@ -109,6 +109,12 @@ namespace DECS_Excel_Add_Ins
 
             log.Debug("Ordering StatusForm object .Show().");
             statusForm.Show();
+
+            if (!config.HasCleaningRules())
+            {
+                return true;
+            }
+
             statusForm.UpdateStatusLabel("Applying cleaning rules.");
 
             ShowRow(1);
@@ -145,12 +151,23 @@ namespace DECS_Excel_Add_Ins
                     {
                         cell_contents = Regex.Replace(cell_contents, rule.pattern, rule.replace);
                     }
-                    catch (System.ArgumentNullException) { }
+                    catch (System.ArgumentNullException ex) 
+                    { 
+                        log.Error(ex.Message);
+                    }
 
                     statusForm?.UpdateProgressBarLabel(rule.displayName ?? rule.replace);
                 }
 
-                thisCell.Value2 = cell_contents;
+                try
+                {
+                    thisCell.Value2 = cell_contents;
+                }
+                catch (System.Runtime.InteropServices.COMException ex)
+                { 
+                    log.Error(ex.Message);
+                }
+
                 statusForm?.UpdateCount();
             }
 
@@ -197,13 +214,22 @@ namespace DECS_Excel_Add_Ins
                 {
                     cell_contents = thisCell.Value2.ToString();
                 }
-                catch
+                catch (System.Runtime.InteropServices.COMException ex)
                 {
                     // There's nothing in this cell.
+                    log.Error(ex.Message);
                     continue;
                 }
 
-                thisCell.Value2 = dateConverter.Convert(cell_contents, desiredDateFormat);
+                try
+                {
+                    thisCell.Value2 = dateConverter.Convert(cell_contents, desiredDateFormat);
+                }
+                catch (System.Runtime.InteropServices.COMException ex) 
+                {
+                    log.Error(ex.Message);
+                }
+
                 statusForm?.UpdateCount();
             }
 
@@ -449,7 +475,15 @@ namespace DECS_Excel_Add_Ins
             for (int row_offset = 1; row_offset < lastRow; row_offset++)
             {
                 thisCell = sourceColumn.Offset[row_offset, 0];
-                thisCell.Value2 = originalSourceColumnEntries[row_offset - 1];
+
+                try
+                {
+                    thisCell.Value2 = originalSourceColumnEntries[row_offset - 1];
+                }
+                catch (System.Runtime.InteropServices.COMException ex)
+                {
+                    log.Error(ex.Message);
+                }
             }
         }
 
@@ -507,35 +541,11 @@ namespace DECS_Excel_Add_Ins
 
             var thread = new Thread(() =>
             {
-                SaveRevised(workbook, newFilename, justTheFilename);
+                Utilities.SaveRevised(workbook, newFilename, justTheFilename);
             });
 
             thread.Start();
             thread.IsBackground = true;
-        }
-
-        /// <summary>
-        /// Saves the workbook as revised using a new name.
-        /// </summary>
-        /// <param name="workbook">Active workbook</param>
-        /// <param name="newFilename">Desired new name for file</param>
-        /// <param name="justTheFilename">Stub of filename in case we need to synthesize filename with timestamp</param>
-        
-        private void SaveRevised(Workbook workbook, string newFilename, string justTheFilename)
-        {
-            try
-            {
-                workbook.SaveCopyAs(newFilename);
-            }
-            catch (System.Runtime.InteropServices.COMException)
-            {
-                newFilename = System.IO.Path.Combine(
-                    justTheFilename + "_" + Utilities.GetTimestamp()
-                );
-                workbook.SaveCopyAs(newFilename);
-            }
-
-            MessageBox.Show("Saved in '" + newFilename + "'.");
         }
 
         /// <summary>
