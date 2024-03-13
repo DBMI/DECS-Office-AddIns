@@ -450,7 +450,6 @@
             this.rightRadioButton.Name = "rightRadioButton";
             this.rightRadioButton.Size = new System.Drawing.Size(155, 19);
             this.rightRadioButton.TabIndex = 1;
-            this.rightRadioButton.TabStop = true;
             this.rightRadioButton.Text = "Right of Source Column";
             this.rightRadioButton.UseVisualStyleBackColor = true;
             this.rightRadioButton.Click += new System.EventHandler(this.RightRadioButton_Click);
@@ -458,6 +457,7 @@
             // leftRadioButton
             // 
             this.leftRadioButton.AutoSize = true;
+            this.leftRadioButton.Checked = true;
             this.leftRadioButton.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.leftRadioButton.Location = new System.Drawing.Point(18, 25);
             this.leftRadioButton.Name = "leftRadioButton";
