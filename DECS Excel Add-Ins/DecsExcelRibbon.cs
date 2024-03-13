@@ -79,6 +79,16 @@ namespace DECS_Excel_Add_Ins
         }
 
         /// <summary>
+        /// Lets the @c DexsExcelRibbon.xml point to the image for the @c MergeRows button.
+        /// </summary>
+        /// <param name="control">Reference to the IRibbonControl object.</param>
+        /// <returns>Bitmap</returns>
+        public Bitmap mergeRowsButton_GetImage(IRibbonControl control)
+        {
+            return Resources.merge_rows;
+        }
+
+        /// <summary>
         /// Lets the @c DexsExcelRibbon.xml point to the image for the @c SetupConfig button.
         /// </summary>
         /// <param name="control">Reference to the IRibbonControl object.</param>
@@ -157,11 +167,25 @@ namespace DECS_Excel_Add_Ins
         }
 
         /// <summary>
+        /// When @c MergeRows button is pressed, this method instantiates a @c MergeRowsForm.
+        /// </summary>
+        /// <param name="control">Reference to the IRibbonControl object.</param>
+
+        public void OnMergeRows(Office.IRibbonControl control)
+        {
+            MergeRowsForm form = new MergeRowsForm();
+            form.Visible = true;
+            // Formatter formatter = new Formatter();
+            // Excel.Worksheet wksheet = (Excel.Worksheet)Globals.ThisAddIn.Application.ActiveSheet;
+            // formatter.Format(wksheet);
+        }
+
+        /// <summary>
         /// When @c SetupConfig button is pressed, this method instantiates a @c DefineRulesForm object
         /// for the user to review & edit notes parsing rules.
         /// </summary>
         /// <param name="control">Reference to the IRibbonControl object.</param>
-        
+
         public void OnSearchConfig(Office.IRibbonControl control)
         {
             Excel.Worksheet wksheet = (Excel.Worksheet)Globals.ThisAddIn.Application.ActiveSheet;
