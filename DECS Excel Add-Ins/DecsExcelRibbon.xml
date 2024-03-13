@@ -19,6 +19,13 @@
 							screentip="Configure Search"
 							size="large"
 							supertip="Configure search of notes." />
+					<button id="mergeButton"
+							getImage="mergeRowsButton_GetImage"
+							label="Merge Rows"
+							onAction="OnMergeRows"
+							screentip="Merge rows"
+							size="large"
+							supertip="Merge results on index." />
 				</group>
 				<group id="ListGroup"
 					   label="Lists">

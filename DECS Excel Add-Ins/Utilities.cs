@@ -267,7 +267,12 @@ namespace DECS_Excel_Add_Ins
             // Search along row 1.
             for (int col_index = 1; col_index <= lastUsedCol; col_index++)
             {
-                columns.Add(range.Value.ToString(), range);
+                try
+                {
+                    columns.Add(range.Value.ToString(), range);
+                }
+                // If there's already a column by this name, skip this one.
+                catch (System.ArgumentException) {}
 
                 // Move over one column.
                 range = range.Offset[0, 1];
@@ -337,6 +342,19 @@ namespace DECS_Excel_Add_Ins
             return DateTime.Now.ToString("yyyyMMddHHmmss");
         }
 
+        internal static Dictionary<string, Worksheet> GetWorksheets()
+        {
+            Workbook workbook = (Workbook)Globals.ThisAddIn.Application.ActiveWorkbook;
+            Dictionary<string, Worksheet> dict = new Dictionary<string, Worksheet>();
+            
+            foreach (Worksheet worksheet in workbook.Worksheets)
+            {
+                dict.Add(worksheet.Name, worksheet);
+            }
+
+            return dict;
+        }
+
         /// <summary>
         /// Tests to see if RegEx pattern has any capture groups.
         /// </summary>
@@ -394,10 +412,11 @@ namespace DECS_Excel_Add_Ins
         }
 
         /// <summary>
-        /// Inserts new column to the right of the provided Range.
+        /// Inserts new column next to the provided Range.
         /// </summary>
         /// <param name="range">Range of existing column</param>
         /// <param name="newColumnName">Name of column to be created</param>
+        /// <param name="side">Create it to the left or right of Range?</param>
         /// <returns>Range</returns>
         internal static Range InsertNewColumn(Range range, string newColumnName, InsertSide side = InsertSide.Right)
         {
@@ -470,6 +489,22 @@ namespace DECS_Excel_Add_Ins
             }
         }
 
+        // How many non-empty strings are present in the list?
+        internal static int NumElementsPresent(List<string> values)
+        {
+            int numNonEmpties = 0;
+
+            foreach (string value in values)
+            {
+                if (!string.IsNullOrEmpty(value))
+                {
+                    numNonEmpties++;
+                }
+            }
+
+            return numNonEmpties;
+        }
+
         /// <summary>
         /// Open the output StreamWriter object, understanding that we might
         /// have to substitute a shorter version of the output filename
@@ -510,6 +545,42 @@ namespace DECS_Excel_Add_Ins
             }
 
             return (writer: writer_obj, openedFilename: outputFilename);
+        }
+
+        /// <summary>
+        /// Saves the workbook as revised using a new name.
+        /// </summary>
+        /// <param name="workbook">Active workbook</param>
+        /// <param name="newFilename">Desired new name for file</param>
+        /// <param name="justTheFilename">Stub of filename in case we need to synthesize filename with timestamp</param>
+
+        internal static void SaveRevised(Workbook workbook, string newFilename, string justTheFilename)
+        {
+            try
+            {
+                workbook.SaveCopyAs(newFilename);
+            }
+            catch (System.Runtime.InteropServices.COMException)
+            {
+                newFilename = System.IO.Path.Combine(
+                    justTheFilename + "_" + Utilities.GetTimestamp()
+                );
+                workbook.SaveCopyAs(newFilename);
+            }
+
+            MessageBox.Show("Saved in '" + newFilename + "'.");
+        }
+
+        // Get the Range defined by these row, column Range objects.
+        internal static Range ThisRowThisColumn(Range rowRange, Range columnRange)
+        {
+            Worksheet sourceSheet = rowRange.Worksheet as Worksheet;
+            int rowNumber = rowRange.Row;
+
+            int columnNumber = columnRange.Column;
+            Range dataRange = (Range)sourceSheet.Cells[rowNumber, columnNumber];
+            
+            return dataRange;
         }
 
         /// <summary>
