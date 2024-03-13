@@ -271,8 +271,10 @@ namespace DECS_Excel_Add_Ins
                 {
                     columns.Add(range.Value.ToString(), range);
                 }
+                // If there's nothing in this header, then skip it.
+                catch (Microsoft.CSharp.RuntimeBinder.RuntimeBinderException) { }
                 // If there's already a column by this name, skip this one.
-                catch (System.ArgumentException) {}
+                catch (System.ArgumentException) { }
 
                 // Move over one column.
                 range = range.Offset[0, 1];

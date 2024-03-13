@@ -391,8 +391,14 @@ namespace DECS_Excel_Add_Ins
                 }
 
                 writer.Write(line_ending);
+
+                if (rowNumber % 100 == 0)
+                {
+                    application.StatusBar = "Processed " + rowNumber.ToString() + "/" + lastRow.ToString() + " rows.";
+                }
             }
 
+            application.StatusBar = "Completed";
             writer.Close();
             Process.Start(outputFilename);
             WriteMainHeader(workbookFilename);
