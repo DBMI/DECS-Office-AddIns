@@ -8,6 +8,7 @@ Creates custom buttons in Microsoft Excel & Word that allow user to:
 ![image info](./DECS%20Excel%20Add-Ins/pictures/toolbar.png) 
 
 * Scan `Notes` fields for keywords, creating new columns.
+* Merge rows from one sheet into another according to some index column.
 * Turn a list (of MRNs, ICD codes, etc.) into a SQL snippet that imports the column into a query.
 * Lookup Social Vulnerability Index ([SVI](https://www.atsdr.cdc.gov/placeandhealth/svi/index.html)) from address or zip code.
 * Format a page of results with bold & centered header, NULLs grayed out, etc.
@@ -58,6 +59,12 @@ Here's an example of the extracted data:
 ![image info](./DECS%20Excel%20Add-Ins/pictures/notes_results.png)
 
 Notice how the original dates--in multiple formats--were automatically converted to a standard date format before extraction.
+
+### Excel: Merge rows from different sheets
+In complex data sets, we may have extracted data in pieces and now need to merge results from one sheet into another. However, the index value (like **C**ontact **S**erial **N**umber) may be present on more than one row, or may be missing. And in the case of data extracted from notes, there may be different values extracted from different patient visits.
+
+Clicking the `Merge Rows` button brings up this dialog to define the source of the data, into which sheet it's to be merged and which column (if any) defines the date at which the data were measured:
+![image info](./DECS%20Excel%20Add-Ins/pictures/merge_dialog.png)
 
 ### Word: Extract ICD codes
 Sometimes Statements of Work (SoW) contain lists of medical conditions and ICD-10 codes to be reported on.

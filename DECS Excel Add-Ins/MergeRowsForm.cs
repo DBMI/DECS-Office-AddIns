@@ -16,7 +16,6 @@ namespace DECS_Excel_Add_Ins
 {
     public partial class MergeRowsForm : Form
     {
-        private string indexColumn;
         private Dictionary<string, Range> availableSourceColumnsDict;
         private bool disableCallbacks;
         private bool initializing;
