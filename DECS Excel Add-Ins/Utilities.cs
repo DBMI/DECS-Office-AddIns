@@ -44,11 +44,87 @@ namespace DECS_Excel_Add_Ins
             return allRows;
         }
 
+        internal static string CleanColumnNamesForSQL(string columnName)
+        {
+            // Remove stuff that breaks the SQL script.   
+            string niceColumnName = columnName.Trim().
+                                        Replace(" ", "_").
+                                        Replace("/", "_").
+                                        Replace("-", "_").
+                                        Replace(",", "").
+                                        Replace("(", "").
+                                        Replace(")", "").
+                                        ToUpper();
+            return niceColumnName;
+        }
+
+        internal static string CleanDataForSQL(string row)
+        {
+            // Remove stuff that breaks the SQL script.   
+            string niceRow = row.Trim();
+
+            // Change 72" into 72 in
+            string pattern = @"(\d{2}\.?\d*)\s*""";
+            string replacement = "$1 in";
+            niceRow = Regex.Replace(niceRow, pattern, replacement);
+
+            // Change Pt's to Pt, fx's to fx
+            pattern = @"([^']+)'([^']+)";
+            replacement = "$1''$2";
+            niceRow = Regex.Replace(niceRow, pattern, replacement);
+
+            //// Change 50's to 50s
+            //pattern = @"(\d+)'s";
+            //replacement = "$1s";
+            //niceRow = Regex.Replace(niceRow, pattern, replacement);
+
+            //// Change Doctors' Hospital to Doctors Hospital
+            //pattern = @"(\w+s)'";
+            //replacement = "$1";
+            //niceRow = Regex.Replace(niceRow, pattern, replacement);
+
+            //// Change O'Malley to OMalley
+            //pattern = @"O'(\w+)";
+            //replacement = "O$1";
+            //niceRow = Regex.Replace(niceRow, pattern, replacement);
+
+            //// Change D'Orange to DOrange
+            //pattern = @"D'(\w+)";
+            //replacement = "D$1";
+            //niceRow = Regex.Replace(niceRow, pattern, replacement);
+
+            //// Change she's to she
+            //pattern = @"he's";
+            //replacement = "he";
+            //niceRow = niceRow.Replace(pattern, replacement);
+
+            // Additional
+            pattern = @"add'l";
+            replacement = "additional";
+            niceRow = niceRow.Replace(pattern, replacement);
+
+            // Double quotes
+            pattern = @"""([^""])";
+            replacement = @"""""$1";
+            niceRow = niceRow.Replace(pattern, replacement);
+
+            //pattern = @"cGy'";
+            //replacement = "cGy";
+            //niceRow = niceRow.Replace(pattern, replacement);
+
+            //// Don't
+            //pattern = @"n't";
+            //replacement = " not";
+            //niceRow = niceRow.Replace(pattern, replacement);
+
+            return niceRow;
+        }
+
         /// <summary>
         /// Clears the "Invalid" highlighting & MouseOver eventhandler from a textbox.
         /// </summary>
         /// <param name="sheet">ActiveWorksheet.</param>
-        
+
         internal static void ClearRegexInvalid(TextBox textBox)
         {
             if (textBox == null)
