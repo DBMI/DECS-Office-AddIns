@@ -127,15 +127,10 @@ namespace DECS_Excel_Add_Ins
                         // Turn dates into something SQL will understand.
                         case DataType.Date:
                             cellContents = Utilities.ConvertExcelDate(cellContents);
-
-                            if (string.IsNullOrEmpty(cellContents))
-                            {
-                                continue;
-                            }
-
                             break;
 
                         case DataType.Varchar:
+                            cellContents = Utilities.CleanDataForSQL(cellContents);
                             break;
 
                         default:
@@ -228,10 +223,14 @@ namespace DECS_Excel_Add_Ins
             // Build the list of column names.
             columnNames = Utilities.GetColumnNames(selectedColumns);
 
+            sqlVariableNames = new List<string>();
+
+            foreach (string column in columnNames)
+            {
+                sqlVariableNames.Add(Utilities.CleanColumnNamesForSQL(column));
+            }
+
             // Turn "Date of consult" into "DATE_OF_CONSULT".
-            sqlVariableNames = columnNames
-                .Select(s => s.Replace(" ", "_").ToUpper())
-                .ToList();
             segmentStart += string.Join(", ", sqlVariableNames);
             segmentStart += SEGMENT_START_II;
             return (selectedColumns, segmentStart);
@@ -239,12 +238,16 @@ namespace DECS_Excel_Add_Ins
 
         private string PrepSegmentStart(List<string> externalColumnNames)
         {
+            sqlVariableNames = new List<string>();
+
+            foreach(string column in externalColumnNames)
+            {
+                sqlVariableNames.Add(Utilities.CleanColumnNamesForSQL(column));
+            }
+
             string segmentStart = SEGMENT_START_I;
 
             // Turn "Date of consult" into "DATE_OF_CONSULT".
-            sqlVariableNames = externalColumnNames
-                .Select(s => s.Replace(" ", "_").ToUpper())
-                .ToList();
             segmentStart += string.Join(", ", sqlVariableNames);
             segmentStart += SEGMENT_START_II;
             return segmentStart;
@@ -359,6 +362,7 @@ namespace DECS_Excel_Add_Ins
             writer.Write(PREAMBLE + selection.segmentStart);
 
             int lines_written_this_chunk = 0;
+            application.StatusBar = "Processing...";
 
             for (int rowNumber = 1; rowNumber <= lastRow; rowNumber++)
             {
