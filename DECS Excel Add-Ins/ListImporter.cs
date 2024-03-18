@@ -118,8 +118,8 @@ namespace DECS_Excel_Add_Ins
                 {
                     cellContents = thisCell.Value2.ToString();
 
-                    // If the line is just the column name, skip this row.
-                    if (columnNames.Any(cellContents.Contains))
+                    // If the line is just the column names, skip this row.
+                    if (col.Column == 1 && cellContents == columnNames.First())
                         break;
 
                     switch (dataType)
@@ -220,17 +220,12 @@ namespace DECS_Excel_Add_Ins
                 selectedColumns.Add(worksheet.Columns[1].EntireColumn);
             }
 
-            // Build the list of column names.
+            // Build & clean the list of column names.
             columnNames = Utilities.GetColumnNames(selectedColumns);
 
-            sqlVariableNames = new List<string>();
-
-            foreach (string column in columnNames)
-            {
-                sqlVariableNames.Add(Utilities.CleanColumnNamesForSQL(column));
-            }
-
             // Turn "Date of consult" into "DATE_OF_CONSULT".
+            sqlVariableNames = Utilities.CleanColumnNamesForSQL(columnNames);
+
             segmentStart += string.Join(", ", sqlVariableNames);
             segmentStart += SEGMENT_START_II;
             return (selectedColumns, segmentStart);
@@ -238,16 +233,10 @@ namespace DECS_Excel_Add_Ins
 
         private string PrepSegmentStart(List<string> externalColumnNames)
         {
-            sqlVariableNames = new List<string>();
-
-            foreach(string column in externalColumnNames)
-            {
-                sqlVariableNames.Add(Utilities.CleanColumnNamesForSQL(column));
-            }
-
             string segmentStart = SEGMENT_START_I;
 
             // Turn "Date of consult" into "DATE_OF_CONSULT".
+            sqlVariableNames = Utilities.CleanColumnNamesForSQL(externalColumnNames);
             segmentStart += string.Join(", ", sqlVariableNames);
             segmentStart += SEGMENT_START_II;
             return segmentStart;
@@ -296,7 +285,6 @@ namespace DECS_Excel_Add_Ins
 
             if (externalFilename != string.Empty)
             {
-
                 (StreamWriter writer, string outputFilename) = Utilities.OpenOutput(
                     inputFilename: externalFilename,
                     filenameAddon: "_list",
@@ -430,7 +418,7 @@ namespace DECS_Excel_Add_Ins
             );
 
             writer.Write(PREAMBLE);
-            writer.Write(MAIN_TABLE_CREATE + string.Join(", ", variableNamesAndTypes) + ")\r\n");
+            writer.Write(MAIN_TABLE_CREATE + string.Join(", \n", variableNamesAndTypes) + ")\r\n");
             string justTheFilenameAndExt = Path.GetFileName(outputFilename);
             writer.Write(MAIN_TABLE_USE + justTheFilenameAndExt + "\r\n");
             writer.Close();
