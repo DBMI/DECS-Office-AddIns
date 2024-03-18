@@ -54,68 +54,56 @@ namespace DECS_Excel_Add_Ins
                                         Replace(",", "").
                                         Replace("(", "").
                                         Replace(")", "").
+                                        Replace("__", "_").
                                         ToUpper();
             return niceColumnName;
         }
 
+        internal static List<string> CleanColumnNamesForSQL(List<string> columnNames)
+        {
+            List<string> niceColumnNames = new List<string>();
+
+            foreach(string columnName in columnNames)
+            {
+                niceColumnNames.Add(Utilities.CleanColumnNamesForSQL(columnName));
+            }
+
+            return niceColumnNames;
+        }
+
+
+        // Remove stuff that breaks the SQL import script.
         internal static string CleanDataForSQL(string row)
         {
-            // Remove stuff that breaks the SQL script.   
             string niceRow = row.Trim();
 
-            // Change 72" into 72 in
-            string pattern = @"(\d{2}\.?\d*)\s*""";
-            string replacement = "$1 in";
-            niceRow = Regex.Replace(niceRow, pattern, replacement);
-
-            // Change Pt's to Pt, fx's to fx
-            pattern = @"([^']+)'([^']+)";
-            replacement = "$1''$2";
-            niceRow = Regex.Replace(niceRow, pattern, replacement);
-
-            //// Change 50's to 50s
-            //pattern = @"(\d+)'s";
-            //replacement = "$1s";
+            //// Change 72" into 72 in
+            //string pattern = @"(\d{2}\.?\d*):?\s*""";
+            //string replacement = "$1 in";
             //niceRow = Regex.Replace(niceRow, pattern, replacement);
 
-            //// Change Doctors' Hospital to Doctors Hospital
-            //pattern = @"(\w+s)'";
-            //replacement = "$1";
+            //// It was acceptable in the '80s.
+            //pattern = @"'(\d{2}s)";
+            //replacement = "''$1";
             //niceRow = Regex.Replace(niceRow, pattern, replacement);
 
-            //// Change O'Malley to OMalley
-            //pattern = @"O'(\w+)";
-            //replacement = "O$1";
-            //niceRow = Regex.Replace(niceRow, pattern, replacement);
-
-            //// Change D'Orange to DOrange
-            //pattern = @"D'(\w+)";
-            //replacement = "D$1";
-            //niceRow = Regex.Replace(niceRow, pattern, replacement);
-
-            //// Change she's to she
-            //pattern = @"he's";
-            //replacement = "he";
+            //// Additional
+            //pattern = @"add'l";
+            //replacement = "additional";
+            //niceRow = niceRow.Replace(pattern, replacement);
+            //pattern = @"addt'l";
+            //replacement = "additional";
             //niceRow = niceRow.Replace(pattern, replacement);
 
-            // Additional
-            pattern = @"add'l";
-            replacement = "additional";
-            niceRow = niceRow.Replace(pattern, replacement);
+            // Double up single quotes.
+            string pattern = @"([^']+)'([^']+)";
+            string replacement = "$1''$2";
+            niceRow = Regex.Replace(niceRow, pattern, replacement);
 
-            // Double quotes
+            // Double up double quotes
             pattern = @"""([^""])";
             replacement = @"""""$1";
             niceRow = niceRow.Replace(pattern, replacement);
-
-            //pattern = @"cGy'";
-            //replacement = "cGy";
-            //niceRow = niceRow.Replace(pattern, replacement);
-
-            //// Don't
-            //pattern = @"n't";
-            //replacement = " not";
-            //niceRow = niceRow.Replace(pattern, replacement);
 
             return niceRow;
         }
@@ -208,6 +196,7 @@ namespace DECS_Excel_Add_Ins
             sheet.Rows.ClearFormats();
 
             // Detect Last used Row, including cells that contains formulas that result in blank values
+            
             return sheet.UsedRange.Rows.Count;
         }
 
