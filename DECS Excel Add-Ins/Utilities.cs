@@ -55,6 +55,7 @@ namespace DECS_Excel_Add_Ins
                                         Replace("(", "").
                                         Replace(")", "").
                                         Replace("__", "_").
+                                        Replace("__", "_").
                                         ToUpper();
             return niceColumnName;
         }
@@ -72,38 +73,36 @@ namespace DECS_Excel_Add_Ins
         }
 
 
-        // Remove stuff that breaks the SQL import script.
+        // Remove quotes that break the SQL import script.
         internal static string CleanDataForSQL(string row)
         {
             string niceRow = row.Trim();
 
-            //// Change 72" into 72 in
-            //string pattern = @"(\d{2}\.?\d*):?\s*""";
-            //string replacement = "$1 in";
-            //niceRow = Regex.Replace(niceRow, pattern, replacement);
-
-            //// It was acceptable in the '80s.
-            //pattern = @"'(\d{2}s)";
-            //replacement = "''$1";
-            //niceRow = Regex.Replace(niceRow, pattern, replacement);
-
-            //// Additional
-            //pattern = @"add'l";
-            //replacement = "additional";
-            //niceRow = niceRow.Replace(pattern, replacement);
-            //pattern = @"addt'l";
-            //replacement = "additional";
-            //niceRow = niceRow.Replace(pattern, replacement);
-
             // Double up single quotes.
             string pattern = @"([^']+)'([^']+)";
             string replacement = "$1''$2";
+            int stringLength = niceRow.Length;
             niceRow = Regex.Replace(niceRow, pattern, replacement);
+
+            // Keep replacing until string length doesn't change.
+            while (niceRow.Length > stringLength)
+            {
+                niceRow = Regex.Replace(niceRow, pattern, replacement);
+                stringLength = niceRow.Length;
+            }
 
             // Double up double quotes
             pattern = @"""([^""])";
             replacement = @"""""$1";
+            stringLength = niceRow.Length;
             niceRow = niceRow.Replace(pattern, replacement);
+
+            // Keep replacing until string length doesn't change.
+            while (niceRow.Length > stringLength)
+            {
+                niceRow = Regex.Replace(niceRow, pattern, replacement);
+                stringLength = niceRow.Length;
+            }
 
             return niceRow;
         }
