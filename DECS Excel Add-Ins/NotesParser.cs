@@ -28,6 +28,7 @@ namespace DECS_Excel_Add_Ins
     {
         private Application application;
         private NotesConfig config;
+        private bool haveModifiedSheet = false;
         private int lastCol;
         private int lastRow;
         private List<string> originalColumnNames;
@@ -118,7 +119,12 @@ namespace DECS_Excel_Add_Ins
             statusForm.UpdateStatusLabel("Applying cleaning rules.");
 
             ShowRow(1);
-            RestoreOriginalSourceColumn();
+
+            if (haveModifiedSheet)
+            {
+                RestoreOriginalSourceColumn();
+            }
+
             Range thisCell;
 
             // Run down the source column, applying each cleaning rule.
@@ -150,6 +156,7 @@ namespace DECS_Excel_Add_Ins
                     try
                     {
                         cell_contents = Regex.Replace(cell_contents, rule.pattern, rule.replace);
+                        haveModifiedSheet = true;
                     }
                     catch (System.ArgumentNullException ex) 
                     { 
@@ -490,6 +497,8 @@ namespace DECS_Excel_Add_Ins
                     log.Error(ex.Message);
                 }
             }
+
+            haveModifiedSheet = false;
         }
 
         /// <summary>
