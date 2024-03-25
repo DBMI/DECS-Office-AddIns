@@ -330,13 +330,18 @@ namespace DECS_Excel_Add_Ins
                     {
                         log.Debug("Attempting match using pattern '" + rule.pattern + "'.");
 
-                        // If we get more than one extracted value, select the LAST one.
-                        Match match = Regex.Match(cell_contents, rule.pattern, RegexOptions.IgnoreCase | RegexOptions.RightToLeft);
+                        MatchCollection matches = Regex.Matches(cell_contents, rule.pattern, RegexOptions.IgnoreCase);
 
-                        if (match.Success)
+                        if (matches.Count > 0)
                         {
-                            log.Debug("Rule matched: " + match.Value.ToString());
-                            targetRng.Offset[rowNumber - 1, 0].Value = match.Groups[1].ToString();
+                            // If we get more than one extracted value, select the LAST one.
+                            Match match = matches[matches.Count - 1];
+
+                            if (match.Success)
+                            {
+                                log.Debug("Rule matched: " + match.Value.ToString());
+                                targetRng.Offset[rowNumber - 1, 0].Value = match.Groups[1].ToString();
+                            }
                         }
                     }
                     catch (System.ArgumentNullException)
