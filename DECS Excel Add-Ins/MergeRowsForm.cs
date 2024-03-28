@@ -82,7 +82,7 @@ namespace DECS_Excel_Add_Ins
 
             try
             {
-                return dataRange.Value2.ToString();
+                return Convert.ToString(dataRange.Value2);
             }
             catch (Microsoft.CSharp.RuntimeBinder.RuntimeBinderException)
             {
@@ -168,7 +168,7 @@ namespace DECS_Excel_Add_Ins
             for (int rowNumber = 2; rowNumber <= lastRowNumber; rowNumber++)
             {
                 indexPosition = (Range)selectedWorksheet.Cells[rowNumber, indexColumnNumber];
-                indexValue = indexPosition.Value2.ToString();
+                indexValue = Convert.ToString(indexPosition.Value2);
 
                 if (indices.ContainsKey(indexValue))
                 {

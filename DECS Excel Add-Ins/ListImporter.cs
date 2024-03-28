@@ -85,7 +85,7 @@ namespace DECS_Excel_Add_Ins
             try
             {
                 // What's in the top cell?
-                string colName = col.Cells[1].Value2.ToString();
+                string colName = Convert.ToString(col.Cells[1].Value2);
 
                 dataType = NameToDataType(colName);
             }
@@ -116,7 +116,7 @@ namespace DECS_Excel_Add_Ins
 
                 try
                 {
-                    cellContents = thisCell.Value2.ToString();
+                    cellContents = Convert.ToString(thisCell.Value2);
 
                     // If the line is just the column names, skip this row.
                     if (col.Column == 1 && cellContents == columnNames.First())
@@ -171,7 +171,7 @@ namespace DECS_Excel_Add_Ins
             try
             {
                 // What's in the top cell?
-                string colName = col.Cells[1].Value2.ToString();
+                string colName = Convert.ToString(col.Cells[1].Value2);
 
                 isIndexColumn = INDEX_ROW_NAMES.Any(colName.Contains);
             }
@@ -189,13 +189,16 @@ namespace DECS_Excel_Add_Ins
         {
             DataType dataType = DataType.Varchar;
 
-            foreach (KeyValuePair<string, DataType> entry in supportedDataTypes)
+            if (colName != null)
             {
-                // Make case-insensitive match.
-                if (colName.ToLower().Contains(entry.Key.ToLower()))
+                foreach (KeyValuePair<string, DataType> entry in supportedDataTypes)
                 {
-                    dataType = entry.Value;
-                    break;
+                    // Make case-insensitive match.
+                    if (colName.ToLower().Contains(entry.Key.ToLower()))
+                    {
+                        dataType = entry.Value;
+                        break;
+                    }
                 }
             }
 

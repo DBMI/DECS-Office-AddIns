@@ -28,6 +28,7 @@ namespace DECS_Excel_Add_Ins
     {
         private Application application;
         private NotesConfig config;
+        private bool haveModifiedSheet = false;
         private int lastCol;
         private int lastRow;
         private List<string> originalColumnNames;
@@ -118,7 +119,12 @@ namespace DECS_Excel_Add_Ins
             statusForm.UpdateStatusLabel("Applying cleaning rules.");
 
             ShowRow(1);
-            RestoreOriginalSourceColumn();
+
+            if (haveModifiedSheet)
+            {
+                RestoreOriginalSourceColumn();
+            }
+
             Range thisCell;
 
             // Run down the source column, applying each cleaning rule.
@@ -137,7 +143,7 @@ namespace DECS_Excel_Add_Ins
 
                 try
                 {
-                    cell_contents = thisCell.Value2.ToString();
+                    cell_contents = Convert.ToString(thisCell.Value2);
                 }
                 catch
                 {
@@ -150,6 +156,7 @@ namespace DECS_Excel_Add_Ins
                     try
                     {
                         cell_contents = Regex.Replace(cell_contents, rule.pattern, rule.replace);
+                        haveModifiedSheet = true;
                     }
                     catch (System.ArgumentNullException ex) 
                     { 
@@ -163,8 +170,9 @@ namespace DECS_Excel_Add_Ins
                 {
                     thisCell.Value2 = cell_contents;
                 }
-                catch (System.Runtime.InteropServices.COMException ex)
-                { 
+                catch (Exception ex)
+                    when (ex is System.Runtime.InteropServices.COMException || ex is System.OutOfMemoryException)
+                {
                     log.Error(ex.Message);
                 }
 
@@ -212,7 +220,7 @@ namespace DECS_Excel_Add_Ins
 
                 try
                 {
-                    cell_contents = thisCell.Value2.ToString();
+                    cell_contents = Convert.ToString(thisCell.Value2);
                 }
                 catch (System.Runtime.InteropServices.COMException ex)
                 {
@@ -225,7 +233,8 @@ namespace DECS_Excel_Add_Ins
                 {
                     thisCell.Value2 = dateConverter.Convert(cell_contents, desiredDateFormat);
                 }
-                catch (System.Runtime.InteropServices.COMException ex) 
+                catch (Exception ex) 
+                    when (ex is System.Runtime.InteropServices.COMException || ex is System.OutOfMemoryException)
                 {
                     log.Error(ex.Message);
                 }
@@ -292,7 +301,7 @@ namespace DECS_Excel_Add_Ins
 
                 try
                 {
-                    cell_contents = thisCell.Value2.ToString();
+                    cell_contents = Convert.ToString(thisCell.Text);
                 }
                 catch
                 {
@@ -339,8 +348,20 @@ namespace DECS_Excel_Add_Ins
 
                             if (match.Success)
                             {
-                                log.Debug("Rule matched: " + match.Value.ToString());
-                                targetRng.Offset[rowNumber - 1, 0].Value = match.Groups[1].ToString();
+                                log.Debug("Rule matched: " + Convert.ToString(match.Value));
+
+                                // Concatenate with any existing contents.
+                                string existingContents = Convert.ToString(targetRng.Offset[rowNumber - 1, 0].Value);
+                                string newContents = Convert.ToString(match.Groups[1]).Trim();
+
+                                if (existingContents != null && existingContents.Length > 0)
+                                {
+                                    targetRng.Offset[rowNumber - 1, 0].Value = existingContents + "; " + newContents;
+                                }
+                                else
+                                {
+                                    targetRng.Offset[rowNumber - 1, 0].Value = newContents;
+                                }
                             }
                         }
                     }
@@ -441,7 +462,7 @@ namespace DECS_Excel_Add_Ins
             // Scan along the header row and delete columns that aren't original.
             for (int col_offset = 0; col_offset < numColumns; col_offset++)
             {
-                string thisColumnName = thisCell.Offset[0, col_offset].Value2.ToString();
+                string thisColumnName = Convert.ToString(thisCell.Offset[0, col_offset].Value2);
 
                 if (!originalColumnNames.Contains(thisColumnName))
                 {
@@ -490,6 +511,8 @@ namespace DECS_Excel_Add_Ins
                     log.Error(ex.Message);
                 }
             }
+
+            haveModifiedSheet = false;
         }
 
         /// <summary>
@@ -516,7 +539,7 @@ namespace DECS_Excel_Add_Ins
                 }
                 else
                 {
-                    originalSourceColumnEntries.Add(thisCell.Value2.ToString());
+                    originalSourceColumnEntries.Add(Convert.ToString(thisCell.Value2));
                 }
             }
         }
