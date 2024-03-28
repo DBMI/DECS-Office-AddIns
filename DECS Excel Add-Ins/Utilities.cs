@@ -88,6 +88,10 @@ namespace DECS_Excel_Add_Ins
             string pattern = @"([^'])'$";
             string replacement = "$1";
             niceRow = Regex.Replace(niceRow, pattern, replacement);
+            
+            pattern = @"([^""])""$";
+            replacement = "$1";
+            niceRow = Regex.Replace(niceRow, pattern, replacement);
 
             // Remove trailing slash.
             pattern = @"(/)$";
