@@ -76,6 +76,11 @@ namespace DECS_Excel_Add_Ins
         // Remove quotes that break the SQL import script.
         internal static string CleanDataForSQL(string row)
         {
+            if (string.IsNullOrEmpty(row))
+            {
+                return string.Empty;
+            }
+
             string niceRow = row.Trim();
 
             // Double up single quotes.
@@ -95,7 +100,7 @@ namespace DECS_Excel_Add_Ins
             pattern = @"""([^""])";
             replacement = @"""""$1";
             stringLength = niceRow.Length;
-            niceRow = niceRow.Replace(pattern, replacement);
+            niceRow = Regex.Replace(niceRow, pattern, replacement);
 
             // Keep replacing until string length doesn't change.
             while (niceRow.Length > stringLength)
@@ -133,15 +138,18 @@ namespace DECS_Excel_Add_Ins
         {
             string convertedContents = null;
 
-            try
+            if (!string.IsNullOrEmpty(cellContents))
             {
-                double d = double.Parse(cellContents);
-                DateTime conv = DateTime.FromOADate(d);
-                convertedContents = conv.ToString("yyyy-MM-dd");
-            }
-            catch (System.FormatException)
-            {
-                // Probably trying to convert the name "Date" to a Double in order to create DateTime object.
+                try
+                {
+                    double d = double.Parse(cellContents);
+                    DateTime conv = DateTime.FromOADate(d);
+                    convertedContents = conv.ToString("yyyy-MM-dd");
+                }
+                catch (System.FormatException)
+                {
+                    // Probably trying to convert the name "Date" to a Double in order to create DateTime object.
+                }
             }
 
             return convertedContents;
@@ -467,7 +475,7 @@ namespace DECS_Excel_Add_Ins
 
                 try
                 {
-                    cell_contents = thisCell.Value2.ToString();
+                    cell_contents = Convert.ToString(thisCell.Value2);
                     hasData = true;
                     break;
                 }

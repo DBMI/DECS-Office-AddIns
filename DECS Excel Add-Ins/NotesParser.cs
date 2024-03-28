@@ -352,7 +352,7 @@ namespace DECS_Excel_Add_Ins
 
                                 // Concatenate with any existing contents.
                                 string existingContents = Convert.ToString(targetRng.Offset[rowNumber - 1, 0].Value);
-                                string newContents = Convert.ToString(match.Groups[1]);
+                                string newContents = Convert.ToString(match.Groups[1]).Trim();
 
                                 if (existingContents != null && existingContents.Length > 0)
                                 {
