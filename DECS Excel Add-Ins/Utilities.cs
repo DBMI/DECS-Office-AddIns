@@ -82,11 +82,21 @@ namespace DECS_Excel_Add_Ins
             }
 
             string niceRow = row.Trim();
+            int stringLength = niceRow.Length;
+
+            // Remove trailing quotes.
+            string pattern = @"([^'])'$";
+            string replacement = "$1";
+            niceRow = Regex.Replace(niceRow, pattern, replacement);
+
+            // Remove trailing slash.
+            pattern = @"(/)$";
+            replacement = "";
+            niceRow = Regex.Replace(niceRow, pattern, replacement);
 
             // Double up single quotes.
-            string pattern = @"([^']+)'([^']+)";
-            string replacement = "$1''$2";
-            int stringLength = niceRow.Length;
+            pattern = @"([^']+)'([^']+)";
+            replacement = "$1''$2";
             niceRow = Regex.Replace(niceRow, pattern, replacement);
 
             // Keep replacing until string length doesn't change.
