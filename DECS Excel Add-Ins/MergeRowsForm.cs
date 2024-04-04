@@ -226,6 +226,14 @@ namespace DECS_Excel_Add_Ins
 
             Range columnRange = availableSourceColumnsRangeDict[dateColumnName];
 
+            // Don't write "12/31/9999" for max values.
+            string newTimeString = newTime.Value.ToString();
+
+            if (newTime == DateTime.MaxValue)
+            {
+                newTimeString = "";
+            }
+
             // There's a header row but not a header column.
             int colOffset = columnRange.Column - 1;
 
@@ -233,7 +241,7 @@ namespace DECS_Excel_Add_Ins
 
             try
             {
-                targetRange.Offset[rowOffset, colOffset].Value = newTime.ToString();
+                targetRange.Offset[rowOffset, colOffset].Value = newTimeString;
             }
             catch (Microsoft.CSharp.RuntimeBinder.RuntimeBinderException)
             {
