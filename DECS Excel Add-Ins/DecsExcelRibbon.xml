@@ -3,50 +3,6 @@
 	<ribbon>
 		<tabs>
 			<tab id="DecsTab" label="DECS Tools">
-				<group id="NotesGroup"
-					   label="Notes">
-					<button id="searchButton"
-							getImage="notesSearchButton_GetImage"
-							label="Search Notes"
-							onAction="OnSearchNotes"
-							screentip="Search Notes"
-							size="large"
-							supertip="Search notes using existing config file." />
-					<button id="setupButton"
-							getImage="notesConfigButton_GetImage"
-							label="Setup Config"
-							onAction="OnSearchConfig"
-							screentip="Configure Search"
-							size="large"
-							supertip="Configure search of notes." />
-					<button id="mergeButton"
-							getImage="mergeRowsButton_GetImage"
-							label="Merge Rows"
-							onAction="OnMergeRows"
-							screentip="Merge rows"
-							size="large"
-							supertip="Merge results on index." />
-				</group>
-				<group id="ListGroup"
-					   label="Lists">
-					<button id="buildListButton"
-							getImage="buildListButton_GetImage"
-							label="Import List"
-							onAction="OnBuildList"
-							screentip="Build list import code"
-							size="large"
-							supertip="Build SQL code to import a list." />
-				</group>
-				<group id ="SviGroup"
-					   label="SVI">
-					<button id="addSVI"
-							getImage="sviButton_GetImage"
-							label="Add SVI"
-							onAction="OnAddSVI"
-							screentip="Looks up Social Vulnerability Index"
-							size="large"
-							supertip="Gets Census Tract from address, then looks up SVI from .csv file." />
-				</group>
 				<group id="FormatGroup"
 					   label="Format">
 					<button id="formatSheet"
@@ -63,6 +19,60 @@
 							screentip="Convert MUMPS Dates"
 							size="large"
 							supertip="Adds new column with converted dates." />
+				</group>
+				<group id="ListGroup"
+					   label="Lists">
+					<button id="buildListButton"
+							getImage="buildListButton_GetImage"
+							label="Import List"
+							onAction="OnBuildList"
+							screentip="Build list import code"
+							size="large"
+							supertip="Build SQL code to import a list." />
+				</group>
+				<group id ="MergeGroup"
+					   label="Merge">
+					<button id="mergeRowButton"
+							getImage="mergeRowsButton_GetImage"
+							label="Merge Rows"
+							onAction="OnMergeRows"
+							screentip="Merge rows"
+							size="large"
+							supertip="Merge results." />
+				</group>
+				<group id="NotesGroup"
+					   label="Notes">
+					<button id="searchButton"
+							getImage="notesSearchButton_GetImage"
+							label="Search Notes"
+							onAction="OnSearchNotes"
+							screentip="Search Notes"
+							size="large"
+							supertip="Search notes using existing config file." />
+					<button id="setupButton"
+							getImage="notesConfigButton_GetImage"
+							label="Setup Config"
+							onAction="OnSearchConfig"
+							screentip="Configure Search"
+							size="large"
+							supertip="Configure search of notes." />
+					<button id="mergeNotesButton"
+							getImage="mergeNotesButton_GetImage"
+							label="Merge Notes"
+							onAction="OnMergeNotes"
+							screentip="Merge notes"
+							size="large"
+							supertip="Merge results on index." />
+				</group>
+				<group id ="SviGroup"
+					   label="SVI">
+					<button id="addSVI"
+							getImage="sviButton_GetImage"
+							label="Add SVI"
+							onAction="OnAddSVI"
+							screentip="Looks up Social Vulnerability Index"
+							size="large"
+							supertip="Gets Census Tract from address, then looks up SVI from .csv file." />
 				</group>
 			</tab>
 		</tabs>

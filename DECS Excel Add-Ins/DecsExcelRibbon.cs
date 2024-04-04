@@ -59,6 +59,16 @@ namespace DECS_Excel_Add_Ins
         }
 
         /// <summary>
+        /// Lets the @c DexsExcelRibbon.xml point to the image for the @c MergeRows button.
+        /// </summary>
+        /// <param name="control">Reference to the IRibbonControl object.</param>
+        /// <returns>Bitmap</returns>
+        public Bitmap mergeRowsButton_GetImage(IRibbonControl control)
+        {
+            return Resources.combine_rows;
+        }
+
+        /// <summary>
         /// Lets the @c DexsExcelRibbon.xml point to the image for the @c ConvertDates button.
         /// </summary>
         /// <param name="control">Reference to the IRibbonControl object.</param>
@@ -83,7 +93,7 @@ namespace DECS_Excel_Add_Ins
         /// </summary>
         /// <param name="control">Reference to the IRibbonControl object.</param>
         /// <returns>Bitmap</returns>
-        public Bitmap mergeRowsButton_GetImage(IRibbonControl control)
+        public Bitmap mergeNotesButton_GetImage(IRibbonControl control)
         {
             return Resources.merge_rows;
         }
@@ -143,10 +153,21 @@ namespace DECS_Excel_Add_Ins
         }
 
         /// <summary>
+        /// When @c MergeRows button is pressed, this method instantiates a @c MergeRowsForm.
+        /// </summary>
+        /// <param name="control">Reference to the IRibbonControl object.</param>
+
+        public void OnMergeRows(Office.IRibbonControl control)
+        {
+            MergeRowsForm form = new MergeRowsForm();
+            form.Visible = true;
+        }
+
+        /// <summary>
         /// When @c ConvertDates button is pressed, this method instantiates a @c MumpsDateConverter object & calls its @c ConvertColumn method.
         /// </summary>
         /// <param name="control">Reference to the IRibbonControl object.</param>
-        
+
         public void OnConvertDates(Office.IRibbonControl control)
         {
             MumpsDateConverter converter = new MumpsDateConverter();
@@ -167,17 +188,14 @@ namespace DECS_Excel_Add_Ins
         }
 
         /// <summary>
-        /// When @c MergeRows button is pressed, this method instantiates a @c MergeRowsForm.
+        /// When @c MergeNotes button is pressed, this method instantiates a @c MergeNotesForm.
         /// </summary>
         /// <param name="control">Reference to the IRibbonControl object.</param>
 
-        public void OnMergeRows(Office.IRibbonControl control)
+        public void OnMergeNotes(Office.IRibbonControl control)
         {
-            MergeRowsForm form = new MergeRowsForm();
+            MergeNotesForm form = new MergeNotesForm();
             form.Visible = true;
-            // Formatter formatter = new Formatter();
-            // Excel.Worksheet wksheet = (Excel.Worksheet)Globals.ThisAddIn.Application.ActiveSheet;
-            // formatter.Format(wksheet);
         }
 
         /// <summary>
