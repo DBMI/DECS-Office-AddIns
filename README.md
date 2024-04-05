@@ -7,12 +7,13 @@ Creates custom buttons in Microsoft Excel & Word that allow user to:
 ### Excel:
 ![image info](./DECS%20Excel%20Add-Ins/pictures/toolbar.png) 
 
-* Scan `Notes` fields for keywords, creating new columns.
-* Merge rows from one sheet into another according to some index column.
-* Turn a list (of MRNs, ICD codes, etc.) into a SQL snippet that imports the column into a query.
-* Lookup Social Vulnerability Index ([SVI](https://www.atsdr.cdc.gov/placeandhealth/svi/index.html)) from address or zip code.
 * Format a page of results with bold & centered header, NULLs grayed out, etc.
 * Convert dates from [MUMPS](https://en.wikipedia.org/wiki/MUMPS) to Excel standard.
+* Turn a list (of MRNs, ICD codes, etc.) into a SQL snippet that imports the column into a query.
+* Merge rows across dates.
+* Scan `Notes` fields for keywords, creating new columns.
+* Merge notes from one sheet into another according to some index column (like CSN).
+* Lookup Social Vulnerability Index ([SVI](https://www.atsdr.cdc.gov/placeandhealth/svi/index.html)) from address or zip code.
 ### Word: 
 ![image info](./DECS%20Word%20Add-Ins/pictures/toolbar.png)
 * Scan a Scope of Work (SoW) file & create SQL code that searches for the ICD-9/ICD-10 codes and names listed in the SoW.
@@ -60,17 +61,12 @@ Here's an example of the extracted data:
 
 Notice how the original dates--in multiple formats--were automatically converted to a standard date format before extraction.
 
-### Excel: Merge rows from different sheets
+### Excel: Merge notes from different sheets
 In complex data sets, we may have extracted data in pieces and now need to merge results from one sheet into another. However, the index value (like **C**ontact **S**erial **N**umber) may be present on more than one row, or may be missing. And in the case of data extracted from notes, there may be different values extracted from different patient visits.
 
 Clicking the `Merge Rows` button brings up this dialog to define the source of the data, into which sheet it's to be merged and which column (if any) defines the date at which the data were measured:
 ![image info](./DECS%20Excel%20Add-Ins/pictures/merge_dialog.png)
 
-### Word: Extract ICD codes
-Sometimes Statements of Work (SoW) contain lists of medical conditions and ICD-10 codes to be reported on.
-Pressing the `Extract ICD` button causes the app to scan the open Word document for lines that look like medical conditions and their associated ICD-10 codes. SQL code is generated that searches the `problem_list` table for the associated codes, as shown here:![image info](./DECS%20Word%20Add-Ins/pictures/ICD_to_sql_basic.png)
-
-Series of ICD codes (such as `M30 - M36`) are automatically expanded into multi-code SQL statements:![image info](./DECS%20Word%20Add-Ins/pictures/series_expansion_sql.png)
 
 ### Word: Build List Import
 When researchers provide lists of Medical Record Numbers (MRNs) or International Classification of Diseases (ICD) codes to be used in a report, those lists need to be imported into SQL. Pressing the `Import List` button converts a list into SQL code which can be referenced in a query to import them:![image info](./DECS%20Word%20Add-Ins/pictures/MRN_list_to_sql_top.png)
