@@ -131,7 +131,7 @@ namespace DECS_Excel_Add_Ins
                     selectedPatientDefnColumns.Remove(thisColumn);
                     patientDefinitionColumnsListBox.Items.Remove(thisColumn);
                 }
-                else // or DEselect it?
+                else // or DEselected?
                 {
                     selectedDateColumns.Remove(thisColumn);
 
@@ -249,7 +249,7 @@ namespace DECS_Excel_Add_Ins
                     selectedPatientDefnColumns.Remove(thisColumn);
                     patientDefinitionColumnsListBox.Items.Remove(thisColumn);
                 }
-                else // or DEselect it?
+                else // or DEselected?
                 {
                     selectedInfoColumns.Remove(thisColumn);
 
@@ -370,7 +370,7 @@ namespace DECS_Excel_Add_Ins
                     selectedInfoColumns.Remove(thisColumn);
                     infoColumnsListBox.Items.Remove(thisColumn);
                 }
-                else // or DEselect it?
+                else // or DEselected?
                 {
                     selectedPatientDefnColumns.Remove(thisColumn);
 
