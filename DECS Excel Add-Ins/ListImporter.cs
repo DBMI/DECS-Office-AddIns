@@ -126,7 +126,7 @@ namespace DECS_Excel_Add_Ins
                     {
                         // Turn dates into something SQL will understand.
                         case DataType.Date:
-                            cellContents = Utilities.ConvertExcelDate(cellContents);
+                            cellContents = Utilities.ConvertExcelDateToString(cellContents);
                             break;
 
                         case DataType.Varchar:

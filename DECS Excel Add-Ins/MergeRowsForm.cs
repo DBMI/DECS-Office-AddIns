@@ -1,8 +1,11 @@
-﻿using Microsoft.Office.Interop.Excel;
+﻿using Microsoft.Office.Core;
+using Microsoft.Office.Interop.Excel;
 using Microsoft.Office.Tools.Excel;
 using SimMetrics.Net;
 using System;
+using System.Collections;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Data;
 using System.Drawing;
@@ -11,6 +14,7 @@ using System.Runtime.InteropServices.ComTypes;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using System.Web.UI.WebControls;
 using System.Windows.Forms;
 using static System.Net.Mime.MediaTypeNames;
 using Worksheet = Microsoft.Office.Interop.Excel.Worksheet;
@@ -27,15 +31,15 @@ namespace DECS_Excel_Add_Ins
     {
         private Dictionary<string, Range> availableSourceColumnsRangeDict;
         private Dictionary<string, ColumnType> availableSourceColumnsTypeDict;
+        private Dictionary<string, DateRangeColumns> selectedDateRangeColumnsDict;
         private bool disableCallbacks;
+        private ColumnNamePairs dateColumnPairs;            // Such as insurance start, end dates
+        private List<string> ignoredWords;
         private bool initializing;
-        private string candidateStartDateColumn;
-        private string candidateEndDateColumn;
-        private List<string> selectedCandidateColumns;  // These MIGHT be the same. If they are, we can combine their rows.
-        private List<string> selectedCandidateColumnsLessDates;
-        private List<string> selectedGroupColumns;      // These MUST all be the same: like insurance group, coverage start/stop dates
-        private Worksheet selectedSourceWorksheet;
+        private List<string> selectedInfoColumns;           // Like insurer, address
+        private List<string> selectedPatientDefnColumns;    // Like MRN
         private string selectedSourceSheetName;
+        private Worksheet selectedSourceWorksheet;
         private Worksheet targetWorksheet;
         private Range topLeftCorner;
         private Dictionary<string, Worksheet> worksheetsDict;
@@ -49,66 +53,29 @@ namespace DECS_Excel_Add_Ins
             worksheetsDict = Utilities.GetWorksheets();
             availableSourceColumnsRangeDict = new Dictionary<string, Range>();
             availableSourceColumnsTypeDict = new Dictionary<string, ColumnType>();
-            selectedCandidateColumns = new List<string>();
-            selectedCandidateColumnsLessDates = new List<string>();
-            selectedGroupColumns = new List<string>();
-            candidateStartDateColumn = string.Empty;
-            candidateEndDateColumn = string.Empty;
+            selectedDateRangeColumnsDict = new Dictionary<string, DateRangeColumns>();
+            selectedInfoColumns = new List<string>();
+            selectedPatientDefnColumns = new List<string>();
+            ignoredWords = new List<string>() { "Date", "End", "Start" };
             disableCallbacks = false;
             initializing = true;
-            PopulateSourceSheets(worksheetsDict.Keys.ToList<string>());
+            List<string> sheetNames = worksheetsDict.Keys.ToList<string>();
+            PopulateSourceSheets(sheetNames);
             initializing = false;
         }
 
-        /// <summary>
-        /// Callback for when the @c candidateColumnsListBox SelectedIndex is changed.
-        /// </summary>
-        /// <param name="sender">Whatever object trigged this callback.</param>
-        /// <param name="e">The EventArgs that accompanied this callback.</param>
-
-        private void CandidateColumnsListBox_SelectedIndexChanged(object sender, EventArgs e)
+        private void BuildDateRangeColumnsDict()
         {
-            if (initializing || disableCallbacks)
+            selectedDateRangeColumnsDict.Clear();
+
+            foreach(ColumnNamePair pair in dateColumnPairs.GetColumnPairs())
             {
-                return;
+                Range col1 = availableSourceColumnsRangeDict[pair.Name1()];
+                Range col2 = availableSourceColumnsRangeDict[pair.Name2()];
+                string commonName = pair.CommonName();
+                DateRangeColumns columnsObj = new DateRangeColumns(col1, col2, commonName);
+                selectedDateRangeColumnsDict.Add(commonName, columnsObj);
             }
-
-            candidateStartDateColumn = string.Empty;
-            candidateEndDateColumn = string.Empty;
-            selectedCandidateColumns.Clear();
-            selectedCandidateColumnsLessDates.Clear();
-            System.Windows.Forms.ListBox listBox = sender as System.Windows.Forms.ListBox;
-
-            foreach (var item in listBox.SelectedItems)
-            {
-                string selectedColumn = item.ToString();
-
-                if (selectedColumn.ToLower().Contains("start"))
-                {
-                    candidateStartDateColumn = selectedColumn;
-                }
-                else if (selectedColumn.ToLower().Contains("end"))
-                {
-                    candidateEndDateColumn = selectedColumn;
-                }
-                else
-                {
-                    selectedCandidateColumnsLessDates.Add(selectedColumn);
-                }
-
-                selectedCandidateColumns.Add(selectedColumn);
-
-                // Was the selected CANDIDATE column already in the GROUP columns list?
-                var itemToRemove = selectedGroupColumns.SingleOrDefault(r => r == selectedColumn);
-                
-                if (itemToRemove != null)
-                    selectedGroupColumns.Remove(itemToRemove);
-            }
-
-            // A CANDIDATE column can not also be a GROUP column.
-            PopulateGroupColumns();
-
-            EnableRunWhenReady();
         }
 
         /// <summary>
@@ -129,10 +96,83 @@ namespace DECS_Excel_Add_Ins
         }
 
         /// <summary>
+        /// Callback for when the @c dateColumnsListBox SelectedIndex is changed.
+        /// </summary>
+        /// <param name="sender">Whatever object trigged this callback.</param>
+        /// <param name="e">The EventArgs that accompanied this callback.</param>
+
+        private void DateColumnsListBox_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            if (initializing || disableCallbacks)
+            {
+                return;
+            }
+
+            List<string> selectedDateColumns = new List<string>();
+
+            System.Windows.Forms.ListBox listBox = sender as System.Windows.Forms.ListBox;
+            List<string> listBoxContents = dateColumnsListBox.Items.Cast<string>().ToList();
+
+            foreach (string thisColumn in listBoxContents)
+            {
+                // This item is in the list box--is it SELECTED?
+                if (listBox.SelectedItems.Contains(thisColumn))
+                {
+                    selectedDateColumns.Add(thisColumn);
+
+                    // Was the selected DATE column already in the INFO columns list?
+                    // 1) Then remove it from the selected Info columns...
+                    selectedInfoColumns.Remove(thisColumn);
+
+                    // 2) ...and remove it from the Info Columns ListBox.
+                    infoColumnsListBox.Items.Remove(thisColumn);
+
+                    // Was the selected DATE column already in the PATIENT DEFINITION columns list?
+                    selectedPatientDefnColumns.Remove(thisColumn);
+                    patientDefinitionColumnsListBox.Items.Remove(thisColumn);
+                }
+                else // or DEselect it?
+                {
+                    selectedDateColumns.Remove(thisColumn);
+
+                    // Since we're not using this column for dates, make it available in the other ListBoxes.
+                    InsertIntoListBox(infoColumnsListBox, thisColumn);
+                    InsertIntoListBox(patientDefinitionColumnsListBox, thisColumn);
+                }
+            }
+
+            // Turn this list of selected Date columns into ColumnNamePairs object.
+            dateColumnPairs = new ColumnNamePairs(selectedDateColumns, ignoredWords);
+
+            // Remember where the pair of date columns is for each pair type ("Address", "Insurance", etc.).
+            BuildDateRangeColumnsDict();
+
+            EnableRunWhenReady();
+        }
+
+        // Checks to ensure each existing date range pair is
+        // contiguous with the corresponding dates in this new row.
+        private bool DateRangesContiguous(int rowOffset)
+        {
+            foreach (string key in selectedDateRangeColumnsDict.Keys)
+            {
+                DateRangeColumns colObj = selectedDateRangeColumnsDict[key];
+
+                if (!colObj.CanMergeDates(rowOffset))
+                {
+                    return false;
+                }
+            }
+
+            return true;
+        }
+
+        /// <summary>
         /// Don't let Venky push "Run" until we're ready.
         /// </summary>
 
         private void EnableRunWhenReady()
+        
         {
             if (initializing)
             {
@@ -140,11 +180,10 @@ namespace DECS_Excel_Add_Ins
             }
 
             runButton.Enabled =
-                    selectedCandidateColumns.Count > 0 &&
-                    selectedGroupColumns.Count > 0 &&
-                    !string.IsNullOrEmpty(selectedSourceSheetName) &&
-                    !string.IsNullOrEmpty(candidateStartDateColumn) &&
-                    !string.IsNullOrEmpty(candidateEndDateColumn);
+                    dateColumnPairs.Count() > 0 &&
+                    selectedInfoColumns.Count > 0 &&
+                    selectedPatientDefnColumns.Count > 0 &&
+                    !string.IsNullOrEmpty(selectedSourceSheetName);
         }
 
         /// <summary>
@@ -176,41 +215,79 @@ namespace DECS_Excel_Add_Ins
         }
 
         /// <summary>
-        /// Callback for when the @c groupColumnsListBox SelectedIndex is changed.
+        /// Callback for when the @c infoColumnsListBox SelectedIndex is changed.
         /// </summary>
         /// <param name="sender">Whatever object trigged this callback.</param>
         /// <param name="e">The EventArgs that accompanied this callback.</param>
 
-        private void GroupColumnsListBox_SelectedIndexChanged(object sender, EventArgs e)
+        private void InfoColumnsListBox_SelectedIndexChanged(object sender, EventArgs e)
         {
             if (initializing || disableCallbacks)
             {
                 return;
             }
 
-            selectedGroupColumns.Clear();
+            selectedInfoColumns.Clear();
             System.Windows.Forms.ListBox listBox = sender as System.Windows.Forms.ListBox;
+            List<string> listBoxContents = infoColumnsListBox.Items.Cast<string>().ToList();
 
-            foreach (var item in listBox.SelectedItems)
+            foreach (string thisColumn in listBoxContents)
             {
-                string selectedColumn = item.ToString();
-                selectedGroupColumns.Add(selectedColumn);
+                // This item is in the list box--is it SELECTED?
+                if (listBox.SelectedItems.Contains(thisColumn))
+                {
+                    selectedInfoColumns.Add(thisColumn);
 
-                // Was the selected GROUP column already in the CANDIDATE columns list?
-                var itemToRemove = selectedCandidateColumns.SingleOrDefault(r => r == selectedColumn);
+                    // Was the selected INFO column already in the DATE columns list?
+                    // 1) Then remove it from the selected DATE columns...
+                    dateColumnPairs.Remove(thisColumn);
 
-                if (itemToRemove != null)
-                    selectedCandidateColumns.Remove(itemToRemove);
+                    // 2) ...and remove it from the Date Columns ListBox.
+                    dateColumnsListBox.Items.Remove(thisColumn);
+
+                    // Was the selected INFO column already in the PATIENT DEFINITION columns list?
+                    selectedPatientDefnColumns.Remove(thisColumn);
+                    patientDefinitionColumnsListBox.Items.Remove(thisColumn);
+                }
+                else // or DEselect it?
+                {
+                    selectedInfoColumns.Remove(thisColumn);
+
+                    // Since we're not using this column for dates, make it available in the other ListBoxes.
+                    InsertIntoListBox(dateColumnsListBox, thisColumn);
+                    InsertIntoListBox(patientDefinitionColumnsListBox, thisColumn);
+                }
             }
-
-            // A GROUP column can not also be a CANDIDATE column.
-            PopulateCandidateColumns();
 
             EnableRunWhenReady();
         }
 
         /// <summary>
-        /// Overwrites DateTime object in target sheet, given named column & row number..
+        /// Puts column back into a ListBox at the original location.
+        /// </summary>
+        /// <param name="listBox">ListBox object</param>
+        /// <param name="columnName">str Column to insert</param>
+
+        private void InsertIntoListBox(System.Windows.Forms.ListBox listBox, string columnName)
+        {
+            // Where does this column appear in the original columns list?
+            List<string> availableSourceColumns = availableSourceColumnsRangeDict.Keys.ToList();
+            int index = availableSourceColumns.FindIndex(c => c == columnName);
+
+            // Only proceed if column appears in the source columns list.
+            if (index >= 0)
+            {
+                int numInListNow = listBox.Items.Count;
+
+                if (!listBox.Items.Contains(columnName))
+                {
+                    listBox.Items.Insert(Math.Min(numInListNow, index), columnName);
+                }
+            }
+        }
+
+        /// <summary>
+        /// Overwrites DateTime object in target sheet, given named column & row number.
         /// </summary>
         /// <param name="targetSheet">string: name of new sheet</param>
         /// <param name="dateColumnName">string: column name</param>
@@ -248,87 +325,190 @@ namespace DECS_Excel_Add_Ins
             }
         }
 
-        /// <summary>
-        /// Fills the candidateColumnsListBox
-        /// </summary>
-
-        private void PopulateCandidateColumns()
+        private void OverwriteDates(Worksheet targetSheet, int rowOffset)
         {
-            disableCallbacks = true;
-
-            List<string> availableSourceColumns = availableSourceColumnsRangeDict.Keys.ToList();
-            availableSourceColumns = availableSourceColumns.Except(selectedGroupColumns);
-
-            if (availableSourceColumns.Count > 0)
+            foreach (string key in selectedDateRangeColumnsDict.Keys)
             {
-                candidateColumnsListBox.DataSource = availableSourceColumns;
-
-                if (selectedCandidateColumns.Count == 0)
-                {
-                    // Then initialize ListBox.
-                    selectedCandidateColumns.Add(availableSourceColumns[0]);
-                    selectedCandidateColumnsLessDates.Add(availableSourceColumns[0]);
-                    candidateColumnsListBox.SelectedIndex = 0;
-                }
-                else
-                {
-                    // By resetting the .DataSource property, we've wiped out any previous selections.
-                    // So restore the already-selected columns.
-                    foreach (string selectedColumn in selectedCandidateColumns)
-                    {
-                        int indexToRestore = availableSourceColumns.FindIndex(r => r == selectedColumn);
-
-                        if (indexToRestore >= 0)
-                        {
-                            candidateColumnsListBox.SelectedIndices.Add(indexToRestore);
-                        }
-                    }
-                }
+                DateRangeColumns colObj = selectedDateRangeColumnsDict[key];
+                OverwriteDate(targetSheet, colObj.StartColumnName(), rowOffset, colObj.StartDate());
+                OverwriteDate(targetSheet, colObj.EndColumnName(), rowOffset, colObj.EndDate());
             }
 
-            disableCallbacks = false;
+        }
+
+        /// <summary>
+        /// Callback for when the @c patientDefinitionColumnsListBox SelectedIndex is changed.
+        /// </summary>
+        /// <param name="sender">Whatever object trigged this callback.</param>
+        /// <param name="e">The EventArgs that accompanied this callback.</param>
+
+        private void PatientDefinitionColumnsListBox_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            if (initializing || disableCallbacks)
+            {
+                return;
+            }
+
+            selectedPatientDefnColumns.Clear();
+            System.Windows.Forms.ListBox listBox = sender as System.Windows.Forms.ListBox;
+            List<string> listBoxContents = patientDefinitionColumnsListBox.Items.Cast<string>().ToList();
+
+            foreach (string thisColumn in listBoxContents)
+            {
+                // This item is in the list box--is it SELECTED?
+                if (listBox.SelectedItems.Contains(thisColumn))
+                {
+                    selectedPatientDefnColumns.Add(thisColumn);
+
+                    // Was the selected PATIENT DEFINITION column already in the DATE columns list?
+                    // 1) Then remove it from the selected DATE columns...
+                    dateColumnPairs.Remove(thisColumn);
+
+                    // 2) ...and remove it from the Date Columns ListBox.
+                    dateColumnsListBox.Items.Remove(thisColumn);
+
+                    selectedInfoColumns.Remove(thisColumn);
+                    infoColumnsListBox.Items.Remove(thisColumn);
+                }
+                else // or DEselect it?
+                {
+                    selectedPatientDefnColumns.Remove(thisColumn);
+
+                    // Since we're not using this column for dates, make it available in the other ListBoxes.
+                    InsertIntoListBox(dateColumnsListBox, thisColumn);
+                    InsertIntoListBox(infoColumnsListBox, thisColumn);
+                }
+            }
 
             EnableRunWhenReady();
         }
 
         /// <summary>
-        /// Fills the groupColumnsListBox
+        /// Fills the dateColumnsListBox
         /// </summary>
 
-        private void PopulateGroupColumns()
+        private void PopulateDateColumns()
         {
             disableCallbacks = true;
+            dateColumnsListBox.DataSource = null;
 
             List<string> availableSourceColumns = availableSourceColumnsRangeDict.Keys.ToList();
-            availableSourceColumns = availableSourceColumns.Except(selectedCandidateColumns);
-            groupColumnsListBox.DataSource = availableSourceColumns;
+            availableSourceColumns = availableSourceColumns.Except(selectedPatientDefnColumns);
+            availableSourceColumns = availableSourceColumns.Except(selectedInfoColumns);
 
             if (availableSourceColumns.Count > 0)
             {
-                if (selectedGroupColumns.Count == 0)
+                Utilities.PopulateListBox(dateColumnsListBox, availableSourceColumns);
+
+                if (dateColumnPairs.Count() == 0)
                 {
                     // Then initialize ListBox.
-                    selectedGroupColumns.Add(availableSourceColumns[0]);
-                    groupColumnsListBox.SelectedIndex = 0;
+                    dateColumnPairs = new ColumnNamePairs(availableSourceColumns, ignoredWords);
+                    dateColumnsListBox.SelectedIndex = 0;
                 }
                 else
                 {
                     // By resetting the .DataSource property, we've wiped out any previous selections.
                     // So restore the already-selected columns.
-                    foreach (string selectedColumn in selectedGroupColumns)
+                    foreach (string columnName in dateColumnPairs.GetColumnNames())
+                    {
+                        int indexToRestore = availableSourceColumns.FindIndex(r => r == columnName);
+
+                        if (indexToRestore >= 0)
+                        {
+                            dateColumnsListBox.SelectedIndices.Add(indexToRestore);
+                        }
+                    }
+                }
+            }
+
+            disableCallbacks = false;            
+            EnableRunWhenReady();
+        }
+
+        /// <summary>
+        /// Fills the infoColumnsListBox
+        /// </summary>
+
+        private void PopulateInfoColumns()
+        {
+            disableCallbacks = true;
+            infoColumnsListBox.DataSource = null;
+
+            List<string> availableSourceColumns = availableSourceColumnsRangeDict.Keys.ToList();
+            availableSourceColumns = availableSourceColumns.Except(selectedPatientDefnColumns);
+            List<string> dateColumns = dateColumnPairs.GetColumnNames();
+            availableSourceColumns = availableSourceColumns.Except(dateColumns);
+
+            if (availableSourceColumns.Count > 0)
+            {
+                Utilities.PopulateListBox(infoColumnsListBox, availableSourceColumns);
+
+                if (selectedInfoColumns.Count == 0)
+                {
+                    // Then initialize ListBox.
+                    selectedInfoColumns.Add(availableSourceColumns[0]);
+                    infoColumnsListBox.SelectedIndex = 0;
+                }
+                else
+                {
+                    // By resetting the .DataSource property, we've wiped out any previous selections.
+                    // So restore the already-selected columns.
+                    foreach (string selectedColumn in selectedInfoColumns)
                     {
                         int indexToRestore = availableSourceColumns.FindIndex(r => r == selectedColumn);
 
                         if (indexToRestore >= 0)
                         {
-                            groupColumnsListBox.SelectedIndices.Add(indexToRestore);
+                            infoColumnsListBox.SelectedIndices.Add(indexToRestore);
                         }
                     }
                 }
             }
 
             disableCallbacks = false;
+            EnableRunWhenReady();
+        }
 
+        /// <summary>
+        /// Fills the patientDefinitionColumnsListBox
+        /// </summary>
+
+        private void PopulatePatientDefnColumns()
+        {
+            disableCallbacks = true;
+            patientDefinitionColumnsListBox.DataSource = null;
+
+            List<string> availableSourceColumns = availableSourceColumnsRangeDict.Keys.ToList();
+            List<string> dateColumns = dateColumnPairs.GetColumnNames();
+            availableSourceColumns = availableSourceColumns.Except(dateColumns);
+            availableSourceColumns = availableSourceColumns.Except(selectedInfoColumns);
+
+            if (availableSourceColumns.Count > 0)
+            {
+                Utilities.PopulateListBox(patientDefinitionColumnsListBox, availableSourceColumns);
+
+                if (selectedPatientDefnColumns.Count == 0)
+                {
+                    selectedPatientDefnColumns.Add(availableSourceColumns[0]);
+                    patientDefinitionColumnsListBox.SelectedIndex = 0;
+                }
+                else
+                {
+                    // Restore the already-selected columns.
+                    foreach (string selectedColumn in selectedPatientDefnColumns)
+                    {
+                        int indexToRestore = availableSourceColumns.FindIndex(r => r == selectedColumn);
+
+                        if (indexToRestore >= 0)
+                        {
+                            patientDefinitionColumnsListBox.SelectedIndices.Add(indexToRestore);
+                        }
+                    }
+                }
+            }
+
+            disableCallbacks = false;
             EnableRunWhenReady();
         }
 
@@ -426,7 +606,7 @@ namespace DECS_Excel_Add_Ins
         {
             log.Debug("Starting run.");
 
-            // Add new worksheet.
+            // Create new worksheet.
             targetWorksheet = (Worksheet)Globals.ThisAddIn.Application.Worksheets.Add();
             targetWorksheet.Name = selectedSourceSheetName + "_merged";
             int targetRowOffset = 1;
@@ -436,18 +616,9 @@ namespace DECS_Excel_Add_Ins
             CopyRow(0, 0);
             CopyRow(1, 1);
 
-            // Keep track of full date range spanned by Candidate columns.
-            DateTime? oldStartDate = GetDate(candidateStartDateColumn, 1);
-            DateTime? oldEndDate = GetDate(candidateEndDateColumn, 1);
-
-            if (!oldStartDate.HasValue || !oldEndDate.HasValue)
-            {
-                MessageBox.Show("Unable to determine original group date range.");
-                return;
-            }
-
-            // Run down the rows, looking for consecutive rows in which all of the Group Columns are identical
-            // and the Candidate Columns are close enough.
+            // Run down the rows, looking for consecutive rows in which:
+            //  ...all of the Patient Definition Columns are identical and
+            //  ...all of Info Columns are close enough.
             int numRows = Utilities.FindLastRow(selectedSourceWorksheet);
             bool inGroup = false;
 
@@ -457,9 +628,7 @@ namespace DECS_Excel_Add_Ins
             {
                 log.Debug("Row " + sourceRowOffset);
 
-                DateTime? startDate = GetDate(candidateStartDateColumn, sourceRowOffset);
-
-                if (!startDate.HasValue)
+                if (!DateRangesContiguous(sourceRowOffset))
                 {
                     // Just copy over the current line and move to the next line.
                     log.Debug("Start Date is null--skipping row.");
@@ -468,27 +637,17 @@ namespace DECS_Excel_Add_Ins
                     continue;
                 }
 
-                DateTime? endDate = GetDate(candidateEndDateColumn, sourceRowOffset);
-
-                if (!endDate.HasValue)
-                {
-                    // Possibly because the address is still valid.
-                    endDate = DateTime.MaxValue;
-                }
-
                 // If this row matches the previous row, use its dates to update the time spanned.
-                if (RowsMatch(selectedGroupColumns, sourceRowOffset, exact: true) &&
-                    RowsMatch(selectedCandidateColumnsLessDates, sourceRowOffset, exact: false))
+                if (RowsMatch(selectedPatientDefnColumns, sourceRowOffset, exact: true) &&
+                    RowsMatch(selectedInfoColumns, sourceRowOffset, exact: false))
                 {
                     log.Debug("In group.");
 
                     inGroup = true;
-                    startDate = new DateTime(Math.Min(oldStartDate.Value.Ticks, startDate.Value.Ticks));
-                    endDate = new DateTime(Math.Max(oldEndDate.Value.Ticks, endDate.Value.Ticks));
 
                     // Replace the existing start/stop dates.
-                    OverwriteDate(targetWorksheet, candidateStartDateColumn, targetRowOffset, startDate);
-                    OverwriteDate(targetWorksheet, candidateEndDateColumn, targetRowOffset, endDate);
+                    UpdateDateRanges(sourceRowOffset);
+                    OverwriteDates(targetWorksheet, targetRowOffset);
                 }
                 else
                 {
@@ -499,9 +658,6 @@ namespace DECS_Excel_Add_Ins
                     targetRowOffset++;
                     CopyRow(sourceRowOffset, targetRowOffset);
                 }
-
-                oldStartDate = startDate;
-                oldEndDate = endDate;
 
                 if (sourceRowOffset % 100 == 0)
                 {
@@ -532,8 +688,11 @@ namespace DECS_Excel_Add_Ins
             topLeftCorner = (Range)selectedSourceWorksheet.Cells[1, 1];
             availableSourceColumnsRangeDict = Utilities.GetColumnRangeDictionary(selectedSourceWorksheet);
             availableSourceColumnsTypeDict = Utilities.GetColumnTypeDictionary(selectedSourceWorksheet);
-            PopulateCandidateColumns();
-            PopulateGroupColumns();
+            List<string> availableSourceColumns = availableSourceColumnsRangeDict.Keys.ToList();
+            dateColumnPairs = new ColumnNamePairs();
+            PopulateDateColumns();
+            PopulateInfoColumns();
+            PopulatePatientDefnColumns();
         }
 
         /// <summary>
@@ -551,6 +710,15 @@ namespace DECS_Excel_Add_Ins
             System.Windows.Forms.ListBox listBox = sender as System.Windows.Forms.ListBox;
             selectedSourceSheetName = listBox.SelectedItem.ToString();
             SetupSheet();
+        }
+
+        private void UpdateDateRanges(int rowOffset)
+        {
+            foreach (string key in selectedDateRangeColumnsDict.Keys)
+            {
+                DateRangeColumns colObj = selectedDateRangeColumnsDict[key];
+                colObj.UpdateDates(rowOffset);
+            }
         }
     }
 }

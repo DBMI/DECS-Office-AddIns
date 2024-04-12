@@ -148,7 +148,7 @@ namespace DECS_Excel_Add_Ins
         /// </summary>
         /// <param name="cellContents">String contents of a particular cell.</param>
         /// <returns>string</returns>
-        internal static string ConvertExcelDate(string cellContents)
+        internal static string ConvertExcelDateToString(string cellContents)
         {
             string convertedContents = null;
 
@@ -170,6 +170,30 @@ namespace DECS_Excel_Add_Ins
         }
 
         /// <summary>
+        /// Convert Excel-formatted date to SQL style.
+        /// </summary>
+        /// <param name="cellContents">String contents of a particular cell.</param>
+        /// <returns>DateTime</returns>
+        internal static DateTime? ConvertExcelDate(string cellContents)
+        {
+            DateTime? convertedContents = null;
+
+            if (!string.IsNullOrEmpty(cellContents))
+            {
+                try
+                {
+                    double d = double.Parse(cellContents);
+                    convertedContents = DateTime.FromOADate(d);
+                }
+                catch (System.FormatException)
+                {
+                    // Probably trying to convert the name "Date" to a Double in order to create DateTime object.
+                }
+            }
+
+            return convertedContents;
+        }
+        /// <summary>
         /// Removes event handlers from a text box.
         /// </summary>
         /// <param name="textBox">Handle to TextBox object</param>        
@@ -186,6 +210,36 @@ namespace DECS_Excel_Add_Ins
             EventHandlerList eventHandlerList_obj = (EventHandlerList)
                 propEvents.GetValue(textBox, null);
             eventHandlerList_obj.Dispose();
+        }
+
+        /// <summary>
+        /// Given a list of column names ("Coverage Start Date", "Address Start Date"),
+        /// finds the strings that make them different ("Address", "Coverage").
+        /// </summary>
+        /// <param name="columnNames">List of strings</param>
+        /// <param name="ignoredWords">List of strings to ignore, like "Start", "Date"</param>
+        /// <returns>List of strings</returns>
+        internal static List<string> DistinctElements(List<string> columnNames, List<string> ignoredWords)
+        {
+            List<string> result = new List<string>();
+
+            // Break up all the column names into a list of words, containing duplicates.
+            List<string> pieces = new List<string>();
+
+            foreach (string columnName in columnNames)
+            {
+                pieces = columnName.Split().ToList();
+
+                foreach (string piece in pieces)
+                {
+                    if (!ignoredWords.Contains(piece) && !result.Contains(piece))
+                    {
+                        result.Add(piece);
+                    }
+                }
+            }
+
+            return result;
         }
 
         /// <summary>
@@ -340,11 +394,11 @@ namespace DECS_Excel_Add_Ins
         }
 
         /// <summary>
-        /// Builds a dictionary of the column names from the first row of a worksheet.
+        /// Builds a dictionary linking column names to ranges from the first row of a worksheet.
         /// </summary>
         /// <param name="sheet">Active Worksheet.</param>
         /// <returns>Dictionary mapping string -> Range</returns>
-        internal static Dictionary<string, Range> GetColumnNamesDictionary(Worksheet sheet)
+        internal static Dictionary<string, Range> GetColumnRangeDictionary(Worksheet sheet, List<string> namesDesired = null)
         {
             Dictionary<string, Range> columns = new Dictionary<string, Range>();
             Range range = (Range) sheet.Cells[1, 1];
@@ -353,9 +407,68 @@ namespace DECS_Excel_Add_Ins
             // Search along row 1.
             for (int col_index = 1; col_index <= lastUsedCol; col_index++)
             {
+                string thisColumnName = string.Empty;
+
                 try
                 {
-                    columns.Add(range.Value.ToString(), range);
+                    thisColumnName = Convert.ToString(range.Value);
+                }
+                // If there's nothing in this header, move to next column.
+                catch (Microsoft.CSharp.RuntimeBinder.RuntimeBinderException) 
+                {
+                    continue;
+                }
+
+                // If column name is empty, can't do anything.
+                if (string.IsNullOrEmpty(thisColumnName))
+                {
+                    continue;
+                }
+
+                // If namesDesired isn't specified, then we add every column name.
+                // Otherwise, see if this column is one of the droids we're looking for.
+                if (namesDesired is null || namesDesired.Count == 0 || namesDesired.Contains(thisColumnName))
+                {
+                    try
+                    {
+                        columns.Add(thisColumnName, range);
+                    }
+                    // If there's already a column by this name, skip this one.
+                    catch (System.ArgumentException) { }
+                }
+
+                // Move over one column.
+                range = range.Offset[0, 1];
+            }
+
+            return columns;
+        }
+
+        /// <summary>
+        /// Builds a dictionary linking column names to ColumnType enum from the first row of a worksheet.
+        /// </summary>
+        /// <param name="sheet">Active Worksheet.</param>
+        /// <returns>Dictionary mapping string -> ColumnType</returns>
+        internal static Dictionary<string, ColumnType> GetColumnTypeDictionary(Worksheet sheet)
+        {
+            Dictionary<string, ColumnType> columns = new Dictionary<string, ColumnType>();
+            Range range = (Range)sheet.Cells[1, 1];
+            int lastUsedCol = Utilities.FindLastCol(sheet);
+
+            // Search along row 1.
+            for (int col_index = 1; col_index <= lastUsedCol; col_index++)
+            {
+                try
+                {
+                    string columnName = range.Value.ToString();
+                    ColumnType columnType = ColumnType.Text;
+
+                    if (columnName.Contains("Date"))
+                    {
+                        columnType = ColumnType.Date;
+                    }
+                    
+                    columns.Add(range.Value.ToString(), columnType);
                 }
                 // If there's nothing in this header, then skip it.
                 catch (Microsoft.CSharp.RuntimeBinder.RuntimeBinderException) { }
@@ -633,6 +746,16 @@ namespace DECS_Excel_Add_Ins
             }
 
             return (writer: writer_obj, openedFilename: outputFilename);
+        }
+
+        internal static void PopulateListBox(System.Windows.Forms.ListBox listBox, List<string> contents)
+        {
+            listBox.Items.Clear();
+
+            foreach (string item in contents)
+            {
+                listBox.Items.Add(item);
+            }
         }
 
         /// <summary>
