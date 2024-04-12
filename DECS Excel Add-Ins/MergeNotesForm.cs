@@ -130,11 +130,41 @@ namespace DECS_Excel_Add_Ins
             }
 
             System.Windows.Forms.ListBox listBox = sender as System.Windows.Forms.ListBox;
-            selectedDateColumn = listBox.SelectedItem as string;
+            List<string> listBoxContents = listBox.Items.Cast<string>().ToList();
 
-            // A DATE column can not also be the index or a data source column.
-            PopulateIndexColumns();
-            PopulateSourceColumns();
+            foreach (string thisColumn in listBoxContents)
+            {
+                // This item is in the list box--is it SELECTED?
+                if (listBox.SelectedItems.Contains(thisColumn))
+                {
+                    selectedDateColumn = thisColumn;
+
+                    // Was the selected DATE column already the INDEX column?
+                    if (selectedIndexColumn == thisColumn)
+                    {
+                        // 1) Then remove it as the selected Index...
+                        selectedIndexColumn = string.Empty;
+                    }
+
+                    // 2) ...and remove it from the Index Columns ListBox.
+                    indexColumnListBox.Items.Remove(thisColumn);
+
+                    // Was the selected DATE column already one of the SOURCE columns?
+                    // 1) Then remove it from the selected Source columns...
+                    selectedSourceColumns.Remove(thisColumn);
+
+                    // 2) ...and remove it from the Index Columns ListBox.
+                    sourceColumnsListBox.Items.Remove(thisColumn);
+                }
+                else // or DEselected?
+                {
+                    selectedDateColumn = string.Empty;
+
+                    // Since we're not using this column for dates, make it available in the other ListBoxes.
+                    InsertIntoListBox(indexColumnListBox, thisColumn);
+                    InsertIntoListBox(sourceColumnsListBox, thisColumn);
+                }
+            }
 
             EnableRunWhenReady();
         }
@@ -149,8 +179,8 @@ namespace DECS_Excel_Add_Ins
             runButton.Enabled = 
                     selectedSourceColumns.Count > 0 &&
                     !string.IsNullOrEmpty(selectedDateColumn) &&
-                    !string.IsNullOrEmpty(selectedTargetSheetName) &&
-                    !string.IsNullOrEmpty(selectedIndexColumn);
+                    !string.IsNullOrEmpty(selectedIndexColumn) &&
+                    !string.IsNullOrEmpty(selectedTargetSheetName);
         }
 
         private Dictionary<string, List<Range>> GetIndexValues(string worksheetName)
@@ -225,15 +255,68 @@ namespace DECS_Excel_Add_Ins
             }
 
             System.Windows.Forms.ListBox listBox = sender as System.Windows.Forms.ListBox;
-            selectedIndexColumn = listBox.SelectedItem.ToString();
+            List<string> listBoxContents = listBox.Items.Cast<string>().ToList();
 
-            // The INDEX column can not also be one of the source columns or the date column.
-            PopulateDateColumn();
-            PopulateSourceColumns();
+            foreach (string thisColumn in listBoxContents)
+            {
+                // This item is in the list box--is it SELECTED?
+                if (listBox.SelectedItems.Contains(thisColumn))
+                {
+                    selectedIndexColumn = thisColumn;
+
+                    // Was the selected INDEX column already the DATE column?
+                    if (selectedDateColumn == thisColumn)
+                    {
+                        // 1) Then remove it as the selected Index...
+                        selectedDateColumn = string.Empty;
+                    }
+
+                    // 2) ...and remove it from the Date Columns ListBox.
+                    dateColumnListBox.Items.Remove(thisColumn);
+
+                    // Was the selected INDEX column already one of the SOURCE columns?
+                    // 1) Then remove it from the selected Source columns...
+                    selectedSourceColumns.Remove(thisColumn);
+
+                    // 2) ...and remove it from the SOURCE Columns ListBox.
+                    sourceColumnsListBox.Items.Remove(thisColumn);
+                }
+                else // or DEselected?
+                {
+                    selectedIndexColumn = string.Empty;
+
+                    // Since we're not using this column for index, make it available in the other ListBoxes.
+                    InsertIntoListBox(dateColumnListBox, thisColumn);
+                    InsertIntoListBox(sourceColumnsListBox, thisColumn);
+                }
+            }
 
             EnableRunWhenReady();
         }
 
+        /// <summary>
+        /// Puts column back into a ListBox at the original location.
+        /// </summary>
+        /// <param name="listBox">ListBox object</param>
+        /// <param name="columnName">str Column to insert</param>
+
+        private void InsertIntoListBox(System.Windows.Forms.ListBox listBox, string columnName)
+        {
+            // Where does this column appear in the original columns list?
+            List<string> availableSourceColumns = availableSourceColumnsDict.Keys.ToList();
+            int index = availableSourceColumns.FindIndex(c => c == columnName);
+
+            // Only proceed if column appears in the source columns list.
+            if (index >= 0)
+            {
+                int numInListNow = listBox.Items.Count;
+
+                if (!listBox.Items.Contains(columnName))
+                {
+                    listBox.Items.Insert(Math.Min(numInListNow, index), columnName);
+                }
+            }
+        }
         private void PopulateDateColumn()
         {
             disableCallbacks = true;
@@ -243,7 +326,7 @@ namespace DECS_Excel_Add_Ins
 
             // Need to prepend "None" to column list in case there IS no date column.
             availableSourceColumns = availableSourceColumns.Prepend("None").ToList();
-            dateColumnListBox.DataSource = availableSourceColumns;
+            Utilities.PopulateListBox(dateColumnListBox, availableSourceColumns);
 
             // Is there a "Date" column?
             var tagged = availableSourceColumns.Select((item, i) => new { Item = item, Index = (int?)i });
@@ -275,7 +358,7 @@ namespace DECS_Excel_Add_Ins
             availableSourceColumns = availableSourceColumns.Except(selectedSourceColumns);
             availableSourceColumns = availableSourceColumns.Except(selectedDateColumn);
 
-            indexColumnListBox.DataSource = availableSourceColumns;
+            Utilities.PopulateListBox(indexColumnListBox, availableSourceColumns);
 
             if (availableSourceColumns.Count > 0)
             {
@@ -298,7 +381,8 @@ namespace DECS_Excel_Add_Ins
             List<string> availableSourceColumns = availableSourceColumnsDict.Keys.ToList();
             availableSourceColumns = availableSourceColumns.Except(selectedIndexColumn);
             availableSourceColumns = availableSourceColumns.Except(selectedDateColumn);
-            sourceColumnsListBox.DataSource = availableSourceColumns;
+            Utilities.PopulateListBox(sourceColumnsListBox, availableSourceColumns);
+
             selectedSourceColumns.Clear();
 
             if (availableSourceColumns.Count > 0)
@@ -308,7 +392,6 @@ namespace DECS_Excel_Add_Ins
             }
 
             disableCallbacks = false;
-
             EnableRunWhenReady();
         }
 
@@ -477,16 +560,45 @@ namespace DECS_Excel_Add_Ins
 
             selectedSourceColumns = new List<string>();
             System.Windows.Forms.ListBox listBox = sender as System.Windows.Forms.ListBox;
+            List<string> listBoxContents = listBox.Items.Cast<string>().ToList();
 
-            foreach (var item in listBox.SelectedItems)
+            foreach (string thisColumn in listBoxContents)
             {
-                selectedSourceColumns.Add(item.ToString());
+                // This item is in the list box--is it SELECTED?
+                if (listBox.SelectedItems.Contains(thisColumn))
+                {
+                    selectedSourceColumns.Add(thisColumn);
+
+                    // Was the selected SOURCE column already the INDEX column?
+                    if (selectedIndexColumn == thisColumn)
+                    {
+                        // 1) Then remove it as the selected Index...
+                        selectedIndexColumn = string.Empty;
+                    }
+
+                    // 2) ...and remove it from the Index Columns ListBox.
+                    indexColumnListBox.Items.Remove(thisColumn);
+
+                    // Was the selected SOURCE column already the DATE columns?
+                    if (selectedDateColumn == thisColumn)
+                    {
+                        // 1) Then remove it from the selected Date columns...
+                        selectedDateColumn = string.Empty;
+                    }
+
+                    // 2) ...and remove it from the DATE Columns ListBox.
+                    dateColumnListBox.Items.Remove(thisColumn);
+                }
+                else // or DEselected?
+                {
+                    selectedSourceColumns.Remove(thisColumn);
+
+                    // Since we're not using this column for dates, make it available in the other ListBoxes.
+                    InsertIntoListBox(dateColumnListBox, thisColumn);
+                    InsertIntoListBox(indexColumnListBox, thisColumn);
+                }
             }
-
-            // A SOURCE column can not also be the index or date column.
-            PopulateDateColumn();
-            PopulateIndexColumns();
-
+                
             EnableRunWhenReady();
         }
 
