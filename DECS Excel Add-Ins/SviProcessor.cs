@@ -60,7 +60,7 @@ namespace DECS_Excel_Add_Ins
             // If user didn't select a column, find it by name.
             if (selectedColumn == null)
             {
-                Dictionary<string, Range> columns = Utilities.GetColumnNamesDictionary(worksheet);
+                Dictionary<string, Range> columns = Utilities.GetColumnRangeDictionary(worksheet);
 
                 foreach (KeyValuePair<string, Range> column in columns)
                 {
