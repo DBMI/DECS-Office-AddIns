@@ -311,17 +311,26 @@ namespace DECS_Excel_Add_Ins
         /// <param name="filename">Scope of work filename</param>
         /// <param name="filenameAddOn">String we want to append to filename</param>
         /// <param name="filetype">Desired filetype (".sql" by default)</param>
+        /// <param name="replaceSpaces">Should we replace spaces with underscores (true by default)</param>
         /// <param name="shortVersion">Bool--just filename.type? (false by default)</param>
         /// <returns>string</returns>
         internal static string FormOutputFilename(
             string filename,
             string filenameAddon = "",
             string filetype = ".sql",
+            bool replaceSpaces = true,
             bool shortVersion = false
         )
         {
             string dir = Path.GetDirectoryName(filename);
             string justTheFilename = Path.GetFileNameWithoutExtension(filename) + filenameAddon;
+
+            if (replaceSpaces)
+            {
+                // Make SQL filename import-friendly by replacing spaces with underscores.
+                justTheFilename = justTheFilename.Replace(' ', '_');
+            }
+
             string sqlFilename = Path.Combine(dir, justTheFilename + filetype);
 
             if (shortVersion)
@@ -721,10 +730,15 @@ namespace DECS_Excel_Add_Ins
             string filetype = ".sql"
         )
         {
+            // If we're creating a .sql file,
+            // make the filename import-friendly by replacing spaces with underscores.
+            bool replaceSpaces = filetype == ".sql";
+
             string outputFilename = Utilities.FormOutputFilename(
                 filename: inputFilename,
                 filetype: filetype,
                 filenameAddon: filenameAddon,
+                replaceSpaces: replaceSpaces,
                 shortVersion: false
             );
             StreamWriter writer_obj;
