@@ -55,7 +55,7 @@ namespace DECS_Excel_Add_Ins
             ":setvar path \"F:\\DECS\\<task folder name>\"\r\n:r $(path)\\";
         private const string PREAMBLE = "USE [REL_CLARITY];\r\n\r\n";
         private const string QUOTE = "'";
-        private const string SEGMENT_START_I = "INSERT INTO #DATA_LIST (";
+        private const string SEGMENT_START_I = "INSERT INTO #PATIENT_LIST (";
         private const string SEGMENT_START_II = ")\r\nVALUES\r\n";
 
         /// <summary>
