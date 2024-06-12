@@ -59,16 +59,6 @@ namespace DECS_Excel_Add_Ins
         }
 
         /// <summary>
-        /// Lets the @c DexsExcelRibbon.xml point to the image for the @c MergeRows button.
-        /// </summary>
-        /// <param name="control">Reference to the IRibbonControl object.</param>
-        /// <returns>Bitmap</returns>
-        public Bitmap mergeRowsButton_GetImage(IRibbonControl control)
-        {
-            return Resources.combine_rows;
-        }
-
-        /// <summary>
         /// Lets the @c DexsExcelRibbon.xml point to the image for the @c ConvertDates button.
         /// </summary>
         /// <param name="control">Reference to the IRibbonControl object.</param>
@@ -96,6 +86,16 @@ namespace DECS_Excel_Add_Ins
         public Bitmap mergeNotesButton_GetImage(IRibbonControl control)
         {
             return Resources.merge_rows;
+        }
+
+        /// <summary>
+        /// Lets the @c DexsExcelRibbon.xml point to the image for the @c MergeRows button.
+        /// </summary>
+        /// <param name="control">Reference to the IRibbonControl object.</param>
+        /// <returns>Bitmap</returns>
+        public Bitmap mergeRowsButton_GetImage(IRibbonControl control)
+        {
+            return Resources.combine_rows;
         }
 
         /// <summary>
@@ -129,10 +129,20 @@ namespace DECS_Excel_Add_Ins
         }
 
         /// <summary>
+        /// Lets the @c DexsExcelRibbon.xml point to the image for the @c ExtractTime button.
+        /// </summary>
+        /// <param name="control">Reference to the IRibbonControl object.</param>
+        /// <returns>Bitmap</returns>
+        public Bitmap timeInNotesButton_GetImage(IRibbonControl control)
+        {
+            return Resources.time_in_notes;
+        }
+
+        /// <summary>
         /// When @c AddSVI button is pressed, this method instantiates a @c SviProcessor object & calls its @c Scan method.
         /// </summary>
         /// <param name="control">Reference to the IRibbonControl object.</param>
-        
+
         public void OnAddSVI(Office.IRibbonControl control)
         {
             SviProcessor sviProcessor = new SviProcessor();
@@ -150,17 +160,6 @@ namespace DECS_Excel_Add_Ins
             ListImporter importer = new ListImporter();
             Excel.Worksheet wksheet = (Excel.Worksheet)Globals.ThisAddIn.Application.ActiveSheet;
             importer.Scan(wksheet);
-        }
-
-        /// <summary>
-        /// When @c MergeRows button is pressed, this method instantiates a @c MergeRowsForm.
-        /// </summary>
-        /// <param name="control">Reference to the IRibbonControl object.</param>
-
-        public void OnMergeRows(Office.IRibbonControl control)
-        {
-            MergeRowsForm form = new MergeRowsForm();
-            form.Visible = true;
         }
 
         /// <summary>
@@ -199,6 +198,17 @@ namespace DECS_Excel_Add_Ins
         }
 
         /// <summary>
+        /// When @c MergeRows button is pressed, this method instantiates a @c MergeRowsForm.
+        /// </summary>
+        /// <param name="control">Reference to the IRibbonControl object.</param>
+
+        public void OnMergeRows(Office.IRibbonControl control)
+        {
+            MergeRowsForm form = new MergeRowsForm();
+            form.Visible = true;
+        }
+
+        /// <summary>
         /// When @c SetupConfig button is pressed, this method instantiates a @c DefineRulesForm object
         /// for the user to review & edit notes parsing rules.
         /// </summary>
@@ -226,6 +236,18 @@ namespace DECS_Excel_Add_Ins
             Excel.Worksheet wksheet = (Excel.Worksheet)Globals.ThisAddIn.Application.ActiveSheet;
             NotesParser parser = new NotesParser(_worksheet: wksheet);
             parser.Parse();
+        }
+
+        /// <summary>
+        /// When @c ExtractTime button is pressed, this method instantiates a @c TimeInNotes object.
+        /// </summary>
+        /// <param name="control">Reference to the IRibbonControl object.</param>
+
+        public void OnTimeInNotes(Office.IRibbonControl control)
+        {
+            Excel.Worksheet wksheet = (Excel.Worksheet)Globals.ThisAddIn.Application.ActiveSheet;
+            ExtractTime obj = new ExtractTime(_worksheet: wksheet);
+            obj.Extract();
         }
 
         #region IRibbonExtensibility Members

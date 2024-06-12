@@ -82,7 +82,7 @@ namespace DECS_Excel_Add_Ins
             // Trying to modify while user is editing a cell will result in an error.
             try
             {
-                row.AutoFit();
+                row.Columns.AutoFit();
             }
             catch (System.Runtime.InteropServices.COMException) { }
         }
