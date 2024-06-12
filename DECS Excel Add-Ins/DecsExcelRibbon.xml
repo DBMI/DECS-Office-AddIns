@@ -2,7 +2,7 @@
 <customUI xmlns="http://schemas.microsoft.com/office/2009/07/customui" onLoad="Ribbon_Load">
 	<ribbon>
 		<tabs>
-			<tab id="DecsTab" label="DECS Tools">
+			<tab id="DecsTab" label="UCSD Data Tools">
 				<group id="FormatGroup"
 					   label="Format">
 					<button id="formatSheet"
@@ -41,7 +41,7 @@
 							supertip="Merge results." />
 				</group>
 				<group id="NotesGroup"
-					   label="Notes">
+					   label="Search Notes">
 					<button id="searchButton"
 							getImage="notesSearchButton_GetImage"
 							label="Search Notes"
@@ -64,6 +64,18 @@
 							size="large"
 							supertip="Merge results on index." />
 				</group>
+				<!--
+				<group id ="SignalGroup"
+					   label="Epic Signal">
+					<button id="extractTime"
+							getImage="timeInNotesButton_GetImage"
+							label="Extract Time-In-Notes"
+							onAction="OnTimeInNotes"
+							screentip="Extracts data from Epic Signal download"
+							size="large"
+							supertip="Extracts Time in Notes from Epic Signal download" />
+				</group>
+				-->
 				<group id ="SviGroup"
 					   label="SVI">
 					<button id="addSVI"
