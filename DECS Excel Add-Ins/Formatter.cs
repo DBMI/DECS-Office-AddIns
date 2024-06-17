@@ -18,11 +18,18 @@ namespace DECS_Excel_Add_Ins
      */
     internal class Formatter
     {
+        private const double BOLD_BUMP = 1.05;
+        private const double POINTS_PER_CHAR = 1.15;
+        private const double MAX_COLUMN_WIDTH = 100.0;
+
+        private int lastColumn;
+
+
         internal Formatter() { }
 
         /// <summary>
         /// Formats sheet:
-        /// #- centered columns
+        /// #- centered headers
         /// #- bold headings w/ word wrap on
         /// #- auto-fit all columns
         /// #- "NULL" values grayed out
@@ -34,19 +41,24 @@ namespace DECS_Excel_Add_Ins
         internal void Format(Worksheet worksheet)
         {
             Range originalSelection = worksheet.Application.Selection;
+            lastColumn = Utilities.FindLastCol(worksheet);
 
             // If the user has selected the first row, we won't be free to modify it.
             MoveOffFirstRow(originalSelection);
 
+            // Apply special formatting based on column names.
+            FormatMRN(worksheet);
+            FormatDates(worksheet);
+
+            // Format the header row.
+            FitHeader(worksheet);
+            SetBorders(worksheet);
+            FreezePane(worksheet);
             CenterlineTheMain(worksheet);
             WrapText(worksheet);
-            FreezePane(worksheet);
-            GrayOutTheNulls(worksheet);
+            MakeHeaderBold(worksheet);
 
-            Range topRow = worksheet.Cells[1, 1].EntireRow;            
-            topRow.Font.Bold = true;
-            FitHeader(topRow);
-            SetBorders(topRow);
+            GrayOutTheNulls(worksheet);
 
             // Restore original selection.
             originalSelection.Select();
@@ -55,11 +67,11 @@ namespace DECS_Excel_Add_Ins
         /// <summary>
         /// Formats all columns to be centered horizontally & vertically.
         /// </summary>
-        /// <param name="sheet">The active worksheet</param>
+        /// <param name="worksheet">The active worksheet</param>
         
-        private void CenterlineTheMain(Worksheet sheet)
+        private void CenterlineTheMain(Worksheet worksheet)
         {
-            Workbook workbook = sheet.Application.ActiveWorkbook;
+            Workbook workbook = worksheet.Application.ActiveWorkbook;
 
             // Trying to modify while user is editing a cell will result in an error.
             try
@@ -67,7 +79,9 @@ namespace DECS_Excel_Add_Ins
                 Style style = workbook.Styles.Add("CenteredHeadings");
                 style.HorizontalAlignment = XlHAlign.xlHAlignCenter;
                 style.VerticalAlignment = XlVAlign.xlVAlignCenter;
-                sheet.Columns.Style = "CenteredHeadings";
+
+                // Only apply to the header row.
+                worksheet.Rows[1].Columns.Style = "CenteredHeadings";
             }
             catch (System.Runtime.InteropServices.COMException) { }
         }
@@ -75,29 +89,106 @@ namespace DECS_Excel_Add_Ins
         /// <summary>
         /// Formats all columns expand to fit their contents.
         /// </summary>
-        /// <param name="row">Range of desired row--usually the top row.</param>
-        
-        private void FitHeader(Range row)
+        /// <param name="worksheet">The active worksheet</param>
+
+        private void FitHeader(Worksheet worksheet)
         {
-            // Trying to modify while user is editing a cell will result in an error.
-            try
+            Range firstCell = worksheet.Cells[1, 1];
+
+            double dataColWidth;
+            double desiredColWidth;
+            double headerColWidth;
+            int stringLength;
+
+            // Run across the columns.
+            for (int colOffset = 0; colOffset < lastColumn; colOffset++)
             {
-                row.Columns.AutoFit();
+                headerColWidth = 0.0;
+
+                // Wrap this in a try/catch because modifying a column while user is editing a cell in it will throw an exception.
+                try
+                {
+                    // Get width of HEADER cell...
+                    stringLength = firstCell.Offset[0, colOffset].Value2.ToString().Length;
+                    
+                    // Compute width of HEADER cell.
+                    headerColWidth = stringLength * POINTS_PER_CHAR;
+
+                    // Get width of first DATA cell...
+                    stringLength = firstCell.Offset[1, colOffset].Value2.ToString().Length;
+
+                    // Compute width of DATA cell.
+                    dataColWidth = stringLength * POINTS_PER_CHAR;
+
+                    // Set the column width to the larger of the required HEADER cell width
+                    // OR the required DATA cell width (but not wider than the MAX width).
+                    desiredColWidth = Math.Max(headerColWidth * BOLD_BUMP, dataColWidth);
+                    desiredColWidth = Math.Min(MAX_COLUMN_WIDTH, desiredColWidth);
+                    firstCell.Offset[0, colOffset].Columns.ColumnWidth = desiredColWidth;
+                }
+                catch (System.Runtime.InteropServices.COMException) { }
             }
-            catch (System.Runtime.InteropServices.COMException) { }
+        }
+
+        /// <summary>
+        /// Formats the column containing Medical Record Numbers to use 0####### numerical format.
+        /// </summary>
+        /// <param name="worksheet">The active worksheet</param>
+
+        private void FormatMRN(Worksheet worksheet)
+        {
+            Range firstCell = worksheet.Cells[1, 1];
+
+            for (int colOffset = 0; colOffset < lastColumn; colOffset++)
+            {
+                string columnName = firstCell.Offset[0, colOffset].Value2.ToString();
+
+                if (columnName.ToUpper().Contains("MRN"))
+                {
+                    try
+                    {
+                        worksheet.Columns[colOffset + 1].NumberFormat = "0#######";
+                    }
+                    catch (System.Runtime.InteropServices.COMException) { }
+                }
+            }
+        }
+
+        /// <summary>
+        /// Formats the column containing dates to use "MM/DD/YYYY" format.
+        /// </summary>
+        /// <param name="worksheet">The active worksheet</param>
+
+        private void FormatDates(Worksheet worksheet)
+        {
+            Range firstCell = worksheet.Cells[1, 1];
+
+            for (int colOffset = 0; colOffset < lastColumn; colOffset++)
+            {
+                string columnName = firstCell.Offset[0, colOffset].Value2.ToString();
+
+                if (columnName.ToLower().Contains("date"))
+                {
+                    try
+                    {
+                        worksheet.Columns[colOffset + 1].NumberFormat = "MM/DD/YYYY";
+                    }
+                    catch (System.Runtime.InteropServices.COMException) { }
+                }
+            }
         }
 
         /// <summary>
         /// Freezes the top row so it's always visible as we scroll down.
         /// </summary>
-        /// <param name="sheet">The active worksheet</param>
-        
-        private void FreezePane(Worksheet sheet)
+        /// <param name="worksheet">The active worksheet</param>
+
+        private void FreezePane(Worksheet worksheet)
         {
             try
             {
-                sheet.Application.ActiveWindow.SplitRow = 1;
-                sheet.Application.ActiveWindow.FreezePanes = true;
+                worksheet.Application.ActiveWindow.SplitRow = 1;
+                worksheet.Application.ActiveWindow.FreezePanes = true;
             }
             catch (System.Runtime.InteropServices.COMException) { }
         }
@@ -105,8 +196,8 @@ namespace DECS_Excel_Add_Ins
         /// <summary>
         /// Grays out all "NULL" values for better readability.
         /// </summary>
-        /// <param name="sheet">The active worksheet</param>
-        
+        /// <param name="worksheet">The active worksheet</param>
+
         private void GrayOutTheNulls(Worksheet worksheet)
         {
             FormatCondition cond = worksheet.Cells.FormatConditions.Add(XlFormatConditionType.xlCellValue, XlFormatConditionOperator.xlEqual, "NULL");
@@ -125,10 +216,21 @@ namespace DECS_Excel_Add_Ins
         }
 
         /// <summary>
+        /// Sets header text tp BP:D/
+        /// </summary>
+        /// <param name="worksheet">The active worksheet</param>
+
+        private void MakeHeaderBold(Worksheet worksheet)
+        {
+            Range topRow = worksheet.Cells[1, 1].EntireRow;
+            topRow.Font.Bold = true;
+        }
+
+        /// <summary>
         /// Pushes the selection off the first row so we can modify first row.
         /// </summary>
         /// <param name="selection">Range of selected region</param>
-        
+
         private void MoveOffFirstRow(Range selection)
         {
             if (IsFirstRowSelected(selection))
@@ -142,17 +244,18 @@ namespace DECS_Excel_Add_Ins
         /// <summary>
         /// Formats desired row to have thick bottom border.
         /// </summary>
-        /// <param name="row">Range of desired row--usually the top row.</param>
-        
-        private void SetBorders(Range row)
+        /// <param name="worksheet">The active worksheet</param>
+
+        private void SetBorders(Worksheet worksheet)
         {
+            Range topRow = worksheet.Cells[1, 1].EntireRow;
 
             // Trying to modify while user is editing a cell will result in an error.
             try
             {
-                row.Borders[XlBordersIndex.xlEdgeBottom].Color = Color.Black;
-                row.Borders[XlBordersIndex.xlEdgeBottom].LineStyle = XlLineStyle.xlContinuous;
-                row.Borders[XlBordersIndex.xlEdgeBottom].Weight = 2;
+                topRow.Borders[XlBordersIndex.xlEdgeBottom].Color = Color.Black;
+                topRow.Borders[XlBordersIndex.xlEdgeBottom].LineStyle = XlLineStyle.xlContinuous;
+                topRow.Borders[XlBordersIndex.xlEdgeBottom].Weight = 2;
             }
             catch (System.Runtime.InteropServices.COMException) { }
         }
@@ -160,14 +263,15 @@ namespace DECS_Excel_Add_Ins
         /// <summary>
         /// Formats sheet to wrap text so long info or headers can be read in their entirety.
         /// </summary>
-        /// <param name="sheet">The active worksheet</param>
-        
-        private void WrapText(Worksheet sheet)
+        /// <param name="worksheet">The active worksheet</param>
+
+        private void WrapText(Worksheet worksheet)
         {
             // Trying to modify while user is editing a cell will result in an error.
             try
             {
-                sheet.Columns.WrapText = true;
+                // Only apply to the header row.
+                worksheet.Rows[1].Columns.WrapText = true;
             }
             catch (System.Runtime.InteropServices.COMException) { }
         }
