@@ -193,6 +193,26 @@ namespace DECS_Excel_Add_Ins
 
             return convertedContents;
         }
+
+        /// <summary>
+        /// Copy row from source Worksheet to target Worksheet.
+        /// </summary>
+        /// <param name="sourceSheet">Worksheet</param>
+        /// <param name="sourceRowOffset">int</param>
+        /// <param name="targetSheet">Worksheet</param>
+        /// <param name="targetRowOffset">int</param>
+
+        public static void CopyRow(Worksheet sourceSheet, int sourceRowOffset, Worksheet targetSheet, int targetRowOffset)
+        {
+            // Convert from offset to row number.
+            int sourceRowNumber = sourceRowOffset + 1;
+            int targetRowNumber = targetRowOffset + 1;
+
+            Range sourceRange = sourceSheet.Rows[sourceRowNumber + ":" + sourceRowNumber];
+            Range targetRange = targetSheet.Rows[targetRowNumber + ":" + targetRowNumber];
+            sourceRange.Copy(targetRange);
+        }
+
         /// <summary>
         /// Removes event handlers from a text box.
         /// </summary>
@@ -250,12 +270,14 @@ namespace DECS_Excel_Add_Ins
         // https://stackoverflow.com/a/22151620/18749636
         internal static int FindLastCol(Worksheet sheet)
         {
+            // Not sure why (at some point) I thought it was necessary to do this??
             // Unhide All Cells and clear formats
-            sheet.Columns.ClearFormats();
-            sheet.Rows.ClearFormats();
+            //sheet.Columns.ClearFormats();
+            //sheet.Rows.ClearFormats();
 
             // Detect Last used Columns, including cells that contains formulas that result in blank values
             return sheet.UsedRange.Columns.Count;
+        
         }
 
         /// <summary>

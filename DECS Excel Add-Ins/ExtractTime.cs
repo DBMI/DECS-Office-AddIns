@@ -16,8 +16,8 @@ namespace DECS_Excel_Add_Ins
     internal class ExtractTime
     {
         private readonly string[] COLUMNSNEEDED = { "SER CID", "Provider Name", "Service Area", "Specialty", "Numerator", "Denominator", "Metric ID" };
-        private readonly string[] PRIMARY_CARE_SPECIALTIES = { "Family Practice", "General Practice", "Medicine", "Pediatrics", "Sports Medicine"};
-        private readonly string[] SURGICAL_SPECIALTY_PATTERNS = { "%SURG%"};
+        private readonly string[] PRIMARY_CARE_SPECIALTIES = { "Family Practice", "General Practice", "Medicine", "Pediatrics", "Sports Medicine" };
+        private readonly string[] SURGICAL_SPECIALTY_PATTERNS = { "%SURG%" };
         private const string SPECIALTY_COLUMN_NAME = "Specialty";
         private const string METRIC_ID_COLUMN = "Metric ID";
         private const int TIME_IN_NOTES_METRIC_ID = 317;
@@ -73,7 +73,7 @@ namespace DECS_Excel_Add_Ins
                 {
                     columnName = sourceRange.Offset[0, colOffset].Value2.ToString();
                 }
-                catch (Microsoft.CSharp.RuntimeBinder.RuntimeBinderException ex)
+                catch (Microsoft.CSharp.RuntimeBinder.RuntimeBinderException)
                 {
                     return;
                 }
@@ -86,7 +86,7 @@ namespace DECS_Excel_Add_Ins
                     {
                         downloadedWorksheet.Columns[colOffset + 1].Delete();
                     }
-                    catch (Exception ex)
+                    catch (Exception)
                     {
                         application.StatusBar = false;
                         break;
@@ -188,7 +188,7 @@ namespace DECS_Excel_Add_Ins
                     {
                         thisSpecialty = specialtyColumn.Offset[metricsPageRowOffset, 0].Value2.ToString();
                     }
-                    catch (Microsoft.CSharp.RuntimeBinder.RuntimeBinderException ex) 
+                    catch (Microsoft.CSharp.RuntimeBinder.RuntimeBinderException) 
                     {
                         return;
                     }                    
@@ -283,7 +283,7 @@ namespace DECS_Excel_Add_Ins
                         specialties.Add(specialtyName);
                     }
                 }
-                catch (Microsoft.CSharp.RuntimeBinder.RuntimeBinderException ex)
+                catch (Microsoft.CSharp.RuntimeBinder.RuntimeBinderException)
                 {
                     return;
                 }
@@ -312,7 +312,7 @@ namespace DECS_Excel_Add_Ins
                             specialties.Add(specialtyName);
                         }
                     }
-                    catch (Microsoft.CSharp.RuntimeBinder.RuntimeBinderException ex)
+                    catch (Microsoft.CSharp.RuntimeBinder.RuntimeBinderException)
                     {
                         return;
                     }

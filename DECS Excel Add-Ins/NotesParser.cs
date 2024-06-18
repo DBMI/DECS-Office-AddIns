@@ -339,7 +339,7 @@ namespace DECS_Excel_Add_Ins
                     {
                         log.Debug("Attempting match using pattern '" + rule.pattern + "'.");
 
-                        MatchCollection matches = Regex.Matches(cell_contents, rule.pattern, RegexOptions.IgnoreCase);
+                        MatchCollection matches = Regex.Matches(cell_contents, rule.pattern, RegexOptions.None);
 
                         if (matches.Count > 0)
                         {
