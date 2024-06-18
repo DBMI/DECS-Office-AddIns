@@ -12,6 +12,13 @@
 							screentip="Formats current sheet"
 							size="large"
 							supertip="Nice formatting for results sheet." />
+					<button id="copyFormatting"
+							getImage="copyFormatButton_GetImage"
+							label="Copy Formatting"
+							onAction="OnCopyFormat"
+							screentip="Copies formatting from current sheet to next"
+							size="large"
+							supertip="Copies formatting to next sheet." />
 					<button id="convertDate"
 							getImage="dateConvertButton_GetImage"
 							label="Convert Dates"

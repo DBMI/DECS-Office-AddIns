@@ -59,6 +59,16 @@ namespace DECS_Excel_Add_Ins
         }
 
         /// <summary>
+        /// Lets the @c DexsExcelRibbon.xml point to the image for the @c CopyFormatting button.
+        /// </summary>
+        /// <param name="control">Reference to the IRibbonControl object.</param>
+        /// <returns>Bitmap</returns>
+        public Bitmap copyFormatButton_GetImage(IRibbonControl control)
+        {
+            return Resources.copy_formatting;
+        }
+
+        /// <summary>
         /// Lets the @c DexsExcelRibbon.xml point to the image for the @c ConvertDates button.
         /// </summary>
         /// <param name="control">Reference to the IRibbonControl object.</param>
@@ -163,6 +173,18 @@ namespace DECS_Excel_Add_Ins
         }
 
         /// <summary>
+        /// When @c CopyFormatting button is pressed, this method instantiates a @c Formatter object & calls its @c CopyFormat method.
+        /// </summary>
+        /// <param name="control">Reference to the IRibbonControl object.</param>
+
+        public void OnCopyFormat(Office.IRibbonControl control)
+        {
+            Formatter formatter = new Formatter();
+            Excel.Worksheet wksheet = (Excel.Worksheet)Globals.ThisAddIn.Application.ActiveSheet;
+            formatter.CopyFormat(wksheet);
+        }
+
+        /// <summary>
         /// When @c ConvertDates button is pressed, this method instantiates a @c MumpsDateConverter object & calls its @c ConvertColumn method.
         /// </summary>
         /// <param name="control">Reference to the IRibbonControl object.</param>
@@ -175,7 +197,7 @@ namespace DECS_Excel_Add_Ins
         }
 
         /// <summary>
-        /// When @c FormatResults button is pressed, this method instantiates a @c ListImporter object & calls its @c Scan method.
+        /// When @c FormatResults button is pressed, this method instantiates a @c Formatter object & calls its @c Format method.
         /// </summary>
         /// <param name="control">Reference to the IRibbonControl object.</param>
         

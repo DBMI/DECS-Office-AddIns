@@ -28,6 +28,79 @@ namespace DECS_Excel_Add_Ins
         internal Formatter() { }
 
         /// <summary>
+        /// Formats all columns to be centered horizontally & vertically.
+        /// </summary>
+        /// <param name="worksheet">The active worksheet</param>
+
+        private void CenterlineTheMain(Worksheet worksheet)
+        {
+            Workbook workbook = worksheet.Application.ActiveWorkbook;
+
+            // Trying to modify while user is editing a cell will result in an error.
+            try
+            {
+                Style style = workbook.Styles.Add("CenteredHeadings");
+                style.HorizontalAlignment = XlHAlign.xlHAlignCenter;
+                style.VerticalAlignment = XlVAlign.xlVAlignCenter;
+
+                // Only apply to the header row.
+                worksheet.Rows[1].Columns.Style = "CenteredHeadings";
+            }
+            catch (System.Runtime.InteropServices.COMException) { }
+        }
+
+        /// <summary>
+        /// Copies formatting from each column in this sheet to the matching column in the next.
+        /// </summary>
+        /// <param name="worksheet">The active worksheet</param>
+
+        internal void CopyFormat(Worksheet worksheet)
+        {
+            lastColumn = worksheet.UsedRange.Columns.Count;
+            Range sourceCell = worksheet.Cells[1, 1];
+
+            Worksheet targetSheet = worksheet.Next;
+
+            if (targetSheet != null)
+            {
+                Range targetCell = targetSheet.Cells[1, 1];
+
+                // Copy header ROW attributes.
+                // 1) Header text style
+                targetCell.EntireRow.Font.Bold = sourceCell.Font.Bold;
+
+                // 2) Font size
+                targetCell.EntireRow.Font.Size = sourceCell.Font.Size;
+
+                // Copy each COLUMN's attributes.
+                for (int columnOffset =  0; columnOffset < lastColumn; columnOffset++)
+                {
+                    CopyColumnFormatting(sourceCell.Offset[1, columnOffset], 
+                                         targetCell.Offset[1, columnOffset]);
+                }
+            }
+        }
+
+        /// <summary>
+        /// Copies formatting from one column to another.
+        /// </summary>
+        /// <param name="sourceColumn">Where we copy FROM</param>
+        /// <param name="targetColumn">Where we copy TO</param>
+
+        internal void CopyColumnFormatting(Range sourceColumn, Range targetColumn)
+        {
+            // Attributes to copy:
+
+            // 1) Column width
+            targetColumn.EntireColumn.ColumnWidth = sourceColumn.Columns.ColumnWidth;
+
+            // 2) Data format
+            var numberFormat = sourceColumn.Columns.NumberFormat;
+            targetColumn.EntireColumn.NumberFormat = numberFormat;
+
+        }
+
+        /// <summary>
         /// Formats sheet:
         /// #- centered headers
         /// #- bold headings w/ word wrap on
@@ -36,12 +109,12 @@ namespace DECS_Excel_Add_Ins
         /// #- top row frozen
         /// #- thick bottom border on top row
         /// </summary>
-        /// <param name="sheet">The active worksheet</param>
-        
+        /// <param name="worksheet">The active worksheet</param>
+
         internal void Format(Worksheet worksheet)
         {
             Range originalSelection = worksheet.Application.Selection;
-            lastColumn = Utilities.FindLastCol(worksheet);
+            lastColumn = worksheet.UsedRange.Columns.Count;
 
             // If the user has selected the first row, we won't be free to modify it.
             MoveOffFirstRow(originalSelection);
@@ -62,28 +135,6 @@ namespace DECS_Excel_Add_Ins
 
             // Restore original selection.
             originalSelection.Select();
-        }
-
-        /// <summary>
-        /// Formats all columns to be centered horizontally & vertically.
-        /// </summary>
-        /// <param name="worksheet">The active worksheet</param>
-        
-        private void CenterlineTheMain(Worksheet worksheet)
-        {
-            Workbook workbook = worksheet.Application.ActiveWorkbook;
-
-            // Trying to modify while user is editing a cell will result in an error.
-            try
-            {
-                Style style = workbook.Styles.Add("CenteredHeadings");
-                style.HorizontalAlignment = XlHAlign.xlHAlignCenter;
-                style.VerticalAlignment = XlVAlign.xlVAlignCenter;
-
-                // Only apply to the header row.
-                worksheet.Rows[1].Columns.Style = "CenteredHeadings";
-            }
-            catch (System.Runtime.InteropServices.COMException) { }
         }
 
         /// <summary>

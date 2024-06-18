@@ -86,13 +86,7 @@ namespace DECS_Excel_Add_Ins
 
         private void CopyRow(int sourceRowOffset, int targetRowOffset)
         {
-            // Convert from offset to row number.
-            int sourceRowNumber = sourceRowOffset + 1;
-            int targetRowNumber = targetRowOffset + 1;
-
-            Range sourceRange = selectedSourceWorksheet.Rows[sourceRowNumber + ":" + sourceRowNumber];
-            Range targetRange = targetWorksheet.Rows[targetRowNumber + ":" + targetRowNumber];
-            sourceRange.Copy(targetRange);
+            Utilities.CopyRow(selectedSourceWorksheet, sourceRowOffset, targetWorksheet, targetRowOffset);
         }
 
         /// <summary>
