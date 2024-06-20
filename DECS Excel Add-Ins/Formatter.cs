@@ -20,7 +20,7 @@ namespace DECS_Excel_Add_Ins
     {
         private const double BOLD_BUMP = 1.05;
         private const double POINTS_PER_CHAR = 1.15;
-        private const double MAX_COLUMN_WIDTH = 100.0;
+        private const double MAX_COLUMN_WIDTH = 30.0;
 
         private int lastColumn;
 
