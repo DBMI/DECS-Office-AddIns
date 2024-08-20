@@ -23,6 +23,7 @@ namespace DECS_Excel_Add_Ins
         private const double MAX_COLUMN_WIDTH = 30.0;
 
         private int lastColumn;
+        private int lastRow;
 
 
         internal Formatter() { }
@@ -115,6 +116,7 @@ namespace DECS_Excel_Add_Ins
         {
             Range originalSelection = worksheet.Application.Selection;
             lastColumn = worksheet.UsedRange.Columns.Count;
+            lastRow = worksheet.UsedRange.Rows.Count;
 
             // If the user has selected the first row, we won't be free to modify it.
             MoveOffFirstRow(originalSelection);
@@ -216,9 +218,10 @@ namespace DECS_Excel_Add_Ins
 
             for (int colOffset = 0; colOffset < lastColumn; colOffset++)
             {
-                string columnName = firstCell.Offset[0, colOffset].Value2.ToString();
+                Range topOfColumn = firstCell.Offset[0, colOffset];
+                string columnName = topOfColumn.Value2.ToString();
 
-                if (columnName.ToLower().Contains("date"))
+                if (columnName.ToLower().Contains("date") && Utilities.IsExcelDate(topOfColumn, lastRow))
                 {
                     try
                     {
