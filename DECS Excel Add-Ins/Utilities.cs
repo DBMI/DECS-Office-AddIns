@@ -289,8 +289,8 @@ namespace DECS_Excel_Add_Ins
         internal static int FindLastRow(Worksheet sheet)
         {
             // Unhide All Cells and clear formats
-            sheet.Columns.ClearFormats();
-            sheet.Rows.ClearFormats();
+            //sheet.Columns.ClearFormats();
+            //sheet.Rows.ClearFormats();
 
             // Detect Last used Row, including cells that contains formulas that result in blank values
             
@@ -669,6 +669,41 @@ namespace DECS_Excel_Add_Ins
 
             newRange.Value2 = newColumnName;
             return newRange;
+        }
+
+        /// <summary>
+        /// Tests to see if column can be converted to Excel date.
+        /// </summary>
+        /// <param name="cellContents">String contents of a particular cell.</param>
+        /// <returns>DateTime</returns>
+        internal static bool IsExcelDate(Range column, int lastRow)
+        {
+            bool isExcelDate = true;
+            string cellContents = string.Empty;
+            DateTime pastDate = DateTime.Parse("1950-01-01");
+            DateTime futureDate = DateTime.Parse("2050-01-01");
+
+            for (int rowOffset = 1; rowOffset < (lastRow - 1); rowOffset++)
+            {
+                try
+                {
+                    cellContents = column.Offset[rowOffset, 0].Value2.ToString();
+                }
+                catch (Exception ex)
+                { 
+                    MessageBox.Show(ex.Message);
+                }
+
+                DateTime? convertedDate = ConvertExcelDate(cellContents);
+
+                if (convertedDate == null || convertedDate < pastDate || convertedDate > futureDate)
+                {
+                    isExcelDate = false;
+                    break;
+                }
+            }
+
+            return isExcelDate;
         }
 
         /// <summary>
