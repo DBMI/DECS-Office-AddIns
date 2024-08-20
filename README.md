@@ -1,4 +1,4 @@
-# DECS Office Add-Ins
+# UCSD Office Add-Ins
 ![Last Commit Date](./.github/badges/last-commit-badge.svg?dummy=8484744)
 
 [GitHub Pages site](https://dbmi.github.io/DECS-Office-AddIns/)
@@ -8,6 +8,7 @@ Creates custom buttons in Microsoft Excel & Word that allow user to:
 ![image info](./DECS%20Excel%20Add-Ins/pictures/toolbar.png) 
 
 * Format a page of results with bold & centered header, NULLs grayed out, etc.
+* Copy the formatting from one sheet onto the next.
 * Convert dates from [MUMPS](https://en.wikipedia.org/wiki/MUMPS) to Excel standard.
 * Turn a list (of MRNs, ICD codes, etc.) into a SQL snippet that imports the column into a query.
 * Merge rows across dates.
@@ -64,7 +65,7 @@ Notice how the original dates--in multiple formats--were automatically converted
 ### Excel: Merge notes from different sheets
 In complex data sets, we may have extracted data in pieces and now need to merge results from one sheet into another. However, the index value (like **C**ontact **S**erial **N**umber) may be present on more than one row, or may be missing. And in the case of data extracted from notes, there may be different values extracted from different patient visits.
 
-Clicking the `Merge Notess` button brings up this dialog to define the source of the data, into which sheet it's to be merged and which column (if any) defines the date at which the data were measured:
+Clicking the `Merge Notes` button brings up this dialog to define the source of the data, into which sheet it's to be merged and which column (if any) defines the date at which the data were measured:
 ![image info](./DECS%20Excel%20Add-Ins/pictures/merge_dialog.png)
 
 
@@ -85,7 +86,7 @@ We can provide this information by using the patient's address (preferred) or zi
 
 #### Finding the census tract number:
 **Address**
-If we have a patient's address, we can lookup their exact census tract number using the US Census Bureau's [online geocoding service](https://geocoding.geo.census.gov/geocoder/Geocoding_Services_API.html). Here's an example of the query & response (the census tract number is here called *GEOID*):
+If we have a patient's address, the app looks up their exact census tract number using the US Census Bureau's [online geocoding service](https://geocoding.geo.census.gov/geocoder/Geocoding_Services_API.html). Here's an example of the query & response (the census tract number is here called *GEOID*):
 
 Query:
 https://geocoding.geo.census.gov/geocoder/geographies/onelineaddress?address=1600%20PENNSYLVANIA%20AVE%2C%20WASHINGTON%20DC%2020500&benchmark=2020&vintage=2020&format=json
@@ -95,7 +96,7 @@ Response:
 ![image info](./DECS%20Excel%20Add-Ins/pictures/json_response.png)
 
 **Zip code**
-Using just a zip code is less exact than a full address, as a zip code may contain many census tracts, and tracts may overlap with more than one zip code. However, we can use [*crosswalk*](https://www.huduser.gov/portal/datasets/usps_crosswalk.html) files provided by the US Department of Housing and Urban Development to lookup all the census tracts present in a given zip code. Here's an example from the file ZIP_TRACT_122023.csv (available [here](https://www.huduser.gov/portal/datasets/usps_crosswalk.html)). Notice the large number of census tracts which cross to a typical San Diego County zip code:
+Using just a zip code is less exact than a full address, as a zip code may contain many census tracts, and tracts may overlap with more than one zip code. So the app uses [*crosswalk*](https://www.huduser.gov/portal/datasets/usps_crosswalk.html) files provided by the US Department of Housing and Urban Development to lookup all the census tracts present in a given zip code. Here's an example from the file ZIP_TRACT_122023.csv (available [here](https://www.huduser.gov/portal/datasets/usps_crosswalk.html)). Notice the large number of census tracts which cross to a typical San Diego County zip code:
 
 ![image info](./DECS%20Excel%20Add-Ins/pictures/crosswalk_multiple_tracts.png)
 
@@ -106,6 +107,6 @@ Here's an example of the SVI data from file SVI_2020_US.csv (available [here](ht
 
 ![image info](./DECS%20Excel%20Add-Ins/pictures/SVI_example.png)
 
-In cases where we're using only zip code information and have multiple census tracts, we return the average SVI score and ranking across all tracts associated with the zip code.
+In cases where we're using only zip code information and have multiple census tracts, the app returns the average SVI score and ranking across all tracts associated with the zip code.
 
 
