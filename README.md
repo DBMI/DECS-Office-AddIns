@@ -10,6 +10,7 @@ Creates custom buttons in Microsoft Excel & Word that allow user to:
 * Format a page of results with bold & centered header, NULLs grayed out, etc.
 * Copy the formatting from one sheet onto the next.
 * Convert dates from [MUMPS](https://en.wikipedia.org/wiki/MUMPS) to Excel standard.
+* Generate unique, scrambled identifiers from patient or user data.
 * Turn a list (of MRNs, ICD codes, etc.) into a SQL snippet that imports the column into a query.
 * Merge rows across dates.
 * Scan `Notes` fields for keywords, creating new columns.
