@@ -1,4 +1,5 @@
 ﻿using Microsoft.Office.Interop.Excel;
+using Microsoft.Office.Tools.Excel;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -18,6 +19,8 @@ using static System.Windows.Forms.VisualStyles.VisualStyleElement;
 using Excel = Microsoft.Office.Interop.Excel;
 using TextBox = System.Windows.Forms.TextBox;
 using ToolTip = System.Windows.Forms.ToolTip;
+using Workbook = Microsoft.Office.Interop.Excel.Workbook;
+using Worksheet = Microsoft.Office.Interop.Excel.Worksheet;
 
 namespace DECS_Excel_Add_Ins
 {
@@ -141,6 +144,37 @@ namespace DECS_Excel_Add_Ins
 
             // Remove the MouseHover EventHandler.
             DetachEvents(textBox);
+        }
+
+        /// <summary>
+        /// Combine multiple columns across one row.
+        /// </summary>
+        /// <param name="sheet">Worksheet</param>
+        /// <param name="rowNumber">int Row being processed</param>
+        /// <param name="columns">List<Range> Columns being combined</param>
+        /// <returns>string</returns>
+        internal static string CombineColumns(Worksheet sheet, int rowNumber, List<Range> columns)
+        {
+            string textCombined = string.Empty;
+            int columnNumber;
+            Range source;
+
+            foreach (Range column in columns)
+            {
+                columnNumber = column.Column;
+                source = (Range)sheet.Cells[rowNumber, columnNumber];
+
+                try
+                {
+                    textCombined = textCombined + source.Value.ToString();
+                }
+                catch (Microsoft.CSharp.RuntimeBinder.RuntimeBinderException)
+                { 
+                    // Cell is probably empty.
+                }
+            }
+
+            return textCombined;
         }
 
         /// <summary>
