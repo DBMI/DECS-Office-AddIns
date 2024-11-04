@@ -136,20 +136,6 @@ namespace DECS_Excel_Add_Ins
 
         internal void Extract()
         {
-            //DeleteUnneededColumns();
-            //downloadedWorkbook.SaveAs(newFilename);
-
-            // Copy over the header to the extracted metrics sheet.
-            //CopyRow(sourceWorksheet: downloadedWorksheet, targetWorksheet: metricsPageWorksheet);
-
-            // Populate new sheet with just Time-In-Note rows.
-            //ExtractMetricsToNewSheet();
-
-            // Delete the main sheet & save the file.
-            //downloadedWorksheet.Delete();
-            //application.StatusBar = "Saving workbook...";
-            //downloadedWorkbook.Save();
-
             GetSpecialties();
 
             // Build new sheet for each specialty.

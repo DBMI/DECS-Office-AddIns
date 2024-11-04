@@ -59,6 +59,16 @@ namespace DECS_Excel_Add_Ins
         }
 
         /// <summary>
+        /// Lets the @c DexsExcelRibbon.xml point to the image for the @c ChopIntoTabsButton button.
+        /// </summary>
+        /// <param name="control">Reference to the IRibbonControl object.</param>
+        /// <returns>Bitmap</returns>
+        public Bitmap chopIntoTabsButton_GetImage(IRibbonControl control)
+        {
+            return Resources.slicing;
+        }
+        
+        /// <summary>
         /// Lets the @c DexsExcelRibbon.xml point to the image for the @c CopyFormatting button.
         /// </summary>
         /// <param name="control">Reference to the IRibbonControl object.</param>
@@ -76,6 +86,16 @@ namespace DECS_Excel_Add_Ins
         public Bitmap dateConvertButton_GetImage(IRibbonControl control)
         {
             return Resources.calendar_with_gear;
+        }
+
+        /// <summary>
+        /// Lets the @c DexsExcelRibbon.xml point to the image for the @c Deidentify button.
+        /// </summary>
+        /// <param name="control">Reference to the IRibbonControl object.</param>
+        /// <returns>Bitmap</returns>
+        public Bitmap deidentifyButton_GetImage(IRibbonControl control)
+        {
+            return Resources.groucho;
         }
 
         /// <summary>
@@ -161,7 +181,7 @@ namespace DECS_Excel_Add_Ins
         }
 
         /// <summary>
-        /// When @c ImportList button is pressed, instantiates a @c ListImporter object & calls its @c Scan method.
+        /// When @c BuildList button is pressed, instantiates a @c ListImporter object & calls its @c Scan method.
         /// </summary>
         /// <param name="control">Reference to the IRibbonControl object.</param>
         
@@ -170,6 +190,18 @@ namespace DECS_Excel_Add_Ins
             ListImporter importer = new ListImporter();
             Excel.Worksheet wksheet = (Excel.Worksheet)Globals.ThisAddIn.Application.ActiveSheet;
             importer.Scan(wksheet);
+        }
+
+        /// <summary>
+        /// When @c ChopList button is pressed, instantiates a @c ListChopper object & calls its @c Scan method.
+        /// </summary>
+        /// <param name="control">Reference to the IRibbonControl object.</param>
+
+        public void OnChopList(Office.IRibbonControl control)
+        {
+            ListChopper chopper = new ListChopper();
+            Excel.Worksheet wksheet = (Excel.Worksheet)Globals.ThisAddIn.Application.ActiveSheet;
+            chopper.Scan(wksheet);
         }
 
         /// <summary>
@@ -197,10 +229,22 @@ namespace DECS_Excel_Add_Ins
         }
 
         /// <summary>
+        /// When @c Deidentify button is pressed, this method instantiates a @c Deidentifier object & calls its @c GenerateHash method.
+        /// </summary>
+        /// <param name="control">Reference to the IRibbonControl object.</param>
+
+        public void OnDeidentify(Office.IRibbonControl control)
+        {
+            Deidentifier deidentifier = new Deidentifier();
+            Excel.Worksheet wksheet = (Excel.Worksheet)Globals.ThisAddIn.Application.ActiveSheet;
+            deidentifier.GenerateHash(wksheet);
+        }
+
+        /// <summary>
         /// When @c FormatResults button is pressed, this method instantiates a @c Formatter object & calls its @c Format method.
         /// </summary>
         /// <param name="control">Reference to the IRibbonControl object.</param>
-        
+
         public void OnFormat(Office.IRibbonControl control)
         {
             Formatter formatter = new Formatter();
