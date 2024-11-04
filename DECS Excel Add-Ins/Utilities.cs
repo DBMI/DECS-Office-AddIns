@@ -132,7 +132,7 @@ namespace DECS_Excel_Add_Ins
         /// <summary>
         /// Clears the "Invalid" highlighting & MouseOver eventhandler from a textbox.
         /// </summary>
-        /// <param name="sheet">ActiveWorksheet.</param>
+        /// <param name="textBox">TextBox object</param>
 
         internal static void ClearRegexInvalid(TextBox textBox)
         {
@@ -229,6 +229,21 @@ namespace DECS_Excel_Add_Ins
         }
 
         /// <summary>
+        /// Copy block of rows from source Worksheet to target Worksheet.
+        /// </summary>
+        /// <param name="sourceSheet">Worksheet</param>
+        /// <param name="sourceBlock">Block</param>
+        /// <param name="targetSheet">Worksheet</param>
+        /// <param name="targetBlock">Block</param>
+
+        public static void CopyBlock(Worksheet sourceSheet, Block sourceBlock, Worksheet targetSheet, Block targetBlock)
+        {
+            Range sourceRange = sourceSheet.Rows[sourceBlock.rowList()];
+            Range targetRange = targetSheet.Rows[targetBlock.rowList()];
+            sourceRange.Copy(targetRange);
+        }
+
+        /// <summary>
         /// Copy row from source Worksheet to target Worksheet.
         /// </summary>
         /// <param name="sourceSheet">Worksheet</param>
@@ -248,6 +263,30 @@ namespace DECS_Excel_Add_Ins
         }
 
         /// <summary>
+        /// Insert new Worksheet with given name.
+        /// </summary>
+        /// <param name="sourceSheet">Worksheet</param>
+        /// <param name="newName">string</param>
+
+        public static Worksheet CreateNewNamedSheet(Worksheet worksheet, string newName)
+        {        
+            int MAX_LENGTH = 31;
+            Workbook workbook = worksheet.Parent;
+
+            // Create new sheet at the end.
+            Worksheet newSheet = workbook.Sheets.Add(After: workbook.Sheets[workbook.Sheets.Count]);
+
+            // There's a 31-character limit.
+            string cleanName = newName;
+
+            if (newName.Length > MAX_LENGTH)
+                cleanName = newName.Substring(0, MAX_LENGTH);
+
+            newSheet.Name = cleanName;
+            return newSheet;
+        }
+
+        /// <summary>
         /// Removes event handlers from a text box.
         /// </summary>
         /// <param name="textBox">Handle to TextBox object</param>        
@@ -264,6 +303,61 @@ namespace DECS_Excel_Add_Ins
             EventHandlerList eventHandlerList_obj = (EventHandlerList)
                 propEvents.GetValue(textBox, null);
             eventHandlerList_obj.Dispose();
+        }
+
+        /// <summary>
+        /// Given a list of names ("Alice Apple", "Alice Apple", "Bob Baker"),
+        /// finds the distinct elements ("Alice Apple", "Bob Baker").
+        /// </summary>
+        /// <param name="names">List of strings</param>
+        /// <returns>List of strings</returns>
+        internal static List<string> Distinct(List<string> names)
+        {
+            List<string> result = new List<string>();
+
+            foreach (string name in names)
+            {
+                if (!result.Contains(name))
+                {
+                    result.Add(name);
+                }
+            }
+
+            result.Sort();
+            return result;
+        }
+
+        /// <summary>
+        /// Given a Range to a column with a list of names ("Alice Apple", "Alice Apple", "Bob Baker"),
+        /// finds the distinct elements ("Alice Apple", "Bob Baker").
+        /// </summary>
+        /// <param name="column">Range</param>
+        /// <param name="lastRow">int</param>
+        /// <returns>List of strings</returns>
+        internal static List<string> Distinct(Range column, int lastRow)
+        {
+            List<string> result = new List<string>();
+            string cellContents = string.Empty;
+
+            for (int rowOffset = 1; rowOffset < (lastRow - 1); rowOffset++)
+            {
+                try
+                {
+                    cellContents = column.Offset[rowOffset, 0].Value2.ToString();
+
+                    if (!result.Contains(cellContents))
+                    {
+                        result.Add(cellContents);
+                    }
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show(ex.Message);
+                }
+            }
+
+            result.Sort();
+            return result;
         }
 
         /// <summary>
@@ -395,6 +489,17 @@ namespace DECS_Excel_Add_Ins
             }
 
             return sqlFilename;
+        }
+
+        /// <summary>
+        /// Reads the column name from the first row of column Range.
+        /// </summary>
+        /// <param name="column">Range</param>
+        /// <returns>string</returns>
+        internal static string GetColumnName(Range column)
+        {
+            string name = column.Offset[0, 0].Value2.ToString();
+            return name;
         }
 
         /// <summary>
@@ -675,6 +780,61 @@ namespace DECS_Excel_Add_Ins
             }
 
             return hasData;
+        }
+
+        /// <summary>
+        /// Given a Range to a column with a list of names ("Alice Apple", "Alice Apple", "Bob Baker"),
+        /// finds the distinct elements ("Alice Apple", "Bob Baker") and the Block of rows where each appears.
+        /// </summary>
+        /// <param name="column">Range</param>
+        /// <param name="lastRow">int</param>
+        /// <returns>Dictionary of Block objects</returns>
+        internal static Dictionary<string, Block> IdentifyBlocks(Range column, int lastRow)
+        {
+            Dictionary<string, Block> dict = new Dictionary<string, Block>();
+            string cellContents = string.Empty;
+            Block thisBlock = null;
+            int startingOffset = 1;
+            int endingOffset = 1;
+            string thisBlockName = null;
+
+            for (int rowOffset = 1; rowOffset < (lastRow - 1); rowOffset++)
+            {
+                try
+                {
+                    cellContents = column.Offset[rowOffset, 0].Value2.ToString();
+
+                    if (thisBlockName is null || cellContents == thisBlockName)
+                    {
+                        // Still in same block, so keep a running count.
+                        thisBlockName = cellContents;
+                        endingOffset = rowOffset;
+                    }
+                    else
+                    {
+                        // The name just changed, which means:
+                        //  --> the previous block ended.
+                        thisBlock = new Block(startingOffset, endingOffset);
+
+                        // Should we add this to the dictionary?
+                        if (!dict.ContainsKey(thisBlockName))
+                        {
+                            dict[thisBlockName] = thisBlock;
+                        }
+
+                        //  --> & a new block started.
+                        thisBlockName = cellContents;
+                        startingOffset = rowOffset;
+                        endingOffset = rowOffset;
+                    }
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show(ex.Message);
+                }
+            }
+
+            return dict;
         }
 
         /// <summary>

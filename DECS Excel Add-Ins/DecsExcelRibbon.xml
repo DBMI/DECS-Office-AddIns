@@ -27,6 +27,16 @@
 							size="large"
 							supertip="Adds new column with converted dates." />
 				</group>
+				<group id="GrouchoGroup"
+					   label="Deidentify">
+					<button id="deidentifyButton"
+							getImage="deidentifyButton_GetImage"
+							label="Deidentify"
+							onAction="OnDeidentify"
+							screentip="Deidentify"
+							size="large"
+							supertip="Generate hash from selected column." />
+				</group>
 				<group id="ListGroup"
 					   label="Lists">
 					<button id="buildListButton"
@@ -36,6 +46,13 @@
 							screentip="Build list import code"
 							size="large"
 							supertip="Build SQL code to import a list." />
+					<button id="chopIntoTabsButton"
+							getImage="chopIntoTabsButton_GetImage"
+							label="Separate Tabs"
+							onAction="OnChopList"
+							screentip="Break up into separate tabs"
+							size="large"
+							supertip="Break up long list into separate tabs by category." />
 				</group>
 				<group id ="MergeGroup"
 					   label="Merge">
@@ -71,18 +88,6 @@
 							size="large"
 							supertip="Merge results on index." />
 				</group>
-				<!--
-				<group id ="SignalGroup"
-					   label="Epic Signal">
-					<button id="extractTime"
-							getImage="timeInNotesButton_GetImage"
-							label="Extract Time-In-Notes"
-							onAction="OnTimeInNotes"
-							screentip="Extracts data from Epic Signal download"
-							size="large"
-							supertip="Extracts Time in Notes from Epic Signal download" />
-				</group>
-				-->
 				<group id ="SviGroup"
 					   label="SVI">
 					<button id="addSVI"
