@@ -62,7 +62,7 @@ namespace DECS_Excel_Add_Ins
 
             Worksheet targetSheet = worksheet.Next;
 
-            if (targetSheet != null)
+            while (targetSheet != null)
             {
                 Range targetCell = targetSheet.Cells[1, 1];
 
@@ -79,6 +79,8 @@ namespace DECS_Excel_Add_Ins
                     CopyColumnFormatting(sourceCell.Offset[1, columnOffset], 
                                          targetCell.Offset[1, columnOffset]);
                 }
+
+                targetSheet = targetSheet.Next;
             }
         }
 
