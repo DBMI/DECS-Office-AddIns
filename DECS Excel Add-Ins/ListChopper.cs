@@ -139,7 +139,7 @@ namespace DECS_Excel_Add_Ins
             
             if (FindSelectedCategory(worksheet))
             {
-                string selectedColumnName = Utilities.GetColumnName(selectedColumnRng);
+//                string selectedColumnName = Utilities.GetColumnName(selectedColumnRng);
 
                 // Figure out the distinct category values & where they are.
                 sourceBlocks = Utilities.IdentifyBlocks(selectedColumnRng, lastRowInSheet);

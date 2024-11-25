@@ -566,11 +566,26 @@ namespace DECS_Excel_Add_Ins
         /// <summary>
         /// Builds a dictionary linking column names to ranges from the first row of a worksheet.
         /// </summary>
-        /// <param name="sheet">Active Worksheet.</param>
+        /// <param name="sheet">Active Worksheet</param>
+        /// <param name="namesDesired">List<string></string></param>
+        /// <param name="caseSensitive">bool</param>
         /// <returns>Dictionary mapping string -> Range</returns>
-        internal static Dictionary<string, Range> GetColumnRangeDictionary(Worksheet sheet, List<string> namesDesired = null)
+        internal static Dictionary<string, Range> GetColumnRangeDictionary(Worksheet sheet, 
+                                                                           List<string> namesDesired = null,
+                                                                           bool caseSensitive = true)
         {
-            Dictionary<string, Range> columns = new Dictionary<string, Range>();
+            Dictionary<string, Range> columns = null;
+
+            if (caseSensitive)
+            {
+                columns = new Dictionary<string, Range>();
+            }
+            else
+            {
+                var comparer = StringComparer.OrdinalIgnoreCase;
+                columns = new Dictionary<string, Range>(comparer);
+            }
+
             Range range = (Range) sheet.Cells[1, 1];
             int lastUsedCol = Utilities.FindLastCol(sheet);
 

@@ -149,6 +149,16 @@ namespace DECS_Excel_Add_Ins
         }
 
         /// <summary>
+        /// Lets the @c DexsExcelRibbon.xml point to the image for the @c onCallList button.
+        /// </summary>
+        /// <param name="control">Reference to the IRibbonControl object.</param>
+        /// <returns>Bitmap</returns>
+        public Bitmap onCallListButton_GetImage(IRibbonControl control)
+        {
+            return Resources.on_call;
+        }
+
+        /// <summary>
         /// Lets the @c DexsExcelRibbon.xml point to the image for the @c AddSvi button.
         /// </summary>
         /// <param name="control">Reference to the IRibbonControl object.</param>
@@ -272,6 +282,18 @@ namespace DECS_Excel_Add_Ins
         {
             MergeRowsForm form = new MergeRowsForm();
             form.Visible = true;
+        }
+
+        /// <summary>
+        /// When @c onCallList button is pressed, instantiates a @c OnCallListProcessor object & calls its @c Scan method.
+        /// </summary>
+        /// <param name="control">Reference to the IRibbonControl object.</param>
+
+        public void OnProcessCallList(Office.IRibbonControl control)
+        {
+            OnCallListProcessor onCallListProcessor = new OnCallListProcessor();
+            Excel.Worksheet wksheet = (Excel.Worksheet)Globals.ThisAddIn.Application.ActiveSheet;
+            onCallListProcessor.Scan(wksheet);
         }
 
         /// <summary>
