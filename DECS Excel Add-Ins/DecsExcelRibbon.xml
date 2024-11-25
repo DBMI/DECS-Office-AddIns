@@ -53,6 +53,13 @@
 							screentip="Break up into separate tabs"
 							size="large"
 							supertip="Break up long list into separate tabs by category." />
+					<button id="onCallListButton"
+							getImage="onCallListButton_GetImage"
+							label="On-Call List"
+							onAction="OnProcessCallList"
+							screentip="Extract on-call list"
+							size="large"
+							supertip="Turn physician on-call list into SQL-friendly version." />
 				</group>
 				<group id ="MergeGroup"
 					   label="Merge">

@@ -1,10 +1,13 @@
-﻿using System;
+﻿using Microsoft.Office.Interop.Excel;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.InteropServices.ComTypes;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Web;
+using System.Windows.Forms;
 
 namespace DECS_Excel_Add_Ins
 {
@@ -28,6 +31,58 @@ namespace DECS_Excel_Add_Ins
                 _start = end;
                 _end = start;
             }
+        }
+
+        /// <summary>
+        /// Creates a DateRange object from string like '01/05-01/11'.
+        /// </summary>
+        /// <param name="dateContent">string</param>
+        internal DateRange(string dateContent, int assumedYear)
+        {
+            Regex regex = new Regex(@"(?<month>\d{1,2})\/(?<day>\d{1,2})");
+            string[] dateParts = dateContent.Split('-');
+
+            if (dateParts.Length == 2) 
+            {
+                Match start_match = regex.Match(dateParts[0]);
+
+                if (start_match.Success)
+                {
+                    if (int.TryParse(start_match.Groups["day"].Value, out int day) &&
+                        int.TryParse(start_match.Groups["month"].Value, out int month))
+                    {
+                        _start = new DateTime(assumedYear, month, day);
+                    }                    
+                }
+
+                Match end_match = regex.Match(dateParts[1]);
+
+                if (end_match.Success)
+                {
+                    if (int.TryParse(end_match.Groups["day"].Value, out int day) &&
+                        int.TryParse(end_match.Groups["month"].Value, out int month))
+                    {
+                        _end = new DateTime(assumedYear, month, day);
+                    }
+                }
+
+                // Special handling for end of the year like: "12/29-01/04"
+                if (_start > _end)
+                {
+                    _start = _start.AddYears(-1);   // Move it to previous year.
+                }
+            }
+        }
+
+        /// <summary>
+        /// Bump the year by one 
+        /// (for when we discover after the fact that we used the wrong value for assumedYear.)
+        /// </summary>
+
+        internal void AddYear()
+        {
+            _start = _start.AddYears(1);
+            _end = _end.AddYears(1);
         }
 
         /// <summary>
@@ -87,6 +142,11 @@ namespace DECS_Excel_Add_Ins
         internal DateTime End()
         {
             return _end;
+        }
+
+        internal bool Valid()
+        {
+            return _start != null && _end != null;
         }
 
         /// <summary>
