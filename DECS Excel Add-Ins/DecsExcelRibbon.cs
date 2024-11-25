@@ -65,7 +65,7 @@ namespace DECS_Excel_Add_Ins
         /// <returns>Bitmap</returns>
         public Bitmap chopIntoTabsButton_GetImage(IRibbonControl control)
         {
-            return Resources.slicing;
+            return Resources.slice_into_tabs;
         }
         
         /// <summary>

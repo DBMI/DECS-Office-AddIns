@@ -10,6 +10,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using System.Windows.Forms.VisualStyles;
+using System.Reflection;
 
 namespace DECS_Excel_Add_Ins
 {
@@ -182,6 +183,11 @@ namespace DECS_Excel_Add_Ins
                     firstCell.Offset[0, colOffset].Columns.ColumnWidth = desiredColWidth;
                 }
                 catch (System.Runtime.InteropServices.COMException) { }
+                catch (Microsoft.CSharp.RuntimeBinder.RuntimeBinderException)
+                {
+                    // Then we've run out of data.
+                    return;
+                }
             }
         }
 
@@ -196,15 +202,23 @@ namespace DECS_Excel_Add_Ins
 
             for (int colOffset = 0; colOffset < lastColumn; colOffset++)
             {
-                string columnName = firstCell.Offset[0, colOffset].Value2.ToString();
-
-                if (columnName.ToUpper().Contains("MRN"))
+                try
                 {
-                    try
+                    string columnName = firstCell.Offset[0, colOffset].Value2.ToString();
+
+                    if (columnName.ToUpper().Contains("MRN"))
                     {
-                        worksheet.Columns[colOffset + 1].NumberFormat = "0#######";
+                        try
+                        {
+                            worksheet.Columns[colOffset + 1].NumberFormat = "0#######";
+                        }
+                        catch (System.Runtime.InteropServices.COMException) { }
                     }
-                    catch (System.Runtime.InteropServices.COMException) { }
+                }
+                catch (Microsoft.CSharp.RuntimeBinder.RuntimeBinderException) 
+                {
+                    // Then we've run out of data.
+                    return;
                 }
             }
         }
@@ -221,15 +235,24 @@ namespace DECS_Excel_Add_Ins
             for (int colOffset = 0; colOffset < lastColumn; colOffset++)
             {
                 Range topOfColumn = firstCell.Offset[0, colOffset];
-                string columnName = topOfColumn.Value2.ToString();
 
-                if (columnName.ToLower().Contains("date") && Utilities.IsExcelDate(topOfColumn, lastRow))
+                try 
                 {
-                    try
+                    string columnName = topOfColumn.Value2.ToString();
+
+                    if (columnName.ToLower().Contains("date") && Utilities.IsExcelDate(topOfColumn, lastRow))
                     {
-                        worksheet.Columns[colOffset + 1].NumberFormat = "MM/DD/YYYY";
+                        try
+                        {
+                            worksheet.Columns[colOffset + 1].NumberFormat = "MM/DD/YYYY";
+                        }
+                        catch (System.Runtime.InteropServices.COMException) { }
                     }
-                    catch (System.Runtime.InteropServices.COMException) { }
+                }
+                catch (Microsoft.CSharp.RuntimeBinder.RuntimeBinderException)
+                {
+                    // Then we've run out of data.
+                    return;
                 }
             }
         }
