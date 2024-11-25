@@ -89,7 +89,7 @@ namespace DECS_Excel_Add_Ins
      */
     internal class OnCallListProcessor
     {
-        private readonly string[] DATECOLUMNNAMES = { "DATES" };
+        private readonly string[] DATECOLUMNNAMES = { "Dates" };
         private readonly string[] NAMECOLUMNNAMES = { "Call" };
 
         private Range datesColumnRng;
@@ -108,7 +108,8 @@ namespace DECS_Excel_Add_Ins
             bool foundNameColumn = false;
 
             // Can we find the dates, names columns by their header names?
-            Dictionary<string, Range> columnsDict = Utilities.GetColumnRangeDictionary(worksheet);
+            Dictionary<string, Range> columnsDict = Utilities.GetColumnRangeDictionary(sheet: worksheet,
+                caseSensitive: false);
 
             if (columnsDict != null)
             {

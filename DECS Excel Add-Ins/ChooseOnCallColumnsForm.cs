@@ -54,7 +54,7 @@ namespace DECS_Excel_Add_Ins
         public void RunButton_Click(object sender, EventArgs e)
         {
             selectedDateColumn = onCallDateColumnListBox.SelectedItem.ToString();
-            selectedDateColumn = onCallNameColumnListBox.SelectedItem.ToString();
+            selectedNameColumn = onCallNameColumnListBox.SelectedItem.ToString();
             this.DialogResult = DialogResult.OK;
             this.Close();
         }
