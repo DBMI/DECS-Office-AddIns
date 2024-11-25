@@ -13,6 +13,7 @@ Creates custom buttons in Microsoft Excel & Word that allow user to:
 * Generate unique, scrambled identifiers from patient or user data.
 * Turn a list (of MRNs, ICD codes, etc.) into a SQL snippet that imports the column into a query.
 * Break up a long spreadsheet into individual sheets, using the value of one column.
+* Process a physician oncall list into SQL code for import.
 * Merge rows across dates.
 * Scan `Notes` fields for keywords, creating new columns.
 * Merge notes from one sheet into another according to some index column (like CSN).
