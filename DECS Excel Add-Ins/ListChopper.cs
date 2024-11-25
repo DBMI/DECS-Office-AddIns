@@ -22,7 +22,7 @@ namespace DECS_Excel_Add_Ins
     internal class ListChopper
     {
         private Microsoft.Office.Interop.Excel.Application application;
-        private BackgroundWorker chopper1;
+        private BackgroundWorker chopper;
         private Formatter formatter;
         private int lastRowInSheet;
         private Dictionary<string, Worksheet> newWorksheets;
@@ -108,7 +108,7 @@ namespace DECS_Excel_Add_Ins
             return success;
         }
 
-        private void Chopper1_DoWork(object sender, DoWorkEventArgs e)
+        private void Chopper_DoWork(object sender, DoWorkEventArgs e)
         {
             List<string> newSheetNames = (List<string>)e.Argument;
 
@@ -150,9 +150,9 @@ namespace DECS_Excel_Add_Ins
                 CreateNeededSheets(newSheetNames);
 
                 // To avoid locking up the main thread, send the copying off to a BackgroundWorker.
-                chopper1 = new BackgroundWorker();
-                chopper1.DoWork += new DoWorkEventHandler(Chopper1_DoWork);
-                chopper1.RunWorkerAsync(newSheetNames);
+                chopper = new BackgroundWorker();
+                chopper.DoWork += new DoWorkEventHandler(Chopper_DoWork);
+                chopper.RunWorkerAsync(newSheetNames);
             }
         }
     }
