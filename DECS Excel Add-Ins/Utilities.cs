@@ -849,6 +849,15 @@ namespace DECS_Excel_Add_Ins
                 }
             }
 
+            // Add the ending block.
+            thisBlock = new Block(startingOffset, endingOffset);
+
+            // Should we add this to the dictionary?
+            if (!dict.ContainsKey(thisBlockName))
+            {
+                dict[thisBlockName] = thisBlock;
+            }
+
             return dict;
         }
 
