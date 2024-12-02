@@ -99,6 +99,16 @@ namespace DECS_Excel_Add_Ins
         }
 
         /// <summary>
+        /// Lets the @c DexsExcelRibbon.xml point to the image for the @c Extend Timecard button.
+        /// </summary>
+        /// <param name="control">Reference to the IRibbonControl object.</param>
+        /// <returns>Bitmap</returns>
+        public Bitmap extendTimecard_GetImage(IRibbonControl control)
+        {
+            return Resources.timecard;
+        }
+
+        /// <summary>
         /// Lets the @c DexsExcelRibbon.xml point to the image for the @c FormatResults button.
         /// </summary>
         /// <param name="control">Reference to the IRibbonControl object.</param>
@@ -248,6 +258,18 @@ namespace DECS_Excel_Add_Ins
             Deidentifier deidentifier = new Deidentifier();
             Excel.Worksheet wksheet = (Excel.Worksheet)Globals.ThisAddIn.Application.ActiveSheet;
             deidentifier.GenerateHash(wksheet);
+        }
+
+        /// <summary>
+        /// When @c ExtendTimecard button is pressed, this method instantiates a @c Timecard object & calls its @c Extend method.
+        /// </summary>
+        /// <param name="control">Reference to the IRibbonControl object.</param>
+
+        public void OnExtendTimecard(Office.IRibbonControl control)
+        {
+            Timecard timecard = new Timecard();
+            Excel.Worksheet wksheet = (Excel.Worksheet)Globals.ThisAddIn.Application.ActiveSheet;
+            timecard.Extend(wksheet);
         }
 
         /// <summary>
