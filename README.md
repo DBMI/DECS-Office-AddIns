@@ -18,6 +18,7 @@ Creates custom buttons in Microsoft Excel & Word that allow user to:
 * Scan `Notes` fields for keywords, creating new columns.
 * Merge notes from one sheet into another according to some index column (like CSN).
 * Lookup Social Vulnerability Index ([SVI](https://www.atsdr.cdc.gov/placeandhealth/svi/index.html)) from address or zip code.
+* Extend the existing monthly research hours report to the new month.
 ### Word: 
 ![image info](./DECS%20Word%20Add-Ins/pictures/toolbar.png)
 * Scan a Scope of Work (SoW) file & create SQL code that searches for the ICD-9/ICD-10 codes and names listed in the SoW.

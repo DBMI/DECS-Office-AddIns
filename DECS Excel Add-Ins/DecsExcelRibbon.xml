@@ -105,6 +105,16 @@
 							size="large"
 							supertip="Gets Census Tract from address, then looks up SVI from .csv file." />
 				</group>
+				<group id ="TimecardGroup"
+					   label="Monthly Report">
+					<button id="extendTimecard"
+							getImage="extendTimecard_GetImage"
+							label="Extend monthly report"
+							onAction="OnExtendTimecard"
+							screentip="Extends monthly report to new month"
+							size="large"
+							supertip="Extends monthly report to new month" />
+				</group>
 			</tab>
 		</tabs>
 	</ribbon>

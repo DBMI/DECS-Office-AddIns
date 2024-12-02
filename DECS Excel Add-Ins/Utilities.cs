@@ -425,6 +425,18 @@ namespace DECS_Excel_Add_Ins
             return sheet.UsedRange.Rows.Count;
         }
 
+        internal static Worksheet FindLastWorksheet(Workbook workbook)
+        {
+            List<Worksheet> sheets = new List<Worksheet>();
+            
+            foreach (Worksheet sheet in workbook.Worksheets)
+            {
+                sheets.Add(sheet);
+            }
+
+            return sheets.LastOrDefault();
+        }
+
         /// <summary>
         /// Finds the ToolTip linked to a TextBox object.
         /// </summary>
