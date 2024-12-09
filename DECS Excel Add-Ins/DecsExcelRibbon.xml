@@ -95,6 +95,16 @@
 							size="large"
 							supertip="Merge results on index." />
 				</group>
+				<group id ="SurveyGroup"
+					   label="Survey">
+					<button id="importSurveyButton"
+							getImage="importSurveyButton_GetImage"
+							label="Import Survey"
+							onAction="OnImportSurvey"
+							screentip="Import NRC survey"
+							size="large"
+							supertip="Convert NRC patient satisfaction survey to SQL format." />
+				</group>
 				<group id ="SviGroup"
 					   label="SVI">
 					<button id="addSVI"

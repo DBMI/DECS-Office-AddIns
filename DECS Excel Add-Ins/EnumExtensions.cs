@@ -18,6 +18,7 @@ namespace DECS_Excel_Add_Ins
             where T : struct
         {
             Type type = enumerationValue.GetType();
+
             if (!type.IsEnum)
             {
                 throw new ArgumentException(
@@ -26,8 +27,8 @@ namespace DECS_Excel_Add_Ins
                 );
             }
 
-            // Tries to find a DescriptionAttribute for a potential friendly name
-            // for the enum
+            // Tries to find a DescriptionAttribute for
+            // a potential friendly name for the enum.
             MemberInfo[] memberInfo = type.GetMember(enumerationValue.ToString());
 
             if (memberInfo != null && memberInfo.Length > 0)

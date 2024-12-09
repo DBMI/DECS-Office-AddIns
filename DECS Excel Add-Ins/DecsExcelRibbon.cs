@@ -119,6 +119,16 @@ namespace DECS_Excel_Add_Ins
         }
 
         /// <summary>
+        /// Lets the @c DexsExcelRibbon.xml point to the image for the @c importSurvey button.
+        /// </summary>
+        /// <param name="control">Reference to the IRibbonControl object.</param>
+        /// <returns>Bitmap</returns>
+        public Bitmap importSurveyButton_GetImage(IRibbonControl control)
+        {
+            return Resources.survey;
+        }
+
+        /// <summary>
         /// Lets the @c DexsExcelRibbon.xml point to the image for the @c MergeRows button.
         /// </summary>
         /// <param name="control">Reference to the IRibbonControl object.</param>
@@ -282,6 +292,18 @@ namespace DECS_Excel_Add_Ins
             Formatter formatter = new Formatter();
             Excel.Worksheet wksheet = (Excel.Worksheet)Globals.ThisAddIn.Application.ActiveSheet;
             formatter.Format(wksheet);
+        }
+
+        /// <summary>
+        /// When @c importSurvey button is pressed, instantiates a @c SurveyResults object & calls its @c Scan method.
+        /// </summary>
+        /// <param name="control">Reference to the IRibbonControl object.</param>
+
+        public void OnImportSurvey(Office.IRibbonControl control)
+        {
+            SurveyResults surveyProcessor = new SurveyResults();
+            Excel.Worksheet wksheet = (Excel.Worksheet)Globals.ThisAddIn.Application.ActiveSheet;
+            surveyProcessor.Scan(wksheet);
         }
 
         /// <summary>
