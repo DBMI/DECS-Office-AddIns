@@ -17,6 +17,7 @@ Creates custom buttons in Microsoft Excel & Word that allow user to:
 * Merge rows across dates.
 * Scan `Notes` fields for keywords, creating new columns.
 * Merge notes from one sheet into another according to some index column (like CSN).
+* Convert patient satisfaction survey data into SQL format.
 * Lookup Social Vulnerability Index ([SVI](https://www.atsdr.cdc.gov/placeandhealth/svi/index.html)) from address or zip code.
 * Extend the existing monthly research hours report to the new month.
 ### Word: 
