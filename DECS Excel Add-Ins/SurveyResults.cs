@@ -108,10 +108,10 @@ namespace DECS_Excel_Add_Ins
     /// </summary>
     internal class MedicalQuestionResults
     {
-        private MedicalPracticeQuestions question;
-        private double boxScore;
-        private int percentileRank;
-        private int responseSize;
+        private readonly MedicalPracticeQuestions question;
+        private readonly double boxScore;
+        private readonly int percentileRank;
+        private readonly int responseSize;
 
         internal MedicalQuestionResults(MedicalPracticeQuestions _question, double _boxScore, int _rank, int _size)
         {
@@ -133,12 +133,12 @@ namespace DECS_Excel_Add_Ins
 
     internal class SurveyRow
     {
-        private string provider;
-        private SurveySection section;
-        private string question;
-        private double score;
-        private int rank;
-        private int size;
+        private readonly string provider;
+        private readonly SurveySection section;
+        private readonly string question;
+        private readonly double score;
+        private readonly int rank;
+        private readonly int size;
         private const string QUOTE = "'";
 
         internal SurveyRow(string _provider, MedicalQuestionResults results)
@@ -181,10 +181,10 @@ namespace DECS_Excel_Add_Ins
     /// </summary>
     internal class TelehealthQuestionResults
     {
-        private TelehealthQuestions question;
-        private double boxScore;
-        private int percentileRank;
-        private int responseSize;
+        private readonly TelehealthQuestions question;
+        private readonly double boxScore;
+        private readonly int percentileRank;
+        private readonly int responseSize;
 
         internal TelehealthQuestionResults(TelehealthQuestions _question, double _boxScore, int _rank, int _size)
         {
@@ -212,7 +212,7 @@ namespace DECS_Excel_Add_Ins
         private Dictionary<string, TelehealthQuestions> telehealthQuestionDictionary;
 
         private const string PREAMBLE = "USE [REL_CLARITY];\r\n\r\n";
-        private const string SEGMENT_START = "INSERT INTO #SURVEY_LIST (PROVIDER_NAME, SECTION, QUESTION, SCORE, RANK, SIZE)\r\nVALUES\r\n";
+        private const string SEGMENT_START = "INSERT INTO #PATIENT_SATISFACTION_LIST (PROVIDER_NAME, SECTION_NAME, QUESTION, SCORE, RANK_NUM, NUM_ANSWERS)\r\nVALUES\r\n";
 
         internal SurveyResults()
         {
@@ -232,9 +232,9 @@ namespace DECS_Excel_Add_Ins
             string cellContents;
             MedicalQuestionResults results = null;
             MedicalPracticeQuestions question = MedicalPracticeQuestions.Unknown;
-            double score = 0.0;
-            int rank = 0;
-            int size = 0;
+            double? score = null;
+            int? rank = null;
+            int? size = null;
 
             // We expect to see question, score, percentile and size.
             try
@@ -271,7 +271,10 @@ namespace DECS_Excel_Add_Ins
                     size = _size;
                 }
 
-                results = new MedicalQuestionResults(question, score, rank, size);
+                if (score.HasValue && rank.HasValue && size.HasValue)
+                {
+                    results = new MedicalQuestionResults(question, score.Value, rank.Value, size.Value);
+                }
             }
             catch (Microsoft.CSharp.RuntimeBinder.RuntimeBinderException) { }
 
@@ -288,9 +291,9 @@ namespace DECS_Excel_Add_Ins
             string cellContents;
             TelehealthQuestionResults results = null;
             TelehealthQuestions question = TelehealthQuestions.Unknown;
-            double score = 0.0;
-            int rank = 0;
-            int size = 0;
+            double? score = null;
+            int? rank = null;
+            int? size = null;
 
             // We expect to see question, score, percentile and size.
             try
@@ -327,7 +330,10 @@ namespace DECS_Excel_Add_Ins
                     size = _size;
                 }
 
-                results = new TelehealthQuestionResults(question, score, rank, size);
+                if (score.HasValue && rank.HasValue && size.HasValue)
+                {
+                    results = new TelehealthQuestionResults(question, score.Value, rank.Value, size.Value);
+                }
             }
             catch (Microsoft.CSharp.RuntimeBinder.RuntimeBinderException) { }
 
