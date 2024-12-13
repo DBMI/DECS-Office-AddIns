@@ -26,6 +26,13 @@
 							screentip="Convert MUMPS Dates"
 							size="large"
 							supertip="Adds new column with converted dates." />
+					<button id="stripe"
+							getImage="stripeButton_GetImage"
+							label="Stripe by Value"
+							onAction="OnStripe"
+							screentip="Stripe by data"
+							size="large"
+							supertip="Stripe worksheet by data value." />
 				</group>
 				<group id="GrouchoGroup"
 					   label="Deidentify">
