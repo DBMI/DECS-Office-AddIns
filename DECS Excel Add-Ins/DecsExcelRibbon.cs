@@ -179,6 +179,16 @@ namespace DECS_Excel_Add_Ins
         }
 
         /// <summary>
+        /// Lets the @c DexsExcelRibbon.xml point to the image for the @c Stripe button.
+        /// </summary>
+        /// <param name="control">Reference to the IRibbonControl object.</param>
+        /// <returns>Bitmap</returns>
+        public Bitmap stripeButton_GetImage(IRibbonControl control)
+        {
+            return Resources.spreadsheet;
+        }
+
+        /// <summary>
         /// Lets the @c DexsExcelRibbon.xml point to the image for the @c AddSvi button.
         /// </summary>
         /// <param name="control">Reference to the IRibbonControl object.</param>
@@ -368,6 +378,18 @@ namespace DECS_Excel_Add_Ins
             Excel.Worksheet wksheet = (Excel.Worksheet)Globals.ThisAddIn.Application.ActiveSheet;
             NotesParser parser = new NotesParser(_worksheet: wksheet);
             parser.Parse();
+        }
+
+        /// <summary>
+        /// When @c stripe button is pressed, this method instantiates a @c Striper object & calls its @c Run method.
+        /// </summary>
+        /// <param name="control">Reference to the IRibbonControl object.</param>
+
+        public void OnStripe(Office.IRibbonControl control)
+        {
+            Striper striper = new Striper();
+            Excel.Worksheet wksheet = (Excel.Worksheet)Globals.ThisAddIn.Application.ActiveSheet;
+            striper.Run(wksheet);
         }
 
         /// <summary>

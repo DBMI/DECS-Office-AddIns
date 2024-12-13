@@ -825,7 +825,7 @@ namespace DECS_Excel_Add_Ins
             int endingOffset = 1;
             string thisBlockName = null;
 
-            for (int rowOffset = 1; rowOffset < (lastRow - 1); rowOffset++)
+            for (int rowOffset = 1; rowOffset < lastRow; rowOffset++)
             {
                 try
                 {
