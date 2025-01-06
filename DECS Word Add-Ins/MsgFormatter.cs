@@ -12,8 +12,8 @@ namespace DecsWordAddIns
 {
     internal class MsgFormatter
     {
-        private readonly string[] BREAK_AFTER_PATTERNS = { @"RE:\s*\S+\s*", @"sent at \d{1,2}\/\d{1,2}\/\d{4} \d{1,2}:\d{2} [AP]M (?:\w{3} )?-----\s*", @"(Subject:\s*(?!RE:)[\d\w\s\>\<]{1,40}\.\s+)" };
-        private readonly string[] BREAK_INSIDE_PATTERNS = { @"(Subject:\s*[\d\w\s\>\<]{1,40})(\s(?:Dear|Good|Hello|Hi|HI|My)[\s,]+)" };
+        private readonly string[] BREAK_AFTER_PATTERNS = { @"RE:\s*\S+\s*", @"sent at \d{1,2}\/\d{1,2}\/\d{4} \d{1,2}:\d{2} [AP]M (?:\w{3} )?-----\s*", @"(Subject:\s*(?!RE:)[\d\w\s\>\<\(\)-]{1,40}(?<!Dr)\.\s+)" };
+        private readonly string[] BREAK_INSIDE_PATTERNS = { @"(Subject:\s*[\d\w\s\>\<\(\)\.-]{1,40})(\s(?:Dear|Good|Hello|Hi|HI|I|My)[\s,]+)" };
         private readonly string[] BREAK_BEFORE_PATTERNS = { @"""?----- Message", "From:", "Sent:", "To:", @"Subject:\s*", @"\d{11},", @"sent at \d{1,2}\/\d{1,2}\/\d{4} \d{1,2}:\d{2} [AP]M (?:\w{3} )?-----\s*" };
         private readonly string[] SPACE_AFTER_PATTERNS = { @"(From:)(\S+)", @"(Sent:)(\S+)", @"(To:)(\S+)", @"(Subject:)(\S+)", @"(RE:)(\S+)", @"(\w)\.(\w)" };
 
