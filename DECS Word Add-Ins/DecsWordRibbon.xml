@@ -27,7 +27,18 @@
 					size="large"
 					supertip="Parse Scope of Work (SOW) document and set up DECS project." />
 		</group>
-      </tab>
+		<group id="MessageGroup"
+			   label="Format InBasket Message">
+			  <button id="formatMsgButton"
+					  getImage="formatMsgButton_GetImage"
+					  label="Format Messages"
+					  onAction="OnFormatMsg"
+					  screentip="Format InBasket Messages"
+					  size="large"
+					  supertip="Format InBasket Messages." />
+		</group>
+
+	</tab>
     </tabs>
   </ribbon>
 </customUI>

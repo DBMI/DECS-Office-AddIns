@@ -33,6 +33,7 @@ Creates custom buttons in Microsoft Excel & Word that allow user to:
     - Push the SQL file to GitLab.
     - Creates a project folder in Outlook.
     - Draft the completion email.
+* Format extracted InBasket messages to facilitate human review.
 
 ## Installation
 * Download the `Office Add-Ins` folder from [Sharepoint.](https://ucsdhs.sharepoint.com/:f:/t/ACTRI-BMI-DECSPrivate/EhFYD_9zfX9GsNRN9enCMzABFKg6wmPh13zY_ps2qRJHSg?e=KYFZeG)
