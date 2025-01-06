@@ -62,6 +62,16 @@ namespace DecsWordAddIns
         }
 
         /// <summary>
+        /// Defines what happens when @c formatMsg button is pushed.
+        /// </summary>
+        /// <param name="control">The @c IRibbon object</param>
+        public void OnFormatMsg(Office.IRibbonControl control)
+        {
+            MsgFormatter formatter = new MsgFormatter();
+            formatter.Format(Globals.ThisAddIn.Application.ActiveDocument);
+        }
+
+        /// <summary>
         /// Defines what happens when @c SetupProject button is pushed.
         /// </summary>
         /// <param name="control">The @c IRibbon object</param>
@@ -69,6 +79,16 @@ namespace DecsWordAddIns
         {
             ScopeOfWorkParser parser = new ScopeOfWorkParser();
             parser.SetupProject(Globals.ThisAddIn.Application.ActiveDocument);
+        }
+
+        /// <summary>
+        /// Supplies the format_messages image to the @c formatMsg button.
+        /// </summary>
+        /// <param name="control">The @c IRibbon object</param>
+        /// <returns></returns>
+        public Bitmap formatMsgButton_GetImage(IRibbonControl control)
+        {
+            return Resources.format_messages;
         }
 
         /// <summary>
