@@ -1,8 +1,11 @@
-﻿using System;
+﻿using Microsoft.Office.Interop.Excel;
+using Microsoft.Office.Tools.Excel;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Worksheet = Microsoft.Office.Interop.Excel.Worksheet;
 
 namespace DECS_Excel_Add_Ins
 {
@@ -39,6 +42,16 @@ namespace DECS_Excel_Add_Ins
         internal Block sameSize(int newStartingRowOffset)
         {
             return new Block(newStartingRowOffset, newStartingRowOffset + numRows() - 1);
+        }
+
+        internal void shade(Worksheet worksheet, XlRgbColor shade)
+        {
+            int lastColInSheet = worksheet.UsedRange.Columns.Count;
+
+            Range startCell = (Range)worksheet.Cells[startRowOffset + 1, 1];
+            Range endCell = (Range)worksheet.Cells[endRowOffset + 1, lastColInSheet];
+            Range theseRows = (Range)worksheet.Range[startCell, endCell];
+            theseRows.Interior.Color = shade;
         }
 
         internal int startOffset()
