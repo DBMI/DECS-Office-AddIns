@@ -67,6 +67,13 @@
 							screentip="Extract on-call list"
 							size="large"
 							supertip="Turn physician on-call list into SQL-friendly version." />
+					<button id="searchByEmailButton"
+							getImage="searchByEmailButton_GetImage"
+							label="Search by Email"
+							onAction="OnSearchByEmail"
+							screentip="Search Providers by Email"
+							size="large"
+							supertip="Search Providers by Email." />
 				</group>
 				<group id ="MergeGroup"
 					   label="Merge">

@@ -179,6 +179,16 @@ namespace DECS_Excel_Add_Ins
         }
 
         /// <summary>
+        /// Lets the @c DexsExcelRibbon.xml point to the image for the @c SearchByEmail button.
+        /// </summary>
+        /// <param name="control">Reference to the IRibbonControl object.</param>
+        /// <returns>Bitmap</returns>
+        public Bitmap searchByEmailButton_GetImage(IRibbonControl control)
+        {
+            return Resources.search_by_email;
+        }
+
+        /// <summary>
         /// Lets the @c DexsExcelRibbon.xml point to the image for the @c Stripe button.
         /// </summary>
         /// <param name="control">Reference to the IRibbonControl object.</param>
@@ -348,6 +358,18 @@ namespace DECS_Excel_Add_Ins
             OnCallListProcessor onCallListProcessor = new OnCallListProcessor();
             Excel.Worksheet wksheet = (Excel.Worksheet)Globals.ThisAddIn.Application.ActiveSheet;
             onCallListProcessor.Scan(wksheet);
+        }
+
+        /// <summary>
+        /// When @c SearchByEmail button is pressed, this method instantiates a @c EmailSearcher object & calls its @c Search method.
+        /// </summary>
+        /// <param name="control">Reference to the IRibbonControl object.</param>
+
+        public void OnSearchByEMail(Office.IRibbonControl control)
+        {
+            EmailSearcher emailSearcher = new EmailSearcher();
+            Excel.Worksheet wksheet = (Excel.Worksheet)Globals.ThisAddIn.Application.ActiveSheet;
+            emailSearcher.Search(wksheet);
         }
 
         /// <summary>

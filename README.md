@@ -15,6 +15,7 @@ Creates custom buttons in Microsoft Excel & Word that allow user to:
 * Turn a list (of MRNs, ICD codes, etc.) into a SQL snippet that imports the column into a query.
 * Break up a long spreadsheet into individual sheets, using the value of one column.
 * Process a physician oncall list into SQL code for import.
+* Search UCSD Blink for provider names using email addresses.
 * Merge rows across dates.
 * Scan `Notes` fields for keywords, creating new columns.
 * Merge notes from one sheet into another according to some index column (like CSN).
