@@ -71,17 +71,22 @@ namespace DECS_Excel_Add_Ins
         private string ExtractJustNameFromEmail(Range emailRng)
         {
             string result = string.Empty;
-            string email = emailRng.Value2.ToString();
 
-            if (!string.IsNullOrEmpty(email))
+            try
             {
-                Match match = Regex.Match(email, emailExtractor);
+                string email = Convert.ToString(emailRng.Value2);
 
-                if (match.Success)
+                if (!string.IsNullOrEmpty(email))
                 {
-                    result = match.Groups["name"].Value.ToString();
+                    Match match = Regex.Match(email, emailExtractor);
+
+                    if (match.Success)
+                    {
+                        result = Convert.ToString(match.Groups["name"].Value);
+                    }
                 }
             }
+            catch (System.NullReferenceException) { }
 
             return result;
         }
@@ -100,7 +105,7 @@ namespace DECS_Excel_Add_Ins
 
                 if (match.Success)
                 {
-                    result = match.Groups["name"].Value.ToString();
+                    result = Convert.ToString(match.Groups["name"].Value);
                 }
             }
 
