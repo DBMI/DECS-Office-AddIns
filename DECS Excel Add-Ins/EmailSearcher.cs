@@ -20,7 +20,7 @@ namespace DECS_Excel_Add_Ins
     {
         private Microsoft.Office.Interop.Excel.Application application;
         private const string emailExtractor = @"(?<name>[^@]+)@";
-        private const string titleExtractor = @"Staff Directory: (?<name>[\w,\s\.'-]+)";
+        private const string titleExtractor = @"Staff Directory: (?<name>[\w\s'-]+,[\w\s'-]+)";
         private HtmlWeb web;
         private int lastRowInSheet;
         private Range providerNameRng;
