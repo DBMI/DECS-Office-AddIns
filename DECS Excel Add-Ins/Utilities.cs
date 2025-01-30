@@ -403,7 +403,7 @@ namespace DECS_Excel_Add_Ins
             //sheet.Columns.ClearFormats();
             //sheet.Rows.ClearFormats();
 
-            // Detect Last used Columns, including cells that contains formulas that result in blank values
+            // Detect Last used Columns, including cells that contain formulas that result in blank values
             return sheet.UsedRange.Columns.Count;
         
         }
@@ -420,7 +420,7 @@ namespace DECS_Excel_Add_Ins
             //sheet.Columns.ClearFormats();
             //sheet.Rows.ClearFormats();
 
-            // Detect Last used Row, including cells that contains formulas that result in blank values
+            // Detect Last used Row, including cells that contain formulas that result in blank values
             
             return sheet.UsedRange.Rows.Count;
         }
@@ -660,7 +660,7 @@ namespace DECS_Excel_Add_Ins
                     string columnName = range.Value.ToString();
                     ColumnType columnType = ColumnType.Text;
 
-                    if (columnName.Contains("Date"))
+                    if (columnName.Contains("Date") || columnName.Contains("DTTM"))
                     {
                         columnType = ColumnType.Date;
                     }
