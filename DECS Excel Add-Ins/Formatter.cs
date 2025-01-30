@@ -224,7 +224,8 @@ namespace DECS_Excel_Add_Ins
         }
 
         /// <summary>
-        /// Formats the column containing dates to use "MM/DD/YYYY" format.
+        /// Formats the column containing dates to use "MM/DD/YYYY" format
+        /// and datetimes to use "MM/DD/YYYY hh:mm:ss".
         /// </summary>
         /// <param name="worksheet">The active worksheet</param>
 
@@ -240,12 +241,20 @@ namespace DECS_Excel_Add_Ins
                 {
                     string columnName = topOfColumn.Value2.ToString();
 
-                    if ((columnName.ToLower().Contains("date") || columnName.ToLower().Contains("dttm")) 
-                        && Utilities.IsExcelDate(topOfColumn, lastRow))
+                    if (columnName.ToLower().Contains("date") && Utilities.IsExcelDate(topOfColumn, lastRow))
                     {
                         try
                         {
                             worksheet.Columns[colOffset + 1].NumberFormat = "MM/DD/YYYY";
+                        }
+                        catch (System.Runtime.InteropServices.COMException) { }
+                    }
+
+                    if (columnName.ToLower().Contains("dttm") && Utilities.IsExcelDate(topOfColumn, lastRow))
+                    {
+                        try
+                        {
+                            worksheet.Columns[colOffset + 1].NumberFormat = "MM/DD/YYYY hh:mm:ss";
                         }
                         catch (System.Runtime.InteropServices.COMException) { }
                     }
