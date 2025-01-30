@@ -240,7 +240,8 @@ namespace DECS_Excel_Add_Ins
                 {
                     string columnName = topOfColumn.Value2.ToString();
 
-                    if (columnName.ToLower().Contains("date") && Utilities.IsExcelDate(topOfColumn, lastRow))
+                    if ((columnName.ToLower().Contains("date") || columnName.ToLower().Contains("dttm")) 
+                        && Utilities.IsExcelDate(topOfColumn, lastRow))
                     {
                         try
                         {
