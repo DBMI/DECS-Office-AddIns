@@ -36,13 +36,20 @@
 				</group>
 				<group id="GrouchoGroup"
 					   label="Deidentify">
-					<button id="deidentifyButton"
+					<button id="deidentify"
 							getImage="deidentifyButton_GetImage"
 							label="Deidentify"
 							onAction="OnDeidentify"
 							screentip="Deidentify"
 							size="large"
 							supertip="Generate hash from selected column." />
+					<button id="hideDateTime"
+							getImage="hideDateTimeButton_GetImage"
+							label="Obscure Date/Time"
+							onAction="OnObscureDateTime"
+							screentip="Obscure Date and Time"
+							size="large"
+							supertip="Adds random offset to dates, times." />
 				</group>
 				<group id="ListGroup"
 					   label="Lists">
