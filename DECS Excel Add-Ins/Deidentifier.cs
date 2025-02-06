@@ -20,8 +20,9 @@ namespace DECS_Excel_Add_Ins
     internal class Deidentifier
     {
         private Microsoft.Office.Interop.Excel.Application application;
-//        private const string dateTimePattern = @"(?<month>\d{1,2})\/(?<day>\d{1,2})\/(?<year>\d{4})\s+(?<hour>\d{1,2}):(?<minute>\d{2})\s(?<ampm>(A|P)M)";
+        private const string dateOnlyPattern = @"\d{1,2}\/\d{1,2}\/\d{4}((?!\d{1,2}:\d{2}\s[AP]M).)*$";
         private const string dateTimePattern = @"\d{1,2}\/\d{1,2}\/\d{4}\s+\d{1,2}:\d{2}\s[AP]M";
+        private const string justDatePattern = @"\d{1,2}\/\d{1,2}\/\d{4}";
         private int dayOffset;
         private int lastRow;
         private Random rnd;
@@ -50,13 +51,17 @@ namespace DECS_Excel_Add_Ins
             return sOutput.ToString();
         }
 
+        private string ConvertDate(Match match)
+        {
+            DateTime payload = DateTime.Parse(match.Value.ToString().Trim());
+            DateTime payloadConverted = payload.AddDays(dayOffset);
+            return payloadConverted.ToString("M/d/yyyy");
+        }
+
         private string ConvertDateTime(Match match)
         {
-            string convertedDateTimeString = string.Empty;
-
-            DateTime payload = DateTime.ParseExact(match.Value, "M/d/yyyy h:mm tt", CultureInfo.InvariantCulture);
-            DateTime payloadConverted = payload.AddDays(dayOffset);
-            payloadConverted += deltaT;
+            DateTime payload = DateTime.Parse(match.Value.ToString().Trim());
+            DateTime payloadConverted = payload.AddDays(dayOffset) + deltaT;
             return payloadConverted.ToString("M/d/yyyy h:mm tt");
         }
 
@@ -174,9 +179,11 @@ namespace DECS_Excel_Add_Ins
 
         internal void ObscureDateTime(Worksheet worksheet)
         {
-            // Instantiate reusable Regex.
+            // Instantiate reusable Regexes.
+            Regex dateOnlyRegex = new Regex(dateOnlyPattern);
             Regex dateTimeRegex = new Regex(dateTimePattern);
-            
+            Regex justDateRegex = new Regex(justDatePattern);
+
             // Instantiate random number generator and random day, time offsets.
             rnd = new Random();
             dayOffset = rnd.Next(-7, 7);
@@ -187,9 +194,14 @@ namespace DECS_Excel_Add_Ins
             lastRow = worksheet.UsedRange.Rows.Count;
 
             if (FindSelectedColumn(worksheet))
-            {                
+            {
+                string selectedColumnName = selectedColumnRng.Value.ToString();
+                string newColumnName = selectedColumnName + " (Date/Time Altered)";
+
                 // Make room for new column.
-                Range ditheredColumn = Utilities.InsertNewColumn(range: selectedColumnRng, newColumnName: "Date/Time Altered", side: InsertSide.Right);
+                Range ditheredColumn = Utilities.InsertNewColumn(range: selectedColumnRng, 
+                                                                 newColumnName: newColumnName, 
+                                                                 side: InsertSide.Right);
 
                 string sourceData;
                 Range target;
@@ -202,6 +214,7 @@ namespace DECS_Excel_Add_Ins
 
                     if (!string.IsNullOrEmpty(sourceData))
                     {
+                        // First, search for & modify date/time values.
                         Match match = dateTimeRegex.Match(sourceData);
 
                         while (match.Success)
@@ -215,7 +228,41 @@ namespace DECS_Excel_Add_Ins
                             match = dateTimeRegex.Match(sourceData);
                         }
 
-                        target.Value = targetData + sourceData;
+                        // Append whatever's left over.
+                        targetData += sourceData;
+
+                        // Second, search for & modify date-only values.
+                        match = dateOnlyRegex.Match(targetData);
+
+                        if (match.Success)
+                        {
+                            sourceData = targetData;
+                            targetData = string.Empty;
+
+                            string beforeMatch = sourceData.Substring(0, match.Index);
+                            targetData += beforeMatch;
+
+                            // Here the match.Value is the date AND EVERYTHING AFTER.
+                            string subSourceData = match.Value;
+                            Match justDateMatch = justDateRegex.Match(subSourceData);
+
+                            while (justDateMatch.Success)
+                            {
+                                beforeMatch = subSourceData.Substring(0, justDateMatch.Index);
+                                targetData += beforeMatch;
+                                targetData += ConvertDate(justDateMatch);
+
+                                // Trim to just what's AFTER the match.
+                                subSourceData = subSourceData.Substring(justDateMatch.Index + justDateMatch.Value.Length);
+                                justDateMatch = justDateRegex.Match(subSourceData);
+                            }
+
+                            // Append what was left over.
+                            targetData += subSourceData;
+                        }
+
+                        // Stuff into target cell.
+                        target.Value = targetData;
                     }
                 }
             }
