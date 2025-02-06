@@ -425,6 +425,11 @@ namespace DECS_Excel_Add_Ins
             return sheet.UsedRange.Rows.Count;
         }
 
+        /// <summary>
+        /// Finds last worksheet.
+        /// </summary>
+        /// <param name="workbook">Active Workbook.</param>
+
         internal static Worksheet FindLastWorksheet(Workbook workbook)
         {
             List<Worksheet> sheets = new List<Worksheet>();
@@ -436,7 +441,6 @@ namespace DECS_Excel_Add_Ins
 
             return sheets.LastOrDefault();
         }
-
         /// <summary>
         /// Finds the ToolTip linked to a TextBox object.
         /// </summary>
@@ -687,16 +691,14 @@ namespace DECS_Excel_Add_Ins
         /// <returns>Range</returns>
         internal static Range GetSelectedCol(Microsoft.Office.Interop.Excel.Application application, int lastRow)
         {
-            Range selectedColumn = null;
             Range rng = (Range) application.Selection;
+            Worksheet sheet = application.Selection.Worksheet;
+            Range selectedColumn = null;
 
             // Whole column? Just one? And containing data?
-            if (rng.Count > 1000 && 
-                rng.Columns.Count == 1 && 
-                Utilities.HasData(rng.Columns[1], lastRow))
+            if (Utilities.HasData(rng.Columns[1], lastRow))
             {
                 // We want the TOP of the column.
-                Worksheet sheet = application.Selection.Worksheet;
                 int columnNumber = rng.Columns[1].Column;
                 selectedColumn = (Range) sheet.Cells[1, columnNumber];
             }

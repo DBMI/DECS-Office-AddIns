@@ -119,6 +119,16 @@ namespace DECS_Excel_Add_Ins
         }
 
         /// <summary>
+        /// Lets the @c DexsExcelRibbon.xml point to the image for the @c HideDateTime button.
+        /// </summary>
+        /// <param name="control">Reference to the IRibbonControl object.</param>
+        /// <returns>Bitmap</returns>
+        public Bitmap hideDateTimeButton_GetImage(IRibbonControl control)
+        {
+            return Resources.rubber_clock_small;
+        }
+
+        /// <summary>
         /// Lets the @c DexsExcelRibbon.xml point to the image for the @c importSurvey button.
         /// </summary>
         /// <param name="control">Reference to the IRibbonControl object.</param>
@@ -312,6 +322,18 @@ namespace DECS_Excel_Add_Ins
             Formatter formatter = new Formatter();
             Excel.Worksheet wksheet = (Excel.Worksheet)Globals.ThisAddIn.Application.ActiveSheet;
             formatter.Format(wksheet);
+        }
+
+        /// <summary>
+        /// When @c hideDateTime button is pressed, instantiates a @c Deidentifier object & calls its @c ObscureDateTime method.
+        /// </summary>
+        /// <param name="control">Reference to the IRibbonControl object.</param>
+
+        public void OnObscureDateTime(Office.IRibbonControl control)
+        {
+            Deidentifier deidentifier = new Deidentifier();
+            Excel.Worksheet wksheet = (Excel.Worksheet)Globals.ThisAddIn.Application.ActiveSheet;
+            deidentifier.ObscureDateTime(wksheet);
         }
 
         /// <summary>
