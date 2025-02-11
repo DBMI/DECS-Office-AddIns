@@ -1,4 +1,5 @@
 ﻿using Microsoft.Office.Interop.Excel;
+using Microsoft.Office.Tools.Excel;
 using Microsoft.VisualBasic;
 using Newtonsoft.Json.Linq;
 using System;
@@ -6,6 +7,7 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
 using System.Linq;
+using System.Runtime.Remoting.Contexts;
 using System.Security.Cryptography;
 using System.Text;
 using System.Text.RegularExpressions;
@@ -17,25 +19,55 @@ using Worksheet = Microsoft.Office.Interop.Excel.Worksheet;
 
 namespace DECS_Excel_Add_Ins
 {
+    // What did the user select in the HideThisNameForm?
+    internal class SelectionResult
+    {
+        internal string alias;
+        internal bool replace;
+        internal string wordToReplace;
+
+        internal SelectionResult(string alias, bool replace, string wordToReplace)
+        {
+            this.alias = alias;
+            this.replace = replace;
+            this.wordToReplace = wordToReplace;
+        }
+    }
+
     internal class Deidentifier
     {
         private Microsoft.Office.Interop.Excel.Application application;
+        private bool cancel = false;
+        
         private const string dateOnlyPattern = @"\d{1,2}\/\d{1,2}\/\d{4}[\s\.](?!\d)";
         private Regex dateOnlyRegex;
         private const string dateTimePattern = @"\d{1,2}\/\d{1,2}\/\d{4}\s+\d{1,2}:\d{2}\s[AP]M";
         private Regex dateTimeRegex;
+        private const string drNamePattern = @"Dr\.\s[A-Z]\w+,?\s*(?:[A-Z]\.\s*)?(?:[A-Z]\w+)?";
+        private Regex drNameRegex;
         private const string monthDayOnlyPattern = @"\d{1,2}\/\d{1,2}(?![\/\d])";
         private Regex monthDayOnlyRegex;
         private const string monthSpelledOutPattern = @"\w{4,8}\s*\d{4}";
         private Regex monthSpelledOutRegex;
+        private const string namePattern = @"[A-Z][a-z]+";
+        private Regex nameRegex;
+        private const string providerNameTitlePattern = @"[A-Z][\w-]+,?\s*[A-Z][\w-]*\.?\s*(?:[A-Z][\w-]*\.?)?,?\s*[A-Z]{2,}(?:\s[A-Z-]{2,})?";
+        private Regex providerNameTitleRegex;
+        private const string wordsBeforePattern = @"(?<left>(?:[\d\w,\/\?\.]+\s)?(?:[\d\w,\/\?\.]+\s)?(?:[\d\w,\/\?\.]+\s)?(?:[\d\w,\/\?\.]+\s)?(?:[\d\w,\/\?\.]+\s)?)";
+        private const string wordsAfterPattern = @"(?<right>(?:\s[\d\w,\/\?\.]+)?(?:\s[\d\w,\/\?\.]+)?(?:\s[\d\w,\/\?\.]+)?(?:\s[\d\w,\/\?\.]+)?(?:\s[\d\w,\/\?\.]+)?)";
+
         private int dayOffset;
         private int monthOffset;
+        private TimeSpan deltaT;
+        
         private int lastRow;
+        
         private Range selectedColumnRng;
         private List<Range> selectedColumnsRng;
-        private TimeSpan deltaT;
-        private byte[] tmpSource;
-        private byte[] tmpHash;
+
+        private Dictionary<string, string> namesAndAliasesDict;
+        private List<string> namesToSkip;
+        private string[] workInProgress;
 
         internal Deidentifier()
         {
@@ -56,45 +88,77 @@ namespace DECS_Excel_Add_Ins
             return sOutput.ToString();
         }
 
-        private string TweakDateOnly(string dateString)
+        private SelectionResult EncodeProviderName(string nameString,
+                                          string leftContext,
+                                          string rightContext)
         {
-            DateTime payload = DateTime.Parse(dateString.Trim());
-            DateTime payloadTweaked = payload.AddDays(dayOffset);
-            string convertedDateString = payloadTweaked.ToString("M/d/yyyy");
+            string nameCleaned = nameString.Trim();
+            string alias = nameCleaned;
+            bool replace = false;
 
-            // Special case: did the Regex absorb a trailing period or space?
-            if (dateString.EndsWith("."))
+            if (namesAndAliasesDict.ContainsKey(nameCleaned))
             {
-                convertedDateString += ".";
+                alias = namesAndAliasesDict[nameCleaned];
+                replace = true;
             }
-            
-            if (dateString.EndsWith(" "))
+            else if (!namesToSkip.Contains(nameCleaned))
             {
-                convertedDateString += " ";
+                List<string> similarNames = FindSimilarNames(nameString);
+
+                using (HideThisNameForm form = new HideThisNameForm(nameCleaned, 
+                                                                    similarNames, 
+                                                                    leftContext, 
+                                                                    rightContext,
+                                                                    FindSimilarNames))
+                {
+                    var result = form.ShowDialog();
+
+                    if (result == DialogResult.Cancel)
+                    {
+                        cancel = true;
+                    }
+                    else if(result == DialogResult.OK)
+                    {
+                        // What word are we replacing?
+                        if (!string.IsNullOrEmpty(form.chosenName))
+                        {
+                            // This is a NEW name to be hidden (not the one we sent to the form).
+                            nameCleaned = form.chosenName.Trim();
+                        }
+
+                        if (string.IsNullOrEmpty(form.linkedName))
+                        {
+                            // This is a NEW name to be hidden.
+                            string hashCode = String.Format("{0:X}", nameCleaned.GetHashCode());
+                            alias = "<" + hashCode + ">";
+                            namesAndAliasesDict.Add(nameCleaned, alias);
+                        }
+                        else
+                        {
+                            // This is a reference to an existing name.
+                            alias = namesAndAliasesDict[form.linkedName];
+
+                            // Perhaps we want to link a new name to an existing alias.
+                            // Example: Already have an entry for "Dr. Able Provider" and we
+                            // want the SAME alias for "Provider, Able, MD".
+                            // (This includes the case where we've edited the string presented
+                            // via form.chosenName.)
+                            if (!namesAndAliasesDict.ContainsKey(nameCleaned))
+                            {
+                                namesAndAliasesDict[nameCleaned] = alias;
+                            }
+                        }
+
+                        replace = true;
+                    }
+                    else 
+                    {
+                        namesToSkip.Add(nameCleaned);
+                    }
+                }
             }
 
-            return convertedDateString;
-        }
-
-        private string TweakDateTime(string dateString)
-        {
-            DateTime payload = DateTime.Parse(dateString.Trim());
-            DateTime payloadTweaked = payload.AddDays(dayOffset) + deltaT;
-            return payloadTweaked.ToString("M/d/yyyy h:mm tt");
-        }
-
-        private string TweakMonthDay(string dateString)
-        {
-            DateTime payload = DateTime.Parse(dateString.Trim());
-            DateTime payloadTweaked = payload.AddDays(dayOffset);
-            return payloadTweaked.ToString("M/d");
-        }
-
-        private string TweakMonthSpelledOut(string dateString)
-        {
-            DateTime payload = DateTime.Parse(dateString.Trim());
-            DateTime payloadTweaked = payload.AddMonths(monthOffset);
-            return payloadTweaked.ToString("MMMM yyyy");
+            return new SelectionResult(alias: alias, replace: replace, wordToReplace: nameCleaned);
         }
 
         private bool FindSelectedColumn(Worksheet worksheet)
@@ -174,6 +238,47 @@ namespace DECS_Excel_Add_Ins
             return success;
         }
 
+        private List<string> FindSimilarNames(string name = "")
+        {
+            List<string> similarNames = new List<string>();
+
+            if (string.IsNullOrEmpty(name))
+            {
+                // It's a signal to send ALL the keys.
+                similarNames = namesAndAliasesDict.Keys.ToList<string>();
+            }
+            else
+            {
+                double editDistanceThreshold = 0.5;
+                double fractionOfWordsPresentThreshold = 0.5;
+
+                Fastenshtein.Levenshtein lev = new Fastenshtein.Levenshtein(name);
+
+                foreach (string key in namesAndAliasesDict.Keys.ToList<string>())
+                {
+                    // Is every word in this new name present in an existing key?
+                    if (Utilities.WordsPresent(name, key) >= fractionOfWordsPresentThreshold)
+                    {
+                        similarNames.Add(key);
+                        continue;
+                    }
+
+                    // Test using Levenshtein distance.
+                    double wordLength = (double)Math.Min(name.Length, key.Length);
+                    int levenshteinDistance = lev.DistanceFrom(key);
+                    double relativeDistance = levenshteinDistance / wordLength;
+
+                    if (relativeDistance <= editDistanceThreshold)
+                    {
+                        similarNames.Add(key);
+                    }
+                }
+            }
+
+            similarNames.Sort();
+            return similarNames;
+        }
+
         internal void GenerateHash(Worksheet worksheet)
         {
             lastRow = worksheet.UsedRange.Rows.Count;
@@ -185,8 +290,6 @@ namespace DECS_Excel_Add_Ins
 
                 string sourceData;
                 Range target;
-                byte[] tmpHash;
-                byte[] tmpSource;
 
                 for (int rowNumber = 2; rowNumber <= lastRow; rowNumber++)
                 {
@@ -195,22 +298,96 @@ namespace DECS_Excel_Add_Ins
 
                     if (!string.IsNullOrEmpty(sourceData))
                     {
-                        // Create a byte array from source data.
-                        tmpSource = ASCIIEncoding.ASCII.GetBytes(sourceData);
-
-                        // Initialize a SHA256 hash object.
-                        using (SHA256 mySHA256 = SHA256.Create())
-                        {
-                            tmpHash = mySHA256.ComputeHash(tmpSource);
-                            target.Value = ByteArrayToString(tmpHash);
-                        }
+                        target.Value = StringToHash(sourceData);
                     }
+                }
+            }
+        }
+
+        internal void HidePhysicianNames(Worksheet worksheet)
+        {
+            // Initialize needed variables.
+            lastRow = worksheet.UsedRange.Rows.Count;
+            namesAndAliasesDict = new Dictionary<string, string>();
+            namesToSkip = new List<string>();
+
+            // Instantiate reusable Regexes.
+            drNameRegex = new Regex(drNamePattern);
+            nameRegex = new Regex(namePattern);
+            providerNameTitleRegex = new Regex(providerNameTitlePattern);
+
+            if (FindSelectedColumns(worksheet))
+            {
+                foreach(Range col in selectedColumnsRng)
+                {
+                    HidePhysicianNamesOneColumn(col);
+                }
+            }
+        }
+
+        private void HidePhysicianNamesOneColumn(Range selectedCol)
+        {
+            string selectedColumnName = selectedCol.Value.ToString();
+            string newColumnName = selectedColumnName + " (Names Hidden)";
+
+            // Clear out the buffer for the new column.
+            workInProgress = new string[lastRow + 1];
+
+            // Make room for new column.
+            Range aliasedColumn = Utilities.InsertNewColumn(range: selectedCol,
+                                                            newColumnName: newColumnName,
+                                                            side: InsertSide.Right);
+
+            string sourceData;
+            Range target;
+            Worksheet worksheet = selectedCol.Worksheet;
+
+            // Run the more detailed rules first to assemble a library of names
+            // so can later match "Able" with "Dr. Able Provider".
+            for (int rowNumber = 2; rowNumber <= lastRow; rowNumber++)
+            {
+                if (cancel) { break; }
+
+                sourceData = worksheet.Cells[rowNumber, selectedCol.Column].Value;
+
+                // Modify & store as workInProgress.
+                if (!string.IsNullOrEmpty(sourceData))
+                {
+                    workInProgress[rowNumber] = ProcessOneRuleWithGUI(sourceData, providerNameTitleRegex);
+                }
+            }
+
+            // Run next rule on workInProgress & replace workInProgress.
+            for (int rowNumber = 2; rowNumber <= lastRow; rowNumber++)
+            {
+                if (cancel) { break; }
+
+                // Modify & store as workInProgress.
+                if (!string.IsNullOrEmpty(workInProgress[rowNumber]))
+                {
+                    workInProgress[rowNumber] = ProcessOneRuleWithGUI(workInProgress[rowNumber], drNameRegex);
+                }
+            }
+
+            // Run final rule on workInProgress & save to target cell.
+            for (int rowNumber = 2; rowNumber <= lastRow; rowNumber++)
+            {
+                if (cancel) { break; }
+
+                target = (Range)worksheet.Cells[rowNumber, aliasedColumn.Column];
+
+                // Modify & stuff into target cell.
+                if (!string.IsNullOrEmpty(workInProgress[rowNumber]))
+                {
+                    target.Value = ProcessOneRuleWithGUI(workInProgress[rowNumber], nameRegex);
                 }
             }
         }
 
         internal void ObscureDateTime(Worksheet worksheet)
         {
+            lastRow = worksheet.UsedRange.Rows.Count;
+
             // Instantiate random number generator and random day, time offsets.
             Random rnd = new Random();
             dayOffset = rnd.Next(-7, 7);
@@ -224,8 +401,6 @@ namespace DECS_Excel_Add_Ins
             dateTimeRegex = new Regex(dateTimePattern);
             monthDayOnlyRegex = new Regex(monthDayOnlyPattern);
             monthSpelledOutRegex = new Regex(monthSpelledOutPattern);
-
-            lastRow = worksheet.UsedRange.Rows.Count;
 
             if (FindSelectedColumn(worksheet))
             {
@@ -268,7 +443,9 @@ namespace DECS_Excel_Add_Ins
             {
                 string beforeMatch = sourceData.Substring(0, match.Index);
                 targetData += beforeMatch;
-                targetData += convert(match.Value.ToString());
+                string matchedWord = match.Value.ToString();
+
+                targetData += convert(matchedWord);
 
                 // Trim to just what's AFTER the match.
                 sourceData = sourceData.Substring(match.Index + match.Value.Length);
@@ -279,6 +456,121 @@ namespace DECS_Excel_Add_Ins
             targetData += sourceData;
 
             return targetData;
+        }
+
+        private string ProcessOneRuleWithGUI(string sourceData, Regex regex)
+        {
+            Match match = regex.Match(sourceData);
+            string targetData = string.Empty;
+
+            while (match.Success)
+            {
+                string matchedWord = match.Value.ToString().Trim().TrimEnd(',');
+
+                string compiledPattern = wordsBeforePattern + matchedWord + wordsAfterPattern;
+                Regex contextRegex = new Regex(compiledPattern);
+                Match contextMatch = contextRegex.Match(sourceData);
+                string leftContext = string.Empty;
+                string rightContext = string.Empty;
+
+                if (contextMatch.Success && contextMatch.Groups.Count > 2)
+                {
+                    leftContext = contextMatch.Groups["left"].Value.ToString();
+                    rightContext = contextMatch.Groups["right"].Value.ToString();
+                }
+
+                SelectionResult selectionResult = EncodeProviderName(matchedWord, leftContext, rightContext);
+
+                if (cancel) { break; }
+
+                // Where's the detected word in the text?
+                int index = sourceData.IndexOf(selectionResult.wordToReplace);
+                string beforeText = sourceData.Substring(0, index);
+
+                // Build the output.
+                targetData += beforeText;
+
+                // Apply the user's decision.
+                if (selectionResult.replace)
+                {
+                    // Replace the word.
+                    targetData += selectionResult.alias;
+                }
+                else
+                {
+                    // We're not replacing it.
+                    targetData += selectionResult.wordToReplace;
+                }
+
+                // Trim to just what's AFTER the match.
+                sourceData = sourceData.Substring(index + selectionResult.wordToReplace.Length);
+
+                // Rerun the rule on rest of the data.
+                match = regex.Match(sourceData);
+            }
+
+            // Append whatever's left over.
+            targetData += sourceData;
+
+            return targetData;
+        }
+
+        private string StringToHash(string sourceData)
+        {
+            string hashString = string.Empty;
+     
+            // Create a byte array from source data.
+            byte[] tmpSource = ASCIIEncoding.ASCII.GetBytes(sourceData);
+
+            // Initialize a SHA256 hash object.
+            using (SHA256 mySHA256 = SHA256.Create())
+            {
+                byte[] tmpHash = mySHA256.ComputeHash(tmpSource);
+                hashString = ByteArrayToString(tmpHash);
+            }
+
+            return hashString;
+        }
+
+        private string TweakDateOnly(string dateString)
+        {
+            DateTime payload = DateTime.Parse(dateString.Trim());
+            DateTime payloadTweaked = payload.AddDays(dayOffset);
+            string convertedDateString = payloadTweaked.ToString("M/d/yyyy");
+
+            // Special case: did the Regex absorb a trailing period or space?
+            if (dateString.EndsWith("."))
+            {
+                convertedDateString += ".";
+            }
+
+            if (dateString.EndsWith(" "))
+            {
+                convertedDateString += " ";
+            }
+
+            return convertedDateString;
+        }
+
+        private string TweakDateTime(string dateString)
+        {
+            DateTime payload = DateTime.Parse(dateString.Trim());
+            DateTime payloadTweaked = payload.AddDays(dayOffset) + deltaT;
+            return payloadTweaked.ToString("M/d/yyyy h:mm tt");
+        }
+
+        private string TweakMonthDay(string dateString)
+        {
+            DateTime payload = DateTime.Parse(dateString.Trim());
+            DateTime payloadTweaked = payload.AddDays(dayOffset);
+            return payloadTweaked.ToString("M/d");
+        }
+
+        private string TweakMonthSpelledOut(string dateString)
+        {
+            DateTime payload = DateTime.Parse(dateString.Trim());
+            DateTime payloadTweaked = payload.AddMonths(monthOffset);
+            return payloadTweaked.ToString("MMMM yyyy");
         }
     }
 }
