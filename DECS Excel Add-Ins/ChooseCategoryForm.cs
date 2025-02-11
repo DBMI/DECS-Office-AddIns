@@ -13,11 +13,20 @@ namespace DECS_Excel_Add_Ins
 {
     public partial class ChooseCategoryForm : Form
     {
-        public string selectedCategory = "None";
+        public List<string> selectedColumns = new List<string> { "None" };
 
-        public ChooseCategoryForm(List<string> columnNames)
+        public ChooseCategoryForm(List<string> columnNames, bool MultiSelect = true)
         {
             InitializeComponent();
+
+            if (MultiSelect)
+            {
+                columnNamesListBox.SelectionMode = SelectionMode.MultiExtended;
+            }
+            else 
+            { 
+                columnNamesListBox.SelectionMode = SelectionMode.One; 
+            }
 
             columnNamesListBox.DataSource = null;
             columnNamesListBox.Items.Clear();
@@ -37,7 +46,7 @@ namespace DECS_Excel_Add_Ins
 
         public void RunButton_Click(object sender, EventArgs e)
         {
-            selectedCategory = columnNamesListBox.SelectedItem.ToString();
+            selectedColumns = columnNamesListBox.SelectedItems.Cast<string>().ToList();
             this.DialogResult = DialogResult.OK;
             this.Close();
         }   

@@ -1134,5 +1134,30 @@ namespace DECS_Excel_Add_Ins
             MessageBoxButtons buttons = MessageBoxButtons.OK;
             DialogResult result = MessageBox.Show(message, title, buttons, MessageBoxIcon.Warning);
         }
+
+        /// <summary>
+        /// Tests to see what fraction of the words in "name" are present in another name.
+        /// Ex. Tests "Dr. Able Wise" vs. "Wise, Able MD" ==> 0.667
+        /// </summary>
+        /// <param name="name">string.</param>
+        /// <param name="otherName">string.</param>
+        /// <returns>double</returns>
+        internal static double WordsPresent(string name, string otherName)
+        {
+            string[] wordsInNewName = name.Replace(",", "").Trim().Split();
+            string[] wordsInOtherName = otherName.Replace(",", "").Trim().Split();
+            double numWordsToTest = (double)wordsInNewName.Length;
+            double wordsPresent = 0.0;
+
+            foreach (string word in wordsInNewName)
+            {
+                if (wordsInOtherName.Contains(word))
+                {
+                    wordsPresent++;
+                }
+            }
+
+            return wordsPresent/numWordsToTest;
+        }
     }
 }

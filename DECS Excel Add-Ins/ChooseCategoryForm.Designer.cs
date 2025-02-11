@@ -39,17 +39,18 @@
             // 
             this.label1.AutoSize = true;
             this.label1.Font = new System.Drawing.Font("Microsoft Sans Serif", 15.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label1.Location = new System.Drawing.Point(201, 31);
+            this.label1.Location = new System.Drawing.Point(300, 31);
             this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(384, 25);
+            this.label1.Size = new System.Drawing.Size(190, 25);
             this.label1.TabIndex = 0;
-            this.label1.Text = "Choose Category to Generate Tabs";
+            this.label1.Text = "Choose Columns";
             // 
             // columnNamesListBox
             // 
             this.columnNamesListBox.FormattingEnabled = true;
             this.columnNamesListBox.Location = new System.Drawing.Point(287, 95);
             this.columnNamesListBox.Name = "columnNamesListBox";
+            this.columnNamesListBox.SelectionMode = System.Windows.Forms.SelectionMode.MultiExtended;
             this.columnNamesListBox.Size = new System.Drawing.Size(218, 95);
             this.columnNamesListBox.TabIndex = 1;
             this.columnNamesListBox.SelectedIndexChanged += new System.EventHandler(this.ColumnNamesListBox_SelectedIndexChanged);

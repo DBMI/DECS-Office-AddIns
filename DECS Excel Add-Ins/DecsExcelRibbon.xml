@@ -50,6 +50,13 @@
 							screentip="Obscure Date and Time"
 							size="large"
 							supertip="Adds random offset to dates, times." />
+					<button id="hidePhysicianNames"
+							getImage="hidePhysicianNamesButton_GetImage"
+							label="Hide Dr. Names"
+							onAction="OnHidePhysicianNames"
+							screentip="Hide Physician Names"
+							size="large"
+							supertip="Convert Physician Names to Scrambled ID." />
 				</group>
 				<group id="ListGroup"
 					   label="Lists">
