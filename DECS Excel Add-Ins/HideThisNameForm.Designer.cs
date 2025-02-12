@@ -114,7 +114,7 @@
             this.contextRichTextBox.TabIndex = 9;
             this.contextRichTextBox.Text = "";
             this.contextRichTextBox.ZoomFactor = 2F;
-            this.contextRichTextBox.SelectionChanged += new System.EventHandler(this.UserSelectedPartOfProvidedText);
+            this.contextRichTextBox.MouseUp += new System.Windows.Forms.MouseEventHandler(this.contextRichTextBox_MouseUp);
             // 
             // button1
             // 

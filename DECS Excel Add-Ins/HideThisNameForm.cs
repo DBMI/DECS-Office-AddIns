@@ -8,11 +8,13 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Web.UI.WebControls;
 using System.Windows.Forms;
+using static System.Windows.Forms.VisualStyles.VisualStyleElement;
 
 namespace DECS_Excel_Add_Ins
 {
     public partial class HideThisNameForm : Form
     {
+        private string preamble = @"{\rtf1\ansi ";
         public string chosenName = string.Empty;
         public string linkedName = string.Empty;
         private Func<string, List<string>> refreshSimilarNames;
@@ -26,11 +28,16 @@ namespace DECS_Excel_Add_Ins
             InitializeComponent();
             PopulateSimilarNamesListbox(similarNames);
             contextRichTextBox.Clear();
-            contextRichTextBox.Rtf = @"{\rtf1\ansi " + leftContext + 
-                                     @"\b " + nameToConsider + @"\b0 " +
+            contextRichTextBox.Rtf = preamble + leftContext + 
+                                     BoldWords(nameToConsider) +
                                      rightContext;
             linkNameButton.Enabled = false;
             refreshSimilarNames = _refreshSimilarNames;
+        }
+
+        private string BoldWords(string words)
+        {
+            return @"\b " + words + @"\b0 ";
         }
 
         public void CancelButton_Click(object sender, EventArgs e)
@@ -83,10 +90,29 @@ namespace DECS_Excel_Add_Ins
             }
         }
 
-        private void UserSelectedPartOfProvidedText(object sender, EventArgs e)
+        private void contextRichTextBox_MouseUp(object sender, MouseEventArgs e)
         {
-            if (contextRichTextBox.SelectedText != null)
+            string rtfContents = contextRichTextBox.Text;
+
+            if (contextRichTextBox.SelectedText == null)
             {
+                // Remove all formatting.
+                contextRichTextBox.Rtf = preamble + rtfContents;
+            }
+            else
+            {
+                // Highlight selected text.
+                int selectionStart = contextRichTextBox.SelectionStart;
+                int selectionLen = contextRichTextBox.SelectionLength;
+                string leftContext = rtfContents.Substring(0, selectionStart);
+                int indexOfSelectionEnd = selectionStart + selectionLen;
+                int lengthOfRightContext = rtfContents.Length - indexOfSelectionEnd;
+                string rightContext = rtfContents.Substring(indexOfSelectionEnd, lengthOfRightContext);
+                contextRichTextBox.Rtf = preamble + leftContext +
+                                     BoldWords(contextRichTextBox.SelectedText) +
+                                     rightContext;
+
+                // Find all similar names so user can link "Dr. Able Provider" with "Provider, Able, MD".
                 chosenName = contextRichTextBox.SelectedText.Trim();
                 linkedName = string.Empty;
                 linkNameButton.Enabled = false;
