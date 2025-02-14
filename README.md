@@ -18,6 +18,7 @@ Creates custom buttons in Microsoft Excel & Word that allow user to:
 * Process a physician oncall list into SQL code for import.
 * Search UCSD Blink for provider names using email addresses.
 * Merge rows across dates.
+* Extract the payload from a message.
 * Scan `Notes` fields for keywords, creating new columns.
 * Merge notes from one sheet into another according to some index column (like CSN).
 * Convert patient satisfaction survey data into SQL format.
