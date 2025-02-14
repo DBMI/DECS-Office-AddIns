@@ -109,6 +109,16 @@ namespace DECS_Excel_Add_Ins
         }
 
         /// <summary>
+        /// Lets the @c DexsExcelRibbon.xml point to the image for the @c ExtractMessage button.
+        /// </summary>
+        /// <param name="control">Reference to the IRibbonControl object.</param>
+        /// <returns>Bitmap</returns>
+        public Bitmap extractMessageButton_GetImage(IRibbonControl control)
+        {
+            return Resources.nesting_dolls;
+        }
+
+        /// <summary>
         /// Lets the @c DexsExcelRibbon.xml point to the image for the @c FormatResults button.
         /// </summary>
         /// <param name="control">Reference to the IRibbonControl object.</param>
@@ -320,6 +330,18 @@ namespace DECS_Excel_Add_Ins
             Timecard timecard = new Timecard();
             Excel.Worksheet wksheet = (Excel.Worksheet)Globals.ThisAddIn.Application.ActiveSheet;
             timecard.Extend(wksheet);
+        }
+
+        /// <summary>
+        /// When @c ExtractMessage button is pressed, instantiates a @c MessageUnpeeler object & calls its @c Scan method.
+        /// </summary>
+        /// <param name="control">Reference to the IRibbonControl object.</param>
+
+        public void OnExtractMessage(Office.IRibbonControl control)
+        {
+            MessageUnpeeler unpeeler = new MessageUnpeeler();
+            Excel.Worksheet wksheet = (Excel.Worksheet)Globals.ThisAddIn.Application.ActiveSheet;
+            unpeeler.Scan(wksheet);
         }
 
         /// <summary>

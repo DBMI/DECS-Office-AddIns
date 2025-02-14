@@ -122,6 +122,13 @@
 							screentip="Merge notes"
 							size="large"
 							supertip="Merge results on index." />
+					<button id="extractMessageButton"
+							getImage="extractMessageButton_GetImage"
+							label="Extract Message"
+							onAction="OnExtractMessage"
+							screentip="Extract Msg to Pt"
+							size="large"
+							supertip="Extract Message to Patient." />
 				</group>
 				<group id ="SurveyGroup"
 					   label="Survey">
