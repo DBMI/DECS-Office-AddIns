@@ -10,6 +10,7 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 using static System.Net.Mime.MediaTypeNames;
 using HtmlAgilityPack;
+using System.Security.Policy;
 
 namespace DECS_Excel_Add_Ins
 {
@@ -36,31 +37,6 @@ namespace DECS_Excel_Add_Ins
 
             // https://stackoverflow.com/a/48930280/18749636
             ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12;
-        }
-
-        internal void Search(Worksheet worksheet)
-        {
-            lastRowInSheet = worksheet.UsedRange.Rows.Count;
-
-            if (FindSelectedCategory(worksheet))
-            {
-                web = new HtmlWeb();
-
-                // Create column for provider name.
-                providerNameRng = Utilities.InsertNewColumn(providerEmailRng, "Provider Name");
-
-                // Run down the email column, pinging UCSD Blink & parsing out their name.
-                for (int rowOffset = 1; rowOffset < lastRowInSheet; rowOffset++)
-                {
-                    string emailName = ExtractJustNameFromEmail(providerEmailRng.Offset[rowOffset]);
-
-                    if (!string.IsNullOrEmpty(emailName))
-                    {
-                        string providerName = PingUcsdBlink(emailName);
-                        providerNameRng.Offset[rowOffset].Value = providerName;
-                    }
-                }
-            }
         }
 
         /// <summary>
@@ -90,6 +66,29 @@ namespace DECS_Excel_Add_Ins
 
             return result;
         }
+
+        /// <summary>
+        /// Extracts everything before the "@" symbol.
+        /// </summary>
+        /// <param name="emailRng">Range</param>
+        /// <returns>string</returns>
+        private string ExtractJustNameFromEmail(string email)
+        {
+            string result = string.Empty;
+
+            if (!string.IsNullOrEmpty(email))
+            {
+                Match match = Regex.Match(email, emailExtractor);
+
+                if (match.Success)
+                {
+                    result = Convert.ToString(match.Groups["name"].Value);
+                }
+            }
+
+            return result;
+        }
+
         /// <summary>
         /// Pulls just the provider name from "Faculty/Staff Directory: Doctor, Ima"
         /// </summary>
@@ -101,7 +100,9 @@ namespace DECS_Excel_Add_Ins
 
             if (!string.IsNullOrEmpty(titleAndName))
             {
-                Match match = Regex.Match(titleAndName.Trim(), titleExtractor);
+                // Substitute html &#039; with apostrophe.
+                titleAndName = titleAndName.Trim().Replace("&#039;", "'");
+                Match match = Regex.Match(titleAndName, titleExtractor);
 
                 if (match.Success)
                 {
@@ -112,19 +113,30 @@ namespace DECS_Excel_Add_Ins
             return result;
         }
 
-        private string PingUcsdBlink(string emailName)
+        private string FindBestMatch(string emailName, 
+                                     HtmlAgilityPack.HtmlNodeCollection nameNodes, 
+                                     HtmlAgilityPack.HtmlNodeCollection emailNodes)
         {
-            string result = string.Empty;
-            string urlPopulated = url+emailName;
-            HtmlAgilityPack.HtmlDocument doc = web.Load(urlPopulated);
+            string name = string.Empty;
 
-            try
+            if (nameNodes != null && emailNodes != null)
             {
-                result = doc.GetElementbyId("empNameTitle").InnerText;
-            }
-            catch (System.NullReferenceException) { }
+                int numNodes = Math.Min(nameNodes.Count(), emailNodes.Count());
 
-            return ExtractJustTheNameFromTitle(result);
+                for (int index = 0; index < numNodes; index++)
+                {
+                    // Look for an exact match.
+                    string thisEmail = ExtractJustNameFromEmail(emailNodes[index].InnerText.Trim());
+
+                    if (thisEmail == emailName)
+                    {
+                        name = nameNodes[index].InnerText.Trim();
+                        break;
+                    }
+                }
+            }
+
+            return name;
         }
 
         private bool FindSelectedCategory(Worksheet worksheet)
@@ -139,13 +151,13 @@ namespace DECS_Excel_Add_Ins
                 // Then ask user to select one column.
                 List<string> columnNames = Utilities.GetColumnNames(worksheet);
 
-                using (ChooseCategoryForm form = new ChooseCategoryForm(columnNames))
+                using (ChooseCategoryForm form = new ChooseCategoryForm(columnNames, MultiSelect: false))
                 {
                     var result = form.ShowDialog();
 
                     if (result == DialogResult.OK)
                     {
-                        string selectedColumnName = form.selectedCategory;
+                        string selectedColumnName = form.selectedColumns[0];
                         providerEmailRng = Utilities.TopOfNamedColumn(worksheet, selectedColumnName);
                         success = true;
                     }
@@ -162,6 +174,57 @@ namespace DECS_Excel_Add_Ins
             }
 
             return success;
+        }
+
+        private string PingUcsdBlink(string emailName)
+        {
+            string result = string.Empty;
+            string urlPopulated = url + emailName;
+            HtmlAgilityPack.HtmlDocument doc = web.Load(urlPopulated);
+
+            // Is there just one match?
+            try
+            {
+                result = doc.GetElementbyId("empNameTitle").InnerText;
+            }
+            catch (System.NullReferenceException)
+            {
+                // Or multiple matches?
+                try
+                {
+                    HtmlAgilityPack.HtmlNodeCollection nameNodes = doc.DocumentNode.SelectNodes("//table/tbody/tr/td[1]/a");
+                    HtmlAgilityPack.HtmlNodeCollection emailNodes = doc.DocumentNode.SelectNodes("//table/tbody/tr/td[5]/a");
+                    return FindBestMatch(emailName, nameNodes, emailNodes);
+                }
+                catch (System.NullReferenceException) { }
+            }
+
+            return ExtractJustTheNameFromTitle(result);
+        }
+
+        internal void Search(Worksheet worksheet)
+        {
+            lastRowInSheet = worksheet.UsedRange.Rows.Count;
+
+            if (FindSelectedCategory(worksheet))
+            {
+                web = new HtmlWeb();
+
+                // Create column for provider name.
+                providerNameRng = Utilities.InsertNewColumn(providerEmailRng, "Provider Name");
+
+                // Run down the email column, pinging UCSD Blink & parsing out their name.
+                for (int rowOffset = 1; rowOffset < lastRowInSheet; rowOffset++)
+                {
+                    string emailName = ExtractJustNameFromEmail(providerEmailRng.Offset[rowOffset]);
+
+                    if (!string.IsNullOrEmpty(emailName))
+                    {
+                        string providerName = PingUcsdBlink(emailName);
+                        providerNameRng.Offset[rowOffset].Value = providerName;
+                    }
+                }
+            }
         }
     }
 }
