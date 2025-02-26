@@ -57,19 +57,6 @@ namespace DECS_Excel_Add_Ins
 
             return success;
         }
-/*
-        private List<string> GetNames(string line)
-        {
-            List<string> names = new List<string>();
-
-            foreach (Match match in nameRegex.Matches(line))
-            {
-                names.Add(match.Groups["name"].Value.ToString());
-            }
-
-            return names.Distinct<string>().ToList();
-        }
-*/
 
         internal void Scan(Worksheet worksheet)
         {
@@ -89,6 +76,7 @@ namespace DECS_Excel_Add_Ins
                                                                  side: InsertSide.Right);
 
                 string sourceData;
+                string targetData;
                 Range target;
 
                 for (int rowNumber = 2; rowNumber <= lastRow; rowNumber++)
@@ -98,14 +86,23 @@ namespace DECS_Excel_Add_Ins
 
                     string[] lines = sourceData.Split(new string[] { "----- " }, StringSplitOptions.None);
 
+                    // In case the message doesn't contain "-----", initialize with the raw message.
+                    targetData = sourceData;
+
                     foreach(string line in lines)
                     {
                         // Grab the -LAST- line that does not start with Message or From:
-                        if (!line.Contains("Message") && !line.Contains("From:"))
+                        // (Skip empty lines & ones that repeat MyChart boilerplate.)
+                        if (line.Trim().Length > 0 && 
+                            !line.Contains("MyChart Guidelines:") &&
+                            !line.Contains("Message") && 
+                            !line.Contains("From:"))
                         {
-                            target.Value = line;
+                            targetData = line;
                         }
                     }
+
+                    target.Value2 = targetData;
                 }
             }
         }
