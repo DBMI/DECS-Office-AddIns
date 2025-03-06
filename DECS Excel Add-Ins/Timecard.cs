@@ -46,10 +46,10 @@ namespace DECS_Excel_Add_Ins
             // Find the latest sheet.
             Worksheet lastMonthSheet = Utilities.FindLastWorksheet(thisWorkbook);
 
+            if (lastMonthSheet == null) { return; }
+
             // Point to its first cell in column "K".
             lastMonthCumulativeHours = (Range)lastMonthSheet.Cells[2, 11];
-
-            if (lastMonthSheet == null) { return; }
 
             // Copy all to a new sheet with next month name.
             Worksheet thisMonthSheet = CopyToNewSheet(lastMonthSheet);
@@ -76,6 +76,11 @@ namespace DECS_Excel_Add_Ins
             thisWorkbook.Save();
         }
 
+        private bool PastLastRow(string cellContents)
+        {
+            return !cellContents.Contains("=") && !cellContents.Contains("see next row");
+        }
+
         private string NewFilename()
         {
             string filename = thisWorkbook.FullName;
@@ -83,7 +88,7 @@ namespace DECS_Excel_Add_Ins
             string justTheFilename = System.IO.Path.GetFileNameWithoutExtension(filename);
 
             // Parse year, month from string like "DFMResearchProjects_Kevin_2024_11.xlsx".
-            Regex regex = new Regex(@"(?<preamble>\D+)_(?<year>\d{4})_(?<month>\d{1,2})$");
+            Regex regex = new Regex(@"(?<preamble>\D+)(_|\s)(?<year>\d{4})(_|\s)(?<month>\d{1,2})$");
             Match match = regex.Match(justTheFilename);
 
             if (match.Success)
@@ -142,8 +147,7 @@ namespace DECS_Excel_Add_Ins
                 thisMonthNewHours = thisMonthNewHours.Offset[1, 0];
 
                 // Have we passed the last formula?
-                string cellContents = thisMonthCumulativeHours.Formula;
-                done = !cellContents.Contains("=");
+                done = PastLastRow(thisMonthCumulativeHours.Formula);
             }
         }
 
@@ -183,8 +187,7 @@ namespace DECS_Excel_Add_Ins
                 rowOffset++;
 
                 // Have we passed the last formula?
-                string cellContents = thisMonthCumulativeHours.Offset[rowOffset, 0].Formula;
-                done = !cellContents.Contains("=");
+                done = PastLastRow(thisMonthCumulativeHours.Offset[rowOffset, 0].Formula);
             }
         }
     }
