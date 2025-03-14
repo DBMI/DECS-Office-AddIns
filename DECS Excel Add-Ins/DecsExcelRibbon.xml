@@ -88,6 +88,12 @@
 							screentip="Search Providers by Email"
 							size="large"
 							supertip="Search Providers by Email." />
+					<button id="sortTimesButton"
+							getImage="sortTimesButton_GetImage"
+							label="Sort Follow-up Times"
+							onAction="OnSortTimes"
+							size="large"
+							screentip="Sort Times into High, Medium and Routine Priorities"/>
 				</group>
 				<group id ="MergeGroup"
 					   label="Merge">

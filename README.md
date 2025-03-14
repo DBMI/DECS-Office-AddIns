@@ -17,6 +17,7 @@ Creates custom buttons in Microsoft Excel & Word that allow user to:
 * Break up a long spreadsheet into individual sheets, using the value of one column.
 * Process a physician oncall list into SQL code for import.
 * Search UCSD Blink for provider names using email addresses.
+* Turn text like "2-3 weeks" into a category like "routine/medium/high" [priority].
 * Merge rows across dates.
 * Extract the payload from a message.
 * Scan `Notes` fields for keywords, creating new columns.
