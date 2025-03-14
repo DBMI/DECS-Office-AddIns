@@ -156,7 +156,7 @@ namespace DECS_Excel_Add_Ins
             return success;
         }
 
-        private DateTime? NextMonth(string month, int day, DateTime refDate)
+        private DateTime? NextMonth(string month, DateTime refDate, int day = 1)
         {
             DateTime? dateTranslated = null;
 
@@ -223,25 +223,26 @@ namespace DECS_Excel_Add_Ins
                     string month = TranslateMonthAbbreviation(match.Groups["month"].Value);
 
                     // See if the month belongs to this year or the next.
-                    deadlineDate = NextMonth(month, day.Value, noteWrittenDate);
+                    deadlineDate = NextMonth(month, noteWrittenDate, day.Value);
                 }
             }
 
             return deadlineDate;
         }
 
-        private DateTime? ParseMonthYear(string timeText)
+        private DateTime? ParseMonth(string timeText, DateTime noteWrittenDate)
         {
             DateTime? deadlineDate = null;
 
-            Regex regex = new Regex(@"(?<month>\w{3,})\s+(?<year>\d{4})");
+            Regex regex = new Regex(@"(?<month>\w{3,})\s*(?<year>\d{4})?");
             Match match = regex.Match(timeText);
 
-            if (match.Success && match.Groups.Count > 2)
+            if (match.Success)
             {
                 // Maybe it's an abbreviated month?
                 string month = TranslateMonthAbbreviation(match.Groups["month"].Value);
 
+                // Is there year info?
                 if (int.TryParse(match.Groups["year"].Value, out int year))
                 {
                     // Form month year string (like "July 2024") from the pieces.
@@ -251,6 +252,11 @@ namespace DECS_Excel_Add_Ins
                     {
                         deadlineDate = dateTimeValue;
                     }
+                }
+                else
+                {
+                    // See if the month belongs to this year or the next.
+                    deadlineDate = NextMonth(month, noteWrittenDate);
                 }
             }
 
@@ -393,7 +399,7 @@ namespace DECS_Excel_Add_Ins
                     int day = weekNumber * 7;
 
                     // See if the month belongs to this year or the next.
-                    deadlineDate = NextMonth(month, day, noteWrittenDate);
+                    deadlineDate = NextMonth(month, noteWrittenDate, day);
                 }
             }
 
@@ -428,7 +434,7 @@ namespace DECS_Excel_Add_Ins
                     string month = TranslateMonthAbbreviation(match.Groups["month"].Value);
 
                     // See if the month belongs to this year or the next.
-                    deadlineDate = NextMonth(month, day.Value, noteWrittenDate);
+                    deadlineDate = NextMonth(month, noteWrittenDate, day.Value);
                 }
             }
 
@@ -482,7 +488,7 @@ namespace DECS_Excel_Add_Ins
                         if (priority == TriagePriority.Unknown)
                         {
                             // Does it contain a date like "mid to late July 2024"?
-                            DateTime? possibleDate = ParseMonthYear(timeText);
+                            DateTime? possibleDate = ParseMonth(timeText, noteWrittenDate);
 
                             if (possibleDate != null)
                             {
