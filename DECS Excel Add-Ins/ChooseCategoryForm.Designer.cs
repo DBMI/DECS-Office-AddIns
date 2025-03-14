@@ -29,21 +29,21 @@
         private void InitializeComponent()
         {
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(ChooseCategoryForm));
-            this.label1 = new System.Windows.Forms.Label();
+            this.headlineLabel = new System.Windows.Forms.Label();
             this.columnNamesListBox = new System.Windows.Forms.ListBox();
             this.runButton = new System.Windows.Forms.Button();
             this.quitButton = new System.Windows.Forms.Button();
             this.SuspendLayout();
             // 
-            // label1
+            // headlineLabel
             // 
-            this.label1.AutoSize = true;
-            this.label1.Font = new System.Drawing.Font("Microsoft Sans Serif", 15.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label1.Location = new System.Drawing.Point(300, 31);
-            this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(190, 25);
-            this.label1.TabIndex = 0;
-            this.label1.Text = "Choose Columns";
+            this.headlineLabel.AutoSize = true;
+            this.headlineLabel.Font = new System.Drawing.Font("Microsoft Sans Serif", 15.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.headlineLabel.Location = new System.Drawing.Point(300, 31);
+            this.headlineLabel.Name = "headlineLabel";
+            this.headlineLabel.Size = new System.Drawing.Size(190, 25);
+            this.headlineLabel.TabIndex = 0;
+            this.headlineLabel.Text = "Choose Columns";
             // 
             // columnNamesListBox
             // 
@@ -87,7 +87,7 @@
             this.Controls.Add(this.quitButton);
             this.Controls.Add(this.runButton);
             this.Controls.Add(this.columnNamesListBox);
-            this.Controls.Add(this.label1);
+            this.Controls.Add(this.headlineLabel);
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.Name = "ChooseCategoryForm";
             this.Text = "Choose Category Form";
@@ -98,7 +98,7 @@
 
         #endregion
 
-        private System.Windows.Forms.Label label1;
+        private System.Windows.Forms.Label headlineLabel;
         private System.Windows.Forms.ListBox columnNamesListBox;
         private System.Windows.Forms.Button runButton;
         private System.Windows.Forms.Button quitButton;

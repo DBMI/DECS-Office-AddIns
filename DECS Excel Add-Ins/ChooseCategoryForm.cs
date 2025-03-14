@@ -15,9 +15,10 @@ namespace DECS_Excel_Add_Ins
     {
         public List<string> selectedColumns = new List<string> { "None" };
 
-        public ChooseCategoryForm(List<string> columnNames, bool MultiSelect = true)
+        public ChooseCategoryForm(List<string> columnNames, string headline = "Choose Columns", bool MultiSelect = true)
         {
             InitializeComponent();
+            headlineLabel.Text = headline;
 
             if (MultiSelect)
             {

@@ -219,6 +219,16 @@ namespace DECS_Excel_Add_Ins
         }
 
         /// <summary>
+        /// Lets the @c DexsExcelRibbon.xml point to the image for the @c SortTimes button.
+        /// </summary>
+        /// <param name="control">Reference to the IRibbonControl object.</param>
+        /// <returns>Bitmap</returns>
+        public Bitmap sortTimesButton_GetImage(IRibbonControl control)
+        {
+            return Resources.priority;
+        }
+
+        /// <summary>
         /// Lets the @c DexsExcelRibbon.xml point to the image for the @c Stripe button.
         /// </summary>
         /// <param name="control">Reference to the IRibbonControl object.</param>
@@ -466,6 +476,18 @@ namespace DECS_Excel_Add_Ins
             Excel.Worksheet wksheet = (Excel.Worksheet)Globals.ThisAddIn.Application.ActiveSheet;
             NotesParser parser = new NotesParser(_worksheet: wksheet);
             parser.Parse();
+        }
+
+        /// <summary>
+        /// When @c SortTimes button is pressed, this method instantiates a @c TimeSorter object & calls its @c Scan method.
+        /// </summary>
+        /// <param name="control">Reference to the IRibbonControl object.</param>
+
+        public void OnSortTimes(Office.IRibbonControl control)
+        {
+            TimeSorter timeSorter = new TimeSorter();
+            Excel.Worksheet wksheet = (Excel.Worksheet)Globals.ThisAddIn.Application.ActiveSheet;
+            timeSorter.Scan(wksheet);
         }
 
         /// <summary>
