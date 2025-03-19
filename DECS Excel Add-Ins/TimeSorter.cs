@@ -34,6 +34,7 @@ namespace DECS_Excel_Add_Ins
         private Dictionary<string, int> weeks;
         private Range selectedDateColumnRng;
         private Range selectedTimeTextColumnRng;
+        private FollowUpTimeframeThresholds thresholds;
 
         internal TimeSorter()
         {
@@ -41,6 +42,9 @@ namespace DECS_Excel_Add_Ins
             BuildMonthDictionary();
             BuildSeasonsDictionary();
             BuildWeeksDictionary();
+
+            TimeSorterSettings settings = new TimeSorterSettings();
+            thresholds = settings.Thresholds();
         }
 
         private void BuildMonthDictionary()
@@ -197,6 +201,39 @@ namespace DECS_Excel_Add_Ins
             return dateTranslated;
         }
 
+        private DateTime? ParseMonth(string timeText, DateTime noteWrittenDate)
+        {
+            DateTime? deadlineDate = null;
+
+            Regex regex = new Regex(@"(?<month>\w{3,})\s*(?<year>\d{4})?");
+            Match match = regex.Match(timeText);
+
+            if (match.Success)
+            {
+                // Maybe it's an abbreviated month?
+                string month = TranslateMonthAbbreviation(match.Groups["month"].Value);
+
+                // Is there year info?
+                if (int.TryParse(match.Groups["year"].Value, out int year))
+                {
+                    // Form month year string (like "July 2024") from the pieces.
+                    string monthYearString = month + " " + year.ToString();
+
+                    if (DateTime.TryParse(monthYearString, out DateTime dateTimeValue))
+                    {
+                        deadlineDate = dateTimeValue;
+                    }
+                }
+                else
+                {
+                    // See if the month belongs to this year or the next.
+                    deadlineDate = NextMonth(month, noteWrittenDate);
+                }
+            }
+
+            return deadlineDate;
+        }
+
         private DateTime? ParseMonthDay(string timeText, DateTime noteWrittenDate)
         {
             DateTime? deadlineDate = null;
@@ -230,61 +267,6 @@ namespace DECS_Excel_Add_Ins
             return deadlineDate;
         }
 
-        private DateTime? ParseMonth(string timeText, DateTime noteWrittenDate)
-        {
-            DateTime? deadlineDate = null;
-
-            Regex regex = new Regex(@"(?<month>\w{3,})\s*(?<year>\d{4})?");
-            Match match = regex.Match(timeText);
-
-            if (match.Success)
-            {
-                // Maybe it's an abbreviated month?
-                string month = TranslateMonthAbbreviation(match.Groups["month"].Value);
-
-                // Is there year info?
-                if (int.TryParse(match.Groups["year"].Value, out int year))
-                {
-                    // Form month year string (like "July 2024") from the pieces.
-                    string monthYearString =  month + " " + year.ToString();
-
-                    if (DateTime.TryParse(monthYearString, out DateTime dateTimeValue))
-                    {
-                        deadlineDate = dateTimeValue;
-                    }
-                }
-                else
-                {
-                    // See if the month belongs to this year or the next.
-                    deadlineDate = NextMonth(month, noteWrittenDate);
-                }
-            }
-
-            return deadlineDate;
-        }
-
-        private TriagePriority ParsePriority(TimeSpan timeSpan)
-        {
-            TriagePriority priority = TriagePriority.Unknown;
-
-            double deltaWeeks = (timeSpan.Days / 7.0);
-
-            if (deltaWeeks > 4)
-            {
-                priority = TriagePriority.Routine;
-            } 
-            else if (deltaWeeks > 2)
-            {
-                priority = TriagePriority.Medium;
-            }
-            else
-            { 
-                priority = TriagePriority.High;
-            }
-
-            return priority;
-        }
-
         private TriagePriority ParsePriority(string timeText)
         {
             TriagePriority priority = TriagePriority.Unknown;
@@ -303,27 +285,22 @@ namespace DECS_Excel_Add_Ins
                     {
                         case "month":
                         case "months":
+                        case "mon":
+                        case "mons":
+
                             priority = TriagePriority.Routine;
                             break;
 
                         case "week":
                         case "weeks":
-                            if (quantity > 4)
-                            {
-                                priority = TriagePriority.Routine;
-                            }
-                            else if (quantity >= 2)
-                            {
-                                priority = TriagePriority.Medium;
-                            }
-                            else
-                            {
-                                priority = TriagePriority.High;
-                            }
-                                
+                        case "wk":
+                        case "wks":
+
+                            priority = thresholds.ParsePriority(quantity);                                
                             break;
 
                         default:
+
                             priority = TriagePriority.Unknown;
                             break;
                     }
@@ -470,7 +447,7 @@ namespace DECS_Excel_Add_Ins
                         if (DateTime.TryParse(timeText, out DateTime deadlineDate))
                         {
                             TimeSpan delta = deadlineDate - noteWrittenDate;
-                            priority = ParsePriority(delta);
+                            priority = thresholds.ParsePriority(delta);
                         }
                         else
                         {
@@ -493,7 +470,7 @@ namespace DECS_Excel_Add_Ins
                             if (possibleDate != null)
                             {
                                 TimeSpan delta = possibleDate.Value - noteWrittenDate;
-                                priority = ParsePriority(delta);
+                                priority = thresholds.ParsePriority(delta);
                             }
                         }
 
@@ -505,7 +482,7 @@ namespace DECS_Excel_Add_Ins
                             if (possibleDate != null)
                             {
                                 TimeSpan delta = possibleDate.Value - noteWrittenDate;
-                                priority = ParsePriority(delta);
+                                priority = thresholds.ParsePriority(delta);
                             }
                         }
 
@@ -517,7 +494,7 @@ namespace DECS_Excel_Add_Ins
                             if (possibleDate != null)
                             {
                                 TimeSpan delta = possibleDate.Value - noteWrittenDate;
-                                priority = ParsePriority(delta);
+                                priority = thresholds.ParsePriority(delta);
                             }
                         }
 
@@ -529,7 +506,7 @@ namespace DECS_Excel_Add_Ins
                             if (possibleDate != null)
                             {
                                 TimeSpan delta = possibleDate.Value - noteWrittenDate;
-                                priority = ParsePriority(delta);
+                                priority = thresholds.ParsePriority(delta);
                             }
                         }
 
@@ -541,7 +518,7 @@ namespace DECS_Excel_Add_Ins
                             if (possibleDate != null)
                             {
                                 TimeSpan delta = possibleDate.Value - noteWrittenDate;
-                                priority = ParsePriority(delta);
+                                priority = thresholds.ParsePriority(delta);
                             }
                         }
 

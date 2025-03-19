@@ -94,6 +94,12 @@
 							onAction="OnSortTimes"
 							size="large"
 							screentip="Sort Times into High, Medium and Routine Priorities"/>
+					<button id="sortTimesSettingsButton"
+							getImage="sortTimesSettingsButton_GetImage"
+							label="Choose Thresholds"
+							onAction="OnSortTimesSettings"
+							size="large"
+							screentip="Choose Thresholds for Follow-up Times"/>
 				</group>
 				<group id ="MergeGroup"
 					   label="Merge">
