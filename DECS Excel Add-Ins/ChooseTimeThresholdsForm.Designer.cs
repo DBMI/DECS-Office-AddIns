@@ -178,7 +178,7 @@
             // okButton
             // 
             this.okButton.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.okButton.Location = new System.Drawing.Point(86, 251);
+            this.okButton.Location = new System.Drawing.Point(104, 251);
             this.okButton.Name = "okButton";
             this.okButton.Size = new System.Drawing.Size(92, 33);
             this.okButton.TabIndex = 12;
@@ -189,7 +189,7 @@
             // cancelButton
             // 
             this.cancelButton.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.cancelButton.Location = new System.Drawing.Point(270, 251);
+            this.cancelButton.Location = new System.Drawing.Point(280, 251);
             this.cancelButton.Name = "cancelButton";
             this.cancelButton.Size = new System.Drawing.Size(92, 33);
             this.cancelButton.TabIndex = 13;
