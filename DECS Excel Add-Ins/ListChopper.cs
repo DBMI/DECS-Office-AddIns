@@ -83,13 +83,13 @@ namespace DECS_Excel_Add_Ins
                 // Then ask user to select one column.
                 List<string> columnNames = Utilities.GetColumnNames(worksheet);
 
-                using (ChooseCategoryForm form = new ChooseCategoryForm(columnNames))
+                using (ChooseCategoryForm form = new ChooseCategoryForm(columnNames, MultiSelect: false))
                 {
                     var result = form.ShowDialog();
 
                     if (result == DialogResult.OK)
                     {
-                        string selectedColumnName = form.selectedCategory;
+                        string selectedColumnName = form.selectedColumns[0];
                         selectedColumnRng = Utilities.TopOfNamedColumn(worksheet, selectedColumnName);
                         success = true;
                     }
