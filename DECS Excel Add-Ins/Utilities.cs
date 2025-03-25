@@ -67,7 +67,7 @@ namespace DECS_Excel_Add_Ins
         {
             List<string> niceColumnNames = new List<string>();
 
-            foreach(string columnName in columnNames)
+            foreach (string columnName in columnNames)
             {
                 niceColumnNames.Add(Utilities.CleanColumnNamesForSQL(columnName));
             }
@@ -91,7 +91,7 @@ namespace DECS_Excel_Add_Ins
             string pattern = @"([^'])'$";
             string replacement = "$1";
             niceRow = Regex.Replace(niceRow, pattern, replacement);
-            
+
             pattern = @"([^""])""$";
             replacement = "$1";
             niceRow = Regex.Replace(niceRow, pattern, replacement);
@@ -169,7 +169,7 @@ namespace DECS_Excel_Add_Ins
                     textCombined = textCombined + source.Value.ToString();
                 }
                 catch (Microsoft.CSharp.RuntimeBinder.RuntimeBinderException)
-                { 
+                {
                     // Cell is probably empty.
                 }
             }
@@ -269,7 +269,7 @@ namespace DECS_Excel_Add_Ins
         /// <param name="newName">string</param>
 
         public static Worksheet CreateNewNamedSheet(Worksheet worksheet, string newName)
-        {        
+        {
             int MAX_LENGTH = 31;
             Workbook workbook = worksheet.Parent;
 
@@ -405,7 +405,7 @@ namespace DECS_Excel_Add_Ins
 
             // Detect Last used Columns, including cells that contain formulas that result in blank values
             return sheet.UsedRange.Columns.Count;
-        
+
         }
 
         /// <summary>
@@ -421,7 +421,7 @@ namespace DECS_Excel_Add_Ins
             //sheet.Rows.ClearFormats();
 
             // Detect Last used Row, including cells that contain formulas that result in blank values
-            
+
             return sheet.UsedRange.Rows.Count;
         }
 
@@ -433,7 +433,7 @@ namespace DECS_Excel_Add_Ins
         internal static Worksheet FindLastWorksheet(Workbook workbook)
         {
             List<Worksheet> sheets = new List<Worksheet>();
-            
+
             foreach (Worksheet sheet in workbook.Worksheets)
             {
                 sheets.Add(sheet);
@@ -441,6 +441,31 @@ namespace DECS_Excel_Add_Ins
 
             return sheets.LastOrDefault();
         }
+
+        /// <summary>
+        /// Finds the column name corresponding to a Range in a <name, Range> dictionary.
+        /// </summary>
+        /// <param name="columnNamesDict">Dictionary linking column names to ranges</param>
+        /// <param name="columnRange">Range for which we want the column name</param>
+        /// <returns>Range</returns>        
+
+        internal static string FindColumnName(Dictionary<string, Range> columnNamesDict, Range columnRange)
+        {
+            int desiredColumnNumber = columnRange.Column;
+
+            foreach (KeyValuePair<string, Range> entry in columnNamesDict)
+            {
+                int thisColumnNumber = entry.Value.Column;
+
+                if (thisColumnNumber == desiredColumnNumber)
+                {
+                    return entry.Key;
+                }
+            }
+
+            return string.Empty;
+        }
+
         /// <summary>
         /// Finds the ToolTip linked to a TextBox object.
         /// </summary>
@@ -707,7 +732,7 @@ namespace DECS_Excel_Add_Ins
         }
 
         /// <summary>
-        /// Which columns has the user selected to export to SQL?
+        /// Which columns has the user selected?
         /// </summary>
         /// <param name="application">Excel application</param>
         /// <param name="lastRow">Number of last row with data</param>
@@ -1004,6 +1029,31 @@ namespace DECS_Excel_Add_Ins
             return numNonEmpties;
         }
 
+        /// <summary>Open another Excel worksheet</summary>
+        /// <param name="filename">Excel file to open</param>
+        /// <returns>Workbook object</returns>
+
+        internal static Workbook OpenExternalFile(string filename)
+        {
+            Excel.Workbook xlWorkbook = null;
+            Excel.Application xlApp = new Excel.Application();
+            xlApp.Visible = true;
+
+            if (xlApp != null)
+            {
+                try
+                {
+                    xlWorkbook = xlApp.Workbooks.Open(filename);
+                }
+                catch (Exception)
+                {
+                    xlApp.Quit();
+                }
+            }
+
+            return xlWorkbook;
+        }
+
         /// <summary>
         /// Open the output StreamWriter object, understanding that we might
         /// have to substitute a shorter version of the output filename
@@ -1051,6 +1101,9 @@ namespace DECS_Excel_Add_Ins
             return (writer: writer_obj, openedFilename: outputFilename);
         }
 
+        /// <summary>Fills a ListBox object with a list.</summary>
+        /// <param name="listBox">ListBox object</param>
+        /// <param name="contents">List<string></param>
         internal static void PopulateListBox(System.Windows.Forms.ListBox listBox, List<string> contents)
         {
             listBox.Items.Clear();
@@ -1059,6 +1112,81 @@ namespace DECS_Excel_Add_Ins
             {
                 listBox.Items.Add(item);
             }
+        }
+
+        /// <summary>
+        /// Looks for the given string in ANY row of column.
+        /// </summary>
+        /// <param name="column">Range</param>
+        /// <param name="target">Range</param>
+        /// <returns>bool</returns>
+        internal static bool PresentInColumn(Range column, string target)
+        {
+            bool foundIt = false;
+            Worksheet sheet = column.Worksheet;
+            int lastUsedRow = sheet.UsedRange.Rows.Count;
+
+            Range searchedCell = (Range)sheet.Cells[1, column.Column];
+
+            for (int rowOffset = 0; rowOffset < lastUsedRow; rowOffset++)
+            {
+                try
+                {
+                    string contents = searchedCell.Offset[rowOffset, 0].Value.ToString();
+
+                    if (contents.Contains(target))
+                    {
+                        foundIt = true;
+                        break;
+                    }
+                }
+                catch (Microsoft.CSharp.RuntimeBinder.RuntimeBinderException) { }
+                catch (Exception ex)
+                {
+                    string cause = ex.Message;
+                }
+            }
+
+            return foundIt;
+        }
+
+        /// <summary>
+        /// Looks for the given string in the first row of provided column.
+        /// </summary>
+        /// <param name="column">Range</param>
+        /// <param name="target">Range</param>
+        /// <returns>bool</returns>
+        internal static bool PresentInHeader(Range column, string target)
+        {
+            bool foundIt = false;
+            Worksheet sheet = column.Worksheet;
+            int lastUsedRow = sheet.UsedRange.Rows.Count;
+
+            // Don't search to the bottom--just the top few rows.
+            // (But don't accidentally search past the bottom of the data, either.)
+            int rowsToSearch = Math.Min(3, lastUsedRow);
+
+            Range searchedCell = (Range)sheet.Cells[1, column.Column];
+
+            for (int rowOffset = 0; rowOffset < rowsToSearch; rowOffset++)
+            {
+                try
+                {
+                    string contents = searchedCell.Offset[rowOffset, 0].Value.ToString();
+
+                    if (contents.Contains(target))
+                    {
+                        foundIt = true;
+                    }
+                }
+                catch (Microsoft.CSharp.RuntimeBinder.RuntimeBinderException) { }
+                catch (Exception ex)
+                {
+                    string cause = ex.Message;
+                }
+            }
+
+            return foundIt;
         }
 
         /// <summary>
