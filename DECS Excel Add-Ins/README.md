@@ -80,12 +80,12 @@ https://geocoding.geo.census.gov/geocoder/geographies/onelineaddress?address=160
 
 Response:
 
-![image info](./DECS%20Excel%20Add-Ins/pictures/json_response.png)
+![image info](./pictures/json_response.png)
 
 **Zip code**
 Using just a zip code is less exact than a full address, as a zip code may contain many census tracts, and tracts may overlap with more than one zip code. So the app uses [*crosswalk*](https://www.huduser.gov/portal/datasets/usps_crosswalk.html) files provided by the US Department of Housing and Urban Development to lookup all the census tracts present in a given zip code. Here's an example from the file ZIP_TRACT_122023.csv (available [here](https://www.huduser.gov/portal/datasets/usps_crosswalk.html)). Notice the large number of census tracts which cross to a typical San Diego County zip code:
 
-![image info](./DECS%20Excel%20Add-Ins/pictures/crosswalk_multiple_tracts.png)
+![image info](./pictures/crosswalk_multiple_tracts.png)
 
 #### Extracting SVI information
 The data files published by CDC/ATDSR have one row of social vulnerability data for each census tract. The meaning of each column is explained [here](https://www.atsdr.cdc.gov/placeandhealth/svi/documentation/SVI_documentation_2020.html); we extract the column SPL_THEMES as the SVI score, and RPL_THEMES as the SVI ranking. While both single-state and entire-USA files are available, we've used the entire-USA file to be able to provide data both within & outside of California. If single-state files are used, please review the section *Caveat for SVI State Databases* in [SVI documentation](https://www.atsdr.cdc.gov/placeandhealth/svi/documentation/SVI_documentation_2020.html) for important statistical concerns.
