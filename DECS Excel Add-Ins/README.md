@@ -63,14 +63,6 @@ In complex data sets, we may have extracted data in pieces and now need to merge
 Clicking the `Merge Notes` button brings up this dialog to define the source of the data, into which sheet it's to be merged and which column (if any) defines the date at which the data were measured:
 ![image info](./pictures/merge_dialog.png)
 
-
-### Word: Build List Import
-When researchers provide lists of Medical Record Numbers (MRNs) or International Classification of Diseases (ICD) codes to be used in a report, those lists need to be imported into SQL. Pressing the `Import List` button converts a list into SQL code which can be referenced in a query to import them:![image info](.pictures/MRN_list_to_sql_top.png)
-
-Since there is a limit on the number of values (1000) that can be inserted in one statement, the app automatically breaks up the insertion into multiple statements:
-
-![image info](./pictures/MRN_list_break.png)
-
 ## Algorithm Description
 ### Excel: Lookup Social Vulnerability Index (SVI)
 Researchers sometimes ask for the [Social Vulnerability Index](https://www.atsdr.cdc.gov/placeandhealth/svi/index.html) of a patient's neighborhood in order to provide a fuller picture of their [social determinants of health](https://health.gov/healthypeople/priority-areas/social-determinants-health). According to the US Centers for Disease Control's Agency for Toxic Substances and Disease Registry (CDC/ATSDR):
