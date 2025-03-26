@@ -1,21 +1,13 @@
 ﻿using Microsoft.Office.Interop.Excel;
-using Microsoft.Office.Tools.Excel;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
-using System.Diagnostics;
 using System.Drawing;
-using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Reflection;
-using System.Text;
 using System.Text.RegularExpressions;
-using System.Threading.Tasks;
 using System.Windows.Forms;
-using System.Xml.Linq;
-using static System.Net.Mime.MediaTypeNames;
-using static System.Windows.Forms.VisualStyles.VisualStyleElement;
 using Excel = Microsoft.Office.Interop.Excel;
 using TextBox = System.Windows.Forms.TextBox;
 using ToolTip = System.Windows.Forms.ToolTip;
@@ -341,18 +333,11 @@ namespace DECS_Excel_Add_Ins
 
             for (int rowOffset = 1; rowOffset < (lastRow - 1); rowOffset++)
             {
-                try
-                {
-                    cellContents = column.Offset[rowOffset, 0].Value2.ToString();
+                cellContents = column.Offset[rowOffset, 0].Value2.ToString();
 
-                    if (!result.Contains(cellContents))
-                    {
-                        result.Add(cellContents);
-                    }
-                }
-                catch (Exception ex)
+                if (!result.Contains(cellContents))
                 {
-                    MessageBox.Show(ex.Message);
+                    result.Add(cellContents);
                 }
             }
 
@@ -611,7 +596,7 @@ namespace DECS_Excel_Add_Ins
         /// <param name="namesDesired">List<string></string></param>
         /// <param name="caseSensitive">bool</param>
         /// <returns>Dictionary mapping string -> Range</returns>
-        internal static Dictionary<string, Range> GetColumnRangeDictionary(Worksheet sheet, 
+        internal static Dictionary<string, Range> GetColumnRangeDictionary(Worksheet sheet,
                                                                            List<string> namesDesired = null,
                                                                            bool caseSensitive = true)
         {
@@ -627,7 +612,7 @@ namespace DECS_Excel_Add_Ins
                 columns = new Dictionary<string, Range>(comparer);
             }
 
-            Range range = (Range) sheet.Cells[1, 1];
+            Range range = (Range)sheet.Cells[1, 1];
             int lastUsedCol = Utilities.FindLastCol(sheet);
 
             // Search along row 1.
@@ -640,7 +625,7 @@ namespace DECS_Excel_Add_Ins
                     thisColumnName = Convert.ToString(range.Value);
                 }
                 // If there's nothing in this header, move to next column.
-                catch (Microsoft.CSharp.RuntimeBinder.RuntimeBinderException) 
+                catch (Microsoft.CSharp.RuntimeBinder.RuntimeBinderException)
                 {
                     continue;
                 }
@@ -693,7 +678,7 @@ namespace DECS_Excel_Add_Ins
                     {
                         columnType = ColumnType.Date;
                     }
-                    
+
                     columns.Add(range.Value.ToString(), columnType);
                 }
                 // If there's nothing in this header, then skip it.
@@ -716,7 +701,7 @@ namespace DECS_Excel_Add_Ins
         /// <returns>Range</returns>
         internal static Range GetSelectedCol(Microsoft.Office.Interop.Excel.Application application, int lastRow)
         {
-            Range rng = (Range) application.Selection;
+            Range rng = (Range)application.Selection;
             Worksheet sheet = application.Selection.Worksheet;
             Range selectedColumn = null;
 
@@ -725,7 +710,7 @@ namespace DECS_Excel_Add_Ins
             {
                 // We want the TOP of the column.
                 int columnNumber = rng.Columns[1].Column;
-                selectedColumn = (Range) sheet.Cells[1, columnNumber];
+                selectedColumn = (Range)sheet.Cells[1, columnNumber];
             }
 
             return selectedColumn;
@@ -739,7 +724,7 @@ namespace DECS_Excel_Add_Ins
         /// <returns>List<Range></returns>
         internal static List<Range> GetSelectedCols(Microsoft.Office.Interop.Excel.Application application, int lastRow)
         {
-            Range rng = (Range) application.Selection;
+            Range rng = (Range)application.Selection;
             List<Range> selectedColumns = new List<Range>();
             Worksheet sheet = application.Selection.Worksheet;
 
@@ -771,7 +756,7 @@ namespace DECS_Excel_Add_Ins
         {
             Workbook workbook = (Workbook)Globals.ThisAddIn.Application.ActiveWorkbook;
             Dictionary<string, Worksheet> dict = new Dictionary<string, Worksheet>();
-            
+
             foreach (Worksheet worksheet in workbook.Worksheets)
             {
                 dict.Add(worksheet.Name, worksheet);
@@ -854,37 +839,30 @@ namespace DECS_Excel_Add_Ins
 
             for (int rowOffset = 1; rowOffset < lastRow; rowOffset++)
             {
-                try
+                cellContents = column.Offset[rowOffset, 0].Value2.ToString();
+
+                if (thisBlockName is null || cellContents == thisBlockName)
                 {
-                    cellContents = column.Offset[rowOffset, 0].Value2.ToString();
-
-                    if (thisBlockName is null || cellContents == thisBlockName)
-                    {
-                        // Still in same block, so keep a running count.
-                        thisBlockName = cellContents;
-                        endingOffset = rowOffset;
-                    }
-                    else
-                    {
-                        // The name just changed, which means:
-                        //  --> the previous block ended.
-                        thisBlock = new Block(startingOffset, endingOffset);
-
-                        // Should we add this to the dictionary?
-                        if (!dict.ContainsKey(thisBlockName))
-                        {
-                            dict[thisBlockName] = thisBlock;
-                        }
-
-                        //  --> & a new block started.
-                        thisBlockName = cellContents;
-                        startingOffset = rowOffset;
-                        endingOffset = rowOffset;
-                    }
+                    // Still in same block, so keep a running count.
+                    thisBlockName = cellContents;
+                    endingOffset = rowOffset;
                 }
-                catch (Exception ex)
+                else
                 {
-                    MessageBox.Show(ex.Message);
+                    // The name just changed, which means:
+                    //  --> the previous block ended.
+                    thisBlock = new Block(startingOffset, endingOffset);
+
+                    // Should we add this to the dictionary?
+                    if (!dict.ContainsKey(thisBlockName))
+                    {
+                        dict[thisBlockName] = thisBlock;
+                    }
+
+                    //  --> & a new block started.
+                    thisBlockName = cellContents;
+                    startingOffset = rowOffset;
+                    endingOffset = rowOffset;
                 }
             }
 
@@ -942,15 +920,7 @@ namespace DECS_Excel_Add_Ins
 
             for (int rowOffset = 1; rowOffset < (lastRow - 1); rowOffset++)
             {
-                try
-                {
-                    cellContents = column.Offset[rowOffset, 0].Value2.ToString();
-                }
-                catch (Exception ex)
-                { 
-                    MessageBox.Show(ex.Message);
-                }
-
+                cellContents = column.Offset[rowOffset, 0].Value2.ToString();
                 DateTime? convertedDate = ConvertExcelDate(cellContents);
 
                 if (convertedDate == null || convertedDate < pastDate || convertedDate > futureDate)
@@ -991,7 +961,7 @@ namespace DECS_Excel_Add_Ins
         /// </summary>
         /// <param name="textBox">TextBox object.</param>
         /// <param name="message">String used to fill the ToolTip.</param>
-        
+
         internal static void MarkRegexInvalid(TextBox textBox, string message)
         {
             if (textBox == null)
@@ -1141,10 +1111,6 @@ namespace DECS_Excel_Add_Ins
                     }
                 }
                 catch (Microsoft.CSharp.RuntimeBinder.RuntimeBinderException) { }
-                catch (Exception ex)
-                {
-                    string cause = ex.Message;
-                }
             }
 
             return foundIt;
@@ -1180,10 +1146,6 @@ namespace DECS_Excel_Add_Ins
                     }
                 }
                 catch (Microsoft.CSharp.RuntimeBinder.RuntimeBinderException) { }
-                catch (Exception ex)
-                {
-                    string cause = ex.Message;
-                }
             }
 
             return foundIt;
@@ -1221,7 +1183,7 @@ namespace DECS_Excel_Add_Ins
 
             int columnNumber = columnRange.Column;
             Range dataRange = (Range)sourceSheet.Cells[rowNumber, columnNumber];
-            
+
             return dataRange;
         }
 
@@ -1285,7 +1247,7 @@ namespace DECS_Excel_Add_Ins
                 }
             }
 
-            return wordsPresent/numWordsToTest;
+            return wordsPresent / numWordsToTest;
         }
     }
 }

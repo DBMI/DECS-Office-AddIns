@@ -1,18 +1,11 @@
-﻿using Microsoft.Office.Interop.Excel;
+﻿using HtmlAgilityPack;
+using Microsoft.Office.Interop.Excel;
 using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
 using System.Net;
-using System.Text;
 using System.Text.RegularExpressions;
-using System.Threading.Tasks;
 using System.Windows.Forms;
-using static System.Net.Mime.MediaTypeNames;
-using HtmlAgilityPack;
-using System.Security.Policy;
-using System.Diagnostics.Eventing.Reader;
-using Microsoft.Office.Tools.Excel;
 using Workbook = Microsoft.Office.Interop.Excel.Workbook;
 using Worksheet = Microsoft.Office.Interop.Excel.Worksheet;
 
@@ -23,24 +16,19 @@ namespace DECS_Excel_Add_Ins
      */
     internal class EmailSearcher
     {
-        private Microsoft.Office.Interop.Excel.Application application;
+        private Microsoft.Office.Interop.Excel.Application externalFileApplication;
         private const string emailExtractor = @"(?<name>[^@]+)@";
         private string existingNamesFile = string.Empty;
         private Dictionary<string, string> existingNamesList;
-        private const string titleExtractor = @"Staff Directory: (?<name>[\w\s'-]+,[\w\s'-]+)";
         private HtmlWeb web;
-        private int lastRowInSheet;
-        private Range providerNameRng;
-        private string result = null;
-        private WebResponse response = null;
-        private StreamReader reader = null;
+        //private string result = null;
+        //private WebResponse response = null;
+        //private StreamReader reader = null;
         private Range providerEmailRng;
-        private const string url = "https://itsweb.ucsd.edu/directory/search?t=directory&entry=";
         private bool? useExistingNamesList = null;
 
         internal EmailSearcher()
         {
-            application = Globals.ThisAddIn.Application;
             existingNamesList = new Dictionary<string, string>();
 
             // https://stackoverflow.com/a/48930280/18749636
@@ -53,7 +41,7 @@ namespace DECS_Excel_Add_Ins
         private void AskUserForExternalFile()
         {
             if (string.IsNullOrEmpty(existingNamesFile))
-            {            
+            {
                 // Have we already asked the user if there's an
                 // existing spreadsheet with emails & names?
                 if (useExistingNamesList is null)
@@ -87,7 +75,7 @@ namespace DECS_Excel_Add_Ins
         /// <returns>bool</returns>
         private bool AskUserIfUsingExistingList()
         {
-            DialogResult dialogResult = MessageBox.Show("Should we look up names in an existing spreadsheet?", 
+            DialogResult dialogResult = MessageBox.Show("Should we look up names in an existing spreadsheet?",
                                                         "External Lookup", MessageBoxButtons.YesNo);
             return dialogResult == DialogResult.Yes;
         }
@@ -104,7 +92,7 @@ namespace DECS_Excel_Add_Ins
 
             switch (namesAndEmails.Count)
             {
-                // Maybe it's name & email.
+                // Maybe it's full name & email.
                 case 2:
 
                     // Which column contains the '@' character?
@@ -137,7 +125,7 @@ namespace DECS_Excel_Add_Ins
                 // Maybe it's first name, last name & email.
                 case 3:
 
-                    List<int> possibleColumnNumbers = new List<int> { 0, 1, 2};
+                    List<int> possibleColumnNumbers = new List<int> { 0, 1, 2 };
 
                     // Which column contains the '@' character?
                     if (Utilities.PresentInColumn(namesAndEmails[0], "@"))
@@ -191,6 +179,9 @@ namespace DECS_Excel_Add_Ins
             }
 
             ScrapeNamesAndEmails(emails, names, firstNames);
+
+            // Close the external spreadsheet.
+            externalFileApplication.Quit();
         }
 
         /// <summary>
@@ -251,6 +242,7 @@ namespace DECS_Excel_Add_Ins
         private string ExtractJustTheNameFromTitle(string titleAndName)
         {
             string result = string.Empty;
+            string titleExtractor = @"Staff Directory: (?<name>[\w\s'-]+,[\w\s'-]+)";
 
             if (!string.IsNullOrEmpty(titleAndName))
             {
@@ -275,8 +267,8 @@ namespace DECS_Excel_Add_Ins
         /// <param name="emailNodes">HtmlNodeCollection</param>
         /// <returns>string</returns>
 
-        private string FindBestMatch(string emailName, 
-                                     HtmlAgilityPack.HtmlNodeCollection nameNodes, 
+        private string FindBestMatch(string emailName,
+                                     HtmlAgilityPack.HtmlNodeCollection nameNodes,
                                      HtmlAgilityPack.HtmlNodeCollection emailNodes)
         {
             string name = string.Empty;
@@ -310,6 +302,8 @@ namespace DECS_Excel_Add_Ins
         private bool FindSelectedCategory(Worksheet worksheet)
         {
             bool success = false;
+            int lastRowInSheet = worksheet.UsedRange.Rows.Count;
+            Microsoft.Office.Interop.Excel.Application application = Globals.ThisAddIn.Application;
 
             // Any column selected?
             providerEmailRng = Utilities.GetSelectedCol(application, lastRowInSheet);
@@ -357,21 +351,26 @@ namespace DECS_Excel_Add_Ins
 
             if (workbook != null)
             {
-                Microsoft.Office.Interop.Excel.Application application = workbook.Application;
+                externalFileApplication = workbook.Application;
 
                 // Tell me when you're ready.
-                DialogResult dialogResult = MessageBox.Show("Ready?",
-                                                            "Please select name & email columns", 
-                                                            MessageBoxButtons.YesNo,
+                DialogResult dialogResult = MessageBox.Show("Click 'OK' once you've selected name & email columns.",
+                                                            "Please select name & email columns.",
+                                                            MessageBoxButtons.OKCancel,
                                                             MessageBoxIcon.Question,
                                                             MessageBoxDefaultButton.Button1,
                                                             MessageBoxOptions.DefaultDesktopOnly);
 
-                if (dialogResult == DialogResult.Yes)
+                if (dialogResult == DialogResult.OK)
                 {
                     // Any column selected?
                     int lastRow = workbook.ActiveSheet.UsedRange.Rows.Count;
-                    selectedColumnsRng = Utilities.GetSelectedCols(application, lastRow);
+                    selectedColumnsRng = Utilities.GetSelectedCols(externalFileApplication, lastRow);
+                }
+                else
+                {
+                    // If user pressed "Cancel", then don't ask again.
+                    useExistingNamesList = false;
                 }
             }
 
@@ -393,7 +392,7 @@ namespace DECS_Excel_Add_Ins
                 {
                     result = existingNamesList[emailName];
                 }
-                catch (KeyNotFoundException) {}
+                catch (KeyNotFoundException) { }
             }
             else
             {
@@ -406,7 +405,7 @@ namespace DECS_Excel_Add_Ins
                     result = LookupNameOutside(emailName);
                 }
             }
-             
+
             return result;
         }
 
@@ -418,6 +417,7 @@ namespace DECS_Excel_Add_Ins
         private string PingUcsdBlink(string emailName)
         {
             string result = string.Empty;
+            string url = "https://itsweb.ucsd.edu/directory/search?t=directory&entry=";
             string urlPopulated = url + emailName;
             HtmlAgilityPack.HtmlDocument doc = web.Load(urlPopulated);
 
@@ -443,7 +443,7 @@ namespace DECS_Excel_Add_Ins
 
         /// <summary>
         /// Reads/parses the emails addresses and names in an external file
-        /// to build a Dictionary
+        /// to build a Dictionary.
         /// </summary>
         /// <param name="emailsColumn">range</param>
         /// <param name="namesColumn">range</param>
@@ -477,8 +477,8 @@ namespace DECS_Excel_Add_Ins
                     emailName = ExtractJustNameFromEmail(emailAddress);
                 }
                 catch (Microsoft.CSharp.RuntimeBinder.RuntimeBinderException)
-                { 
-                    return; 
+                {
+                    return;
                 }
 
                 try
@@ -510,35 +510,36 @@ namespace DECS_Excel_Add_Ins
                 if (!string.IsNullOrEmpty(emailName) && !string.IsNullOrEmpty(name))
                 {
                     existingNamesList.Add(emailName, name);
-                }                
+                }
             }
         }
 
-        /// <summary>
-        /// Main routine.
-        /// </summary>
+        /// <summary>Main routine</summary>
         /// <param name="worksheet">Worksheet</param>
         internal void Search(Worksheet worksheet)
         {
-            lastRowInSheet = worksheet.UsedRange.Rows.Count;
+            int lastRowInSheet = worksheet.UsedRange.Rows.Count;
 
             if (FindSelectedCategory(worksheet))
             {
+                // Create object here--once.
                 web = new HtmlWeb();
 
                 // Create column for provider name.
-                providerNameRng = Utilities.InsertNewColumn(providerEmailRng, "Provider Name");
+                Range providerNameRng = Utilities.InsertNewColumn(providerEmailRng, "Provider Name");
 
                 // Run down the email column, pinging UCSD Blink & parsing out their name.
                 for (int rowOffset = 1; rowOffset < lastRowInSheet; rowOffset++)
                 {
                     string emailName = ExtractJustNameFromEmail(providerEmailRng.Offset[rowOffset]);
-                    string providerName = string.Empty;
 
+                    // Were we able to parse "improvider" from "improvider@health.ucsd.edu"?
                     if (!string.IsNullOrEmpty(emailName))
                     {
-                        providerName = PingUcsdBlink(emailName);
+                        // Ask the Blink server.
+                        string providerName = PingUcsdBlink(emailName);
 
+                        // If that didn't work, look it up in an existing spreadsheet.
                         if (string.IsNullOrEmpty(providerName))
                         {
                             providerName = LookupNameOutside(emailName);
