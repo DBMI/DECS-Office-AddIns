@@ -23,10 +23,6 @@ Creates custom buttons in Microsoft Excel that allow user to:
 * Lookup Social Vulnerability Index ([SVI](https://www.atsdr.cdc.gov/placeandhealth/svi/index.html)) from address or zip code.
 * Extend the existing monthly research hours report to the new month.
 
-## Installation
-* Download the `Office Add-Ins` folder from [Sharepoint.](https://ucsdhs.sharepoint.com/:f:/t/ACTRI-BMI-DECSPrivate/EhFYD_9zfX9GsNRN9enCMzABFKg6wmPh13zY_ps2qRJHSg?e=KYFZeG)
-* Run `setup.exe`.
-
 ## Operation
 ### Excel: Extract data from notes
 In cases where we want to extract data from free-text columns, we can use the `Notes` tools to define & run extraction rules.
