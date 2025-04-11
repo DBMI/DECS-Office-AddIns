@@ -1,19 +1,13 @@
 ﻿using Microsoft.Office.Interop.Excel;
-using Microsoft.Office.Tools.Excel;
 using Microsoft.VisualBasic.FileIO;
 using System;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
-using System.Reflection;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 using Application = Microsoft.Office.Interop.Excel.Application;
-using Excel = Microsoft.Office.Interop.Excel;
 using Workbook = Microsoft.Office.Interop.Excel.Workbook;
 using Worksheet = Microsoft.Office.Interop.Excel.Worksheet;
 
@@ -61,7 +55,7 @@ namespace DECS_Excel_Add_Ins
         /// <summary>
         /// Constructor
         /// </summary>
-        
+
         internal ListImporter()
         {
             application = Globals.ThisAddIn.Application;
@@ -71,6 +65,28 @@ namespace DECS_Excel_Add_Ins
             {
                 { "Date", DataType.Date }
             };
+        }
+
+        internal int AskUserHowManyFilesToCreate()
+        {
+            int numFiles = 1;
+
+            using (NumOutputFilesForm form = new NumOutputFilesForm())
+            {
+                var result = form.ShowDialog();
+
+                if (result == DialogResult.OK)
+                {
+                    int? retrievedValue = form.numFiles;
+
+                    if (retrievedValue.HasValue)
+                    {
+                        numFiles = retrievedValue.Value;
+                    }
+                }
+            }
+
+            return numFiles;
         }
 
         /// <summary>
@@ -339,71 +355,84 @@ namespace DECS_Excel_Add_Ins
 
         private void ScanWorksheet(Worksheet worksheet)
         {
-            // Initialize the output .SQL file.
             Workbook workbook = worksheet.Parent;
             string workbookFilename = workbook.FullName;
 
-            (StreamWriter writer, string outputFilename) = Utilities.OpenOutput(
-                inputFilename: workbookFilename,
-                filenameAddon: "_list",
-                filetype: ".sql"
-            );
+            int lines_written_this_chunk;
+            int lines_written_total = 0;
 
-            var selection = PrepSegmentStart(worksheet);
-            writer.Write(PREAMBLE + selection.segmentStart);
+            int numFilesToCreate = AskUserHowManyFilesToCreate();
+            double lines_per_file_raw = lastRow / numFilesToCreate;
+            int lines_per_file = (int)Math.Ceiling(lines_per_file_raw);
 
-            int lines_written_this_chunk = 0;
-            application.StatusBar = "Processing...";
-
-            for (int rowNumber = 1; rowNumber <= lastRow; rowNumber++)
+            for (int fileNum = 1; fileNum <= numFilesToCreate; fileNum++)
             {
-                List<string> rowContents = ExtractRow(selection.columns, rowNumber);
+                // Initialize the output .SQL file.
+                (StreamWriter writer, string outputFilename) = Utilities.OpenOutput(
+                    inputFilename: workbookFilename,
+                    filenameAddon: "_list",
+                    filetype: ".sql",
+                    index: fileNum
+                );
 
-                if (!rowContents.Any())
-                {
-                    continue;
-                }
+                var selection = PrepSegmentStart(worksheet);
+                writer.Write(PREAMBLE + selection.segmentStart);
 
-                writer.Write("(" + string.Join(", ", rowContents) + ")");
-                lines_written_this_chunk++;
-                string line_ending;
+                lines_written_this_chunk = 0;
+                application.StatusBar = "Processing...";
 
-                if (rowNumber == lastRow)
+                for (int rowOffset = 1; rowOffset <= lines_per_file; rowOffset++)
                 {
-                    line_ending = ";\r\n";
-                }
-                else
-                {
-                    if (lines_written_this_chunk < MAX_LINES_PER_IMPORT)
+                    List<string> rowContents = ExtractRow(selection.columns, lines_written_total + 1);
+
+                    if (!rowContents.Any())
                     {
-                        line_ending = ",\r\n";
+                        continue;
+                    }
+
+                    writer.Write("(" + string.Join(", ", rowContents) + ")");
+                    lines_written_this_chunk++;
+                    lines_written_total++;
+                    string line_ending;
+
+                    if (lines_written_total == lastRow)
+                    {
+                        line_ending = ";\r\n";
                     }
                     else
                     {
-                        line_ending = ";\r\n\r\n" + selection.segmentStart;
-                        lines_written_this_chunk = 0;
+                        if (lines_written_this_chunk < MAX_LINES_PER_IMPORT)
+                        {
+                            line_ending = ",\r\n";
+                        }
+                        else
+                        {
+                            line_ending = ";\r\n\r\n" + selection.segmentStart;
+                            lines_written_this_chunk = 0;
+                        }
+                    }
+
+                    writer.Write(line_ending);
+
+                    if (lines_written_total % 100 == 0)
+                    {
+                        application.StatusBar = "Processed " + lines_written_total.ToString() + "/" + lastRow.ToString() + " rows.";
                     }
                 }
 
-                writer.Write(line_ending);
-
-                if (rowNumber % 100 == 0)
-                {
-                    application.StatusBar = "Processed " + rowNumber.ToString() + "/" + lastRow.ToString() + " rows.";
-                }
+                application.StatusBar = "Completed";
+                writer.Close();
+                Process.Start(outputFilename);
             }
 
-            application.StatusBar = "Completed";
-            writer.Close();
-            Process.Start(outputFilename);
-            WriteMainHeader(workbookFilename);
+            //WriteMainHeader(workbookFilename);
         }
 
         /// <summary>
         /// Writes the part of the main SQL script that creates a temp table from the patient list file.
         /// </summary>
         /// <param name="filename">Name of output file</param>
-        
+
         private void WriteMainHeader(string filename)
         {
             // Build list of variables & types like "PAT_ID varchar, PROCEDURE_DATE date"
