@@ -383,14 +383,17 @@ namespace DECS_Excel_Add_Ins
         // https://stackoverflow.com/a/22151620/18749636
         internal static int FindLastCol(Worksheet sheet)
         {
-            // Not sure why (at some point) I thought it was necessary to do this??
-            // Unhide All Cells and clear formats
-            //sheet.Columns.ClearFormats();
-            //sheet.Rows.ClearFormats();
-
             // Detect Last used Columns, including cells that contain formulas that result in blank values
-            return sheet.UsedRange.Columns.Count;
-
+            return sheet.Cells.Find(
+                                    "*",
+                                    System.Reflection.Missing.Value,
+                                    System.Reflection.Missing.Value,
+                                    System.Reflection.Missing.Value,
+                                    Excel.XlSearchOrder.xlByColumns,
+                                    Excel.XlSearchDirection.xlPrevious,
+                                    false,
+                                    System.Reflection.Missing.Value,
+                                    System.Reflection.Missing.Value).Column;
         }
 
         /// <summary>
@@ -401,13 +404,16 @@ namespace DECS_Excel_Add_Ins
         // https://stackoverflow.com/a/22151620/18749636
         internal static int FindLastRow(Worksheet sheet)
         {
-            // Unhide All Cells and clear formats
-            //sheet.Columns.ClearFormats();
-            //sheet.Rows.ClearFormats();
-
-            // Detect Last used Row, including cells that contain formulas that result in blank values
-
-            return sheet.UsedRange.Rows.Count;
+            return sheet.Cells.Find(
+                                    "*",
+                                    System.Reflection.Missing.Value,
+                                    Excel.XlFindLookIn.xlValues,
+                                    Excel.XlLookAt.xlWhole,
+                                    Excel.XlSearchOrder.xlByRows,
+                                    Excel.XlSearchDirection.xlPrevious,
+                                    false,
+                                    System.Reflection.Missing.Value,
+                                    System.Reflection.Missing.Value).Row;
         }
 
         /// <summary>
