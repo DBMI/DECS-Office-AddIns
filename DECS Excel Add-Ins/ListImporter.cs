@@ -47,7 +47,7 @@ namespace DECS_Excel_Add_Ins
             "DROP TABLE IF EXISTS #PATIENT_LIST;\r\nCREATE TABLE #PATIENT_LIST (";
         private const string MAIN_TABLE_USE =
             ":setvar path \"F:\\DECS\\<task folder name>\"\r\n:r $(path)\\";
-        private const string PREAMBLE = "USE [REL_CLARITY];\r\n\r\n";
+        //private const string PREAMBLE = "USE [REL_CLARITY];\r\n\r\n";
         private const string QUOTE = "'";
         private const string SEGMENT_START_I = "INSERT INTO #PATIENT_LIST (";
         private const string SEGMENT_START_II = ")\r\nVALUES\r\n";
@@ -323,7 +323,7 @@ namespace DECS_Excel_Add_Ins
 
                     // Use the column names to write the file header.
                     string segmentStart = PrepSegmentStart(columnHeaders);
-                    writer.Write(PREAMBLE + segmentStart);
+                    writer.Write(segmentStart);
 
                     while (!csvParser.EndOfData)
                     {
@@ -358,6 +358,7 @@ namespace DECS_Excel_Add_Ins
             Workbook workbook = worksheet.Parent;
             string workbookFilename = workbook.FullName;
 
+            int lines_read_total = 0;
             int lines_written_this_chunk;
             int lines_written_total = 0;
 
@@ -376,14 +377,15 @@ namespace DECS_Excel_Add_Ins
                 );
 
                 var selection = PrepSegmentStart(worksheet);
-                writer.Write(PREAMBLE + selection.segmentStart);
+                writer.Write(selection.segmentStart);
 
                 lines_written_this_chunk = 0;
                 application.StatusBar = "Processing...";
 
                 for (int rowOffset = 1; rowOffset <= lines_per_file; rowOffset++)
                 {
-                    List<string> rowContents = ExtractRow(selection.columns, lines_written_total + 1);
+                    List<string> rowContents = ExtractRow(selection.columns, lines_read_total + 1);
+                    lines_read_total += 1;
 
                     if (!rowContents.Any())
                     {
@@ -395,7 +397,8 @@ namespace DECS_Excel_Add_Ins
                     lines_written_total++;
                     string line_ending;
 
-                    if (lines_written_total == lastRow)
+                    if (lines_written_total == lastRow ||
+                        rowOffset == lines_per_file)
                     {
                         line_ending = ";\r\n";
                     }
@@ -414,7 +417,7 @@ namespace DECS_Excel_Add_Ins
 
                     writer.Write(line_ending);
 
-                    if (lines_written_total % 100 == 0)
+                    if (lines_written_total % 1000 == 0)
                     {
                         application.StatusBar = "Processed " + lines_written_total.ToString() + "/" + lastRow.ToString() + " rows.";
                     }
@@ -428,6 +431,7 @@ namespace DECS_Excel_Add_Ins
             //WriteMainHeader(workbookFilename);
         }
 
+        /*
         /// <summary>
         /// Writes the part of the main SQL script that creates a temp table from the patient list file.
         /// </summary>
@@ -449,12 +453,12 @@ namespace DECS_Excel_Add_Ins
                 filetype: ".sql"
             );
 
-            writer.Write(PREAMBLE);
             writer.Write(MAIN_TABLE_CREATE + string.Join(", \n", variableNamesAndTypes) + ")\r\n");
             string justTheFilenameAndExt = Path.GetFileName(outputFilename);
             writer.Write(MAIN_TABLE_USE + justTheFilenameAndExt + "\r\n");
             writer.Close();
             Process.Start(outputFilename);
         }
+        */
     }
 }
