@@ -1,33 +1,35 @@
-﻿using System;
+﻿using Microsoft.Office.Interop.Excel;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
-using System.Globalization;
-using System.Linq;
-using System.Text;
 using System.Text.RegularExpressions;
-using System.Threading.Tasks;
-using System.Web.Configuration;
 using System.Windows.Forms;
-using Microsoft.Office.Interop.Excel;
-using Microsoft.VisualBasic.Logging;
 
 namespace DECS_Excel_Add_Ins
-{    
+{
     /**
      * @brief Priority of triage action.
     */
     // https://stackoverflow.com/a/479417/18749636
     internal enum TriagePriority
     {
+        [Description("0-2 weeks")]
         High,
+
+        [Description("2-4 weeks")]
         Medium,
+
+        [Description("4+ weeks")]
         Routine,
+
+        [Description("Unknown")]
         Unknown
     }
 
     internal class TimeSorter
     {
         private Microsoft.Office.Interop.Excel.Application application;
+        Dictionary<string, Range> columnNamesDict;
         private int lastRow;
         private Dictionary<string, string> monthAbbreviations;
         private Dictionary<string, string> seasons;
@@ -53,8 +55,8 @@ namespace DECS_Excel_Add_Ins
 
             monthAbbreviations.Add("Jan", "January");
             monthAbbreviations.Add("Feb", "February");
-            monthAbbreviations.Add("Mar", "March"); 
-            monthAbbreviations.Add("Apr", "April"); 
+            monthAbbreviations.Add("Mar", "March");
+            monthAbbreviations.Add("Apr", "April");
             monthAbbreviations.Add("Jun", "June");
             monthAbbreviations.Add("Jul", "July");
             monthAbbreviations.Add("Aug", "August");
@@ -95,11 +97,12 @@ namespace DECS_Excel_Add_Ins
         {
             bool success = false;
 
-            // Any column selected?
-            selectedDateColumnRng = Utilities.GetSelectedCol(application, lastRow);
+            // What's the column we DON'T want? The time text column.
+            string timeTextColumnName = Utilities.FindColumnName(columnNamesDict, selectedTimeTextColumnRng);
 
-            // Then ask user to select one column.
+            // Ask user to select one column.
             List<string> columnNames = Utilities.GetColumnNames(worksheet);
+            columnNames.Remove(timeTextColumnName);
 
             using (ChooseCategoryForm form = new ChooseCategoryForm(columnNames,
                                                                     headline: "Choose Date Column",
@@ -248,14 +251,14 @@ namespace DECS_Excel_Add_Ins
                 if (int.TryParse(match.Groups["day_last"].Value, out int day_last))
                 {
                     day = day_last;
-                } 
+                }
                 else if (int.TryParse(match.Groups["day_first"].Value, out int day_first))
                 {
                     day = day_first;
                 }
 
                 if (day.HasValue)
-                {                
+                {
                     // Maybe it's an abbreviated month?
                     string month = TranslateMonthAbbreviation(match.Groups["month"].Value);
 
@@ -296,7 +299,7 @@ namespace DECS_Excel_Add_Ins
                         case "wk":
                         case "wks":
 
-                            priority = thresholds.ParsePriority(quantity);                                
+                            priority = thresholds.ParsePriority(quantity);
                             break;
 
                         default:
@@ -425,6 +428,8 @@ namespace DECS_Excel_Add_Ins
             string timeText;
             TriagePriority priority;
 
+            columnNamesDict = Utilities.GetColumnRangeDictionary(worksheet);
+
             if (FindSelectedTimeTextColumn(worksheet) && FindSelectedDateColumn(worksheet))
             {
                 // Create column for priority value.
@@ -522,7 +527,7 @@ namespace DECS_Excel_Add_Ins
                             }
                         }
 
-                        priorityRng.Offset[rowOffset].Value = priority.ToString();
+                        priorityRng.Offset[rowOffset].Value = priority.GetDescription();
                     }
                 }
             }
