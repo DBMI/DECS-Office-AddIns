@@ -208,7 +208,8 @@ namespace DECS_Excel_Add_Ins
         {
             DateTime? deadlineDate = null;
 
-            Regex regex = new Regex(@"(?<month>\w{3,})\s*(?<year>\d{4})?");
+            // Strip off preamble like in 'mid'March.
+            Regex regex = new Regex(@"(?:early|late|mid)?\s*(?<month>\w{3,})\s*(?<year>\d{4})?");
             Match match = regex.Match(timeText);
 
             if (match.Success)
@@ -342,17 +343,24 @@ namespace DECS_Excel_Add_Ins
             if (match.Success && match.Groups.Count > 2)
             {
                 string season = match.Groups["season"].Value.ToLower();
-                string month = seasons[season];
 
-                if (int.TryParse(match.Groups["year"].Value, out int year))
+                try
                 {
-                    // Form month year string (like "July 2024") from the pieces.
-                    string monthYearString = month + " " + year.ToString();
+                    string month = seasons[season];
 
-                    if (DateTime.TryParse(monthYearString, out DateTime dateTimeValue))
+                    if (int.TryParse(match.Groups["year"].Value, out int year))
                     {
-                        deadlineDate = dateTimeValue;
+                        // Form month year string (like "July 2024") from the pieces.
+                        string monthYearString = month + " " + year.ToString();
+
+                        if (DateTime.TryParse(monthYearString, out DateTime dateTimeValue))
+                        {
+                            deadlineDate = dateTimeValue;
+                        }
                     }
+                }
+                catch (System.Collections.Generic.KeyNotFoundException)
+                {
                 }
             }
 
