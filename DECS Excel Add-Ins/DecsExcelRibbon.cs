@@ -1,14 +1,10 @@
 ﻿using DECS_Excel_Add_Ins.Properties;
 using Microsoft.Office.Core;
 using System;
-using System.Collections.Generic;
 using System.Drawing;
 using System.IO;
-using System.Linq;
 using System.Reflection;
 using System.Runtime.InteropServices;
-using System.Runtime.Serialization;
-using System.Text;
 using Excel = Microsoft.Office.Interop.Excel;
 using Office = Microsoft.Office.Core;
 
@@ -67,7 +63,7 @@ namespace DECS_Excel_Add_Ins
         {
             return Resources.slice_into_tabs;
         }
-        
+
         /// <summary>
         /// Lets the @c DexsExcelRibbon.xml point to the image for the @c CopyFormatting button.
         /// </summary>
@@ -86,6 +82,16 @@ namespace DECS_Excel_Add_Ins
         public Bitmap dateConvertButton_GetImage(IRibbonControl control)
         {
             return Resources.calendar_with_gear;
+        }
+
+        /// <summary>
+        /// Lets the @c DexsExcelRibbon.xml point to the image for the @c DateToText button.
+        /// </summary>
+        /// <param name="control">Reference to the IRibbonControl object.</param>
+        /// <returns>Bitmap</returns>
+        public Bitmap dateToTextButton_GetImage(IRibbonControl control)
+        {
+            return Resources.calendar;
         }
 
         /// <summary>
@@ -284,7 +290,7 @@ namespace DECS_Excel_Add_Ins
         /// When @c BuildList button is pressed, instantiates a @c ListImporter object & calls its @c Scan method.
         /// </summary>
         /// <param name="control">Reference to the IRibbonControl object.</param>
-        
+
         public void OnBuildList(Office.IRibbonControl control)
         {
             ListImporter importer = new ListImporter();
@@ -305,6 +311,18 @@ namespace DECS_Excel_Add_Ins
         }
 
         /// <summary>
+        /// When @c ConvertDates button is pressed, this method instantiates a @c MumpsDateConverter object & calls its @c ConvertColumn method.
+        /// </summary>
+        /// <param name="control">Reference to the IRibbonControl object.</param>
+
+        public void OnConvertDates(Office.IRibbonControl control)
+        {
+            MumpsDateConverter converter = new MumpsDateConverter();
+            Excel.Worksheet wksheet = (Excel.Worksheet)Globals.ThisAddIn.Application.ActiveSheet;
+            converter.ConvertColumn(wksheet);
+        }
+
+        /// <summary>
         /// When @c CopyFormatting button is pressed, this method instantiates a @c Formatter object & calls its @c CopyFormat method.
         /// </summary>
         /// <param name="control">Reference to the IRibbonControl object.</param>
@@ -317,15 +335,15 @@ namespace DECS_Excel_Add_Ins
         }
 
         /// <summary>
-        /// When @c ConvertDates button is pressed, this method instantiates a @c MumpsDateConverter object & calls its @c ConvertColumn method.
+        /// When @c CopyFormatting button is pressed, this method instantiates a @c DateConverter object & calls its @c ToText method.
         /// </summary>
         /// <param name="control">Reference to the IRibbonControl object.</param>
 
-        public void OnConvertDates(Office.IRibbonControl control)
+        public void OnDatesToText(Office.IRibbonControl control)
         {
-            MumpsDateConverter converter = new MumpsDateConverter();
+            DateConverter converter = new DateConverter();
             Excel.Worksheet wksheet = (Excel.Worksheet)Globals.ThisAddIn.Application.ActiveSheet;
-            converter.ConvertColumn(wksheet);
+            converter.ToText(wksheet);
         }
 
         /// <summary>
@@ -480,7 +498,7 @@ namespace DECS_Excel_Add_Ins
         /// When @c SearchNotes button is pressed, this method instantiates a @c NotesParser object & calls its @c Parse method.
         /// </summary>
         /// <param name="control">Reference to the IRibbonControl object.</param>
-        
+
         public void OnSearchNotes(Office.IRibbonControl control)
         {
             Excel.Worksheet wksheet = (Excel.Worksheet)Globals.ThisAddIn.Application.ActiveSheet;

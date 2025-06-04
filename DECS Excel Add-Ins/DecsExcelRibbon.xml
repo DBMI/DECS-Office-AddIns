@@ -26,6 +26,13 @@
 							screentip="Convert MUMPS Dates"
 							size="large"
 							supertip="Adds new column with converted dates." />
+					<button id="convertDateToText"
+							getImage="dateToTextButton_GetImage"
+							label="Convert Dates to Text"
+							onAction="OnDatesToText"
+							screentip="Convert Dates to Text"
+							size="large"
+							supertip="Adds new column with text version of dates." />
 					<button id="stripe"
 							getImage="stripeButton_GetImage"
 							label="Stripe by Value"
