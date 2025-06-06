@@ -1,20 +1,11 @@
 ﻿using Microsoft.Office.Interop.Excel;
-using Microsoft.Office.Tools.Excel;
-using Microsoft.VisualBasic;
-using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
-using System.Globalization;
-using System.IO;
 using System.Linq;
-using System.Runtime.Remoting.Contexts;
 using System.Security.Cryptography;
 using System.Text;
 using System.Text.RegularExpressions;
-using System.Threading.Tasks;
-using System.Web.UI;
 using System.Windows.Forms;
-using System.Xml.Linq;
 using Worksheet = Microsoft.Office.Interop.Excel.Worksheet;
 
 namespace DECS_Excel_Add_Ins
@@ -38,7 +29,7 @@ namespace DECS_Excel_Add_Ins
     {
         private Microsoft.Office.Interop.Excel.Application application;
         private bool cancel = false;
-        
+
         private const string dateOnlyPattern = @"\d{1,2}\/\d{1,2}\/\d{4}[\s\.](?!\d)";
         private Regex dateOnlyRegex;
         private const string dateTimePattern = @"\d{1,2}\/\d{1,2}\/\d{4}\s+\d{1,2}:\d{2}\s[AP]M";
@@ -59,9 +50,9 @@ namespace DECS_Excel_Add_Ins
         private int dayOffset;
         private int monthOffset;
         private TimeSpan deltaT;
-        
+
         private int lastRow;
-        
+
         private Range selectedColumnRng;
         private List<Range> selectedColumnsRng;
 
@@ -105,9 +96,9 @@ namespace DECS_Excel_Add_Ins
             {
                 List<string> similarNames = FindSimilarNames(nameString);
 
-                using (HideThisNameForm form = new HideThisNameForm(nameCleaned, 
-                                                                    similarNames, 
-                                                                    leftContext, 
+                using (HideThisNameForm form = new HideThisNameForm(nameCleaned,
+                                                                    similarNames,
+                                                                    leftContext,
                                                                     rightContext,
                                                                     FindSimilarNames))
                 {
@@ -117,7 +108,7 @@ namespace DECS_Excel_Add_Ins
                     {
                         cancel = true;
                     }
-                    else if(result == DialogResult.OK)
+                    else if (result == DialogResult.OK)
                     {
                         // What word are we replacing?
                         if (!string.IsNullOrEmpty(form.chosenName))
@@ -151,7 +142,7 @@ namespace DECS_Excel_Add_Ins
 
                         replace = true;
                     }
-                    else 
+                    else
                     {
                         namesToSkip.Add(nameCleaned);
                     }
@@ -291,15 +282,26 @@ namespace DECS_Excel_Add_Ins
                 string sourceData;
                 Range target;
 
-                for (int rowNumber = 2; rowNumber <= lastRow; rowNumber++)
+                using (ChooseHashLength form = new ChooseHashLength())
                 {
-                    target = (Range)worksheet.Cells[rowNumber, hashColumn.Column];
-                    sourceData = Utilities.CombineColumns(worksheet, rowNumber, selectedColumnsRng);
+                    var result = form.ShowDialog();
 
-                    if (!string.IsNullOrEmpty(sourceData))
+                    if (result == DialogResult.OK)
                     {
-                        target.Value = StringToHash(sourceData);
+                        int hashLength = form.hashLength;
+
+                        for (int rowNumber = 2; rowNumber <= lastRow; rowNumber++)
+                        {
+                            target = (Range)worksheet.Cells[rowNumber, hashColumn.Column];
+                            sourceData = Utilities.CombineColumns(worksheet, rowNumber, selectedColumnsRng);
+
+                            if (!string.IsNullOrEmpty(sourceData))
+                            {
+                                target.Value = StringToHash(sourceData, hashLength);
+                            }
+                        }
                     }
+
                 }
             }
         }
@@ -318,7 +320,7 @@ namespace DECS_Excel_Add_Ins
 
             if (FindSelectedColumns(worksheet))
             {
-                foreach(Range col in selectedColumnsRng)
+                foreach (Range col in selectedColumnsRng)
                 {
                     HidePhysicianNamesOneColumn(col);
                 }
@@ -408,8 +410,8 @@ namespace DECS_Excel_Add_Ins
                 string newColumnName = selectedColumnName + " (Date/Time Altered)";
 
                 // Make room for new column.
-                Range ditheredColumn = Utilities.InsertNewColumn(range: selectedColumnRng, 
-                                                                 newColumnName: newColumnName, 
+                Range ditheredColumn = Utilities.InsertNewColumn(range: selectedColumnRng,
+                                                                 newColumnName: newColumnName,
                                                                  side: InsertSide.Right);
 
                 string sourceData;
@@ -515,10 +517,10 @@ namespace DECS_Excel_Add_Ins
             return targetData;
         }
 
-        private string StringToHash(string sourceData)
+        private string StringToHash(string sourceData, int hashLength = 32)
         {
             string hashString = string.Empty;
-     
+
             // Create a byte array from source data.
             byte[] tmpSource = ASCIIEncoding.ASCII.GetBytes(sourceData);
 
@@ -529,7 +531,8 @@ namespace DECS_Excel_Add_Ins
                 hashString = ByteArrayToString(tmpHash);
             }
 
-            return hashString;
+            // Return just 12 char of hash.
+            return hashString.Substring(0, hashLength);
         }
 
         private string TweakDateOnly(string dateString)
