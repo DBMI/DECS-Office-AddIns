@@ -75,6 +75,16 @@ namespace DECS_Excel_Add_Ins
         }
 
         /// <summary>
+        /// Lets the @c DexsExcelRibbon.xml point to the image for the @c CountWords button.
+        /// </summary>
+        /// <param name="control">Reference to the IRibbonControl object.</param>
+        /// <returns>Bitmap</returns>
+        public Bitmap countWordsButton_GetImage(IRibbonControl control)
+        {
+            return Resources.abacus;
+        }
+
+        /// <summary>
         /// Lets the @c DexsExcelRibbon.xml point to the image for the @c ConvertDates button.
         /// </summary>
         /// <param name="control">Reference to the IRibbonControl object.</param>
@@ -332,6 +342,18 @@ namespace DECS_Excel_Add_Ins
             Formatter formatter = new Formatter();
             Excel.Worksheet wksheet = (Excel.Worksheet)Globals.ThisAddIn.Application.ActiveSheet;
             formatter.CopyFormat(wksheet);
+        }
+
+        /// <summary>
+        /// When @c CountWords button is pressed, this method instantiates a @c WordCounter object & calls its @c Scan method.
+        /// </summary>
+        /// <param name="control">Reference to the IRibbonControl object.</param>
+
+        public void OnCountWords(Office.IRibbonControl control)
+        {
+            WordCounter wordCounter = new WordCounter();
+            Excel.Worksheet wksheet = (Excel.Worksheet)Globals.ThisAddIn.Application.ActiveSheet;
+            wordCounter.Scan(wksheet);
         }
 
         /// <summary>

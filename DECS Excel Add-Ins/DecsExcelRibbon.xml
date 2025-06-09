@@ -40,6 +40,13 @@
 							screentip="Stripe by data"
 							size="large"
 							supertip="Stripe worksheet by data value." />
+					<button id="count"
+							getImage="countWordsButton_GetImage"
+							label="Count Words/Char"
+							onAction="OnCountWords"
+							screentip="Count Words and Char"
+							size="large"
+							supertip="Count words and characters."/>
 				</group>
 				<group id="GrouchoGroup"
 					   label="Deidentify">

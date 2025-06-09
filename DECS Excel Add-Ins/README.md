@@ -8,6 +8,7 @@ Creates custom buttons in Microsoft Excel that allow user to:
 * Convert dates from [MUMPS](https://en.wikipedia.org/wiki/MUMPS) to Excel standard.
 * Convert dates to text format for easier import into R.
 * Highlight blocks of data.
+* Count words & characters.
 * Generate unique, scrambled identifiers from patient or user data.
 * Dither dates/times to deidentify patients.
 * Replace physicians names with randomized code number.
