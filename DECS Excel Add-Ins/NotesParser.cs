@@ -609,7 +609,7 @@ namespace DECS_Excel_Add_Ins
 
             config = configObj;
 
-            if (config.SourceColumnName == string.Empty)
+            if (string.IsNullOrEmpty(config.SourceColumnName))
                 return;
 
             // Find the top of the source column.

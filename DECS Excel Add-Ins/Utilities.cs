@@ -375,6 +375,62 @@ namespace DECS_Excel_Add_Ins
             return result;
         }
 
+        internal static List<string> ExtractColumnUnique(Worksheet sheet, string colName)
+        {
+            List<string> names = new List<string>();
+            int lastRow = Utilities.FindLastRow(sheet);
+            Dictionary<string, Range> headers = Utilities.GetColumnRangeDictionary(sheet);
+
+            if (headers.ContainsKey(colName))
+            {
+                Range thisCol = headers[colName];
+
+                for (int rowOffset = 1; rowOffset < lastRow; rowOffset++)
+                {
+                    string cell_contents;
+
+                    try
+                    {
+                        // Make them all upper case.
+                        cell_contents = Convert.ToString(thisCol.Offset[rowOffset, 0].Value2).ToUpper();
+
+                        if (cell_contents.Length > 0 && !names.Contains(cell_contents))
+                        {
+                            names.Add(cell_contents);
+                        }
+                    }
+                    catch (Microsoft.CSharp.RuntimeBinder.RuntimeBinderException) { }
+                }
+            }
+
+            names.Sort();
+            return names;
+        }
+
+        /// <summary>
+        /// Finds the column name corresponding to a Range in a <name, Range> dictionary.
+        /// </summary>
+        /// <param name="columnNamesDict">Dictionary linking column names to ranges</param>
+        /// <param name="columnRange">Range for which we want the column name</param>
+        /// <returns>Range</returns>        
+
+        internal static string FindColumnName(Dictionary<string, Range> columnNamesDict, Range columnRange)
+        {
+            int desiredColumnNumber = columnRange.Column;
+
+            foreach (KeyValuePair<string, Range> entry in columnNamesDict)
+            {
+                int thisColumnNumber = entry.Value.Column;
+
+                if (thisColumnNumber == desiredColumnNumber)
+                {
+                    return entry.Key;
+                }
+            }
+
+            return string.Empty;
+        }
+
         /// <summary>
         /// Finds last column containing anything.
         /// </summary>
@@ -433,28 +489,74 @@ namespace DECS_Excel_Add_Ins
             return sheets.LastOrDefault();
         }
 
-        /// <summary>
-        /// Finds the column name corresponding to a Range in a <name, Range> dictionary.
-        /// </summary>
-        /// <param name="columnNamesDict">Dictionary linking column names to ranges</param>
-        /// <param name="columnRange">Range for which we want the column name</param>
-        /// <returns>Range</returns>        
-
-        internal static string FindColumnName(Dictionary<string, Range> columnNamesDict, Range columnRange)
+        internal static string FindClosestMatch(List<string> names, string desiredName, double maxDistanceAllowed = 1.0)
         {
-            int desiredColumnNumber = columnRange.Column;
+            double lowestScore = 1000000;
+            string bestMatch = string.Empty;
 
-            foreach (KeyValuePair<string, Range> entry in columnNamesDict)
+            Fastenshtein.Levenshtein lev = new Fastenshtein.Levenshtein(desiredName);
+
+            foreach (string thisName in names)
             {
-                int thisColumnNumber = entry.Value.Column;
+                double wordLength = (double)Math.Min(desiredName.Length, thisName.Length);
+                int levenshteinDistance = lev.DistanceFrom(thisName);
+                double relativeDistance = levenshteinDistance / wordLength;
 
-                if (thisColumnNumber == desiredColumnNumber)
+                if (relativeDistance < lowestScore && relativeDistance < maxDistanceAllowed)
                 {
-                    return entry.Key;
+                    bestMatch = thisName;
+                    lowestScore = relativeDistance;
                 }
             }
 
-            return string.Empty;
+            return bestMatch;
+        }
+
+        internal static Rows FindNamesExact(Worksheet sheet, string namesColumnName, string desiredName)
+        {
+            desiredName = desiredName.ToUpper();
+            Rows rows = new Rows();
+            int lastRow = FindLastRow(sheet);
+            Dictionary<string, Range> columnsDict = GetColumnRangeDictionary(sheet);
+
+            if (columnsDict.ContainsKey(namesColumnName))
+            {
+                Range range = columnsDict[namesColumnName];
+                string cellContents = string.Empty;
+
+                for (int rowOffset = 0; rowOffset < lastRow; rowOffset++)
+                {
+                    cellContents = range.Offset[rowOffset, 0].Value2.ToString().ToUpper();
+
+                    if (rows.HasStart())
+                    {
+                        // Then I'm looking for the next NON-match.
+                        if (cellContents != desiredName)
+                        {
+                            rows.SetEnd(rowOffset);
+
+                            // We're done.
+                            break;
+                        }
+                    }
+                    else
+                    {
+                        // Then I'm looking for the FIRST match.
+                        if (cellContents == desiredName)
+                        {
+                            rows.SetStart(rowOffset + 1);
+                        }
+                    }
+                }
+            }
+
+            // Did we run off the end of the sheet without finding a non-match?
+            if (rows.HasStart() && !rows.HasEnd())
+            {
+                rows.SetEnd(lastRow);
+            }
+
+            return rows;
         }
 
         /// <summary>
@@ -594,6 +696,7 @@ namespace DECS_Excel_Add_Ins
 
             return names;
         }
+
 
         /// <summary>
         /// Builds a dictionary linking column names to ranges from the first row of a worksheet.
@@ -1038,16 +1141,24 @@ namespace DECS_Excel_Add_Ins
         /// <param name="inputFilename">File to read</param>
         /// <param name="filenameAddOn">String we want to append to filename</param>
         /// <param name="filetype">Desired filetype (".sql" by default)</param>
+        /// <param name="index">Number in a series (1 by default)</param>
         /// <returns>Tuple of StreamWriter object, string</returns>
         internal static (StreamWriter writer, string openedFilename) OpenOutput(
             string inputFilename,
             string filenameAddon = "",
-            string filetype = ".sql"
+            string filetype = ".sql",
+            int index = 1
         )
         {
             // If we're creating a .sql file,
             // make the filename import-friendly by replacing spaces with underscores.
             bool replaceSpaces = filetype == ".sql";
+
+            // Call the first file "file.sql" and the next one "file_2.sql".
+            if (index > 1)
+            {
+                filenameAddon += "_" + index.ToString();
+            }
 
             string outputFilename = Utilities.FormOutputFilename(
                 filename: inputFilename,
@@ -1080,13 +1191,18 @@ namespace DECS_Excel_Add_Ins
         /// <summary>Fills a ListBox object with a list.</summary>
         /// <param name="listBox">ListBox object</param>
         /// <param name="contents">List<string></param>
-        internal static void PopulateListBox(System.Windows.Forms.ListBox listBox, List<string> contents)
+        internal static void PopulateListBox(System.Windows.Forms.ListBox listBox, List<string> contents, bool enableWhenPopulated = false)
         {
             listBox.Items.Clear();
 
             foreach (string item in contents)
             {
                 listBox.Items.Add(item);
+            }
+
+            if (enableWhenPopulated)
+            {
+                listBox.Enabled = true;
             }
         }
 
