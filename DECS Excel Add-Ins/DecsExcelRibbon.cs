@@ -65,6 +65,16 @@ namespace DECS_Excel_Add_Ins
         }
 
         /// <summary>
+        /// Lets the @c DexsExcelRibbon.xml point to the image for the @c PlotComparisonButton button.
+        /// </summary>
+        /// <param name="control">Reference to the IRibbonControl object.</param>
+        /// <returns>Bitmap</returns>
+        public Bitmap comparisonPlotButton_GetImage(IRibbonControl control)
+        {
+            return Resources.comparison_graph;
+        }
+
+        /// <summary>
         /// Lets the @c DexsExcelRibbon.xml point to the image for the @c CopyFormatting button.
         /// </summary>
         /// <param name="control">Reference to the IRibbonControl object.</param>
@@ -318,6 +328,18 @@ namespace DECS_Excel_Add_Ins
             ListChopper chopper = new ListChopper();
             Excel.Worksheet wksheet = (Excel.Worksheet)Globals.ThisAddIn.Application.ActiveSheet;
             chopper.Scan(wksheet);
+        }
+
+        /// <summary>
+        /// When @c ComparisonPlot button is pressed, instantiates a @c ComparisonPlot object & calls its @c Scan method.
+        /// </summary>
+        /// <param name="control">Reference to the IRibbonControl object.</param>
+
+        public void OnComparisonPlot(Office.IRibbonControl control)
+        {
+            ComparisonPlot plotter = new ComparisonPlot();
+            Excel.Worksheet wksheet = (Excel.Worksheet)Globals.ThisAddIn.Application.ActiveSheet;
+            plotter.Plot(wksheet);
         }
 
         /// <summary>
