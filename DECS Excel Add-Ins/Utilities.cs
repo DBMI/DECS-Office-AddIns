@@ -257,8 +257,25 @@ namespace DECS_Excel_Add_Ins
         /// <summary>
         /// Insert new Worksheet with given name.
         /// </summary>
-        /// <param name="sourceSheet">Worksheet</param>
         /// <param name="newName">string</param>
+
+        public static Worksheet CreateNewNamedSheet(string newName)
+        {
+            int MAX_LENGTH = 31;
+            Workbook workbook = (Excel.Workbook)Globals.ThisAddIn.Application.ActiveWorkbook;
+
+            // Create new sheet at the end.
+            Worksheet newSheet = workbook.Sheets.Add(After: workbook.Sheets[workbook.Sheets.Count]);
+
+            // There's a 31-character limit.
+            string cleanName = newName;
+
+            if (newName.Length > MAX_LENGTH)
+                cleanName = newName.Substring(0, MAX_LENGTH);
+
+            newSheet.Name = cleanName;
+            return newSheet;
+        }
 
         public static Worksheet CreateNewNamedSheet(Worksheet worksheet, string newName)
         {
