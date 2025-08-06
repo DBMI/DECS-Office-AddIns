@@ -81,6 +81,12 @@
 							screentip="Build list import code"
 							size="large"
 							supertip="Build SQL code to import a list." />
+					<button id="signalImportButton"
+							getImage="signalImportButton_GetImage"
+							label="Import Signal Data"
+							onAction="OnSignalImport"
+							size="large"
+							screentip="Import Signal Time in Notes JSON file"/>
 					<button id="chopIntoTabsButton"
 							getImage="chopIntoTabsButton_GetImage"
 							label="Separate Tabs"

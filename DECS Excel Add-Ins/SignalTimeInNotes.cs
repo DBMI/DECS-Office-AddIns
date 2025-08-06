@@ -1,0 +1,246 @@
+﻿using Microsoft.Office.Interop.Excel;
+using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Linq;
+using System.Text.Json;
+using System.Text.Json.Serialization;
+using System.Windows.Forms;
+
+
+namespace DECS_Excel_Add_Ins
+{
+    // Classes generated automatically by copying JSON data onto clipboard,
+    // then using Visual Studio tool: Edit/Paste Special/Paste JSON As classes.
+    public class Rootobject
+    {
+        public Userwebmetadata UserWebMetadata { get; set; }
+        public Datum[] Data { get; set; }
+    }
+
+    public class Userwebmetadata
+    {
+        public string UserFirstName { get; set; }
+        public string UserLastName { get; set; }
+        public string UserEmail { get; set; }
+        public string UserID { get; set; }
+        //public DateTime InstantUTC { get; set; }
+    }
+
+    public class Datum
+    {
+        [JsonPropertyName("EMP CID")]
+        public string EMPCID { get; set; }
+
+        [JsonPropertyName("SER CID")]
+        public string SERCID { get; set; }
+
+        [JsonPropertyName("Clinician Name")]
+        public string ClinicianName { get; set; }
+
+        [JsonPropertyName("Clinician Type")]
+        public string ClinicianType { get; set; }
+
+        [JsonPropertyName("Service Area")]
+        public string ServiceArea { get; set; }
+
+        public string Department { get; set; }
+        public string Specialty { get; set; }
+
+        [JsonPropertyName("User Type")]
+        public string UserType { get; set; }
+
+        [JsonPropertyName("Reporting Period Start Date")]
+        [JsonConverter(typeof(CustomDateTimeConverter))]
+        public DateTime ReportingPeriodStartDate { get; set; }
+
+        [JsonPropertyName("Reporting Period End Date")]
+        [JsonConverter(typeof(CustomDateTimeConverter))]
+        public DateTime ReportingPeriodEndDate { get; set; }
+
+        public string Metric { get; set; }
+        public float Numerator { get; set; }
+        public float Denominator { get; set; }
+        public float Value { get; set; }
+
+        [JsonPropertyName("Metric ID")]
+        public int MetricID { get; set; }
+    }
+
+    internal class PhysicianTable
+    {
+        private Microsoft.Office.Interop.Excel.Worksheet sheet;
+        private int row;
+
+        internal PhysicianTable()
+        {
+            this.sheet = null;
+            this.row = 0;
+        }
+
+        internal PhysicianTable(Microsoft.Office.Interop.Excel.Worksheet sheet)
+        {
+            this.sheet = sheet;
+            this.row = 1;
+        }
+
+        internal PhysicianTable(Microsoft.Office.Interop.Excel.Worksheet sheet, int row)
+        {
+            this.sheet = sheet;
+            this.row = row;
+        }
+
+        internal void IncrementRow()
+        {
+            row += 1;
+        }
+
+        internal int Row()
+        {
+            return row;
+        }
+
+        internal void IncrementRow(int delta)
+        {
+            row += delta;
+        }
+
+        internal Microsoft.Office.Interop.Excel.Worksheet Sheet()
+        {
+            return sheet;
+        }
+
+        internal Range TopLeft()
+        {
+            return sheet.Cells[1, 1];
+        }
+    }
+    internal class SignalTimeInNotes
+    {
+        private Dictionary<string, PhysicianTable> tables;
+
+        internal SignalTimeInNotes()
+        {
+            tables = new Dictionary<string, PhysicianTable>();
+        }
+
+        private string AskUserForFile()
+        {
+            string jsonFile = string.Empty;
+
+            using (OpenFileDialog openFileDialog = new OpenFileDialog())
+            {
+                // Because we don't specify an opening directory,
+                // the dialog will open in the last directory used.
+                openFileDialog.Filter = "JSON files (*.json)|*.json";
+                openFileDialog.RestoreDirectory = true;
+
+                if (openFileDialog.ShowDialog() == DialogResult.OK)
+                {
+                    // Get the path of specified file.
+                    jsonFile = openFileDialog.FileName;
+                }
+            }
+
+            return jsonFile;
+        }
+
+        private void BuildSheets(Rootobject obj)
+        {
+            // Sort the data objects by physician name, then date.
+            List<Datum> sortedData = obj.Data.OrderBy(x => x.ClinicianName).ThenBy(y => y.ReportingPeriodEndDate).ToList();
+
+            foreach (Datum datum in sortedData)
+            {
+                PhysicianTable table = FindOrCreateTable(datum);
+                Range r = table.TopLeft();
+                r.Offset[table.Row(), 0].Value2 = datum.ReportingPeriodEndDate;
+                r.Offset[table.Row(), 1].Value2 = datum.Numerator;
+                r.Offset[table.Row(), 2].Value2 = datum.Denominator;
+                r.Offset[table.Row(), 3].Value2 = datum.Value;
+                table.IncrementRow();
+            }
+        }
+
+        private PhysicianTable FindOrCreateTable(Datum datum)
+        {
+            if (tables.ContainsKey(datum.ClinicianName))
+            {
+                return tables[datum.ClinicianName];
+            }
+
+            Worksheet newSheet = Utilities.CreateNewNamedSheet(datum.ClinicianName);
+            PhysicianTable table = new PhysicianTable(newSheet);
+            Range r = table.TopLeft();
+            r.Value2 = "Clinician Name:";
+            r.Font.Bold = true;
+            r.Offset[0, 1].Value2 = datum.ClinicianName;
+
+            r.Offset[1, 0].Value2 = "Clinician Type:";
+            r.Offset[1, 0].Font.Bold = true;
+            r.Offset[1, 1].Value2 = datum.ClinicianType;
+
+            r.Offset[2, 0].Value2 = "Service Area:";
+            r.Offset[2, 0].Font.Bold = true;
+            r.Offset[2, 1].Value2 = datum.ServiceArea;
+
+            r.Offset[3, 0].Value2 = "Department:";
+            r.Offset[3, 0].Font.Bold = true;
+            r.Offset[3, 1].Value2 = datum.Department;
+
+            r.Offset[4, 0].Value2 = "Specialty:";
+            r.Offset[4, 0].Font.Bold = true;
+            r.Offset[4, 1].Value2 = datum.Specialty;
+
+            r.Offset[5, 0].Value2 = "User Type:";
+            r.Offset[5, 0].Font.Bold = true;
+            r.Offset[5, 1].Value2 = datum.UserType;
+
+            r.EntireColumn.NumberFormat = "mm/dd/yyyy";
+            r.EntireColumn.ColumnWidth = 16;
+            r.Offset[7, 0].Value2 = "End Date";
+            r.Offset[7, 0].Font.Bold = true;
+
+            r.Offset[7, 1].EntireColumn.NumberFormat = "0.0";
+            r.Offset[7, 1].EntireColumn.ColumnWidth = 12;
+            r.Offset[7, 1].Value2 = "Numerator";
+            r.Offset[7, 1].Font.Bold = true;
+
+            r.Offset[7, 2].EntireColumn.ColumnWidth = 12;
+            r.Offset[7, 2].Value2 = "Denominator";
+            r.Offset[7, 2].Font.Bold = true;
+
+            r.Offset[7, 3].EntireColumn.NumberFormat = "0.0";
+            r.Offset[7, 3].EntireColumn.ColumnWidth = 20;
+            r.Offset[7, 3].Value2 = datum.Metric;
+            r.Offset[7, 3].Font.Bold = true;
+
+            Range headings = newSheet.Range[r.Offset[7, 0], r.Offset[7, 3]];
+            Borders borders = headings.Borders;
+            borders[XlBordersIndex.xlEdgeBottom].Weight = XlBorderWeight.xlThick;
+
+            table.IncrementRow(7);
+            tables[datum.ClinicianName] = table;
+
+            return table;
+        }
+
+        internal void Import()
+        {
+            string jsonFile = AskUserForFile();
+
+            if (jsonFile != string.Empty)
+            {
+                using (StreamReader r = new StreamReader(jsonFile))
+                {
+                    string json = r.ReadToEnd();
+
+                    var options = new JsonSerializerOptions();
+                    options.Converters.Add(new CustomDateTimeConverter());
+                    Rootobject obj = JsonSerializer.Deserialize<Rootobject>(json, options);
+                    BuildSheets(obj);
+                }
+            }
+        }
+    }
+}

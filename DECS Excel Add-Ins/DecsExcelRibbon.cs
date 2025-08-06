@@ -245,6 +245,16 @@ namespace DECS_Excel_Add_Ins
         }
 
         /// <summary>
+        /// Lets the @c DexsExcelRibbon.xml point to the image for the @c SignalImportButton button.
+        /// </summary>
+        /// <param name="control">Reference to the IRibbonControl object.</param>
+        /// <returns>Bitmap</returns>
+        public Bitmap signalImportButton_GetImage(IRibbonControl control)
+        {
+            return Resources.json;
+        }
+
+        /// <summary>
         /// Lets the @c DexsExcelRibbon.xml point to the image for the @c SortTimes button.
         /// </summary>
         /// <param name="control">Reference to the IRibbonControl object.</param>
@@ -548,6 +558,17 @@ namespace DECS_Excel_Add_Ins
             Excel.Worksheet wksheet = (Excel.Worksheet)Globals.ThisAddIn.Application.ActiveSheet;
             NotesParser parser = new NotesParser(_worksheet: wksheet);
             parser.Parse();
+        }
+
+        /// <summary>
+        /// When @c SignalImport button is pressed, instantiates a @c SignalTimeInNotes object & calls its @c Import method.
+        /// </summary>
+        /// <param name="control">Reference to the IRibbonControl object.</param>
+
+        public void OnSignalImport(Office.IRibbonControl control)
+        {
+            SignalTimeInNotes parser = new SignalTimeInNotes();
+            parser.Import();
         }
 
         /// <summary>
