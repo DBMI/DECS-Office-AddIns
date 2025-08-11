@@ -5,6 +5,7 @@ using System.IO;
 using System.Linq;
 using System.Text.Json;
 using System.Text.Json.Serialization;
+using System.Web.UI.WebControls;
 using System.Windows.Forms;
 
 
@@ -24,6 +25,8 @@ namespace DECS_Excel_Add_Ins
         public string UserLastName { get; set; }
         public string UserEmail { get; set; }
         public string UserID { get; set; }
+
+        // Don't need it & it's in a weird format.
         //public DateTime InstantUTC { get; set; }
     }
 
@@ -78,13 +81,7 @@ namespace DECS_Excel_Add_Ins
             this.row = 0;
         }
 
-        internal PhysicianTable(Microsoft.Office.Interop.Excel.Worksheet sheet)
-        {
-            this.sheet = sheet;
-            this.row = 1;
-        }
-
-        internal PhysicianTable(Microsoft.Office.Interop.Excel.Worksheet sheet, int row)
+        internal PhysicianTable(Microsoft.Office.Interop.Excel.Worksheet sheet, int row = 1)
         {
             this.sheet = sheet;
             this.row = row;
@@ -115,9 +112,18 @@ namespace DECS_Excel_Add_Ins
             return sheet.Cells[1, 1];
         }
     }
+
+    internal enum SignalNotesFormat
+    {
+        OneBigSheet,
+        SeparateSheets
+    }
+
     internal class SignalTimeInNotes
     {
+        // Keep track of the sheet used for each physician AND what row we last used on that sheet.
         private Dictionary<string, PhysicianTable> tables;
+        private SignalNotesFormat format = SignalNotesFormat.OneBigSheet;
 
         internal SignalTimeInNotes()
         {
@@ -150,6 +156,41 @@ namespace DECS_Excel_Add_Ins
             // Sort the data objects by physician name, then date.
             List<Datum> sortedData = obj.Data.OrderBy(x => x.ClinicianName).ThenBy(y => y.ReportingPeriodEndDate).ToList();
 
+            if (format == SignalNotesFormat.OneBigSheet)
+            {
+                BuildOneBigSheet(sortedData);
+            }
+            else
+            {
+                BuildSeparateSheets(sortedData);
+            }
+        }
+
+        private void BuildOneBigSheet(List<Datum> sortedData)
+        {
+            Worksheet newSheet = Utilities.CreateNewNamedSheet("Signal Time-in-Notes");
+            InitializeSheet(newSheet);
+            Range r = newSheet.Cells[1, 1];
+            int rowOffset = 1;
+
+            foreach (Datum datum in sortedData)
+            {
+                r.Offset[rowOffset, 0].Value2 = datum.ClinicianName;
+                r.Offset[rowOffset, 1].Value2 = datum.ClinicianType;
+                r.Offset[rowOffset, 2].Value2 = datum.ServiceArea;
+                r.Offset[rowOffset, 3].Value2 = datum.Department;
+                r.Offset[rowOffset, 4].Value2 = datum.Specialty;
+                r.Offset[rowOffset, 5].Value2 = datum.UserType;
+                r.Offset[rowOffset, 6].Value2 = datum.ReportingPeriodEndDate;
+                r.Offset[rowOffset, 7].Value2 = datum.Numerator;
+                r.Offset[rowOffset, 8].Value2 = datum.Denominator;
+                r.Offset[rowOffset, 9].Value2 = datum.Value;
+                rowOffset++;
+            }
+        }
+
+        private void BuildSeparateSheets(List<Datum> sortedData)
+        {
             foreach (Datum datum in sortedData)
             {
                 PhysicianTable table = FindOrCreateTable(datum);
@@ -241,6 +282,51 @@ namespace DECS_Excel_Add_Ins
                     BuildSheets(obj);
                 }
             }
+        }
+
+        private void InitializeSheet(Worksheet sheet)
+        {
+            Range r = sheet.Cells[1, 1];
+            r.Value2 = "Clinician Name";
+            r.Font.Bold = true;
+
+            r.Offset[0, 1].Value2 = "Clinician Type";
+            r.Offset[0, 1].Font.Bold = true;
+
+            r.Offset[0, 2].Value2 = "Service Area";
+            r.Offset[0, 2].Font.Bold = true;
+
+            r.Offset[0, 3].Value2 = "Department";
+            r.Offset[0, 3].Font.Bold = true;
+
+            r.Offset[0, 4].Value2 = "Specialty";
+            r.Offset[0, 4].Font.Bold = true;
+
+            r.Offset[0, 5].Value2 = "User Type";
+            r.Offset[0, 5].Font.Bold = true;
+
+            r.Offset[0, 6].Value2 = "End Date";
+            r.Offset[0, 6].Font.Bold = true;
+            r.Offset[0, 6].EntireColumn.NumberFormat = "mm/dd/yyyy";
+            r.Offset[0, 6].EntireColumn.ColumnWidth = 16;
+
+            r.Offset[0, 7].Value2 = "Numerator";
+            r.Offset[0, 7].Font.Bold = true;
+            r.Offset[0, 7].EntireColumn.NumberFormat = "0.0";
+            r.Offset[0, 7].EntireColumn.ColumnWidth = 12;
+
+            r.Offset[0, 8].Value2 = "Denominator";
+            r.Offset[0, 8].Font.Bold = true;
+            r.Offset[0, 8].EntireColumn.ColumnWidth = 12;
+
+            r.Offset[0, 9].Value2 = "Time in Notes (per day)";
+            r.Offset[0, 9].Font.Bold = true;
+            r.Offset[0, 9].EntireColumn.NumberFormat = "0.0";
+            r.Offset[0, 9].EntireColumn.ColumnWidth = 20;
+
+            Range headings = sheet.Range[r, r.Offset[0, 9]];
+            Borders borders = headings.Borders;
+            borders[XlBordersIndex.xlEdgeBottom].Weight = XlBorderWeight.xlThick;
         }
     }
 }
