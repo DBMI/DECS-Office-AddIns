@@ -17,6 +17,11 @@ namespace DECS_Excel_Add_Ins
     {
         public Userwebmetadata UserWebMetadata { get; set; }
         public Datum[] Data { get; set; }
+
+        public string MetricName()
+        {
+            return Data[1].Metric;
+        }
     }
 
     public class Userwebmetadata
@@ -119,13 +124,16 @@ namespace DECS_Excel_Add_Ins
         SeparateSheets
     }
 
-    internal class SignalTimeInNotes
+    internal class ImportSignalData
     {
-        // Keep track of the sheet used for each physician AND what row we last used on that sheet.
-        private Dictionary<string, PhysicianTable> tables;
         private SignalNotesFormat format = SignalNotesFormat.OneBigSheet;
 
-        internal SignalTimeInNotes()
+        private string metricName = string.Empty;
+
+        // Keep track of the sheet used for each physician AND what row we last used on that sheet.
+        private Dictionary<string, PhysicianTable> tables;
+
+        internal ImportSignalData()
         {
             tables = new Dictionary<string, PhysicianTable>();
         }
@@ -168,7 +176,7 @@ namespace DECS_Excel_Add_Ins
 
         private void BuildOneBigSheet(List<Datum> sortedData)
         {
-            Worksheet newSheet = Utilities.CreateNewNamedSheet("Signal Time-in-Notes");
+            Worksheet newSheet = Utilities.CreateNewNamedSheet("Signal " + metricName);
             InitializeSheet(newSheet);
             Range r = newSheet.Cells[1, 1];
             int rowOffset = 1;
@@ -279,6 +287,7 @@ namespace DECS_Excel_Add_Ins
                     var options = new JsonSerializerOptions();
                     options.Converters.Add(new CustomDateTimeConverter());
                     Rootobject obj = JsonSerializer.Deserialize<Rootobject>(json, options);
+                    metricName = obj.MetricName();
                     BuildSheets(obj);
                 }
             }
@@ -319,7 +328,7 @@ namespace DECS_Excel_Add_Ins
             r.Offset[0, 8].Font.Bold = true;
             r.Offset[0, 8].EntireColumn.ColumnWidth = 12;
 
-            r.Offset[0, 9].Value2 = "Time in Notes (per day)";
+            r.Offset[0, 9].Value2 = metricName;
             r.Offset[0, 9].Font.Bold = true;
             r.Offset[0, 9].EntireColumn.NumberFormat = "0.0";
             r.Offset[0, 9].EntireColumn.ColumnWidth = 20;
