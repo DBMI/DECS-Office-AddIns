@@ -1314,6 +1314,31 @@ namespace DECS_Excel_Add_Ins
             MessageBox.Show("Saved in '" + newFilename + "'.");
         }
 
+        internal static void SortPageByColumn(Worksheet sheet, Range selectedColumnRng)
+        {
+            // Clear existing sort fields (optional but good practice)
+            sheet.Sort.SortFields.Clear();
+
+            // Add a sort field.
+            sheet.Sort.SortFields.Add(
+                Key: selectedColumnRng, // first data cell in the sort key column
+                SortOn: Microsoft.Office.Interop.Excel.XlSortOn.xlSortOnValues,
+                Order: Microsoft.Office.Interop.Excel.XlSortOrder.xlAscending,
+                DataOption: Microsoft.Office.Interop.Excel.XlSortDataOption.xlSortNormal
+            );
+
+            // Set the range to be sorted.
+            int lastRow = FindLastRow(sheet);
+            Range wholeColumn = sheet.Range[selectedColumnRng, selectedColumnRng.Offset[lastRow - 1, 0]];
+            sheet.Sort.SetRange(wholeColumn); // should include the header if 'Header' is xlYes
+
+            // Apply the sort
+            sheet.Sort.Header = Microsoft.Office.Interop.Excel.XlYesNoGuess.xlYes; // Set to xlNo if no header
+            sheet.Sort.MatchCase = false;
+            sheet.Sort.Orientation = Microsoft.Office.Interop.Excel.XlSortOrientation.xlSortColumns; // Or xlSortRows
+            sheet.Sort.Apply();
+        }
+
         // Get the Range defined by these row, column Range objects.
         internal static Range ThisRowThisColumn(Range rowRange, Range columnRange)
         {

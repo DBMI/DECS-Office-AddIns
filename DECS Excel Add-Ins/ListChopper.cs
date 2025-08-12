@@ -1,17 +1,7 @@
 ﻿using Microsoft.Office.Interop.Excel;
-using Microsoft.Office.Tools.Excel;
-using System;
 using System.Collections.Generic;
 using System.ComponentModel;
-using System.Linq;
-using System.Security.Cryptography;
-using System.Text;
-using System.Threading;
-using System.Threading.Tasks;
 using System.Windows.Forms;
-using System.Xml.Linq;
-using static System.Windows.Forms.VisualStyles.VisualStyleElement;
-using Workbook = Microsoft.Office.Interop.Excel.Workbook;
 using Worksheet = Microsoft.Office.Interop.Excel.Worksheet;
 
 namespace DECS_Excel_Add_Ins
@@ -135,11 +125,13 @@ namespace DECS_Excel_Add_Ins
         internal void Scan(Worksheet worksheet)
         {
             thisWorksheet = worksheet;
+
             lastRowInSheet = worksheet.UsedRange.Rows.Count;
-            
+
             if (FindSelectedCategory(worksheet))
             {
-//                string selectedColumnName = Utilities.GetColumnName(selectedColumnRng);
+                // Sort by selected column.
+                Utilities.SortPageByColumn(worksheet, selectedColumnRng);
 
                 // Figure out the distinct category values & where they are.
                 sourceBlocks = Utilities.IdentifyBlocks(selectedColumnRng, lastRowInSheet);
