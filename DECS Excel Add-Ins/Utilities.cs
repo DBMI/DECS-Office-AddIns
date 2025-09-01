@@ -7,6 +7,7 @@ using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Text.RegularExpressions;
+using System.Web.UI.WebControls;
 using System.Windows.Forms;
 using Excel = Microsoft.Office.Interop.Excel;
 using TextBox = System.Windows.Forms.TextBox;
@@ -392,6 +393,31 @@ namespace DECS_Excel_Add_Ins
             return result;
         }
 
+        internal static List<string> ExtractColumnUnique(Range column)
+        {
+            List<string> names = new List<string>();
+            int lastRow = Utilities.FindLastRow(column.Worksheet);
+
+            for (int rowOffset = 1; rowOffset < lastRow; rowOffset++)
+            {
+                string cell_contents;
+
+                try
+                {
+                    cell_contents = Convert.ToString(column.Offset[rowOffset, 0].Value2);
+
+                    if (cell_contents.Length > 0 && !names.Contains(cell_contents))
+                    {
+                        names.Add(cell_contents);
+                    }
+                }
+                catch (Microsoft.CSharp.RuntimeBinder.RuntimeBinderException) { }
+            }
+
+            names.Sort();
+            return names;
+        }
+
         internal static List<string> ExtractColumnUnique(Worksheet sheet, string colName)
         {
             List<string> names = new List<string>();
@@ -472,9 +498,24 @@ namespace DECS_Excel_Add_Ins
         /// <summary>
         /// Finds last row containing anything.
         /// </summary>
-        /// <param name="sheet">Active Worksheet.</param>
+        /// <param name="rng">Range</param>
         /// <returns>int</returns>
         // https://stackoverflow.com/a/22151620/18749636
+        internal static int FindLastRow(Range rng)
+        {
+            Worksheet sheet = rng.Worksheet;
+            return sheet.Cells.Find(
+                                    "*",
+                                    System.Reflection.Missing.Value,
+                                    Excel.XlFindLookIn.xlValues,
+                                    Excel.XlLookAt.xlWhole,
+                                    Excel.XlSearchOrder.xlByRows,
+                                    Excel.XlSearchDirection.xlPrevious,
+                                    false,
+                                    System.Reflection.Missing.Value,
+                                    System.Reflection.Missing.Value).Row;
+        }
+
         internal static int FindLastRow(Worksheet sheet)
         {
             return sheet.Cells.Find(
@@ -519,7 +560,11 @@ namespace DECS_Excel_Add_Ins
                 int levenshteinDistance = lev.DistanceFrom(thisName);
                 double relativeDistance = levenshteinDistance / wordLength;
 
-                if (relativeDistance < lowestScore && relativeDistance < maxDistanceAllowed)
+                if (thisName.StartsWith(desiredName) || desiredName.StartsWith(thisName))
+                {
+                    return thisName;
+                }
+                else if (relativeDistance < lowestScore && relativeDistance < maxDistanceAllowed)
                 {
                     bestMatch = thisName;
                     lowestScore = relativeDistance;
@@ -819,6 +864,42 @@ namespace DECS_Excel_Add_Ins
             return columns;
         }
 
+        internal static int GetIndexOfFirstWordAfterThis(List<string> words, string desiredWord)
+        {
+            int index = 0;
+
+            foreach (string word in words)
+            {
+                if (string.Compare(word, desiredWord) < 0)
+                {
+                    index++;
+                }
+                else
+                {
+                    break;
+                }
+            }
+
+            return index;
+        }
+
+        internal static List<string> GetListBoxContents(System.Windows.Forms.ListBox listBox)
+        {
+            List<string> contents = new List<string>();
+
+            foreach (object item in listBox.Items)
+            {
+                // 'item' represents each item in the ListBox
+                // You can cast it to the appropriate type if you know it (e.g., string)
+                // For example: string listItemText = item.ToString();
+
+                // You can then process each item as needed, for example, display it in a MessageBox
+                contents.Add(item.ToString());
+            }
+
+            return contents;
+        }
+
         /// <summary>
         /// Has the user selected a column? And just one?
         /// </summary>
@@ -878,6 +959,10 @@ namespace DECS_Excel_Add_Ins
             return DateTime.Now.ToString("yyyyMMddHHmmss");
         }
 
+        /// <summary>
+        /// Finds all the worksheets.
+        /// </summary>
+        /// <returns>Dictionary<string, Worksheet></returns>
         internal static Dictionary<string, Worksheet> GetWorksheets()
         {
             Workbook workbook = (Workbook)Globals.ThisAddIn.Application.ActiveWorkbook;

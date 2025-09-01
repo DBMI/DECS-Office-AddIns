@@ -185,6 +185,16 @@ namespace DECS_Excel_Add_Ins
         }
 
         /// <summary>
+        /// Lets the @c DexsExcelRibbon.xml point to the image for the @c MatchPhysiciansButton button.
+        /// </summary>
+        /// <param name="control">Reference to the IRibbonControl object.</param>
+        /// <returns>Bitmap</returns>
+        public Bitmap matchPhysiciansButton_GetImage(IRibbonControl control)
+        {
+            return Resources.match_people;
+        }
+
+        /// <summary>
         /// Lets the @c DexsExcelRibbon.xml point to the image for the @c MergeRows button.
         /// </summary>
         /// <param name="control">Reference to the IRibbonControl object.</param>
@@ -461,6 +471,17 @@ namespace DECS_Excel_Add_Ins
         }
 
         /// <summary>
+        /// When @c matchPhysicians button is pressed, instantiates a @c MatchPhysicians object & calls its @c Match method.
+        /// </summary>
+        /// <param name="control">Reference to the IRibbonControl object.</param>
+
+        public void OnMatchPhysicians(Office.IRibbonControl control)
+        {
+            PhysicianMatcher physicianMatcher = new PhysicianMatcher();
+            physicianMatcher.Match();
+        }
+
+        /// <summary>
         /// When @c hideDateTime button is pressed, instantiates a @c Deidentifier object & calls its @c ObscureDateTime method.
         /// </summary>
         /// <param name="control">Reference to the IRibbonControl object.</param>
@@ -567,7 +588,7 @@ namespace DECS_Excel_Add_Ins
 
         public void OnSignalImport(Office.IRibbonControl control)
         {
-            SignalTimeInNotes parser = new SignalTimeInNotes();
+            ImportSignalData parser = new ImportSignalData();
             parser.Import();
         }
 
