@@ -94,6 +94,13 @@
 							screentip="Break up into separate tabs"
 							size="large"
 							supertip="Break up long list into separate tabs by category." />
+					<button id="matchPhysiciansButton"
+							getImage="matchPhysiciansButton_GetImage"
+							label="Match Physicians"
+							onAction="OnMatchPhysicians"
+							screentip="Assign record # to physicians"
+							size="large"
+							supertip="Apply record numbers assigned in one sheet to another sheet." />
 					<button id="onCallListButton"
 							getImage="onCallListButton_GetImage"
 							label="On-Call List"
