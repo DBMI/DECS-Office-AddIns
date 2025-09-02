@@ -48,10 +48,19 @@ namespace DECS_Excel_Add_Ins
 
                     if (!recordIds.ContainsKey(sourceName))
                     {
-                        string idString = idColumn.Offset[iRowOffset].Value2.ToString();
-                        recordIds.Add(sourceName, idString);
+                        try
+                        {
+                            string idString = idColumn.Offset[iRowOffset].Value2.ToString();
+                            recordIds.Add(sourceName, idString);
+                        }
+                        // If there's no ID, skip to next row.
+                        catch (Microsoft.CSharp.RuntimeBinder.RuntimeBinderException)
+                        {
+                            continue;
+                        }
                     }
                 }
+                // If there's no next row, we're done.
                 catch (Microsoft.CSharp.RuntimeBinder.RuntimeBinderException)
                 {
                     return;
@@ -111,38 +120,6 @@ namespace DECS_Excel_Add_Ins
                         idString = recordIds[thisName];
                         newColumn.Offset[iRowOffset].Value = idString;
                     }
-                    else
-                    {
-                        List<string> allNames = recordIds.Keys.ToList();
-                        string closestName = Utilities.FindClosestMatch(allNames, thisName, maxDistanceAllowed: 0.25);
-
-                        if (string.IsNullOrEmpty(closestName))
-                        {
-                            string userSelection = AskUserToMatch(thisName);
-
-                            if (string.IsNullOrEmpty(userSelection))
-                            {
-                                // Put target name into dictionary so we STOP asking the user.
-                                recordIds[thisName] = string.Empty;
-                            }
-                            else
-                            {
-                                idString = recordIds[userSelection];
-                                newColumn.Offset[iRowOffset].Value = idString;
-
-                                // Put target name into dictionary so it's easier to find next time.
-                                recordIds[thisName] = idString;
-                            }
-                        }
-                        else
-                        {
-                            idString = recordIds[closestName];
-                            newColumn.Offset[iRowOffset].Value = idString;
-
-                            // Put target name into dictionary so it's easier to find next time.
-                            recordIds[thisName] = idString;
-                        }
-                    }
                 }
                 catch (Microsoft.CSharp.RuntimeBinder.RuntimeBinderException)
                 {
@@ -154,7 +131,8 @@ namespace DECS_Excel_Add_Ins
         private void InsertMatchingNameAndId(Range tgtColumn)
         {
             Range matchingNameColumn = Utilities.InsertNewColumn(tgtColumn, "Matching Name");
-            Range matchingIdColumn = Utilities.InsertNewColumn(matchingNameColumn, "Id of Matching Name");
+            Range matchDetailsColumn = Utilities.InsertNewColumn(matchingNameColumn, "Match Details");
+            Range matchingIdColumn = Utilities.InsertNewColumn(matchDetailsColumn, "Id of Matching Name");
             string idString;
             int iRowOffset = 0;
 
@@ -169,15 +147,26 @@ namespace DECS_Excel_Add_Ins
                     if (recordIds.ContainsKey(thisName))
                     {
                         matchingNameColumn.Offset[iRowOffset].Value = thisName;
+                        matchDetailsColumn.Offset[iRowOffset].Value = "Exact";
                         idString = recordIds[thisName];
                         matchingIdColumn.Offset[iRowOffset].Value = idString;
                     }
                     else
                     {
                         List<string> allNames = recordIds.Keys.ToList();
-                        string closestName = Utilities.FindClosestMatch(allNames, thisName, maxDistanceAllowed: 0.25);
+                        NameMatch nameMatch = Utilities.FindClosestMatch(allNames, thisName, maxDistanceAllowed: 0.25);
 
-                        if (string.IsNullOrEmpty(closestName))
+                        if (nameMatch.IsMatch())
+                        {
+                            matchingNameColumn.Offset[iRowOffset].Value = nameMatch.BestMatch();
+                            matchDetailsColumn.Offset[iRowOffset].Value = nameMatch.MatchType();
+                            idString = recordIds[nameMatch.BestMatch()];
+                            matchingIdColumn.Offset[iRowOffset].Value = idString;
+
+                            // Put target name into dictionary so it's easier to find next time.
+                            recordIds[thisName] = idString;
+                        }
+                        else
                         {
                             string userSelection = AskUserToMatch(thisName);
 
@@ -189,21 +178,13 @@ namespace DECS_Excel_Add_Ins
                             else
                             {
                                 matchingNameColumn.Offset[iRowOffset].Value = userSelection;
+                                matchDetailsColumn[iRowOffset].Value = TypeOfMatch.UserSelected.ToString();
                                 idString = recordIds[userSelection];
                                 matchingIdColumn.Offset[iRowOffset].Value = idString;
 
                                 // Put target name into dictionary so it's easier to find next time.
                                 recordIds[thisName] = idString;
                             }
-                        }
-                        else
-                        {
-                            matchingNameColumn.Offset[iRowOffset].Value = closestName;
-                            idString = recordIds[closestName];
-                            matchingIdColumn.Offset[iRowOffset].Value = idString;
-
-                            // Put target name into dictionary so it's easier to find next time.
-                            recordIds[thisName] = idString;
                         }
                     }
                 }
@@ -226,7 +207,7 @@ namespace DECS_Excel_Add_Ins
                     Range idColumn = form.idColumn;
                     Range targetColumn = form.targetColumn;
 
-                    Worksheet translationTable = FindOrCreateTranslationTable(sourceColumn, idColumn, targetColumn);
+                    FindOrCreateTranslationTable(sourceColumn, idColumn, targetColumn);
                     InsertIdWhereNamesMatch(targetColumn);
                 }
             }

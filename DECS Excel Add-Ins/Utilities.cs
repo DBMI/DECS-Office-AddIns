@@ -22,6 +22,51 @@ namespace DECS_Excel_Add_Ins
         Left,
         Right
     }
+    internal enum TypeOfMatch
+    {
+        DesiredNameStartsWithMatch,
+        Exact,
+        Levenshtein,
+        MatchStartsWithDesiredName,
+        UserSelected
+    }
+    internal class NameMatch
+    {
+        private string bestMatch;
+        private TypeOfMatch matchType;
+        private double? relativeDistance;
+
+        internal NameMatch(string bestMatch, TypeOfMatch matchType, double? relativeDistance = null)
+        {
+            this.bestMatch = bestMatch;
+            this.matchType = matchType;
+            this.relativeDistance = relativeDistance;
+        }
+
+        internal string BestMatch()
+        {
+            return bestMatch;
+        }
+        internal bool IsMatch()
+        {
+            return !string.IsNullOrEmpty(bestMatch);
+        }
+        internal string MatchType()
+        {
+            string thisMatchType = matchType.ToString();
+
+            if (matchType == TypeOfMatch.Levenshtein && relativeDistance.HasValue)
+            {
+                thisMatchType += ": " + relativeDistance.Value.ToString("F2");
+            }
+
+            return thisMatchType;
+        }
+        internal double? RelativeDistance()
+        {
+            return relativeDistance;
+        }
+    }
     /**
      * @brief Useful tools
      */
@@ -547,7 +592,7 @@ namespace DECS_Excel_Add_Ins
             return sheets.LastOrDefault();
         }
 
-        internal static string FindClosestMatch(List<string> names, string desiredName, double maxDistanceAllowed = 1.0)
+        internal static NameMatch FindClosestMatch(List<string> names, string desiredName, double maxDistanceAllowed = 1.0)
         {
             double lowestScore = 1000000;
             string bestMatch = string.Empty;
@@ -560,9 +605,13 @@ namespace DECS_Excel_Add_Ins
                 int levenshteinDistance = lev.DistanceFrom(thisName);
                 double relativeDistance = levenshteinDistance / wordLength;
 
-                if (thisName.StartsWith(desiredName) || desiredName.StartsWith(thisName))
+                if (thisName.StartsWith(desiredName))
                 {
-                    return thisName;
+                    return new NameMatch(bestMatch: thisName, matchType: TypeOfMatch.MatchStartsWithDesiredName);
+                }
+                else if (desiredName.StartsWith(thisName))
+                {
+                    return new NameMatch(bestMatch: thisName, matchType: TypeOfMatch.DesiredNameStartsWithMatch);
                 }
                 else if (relativeDistance < lowestScore && relativeDistance < maxDistanceAllowed)
                 {
@@ -571,7 +620,7 @@ namespace DECS_Excel_Add_Ins
                 }
             }
 
-            return bestMatch;
+            return new NameMatch(bestMatch: bestMatch, matchType: TypeOfMatch.Levenshtein, relativeDistance: lowestScore);
         }
 
         internal static Rows FindNamesExact(Worksheet sheet, string namesColumnName, string desiredName)
