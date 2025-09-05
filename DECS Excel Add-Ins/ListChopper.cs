@@ -134,7 +134,7 @@ namespace DECS_Excel_Add_Ins
                 Utilities.SortPageByColumn(worksheet, selectedColumnRng);
 
                 // Figure out the distinct category values & where they are.
-                sourceBlocks = Utilities.IdentifyBlocks(selectedColumnRng, lastRowInSheet);
+                sourceBlocks = Utilities.IdentifyBlocks(selectedColumnRng);
 
                 // Create new worksheets--one per distinct value.
                 List<string> newSheetNames = new List<string>(sourceBlocks.Keys);

@@ -1086,9 +1086,8 @@ namespace DECS_Excel_Add_Ins
         /// finds the distinct elements ("Alice Apple", "Bob Baker") and the Block of rows where each appears.
         /// </summary>
         /// <param name="column">Range</param>
-        /// <param name="lastRow">int</param>
         /// <returns>Dictionary of Block objects</returns>
-        internal static Dictionary<string, Block> IdentifyBlocks(Range column, int lastRow)
+        internal static Dictionary<string, Block> IdentifyBlocks(Range column)
         {
             Dictionary<string, Block> dict = new Dictionary<string, Block>();
             string cellContents = string.Empty;
@@ -1096,21 +1095,42 @@ namespace DECS_Excel_Add_Ins
             int startingOffset = 1;
             int endingOffset = 1;
             string thisBlockName = null;
+            int rowOffset = 0;
 
-            for (int rowOffset = 1; rowOffset < lastRow; rowOffset++)
+            while (true)
             {
-                cellContents = column.Offset[rowOffset, 0].Value2.ToString();
+                rowOffset++;
+                try
+                {
+                    cellContents = column.Offset[rowOffset, 0].Value2.ToString();
 
-                if (thisBlockName is null || cellContents == thisBlockName)
-                {
-                    // Still in same block, so keep a running count.
-                    thisBlockName = cellContents;
-                    endingOffset = rowOffset;
+                    if (thisBlockName is null || cellContents == thisBlockName)
+                    {
+                        // Still in same block, so keep a running count.
+                        thisBlockName = cellContents;
+                        endingOffset = rowOffset;
+                    }
+                    else
+                    {
+                        // The name just changed, which means:
+                        //  --> the previous block ended.
+                        thisBlock = new Block(startingOffset, endingOffset);
+
+                        // Should we add this to the dictionary?
+                        if (!dict.ContainsKey(thisBlockName))
+                        {
+                            dict[thisBlockName] = thisBlock;
+                        }
+
+                        //  --> & a new block started.
+                        thisBlockName = cellContents;
+                        startingOffset = rowOffset;
+                        endingOffset = rowOffset;
+                    }
                 }
-                else
+                catch (Microsoft.CSharp.RuntimeBinder.RuntimeBinderException)
                 {
-                    // The name just changed, which means:
-                    //  --> the previous block ended.
+                    // Add the ending block.
                     thisBlock = new Block(startingOffset, endingOffset);
 
                     // Should we add this to the dictionary?
@@ -1119,20 +1139,8 @@ namespace DECS_Excel_Add_Ins
                         dict[thisBlockName] = thisBlock;
                     }
 
-                    //  --> & a new block started.
-                    thisBlockName = cellContents;
-                    startingOffset = rowOffset;
-                    endingOffset = rowOffset;
+                    break;
                 }
-            }
-
-            // Add the ending block.
-            thisBlock = new Block(startingOffset, endingOffset);
-
-            // Should we add this to the dictionary?
-            if (!dict.ContainsKey(thisBlockName))
-            {
-                dict[thisBlockName] = thisBlock;
             }
 
             return dict;

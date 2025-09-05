@@ -1,15 +1,9 @@
 ﻿using Microsoft.Office.Interop.Excel;
-using System;
 using System.Collections.Generic;
-using System.ComponentModel;
-using System.Linq;
-using System.Runtime.Serialization;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 
 namespace DECS_Excel_Add_Ins
-{    
+{
     /**
      * @brief Breaks an Excel spreadsheet into groups based on a selected column.
      */
@@ -72,7 +66,7 @@ namespace DECS_Excel_Add_Ins
             if (FindSelectedCategory(worksheet))
             {
                 // Figure out the distinct category values & where they are.
-                sourceBlocks = Utilities.IdentifyBlocks(selectedColumnRng, lastRowInSheet);                
+                sourceBlocks = Utilities.IdentifyBlocks(selectedColumnRng);
                 List<string> blockNames = new List<string>(sourceBlocks.Keys);
 
                 int blockIndex = 0;
