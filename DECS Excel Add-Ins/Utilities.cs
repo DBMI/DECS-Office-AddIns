@@ -216,6 +216,31 @@ namespace DECS_Excel_Add_Ins
         }
 
         /// <summary>
+        /// Given a list of column names ("Coverage Start Date", "Address Start Date"),
+        /// finds the string they have in common ("Start Date").
+        /// </summary>
+        /// <param name="columnNames">List of strings</param>
+        /// <returns>string</returns>
+        internal static string CommonElements(List<string> columnNames)
+        {
+            string result = string.Empty;
+
+            if (columnNames.Count == 0)
+            {
+                return result;
+            }
+
+            string longestSubstring = columnNames[0];
+
+            for (int i = 1; i <= columnNames.Count; i++)
+            {
+                longestSubstring = FindLongestCommonSubstring(longestSubstring, columnNames[i]);
+            }
+
+            return longestSubstring;
+        }
+
+        /// <summary>
         /// Convert Excel-formatted date to SQL style.
         /// </summary>
         /// <param name="cellContents">String contents of a particular cell.</param>
@@ -1222,6 +1247,31 @@ namespace DECS_Excel_Add_Ins
             }
 
             return new RuleValidationResult();
+        }
+
+        /// <summary>
+        /// Finds longest common substring between two strings.
+        /// </summary>
+        /// <param name="s1">string</param>
+        /// <param name="s2">string</param>
+        /// <returns>string</returns>
+        public static string FindLongestCommonSubstring(string s1, string s2)
+        {
+            string longestCommon = string.Empty;
+
+            for (int i = 0; i < s1.Length; i++)
+            {
+                for (int j = i; j < s1.Length; j++)
+                {
+                    string currentSubstring = s1.Substring(i, j - i + 1);
+
+                    if (s2.Contains(currentSubstring) && currentSubstring.Length > longestCommon.Length)
+                    {
+                        longestCommon = currentSubstring;
+                    }
+                }
+            }
+            return longestCommon;
         }
 
         /// <summary>
