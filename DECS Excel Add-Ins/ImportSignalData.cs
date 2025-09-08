@@ -7,6 +7,7 @@ using System.Text.Json;
 using System.Text.Json.Serialization;
 using System.Web.UI.WebControls;
 using System.Windows.Forms;
+using Application = Microsoft.Office.Interop.Excel.Application;
 
 
 namespace DECS_Excel_Add_Ins
@@ -18,9 +19,20 @@ namespace DECS_Excel_Add_Ins
         public Userwebmetadata UserWebMetadata { get; set; }
         public Datum[] Data { get; set; }
 
-        public string MetricName()
+        public List<string> MetricNames()
         {
-            return Data[1].Metric;
+            List<string> metricNames = new List<string>();
+
+            foreach (Datum datum in Data)
+            {
+                if (!metricNames.Contains(datum.Metric))
+                {
+                    metricNames.Add(datum.Metric);
+                }
+            }
+
+            metricNames.Sort();
+            return metricNames;
         }
     }
 
@@ -126,9 +138,10 @@ namespace DECS_Excel_Add_Ins
 
     internal class ImportSignalData
     {
+        private Application application;
         private SignalNotesFormat format = SignalNotesFormat.OneBigSheet;
 
-        private string metricName = string.Empty;
+        private List<string> metricNames;
 
         // Keep track of the sheet used for each physician AND what row we last used on that sheet.
         private Dictionary<string, PhysicianTable> tables;
@@ -136,6 +149,7 @@ namespace DECS_Excel_Add_Ins
         internal ImportSignalData()
         {
             tables = new Dictionary<string, PhysicianTable>();
+            application = Globals.ThisAddIn.Application;
         }
 
         private string AskUserForFile()
@@ -161,54 +175,21 @@ namespace DECS_Excel_Add_Ins
 
         private void BuildSheets(Rootobject obj)
         {
-            // Sort the data objects by physician name, then date.
-            List<Datum> sortedData = obj.Data.OrderBy(x => x.ClinicianName).ThenBy(y => y.ReportingPeriodEndDate).ToList();
+            // Sort the data objects by metricName, then physician name, then date.
+            List<Datum> sortedData = obj.Data.OrderBy(x => x.Metric).
+                                              ThenBy(y => y.ClinicianName).
+                                              ThenBy(y => y.ReportingPeriodEndDate).ToList();
 
             if (format == SignalNotesFormat.OneBigSheet)
             {
-                BuildOneBigSheet(sortedData);
+                PutAllPhysiciansOnSameSheet(sortedData);
             }
             else
             {
-                BuildSeparateSheets(sortedData);
+                PutEachPhysicianOnOwnSheet(sortedData);
             }
-        }
 
-        private void BuildOneBigSheet(List<Datum> sortedData)
-        {
-            Worksheet newSheet = Utilities.CreateNewNamedSheet("Signal " + metricName);
-            InitializeSheet(newSheet);
-            Range r = newSheet.Cells[1, 1];
-            int rowOffset = 1;
-
-            foreach (Datum datum in sortedData)
-            {
-                r.Offset[rowOffset, 0].Value2 = datum.ClinicianName;
-                r.Offset[rowOffset, 1].Value2 = datum.ClinicianType;
-                r.Offset[rowOffset, 2].Value2 = datum.ServiceArea;
-                r.Offset[rowOffset, 3].Value2 = datum.Department;
-                r.Offset[rowOffset, 4].Value2 = datum.Specialty;
-                r.Offset[rowOffset, 5].Value2 = datum.UserType;
-                r.Offset[rowOffset, 6].Value2 = datum.ReportingPeriodEndDate;
-                r.Offset[rowOffset, 7].Value2 = datum.Numerator;
-                r.Offset[rowOffset, 8].Value2 = datum.Denominator;
-                r.Offset[rowOffset, 9].Value2 = datum.Value;
-                rowOffset++;
-            }
-        }
-
-        private void BuildSeparateSheets(List<Datum> sortedData)
-        {
-            foreach (Datum datum in sortedData)
-            {
-                PhysicianTable table = FindOrCreateTable(datum);
-                Range r = table.TopLeft();
-                r.Offset[table.Row(), 0].Value2 = datum.ReportingPeriodEndDate;
-                r.Offset[table.Row(), 1].Value2 = datum.Numerator;
-                r.Offset[table.Row(), 2].Value2 = datum.Denominator;
-                r.Offset[table.Row(), 3].Value2 = datum.Value;
-                table.IncrementRow();
-            }
+            application.StatusBar = "Ready";
         }
 
         private PhysicianTable FindOrCreateTable(Datum datum)
@@ -282,18 +263,19 @@ namespace DECS_Excel_Add_Ins
             {
                 using (StreamReader r = new StreamReader(jsonFile))
                 {
+                    application.StatusBar = "Reading " + jsonFile;
                     string json = r.ReadToEnd();
 
                     var options = new JsonSerializerOptions();
                     options.Converters.Add(new CustomDateTimeConverter());
                     Rootobject obj = JsonSerializer.Deserialize<Rootobject>(json, options);
-                    metricName = obj.MetricName();
+                    metricNames = obj.MetricNames();
                     BuildSheets(obj);
                 }
             }
         }
 
-        private void InitializeSheet(Worksheet sheet)
+        private void InitializeSheet(Worksheet sheet, string metricName)
         {
             Range r = sheet.Cells[1, 1];
             r.Value2 = "Clinician Name";
@@ -336,6 +318,49 @@ namespace DECS_Excel_Add_Ins
             Range headings = sheet.Range[r, r.Offset[0, 9]];
             Borders borders = headings.Borders;
             borders[XlBordersIndex.xlEdgeBottom].Weight = XlBorderWeight.xlThick;
+        }
+
+        private void PutAllPhysiciansOnSameSheet(List<Datum> sortedData)
+        {
+            foreach (string metricName in metricNames)
+            {
+                application.StatusBar = "Building sheet: Signal " + metricName;
+                Worksheet newSheet = Utilities.CreateNewNamedSheet("Signal " + metricName);
+                InitializeSheet(newSheet, metricName);
+                Range r = newSheet.Cells[1, 1];
+                int rowOffset = 1;
+
+                List<Datum> dataThisMetric = sortedData.Where(obj => obj.Metric == metricName).ToList();
+
+                foreach (Datum datum in dataThisMetric)
+                {
+                    r.Offset[rowOffset, 0].Value2 = datum.ClinicianName;
+                    r.Offset[rowOffset, 1].Value2 = datum.ClinicianType;
+                    r.Offset[rowOffset, 2].Value2 = datum.ServiceArea;
+                    r.Offset[rowOffset, 3].Value2 = datum.Department;
+                    r.Offset[rowOffset, 4].Value2 = datum.Specialty;
+                    r.Offset[rowOffset, 5].Value2 = datum.UserType;
+                    r.Offset[rowOffset, 6].Value2 = datum.ReportingPeriodEndDate;
+                    r.Offset[rowOffset, 7].Value2 = datum.Numerator;
+                    r.Offset[rowOffset, 8].Value2 = datum.Denominator;
+                    r.Offset[rowOffset, 9].Value2 = datum.Value;
+                    rowOffset++;
+                }
+            }
+        }
+
+        private void PutEachPhysicianOnOwnSheet(List<Datum> sortedData)
+        {
+            foreach (Datum datum in sortedData)
+            {
+                PhysicianTable table = FindOrCreateTable(datum);
+                Range r = table.TopLeft();
+                r.Offset[table.Row(), 0].Value2 = datum.ReportingPeriodEndDate;
+                r.Offset[table.Row(), 1].Value2 = datum.Numerator;
+                r.Offset[table.Row(), 2].Value2 = datum.Denominator;
+                r.Offset[table.Row(), 3].Value2 = datum.Value;
+                table.IncrementRow();
+            }
         }
     }
 }
