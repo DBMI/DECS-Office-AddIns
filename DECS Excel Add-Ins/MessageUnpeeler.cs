@@ -1,10 +1,7 @@
 ﻿using Microsoft.Office.Interop.Excel;
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Text.RegularExpressions;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 
 namespace DECS_Excel_Add_Ins
@@ -27,7 +24,7 @@ namespace DECS_Excel_Add_Ins
             bool success = false;
 
             // Any column selected?
-            selectedColumnRng = Utilities.GetSelectedCol(application, lastRow);
+            selectedColumnRng = Utilities.GetSelectedCol(application);
 
             if (selectedColumnRng is null)
             {
@@ -89,13 +86,13 @@ namespace DECS_Excel_Add_Ins
                     // In case the message doesn't contain "-----", initialize with the raw message.
                     targetData = sourceData;
 
-                    foreach(string line in lines)
+                    foreach (string line in lines)
                     {
                         // Grab the -LAST- line that does not start with Message or From:
                         // (Skip empty lines & ones that repeat MyChart boilerplate.)
-                        if (line.Trim().Length > 0 && 
+                        if (line.Trim().Length > 0 &&
                             !line.Contains("MyChart Guidelines:") &&
-                            !line.Contains("Message") && 
+                            !line.Contains("Message") &&
                             !line.Contains("From:"))
                         {
                             targetData = line;

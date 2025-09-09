@@ -13,8 +13,7 @@ namespace DECS_Excel_Add_Ins
     internal class DateConverter
     {
         private Microsoft.Office.Interop.Excel.Application application;
-        private int lastRow;
-        private Range selectedColumnRng;
+        private List<Range> selectedColumnsRng;
         private IDictionary<string, string> supportedDateFormats;
 
         // https://stackoverflow.com/a/28546547/18749636
@@ -67,26 +66,30 @@ namespace DECS_Excel_Add_Ins
             return note;
         }
 
-        private bool FindSelectedColumn(Worksheet worksheet)
+        private bool FindSelectedColumns(Worksheet worksheet)
         {
             bool success = false;
-            lastRow = worksheet.UsedRange.Rows.Count;
 
             // Any column selected?
-            selectedColumnRng = Utilities.GetSelectedCol(application, lastRow);
+            selectedColumnsRng = Utilities.GetSelectedCols(application);
 
-            if (selectedColumnRng is null)
+            if (selectedColumnsRng is null)
             {
-                // Then ask user to select one column.
+                // Then ask user to select columns of interest.
                 List<string> columnNames = Utilities.GetColumnNames(worksheet);
 
-                using (ChooseCategoryForm form = new ChooseCategoryForm(columnNames, MultiSelect: false))
+                using (ChooseCategoryForm form = new ChooseCategoryForm(columnNames, MultiSelect: true))
                 {
                     var result = form.ShowDialog();
 
                     if (result == DialogResult.OK)
                     {
-                        selectedColumnRng = Utilities.TopOfNamedColumn(worksheet, form.selectedColumns[0]);
+                        foreach (string selectedColumnName in form.selectedColumns)
+                        {
+                            Range thisRng = Utilities.TopOfNamedColumn(worksheet, selectedColumnName);
+                            selectedColumnsRng.Add(thisRng);
+                        }
+
                         success = true;
                     }
                     else if (result == DialogResult.Cancel)
@@ -121,33 +124,55 @@ namespace DECS_Excel_Add_Ins
         /// <returns>string</returns>
         internal void ToText(Worksheet worksheet)
         {
-            int lastRow = worksheet.UsedRange.Rows.Count;
-
-            if (FindSelectedColumn(worksheet))
+            if (FindSelectedColumns(worksheet))
             {
-                string selectedColumnName = selectedColumnRng.Value.ToString();
-                string newColumnName = selectedColumnName + " Text";
-
-                // Make room for new column.
-                Range ditheredColumn = Utilities.InsertNewColumn(range: selectedColumnRng,
-                                                                 newColumnName: newColumnName,
-                                                                 side: InsertSide.Right);
-                ditheredColumn.NumberFormat = "@";
-
-                DateTime sourceData;
-                Range target;
-
-                for (int rowNumber = 2; rowNumber <= lastRow; rowNumber++)
+                foreach (Range selectedColumnRng in selectedColumnsRng)
                 {
-                    target = (Range)worksheet.Cells[rowNumber, ditheredColumn.Column];
+                    ToText(selectedColumnRng);
+                }
+            }
+        }
 
-                    try
+        internal void ToText(Range selectedColumnRng)
+        {
+            string selectedColumnName = selectedColumnRng.Value.ToString();
+            string newColumnName = selectedColumnName + " Text";
+
+            // Make room for new column.
+            Range newColumn = Utilities.InsertNewColumn(range: selectedColumnRng,
+                                                             newColumnName: newColumnName,
+                                                             side: InsertSide.Right);
+            newColumn.NumberFormat = "@";
+
+            DateTime sourceData;
+            Range target;
+            Worksheet worksheet = selectedColumnRng.Worksheet;
+            int rowNumber = 1;
+            int numConsecutiveFailures = 0;
+
+            while (true)
+            {
+                rowNumber++;
+                target = (Range)worksheet.Cells[rowNumber, newColumn.Column];
+
+                try
+                {
+                    sourceData = worksheet.Cells[rowNumber, selectedColumnRng.Column].Value;
+                    target.Value = sourceData.ToString("yyyy-MM-dd HH:mm:ss");
+
+                    // reset
+                    numConsecutiveFailures = 0;
+                }
+                // If we can't read into a DateTime object, just skip it.
+                catch (Microsoft.CSharp.RuntimeBinder.RuntimeBinderException)
+                {
+                    // An occasional miss is ok, but three in a row & we've run outta data.
+                    numConsecutiveFailures++;
+
+                    if (numConsecutiveFailures >= 3)
                     {
-                        sourceData = worksheet.Cells[rowNumber, selectedColumnRng.Column].Value;
-                        target.Value = sourceData.ToString("yyyy-MM-dd HH:mm:ss");
+                        break;
                     }
-                    // If we can't read into a DateTime object, just skip it.
-                    catch (Microsoft.CSharp.RuntimeBinder.RuntimeBinderException) { }
                 }
             }
         }

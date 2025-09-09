@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<NotesConfig xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <CleaningRules>
+    <CleaningRule>
+      <enabled>false</enabled>
+    </CleaningRule>
+  </CleaningRules>
+  <DateConversionRule>
+    <enabled>true</enabled>
+    <desiredDateFormat>MM/dd/yyyy</desiredDateFormat>
+  </DateConversionRule>
+  <ExtractRules>
+    <ExtractRule>
+      <displayName>junk</displayName>
+      <enabled>true</enabled>
+      <pattern>test(\d+)</pattern>
+      <newColumn>extracted</newColumn>
+    </ExtractRule>
+  </ExtractRules>
+  <SourceColumnName>REPORT</SourceColumnName>
+</NotesConfig>

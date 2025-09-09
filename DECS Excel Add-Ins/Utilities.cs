@@ -978,16 +978,15 @@ namespace DECS_Excel_Add_Ins
         /// Has the user selected a column? And just one?
         /// </summary>
         /// <param name="application">Excel application</param>
-        /// <param name="lastRow">Number of last row with data</param>
         /// <returns>Range</returns>
-        internal static Range GetSelectedCol(Microsoft.Office.Interop.Excel.Application application, int lastRow)
+        internal static Range GetSelectedCol(Microsoft.Office.Interop.Excel.Application application)
         {
             Range rng = (Range)application.Selection;
             Worksheet sheet = application.Selection.Worksheet;
             Range selectedColumn = null;
 
             // Whole column? Just one? And containing data?
-            if (Utilities.HasData(rng.Columns[1], lastRow))
+            if (Utilities.HasData(rng.Columns[1]))
             {
                 // We want the TOP of the column.
                 int columnNumber = rng.Columns[1].Column;
@@ -1003,7 +1002,7 @@ namespace DECS_Excel_Add_Ins
         /// <param name="application">Excel application</param>
         /// <param name="lastRow">Number of last row with data</param>
         /// <returns>List<Range></returns>
-        internal static List<Range> GetSelectedCols(Microsoft.Office.Interop.Excel.Application application, int lastRow)
+        internal static List<Range> GetSelectedCols(Microsoft.Office.Interop.Excel.Application application)
         {
             Range rng = (Range)application.Selection;
             List<Range> selectedColumns = new List<Range>();
@@ -1012,7 +1011,7 @@ namespace DECS_Excel_Add_Ins
             foreach (Range col in rng.Columns)
             {
                 // Don't add BLANK columns.
-                if (Utilities.HasData(col, lastRow))
+                if (Utilities.HasData(col))
                 {
                     // Want the TOP of the column.
                     int columnNumber = col.Column;
@@ -1082,17 +1081,19 @@ namespace DECS_Excel_Add_Ins
         /// Does this range have data?
         /// </summary>
         /// <param name="rng">Range to search</param>
-        /// <param name="lastRow">Number of last row with data</param>
         /// <returns>bool</returns>
-        internal static bool HasData(Range rng, int lastRow)
+        internal static bool HasData(Range rng)
         {
             bool hasData = false;
             Range thisCell;
+            int rowNumber = 0;
 
-            for (int rowNumber = 1; rowNumber <= lastRow; rowNumber++)
+            while (true)
             {
+                rowNumber++;
                 thisCell = rng.Cells[rowNumber];
                 string cell_contents;
+                int numConsecutiveFailures = 0;
 
                 try
                 {
@@ -1100,7 +1101,15 @@ namespace DECS_Excel_Add_Ins
                     hasData = true;
                     break;
                 }
-                catch (Microsoft.CSharp.RuntimeBinder.RuntimeBinderException) { }
+                catch (Microsoft.CSharp.RuntimeBinder.RuntimeBinderException)
+                {
+                    numConsecutiveFailures++;
+
+                    if (numConsecutiveFailures >= 3)
+                    {
+                        break;
+                    }
+                }
             }
 
             return hasData;

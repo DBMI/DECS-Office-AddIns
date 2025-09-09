@@ -66,7 +66,7 @@ namespace DECS_Excel_Add_Ins
             bool success = false;
 
             // Any column selected?
-            selectedColumnRng = Utilities.GetSelectedCol(application, lastRowInSheet);
+            selectedColumnRng = Utilities.GetSelectedCol(application);
 
             if (selectedColumnRng is null)
             {

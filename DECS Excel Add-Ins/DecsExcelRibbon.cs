@@ -305,16 +305,6 @@ namespace DECS_Excel_Add_Ins
         }
 
         /// <summary>
-        /// Lets the @c DexsExcelRibbon.xml point to the image for the @c ExtractTime button.
-        /// </summary>
-        /// <param name="control">Reference to the IRibbonControl object.</param>
-        /// <returns>Bitmap</returns>
-        public Bitmap timeInNotesButton_GetImage(IRibbonControl control)
-        {
-            return Resources.time_in_notes;
-        }
-
-        /// <summary>
         /// When @c AddSVI button is pressed, this method instantiates a @c SviProcessor object & calls its @c Scan method.
         /// </summary>
         /// <param name="control">Reference to the IRibbonControl object.</param>
@@ -625,18 +615,6 @@ namespace DECS_Excel_Add_Ins
             Striper striper = new Striper();
             Excel.Worksheet wksheet = (Excel.Worksheet)Globals.ThisAddIn.Application.ActiveSheet;
             striper.Run(wksheet);
-        }
-
-        /// <summary>
-        /// When @c ExtractTime button is pressed, this method instantiates a @c TimeInNotes object.
-        /// </summary>
-        /// <param name="control">Reference to the IRibbonControl object.</param>
-
-        public void OnTimeInNotes(Office.IRibbonControl control)
-        {
-            Excel.Worksheet wksheet = (Excel.Worksheet)Globals.ThisAddIn.Application.ActiveSheet;
-            ExtractTime obj = new ExtractTime(_worksheet: wksheet);
-            obj.Extract();
         }
 
         #region IRibbonExtensibility Members

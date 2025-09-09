@@ -118,6 +118,12 @@
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
   <assembly alias="System.Windows.Forms" name="System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
+  <data name="abacus" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\pictures\abacus.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="calendar" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\pictures\calendar.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
   <data name="calendar_with_gear" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\pictures\calendar with gear.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
@@ -127,14 +133,50 @@
   <data name="clipboard" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\pictures\clipboard.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
+  <data name="combine_rows" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\pictures\combine rows.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="comparison_graph" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\pictures\comparison_graph.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="copy_formatting" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\pictures\copy_formatting.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
   <data name="decs_logo" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\pictures\decs_logo.ico;System.Drawing.Icon, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
   <data name="ENV_EPHT_social" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\pictures\ENV_EPHT-social.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
+  <data name="groucho" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\pictures\groucho.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="hide_identity" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\pictures\hide_identity.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="json" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\pictures\json.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="match_people" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\pictures\match_people.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="merge_rows" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\pictures\merge rows.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="nesting_dolls" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\pictures\nesting_dolls.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="on_call" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\pictures\on_call.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
   <data name="paint_roller" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\paint roller.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="priority" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\pictures\priority.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="priority_settings" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\pictures\priority_settings.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
   <data name="regex_search_icon" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\pictures\regex_search_icon.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
@@ -142,8 +184,35 @@
   <data name="regex_setup_icon" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\pictures\regex_setup_icon.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
+  <data name="rubber_clock" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\pictures\rubber_clock.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="rubber_clock_small" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\pictures\rubber_clock_small.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
   <data name="school_of_medicine" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\pictures\school_of_medicine.ico;System.Drawing.Icon, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="search_by_email" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\pictures\search_by_email.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="slice_into_tabs" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\pictures\slice_into_tabs.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="slicing" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\pictures\slicing.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="spreadsheet" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\pictures\spreadsheet.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="survey" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\pictures\survey.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="timecard" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\pictures\timecard.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="time_in_notes" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\pictures\time_in_notes.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
   <data name="ZIP_TRACT_122023" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\data\ZIP_TRACT_122023.csv;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;utf-8</value>
