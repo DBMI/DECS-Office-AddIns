@@ -231,7 +231,7 @@ namespace DECS_Excel_Add_Ins
             string segmentStart = SEGMENT_START_I;
 
             // Any columns selected?
-            List<Range> selectedColumns = Utilities.GetSelectedCols(application, lastRow);
+            List<Range> selectedColumns = Utilities.GetSelectedCols(application);
 
             if (selectedColumns.Count == 0)
             {

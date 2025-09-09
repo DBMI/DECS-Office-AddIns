@@ -1,17 +1,8 @@
-﻿using DECS_Excel_Add_Ins.Properties;
-using Microsoft.Office.Interop.Excel;
-using System;
+﻿using Microsoft.Office.Interop.Excel;
 using System.Collections.Generic;
 using System.ComponentModel;
-using System.IO;
-using System.Linq;
-using System.Net;
-using System.Reflection;
-using System.Text;
 using System.Text.RegularExpressions;
-using System.Threading.Tasks;
 using Application = Microsoft.Office.Interop.Excel.Application;
-using Excel = Microsoft.Office.Interop.Excel;
 
 namespace DECS_Excel_Add_Ins
 {
@@ -55,7 +46,7 @@ namespace DECS_Excel_Add_Ins
         private Range FindNamedColumn(Worksheet worksheet, int lastRowNumber, string desiredName)
         {
             Regex desiredPattern = new Regex(desiredName.ToLower());
-            Range selectedColumn = Utilities.GetSelectedCol(application, lastRowNumber);
+            Range selectedColumn = Utilities.GetSelectedCol(application);
 
             // If user didn't select a column, find it by name.
             if (selectedColumn == null)
@@ -97,7 +88,7 @@ namespace DECS_Excel_Add_Ins
         /// - Looks up the SVI values from the tract dictionary.
         /// <summary>
         /// <param name="worksheet">Reference to the ActiveSheet.</param>
-        
+
         internal void Scan(Worksheet worksheet)
         {
             // We'll use this in a lot of places, so let's just look it up once.

@@ -130,7 +130,7 @@ namespace DECS_Excel_Add_Ins
             bool success = false;
 
             // Any column selected?
-            selectedTimeTextColumnRng = Utilities.GetSelectedCol(application, lastRow);
+            selectedTimeTextColumnRng = Utilities.GetSelectedCol(application);
 
             if (selectedTimeTextColumnRng is null)
             {

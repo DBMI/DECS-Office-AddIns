@@ -306,7 +306,7 @@ namespace DECS_Excel_Add_Ins
             Microsoft.Office.Interop.Excel.Application application = Globals.ThisAddIn.Application;
 
             // Any column selected?
-            providerEmailRng = Utilities.GetSelectedCol(application, lastRowInSheet);
+            providerEmailRng = Utilities.GetSelectedCol(application);
 
             if (providerEmailRng is null)
             {
@@ -365,7 +365,7 @@ namespace DECS_Excel_Add_Ins
                 {
                     // Any column selected?
                     int lastRow = workbook.ActiveSheet.UsedRange.Rows.Count;
-                    selectedColumnsRng = Utilities.GetSelectedCols(externalFileApplication, lastRow);
+                    selectedColumnsRng = Utilities.GetSelectedCols(externalFileApplication);
                 }
                 else
                 {
