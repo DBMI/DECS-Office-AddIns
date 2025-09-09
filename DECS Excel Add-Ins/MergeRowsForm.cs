@@ -1,22 +1,10 @@
-﻿using Microsoft.Office.Core;
-using Microsoft.Office.Interop.Excel;
-using Microsoft.Office.Tools.Excel;
-using SimMetrics.Net;
+﻿using Microsoft.Office.Interop.Excel;
 using System;
-using System.Collections;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using System.ComponentModel;
 using System.Data;
-using System.Drawing;
 using System.Linq;
-using System.Runtime.InteropServices.ComTypes;
-using System.Text;
-using System.Threading;
-using System.Threading.Tasks;
 using System.Web.UI.WebControls;
 using System.Windows.Forms;
-using static System.Net.Mime.MediaTypeNames;
 using Worksheet = Microsoft.Office.Interop.Excel.Worksheet;
 
 namespace DECS_Excel_Add_Ins
@@ -43,7 +31,7 @@ namespace DECS_Excel_Add_Ins
         private Worksheet targetWorksheet;
         private Range topLeftCorner;
         private Dictionary<string, Worksheet> worksheetsDict;
-        
+
         private static readonly log4net.ILog log = log4net.LogManager.GetLogger(
     System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
 
@@ -68,7 +56,7 @@ namespace DECS_Excel_Add_Ins
         {
             selectedDateRangeColumnsDict.Clear();
 
-            foreach(ColumnNamePair pair in dateColumnPairs.GetColumnPairs())
+            foreach (ColumnNamePair pair in dateColumnPairs.GetColumnPairs())
             {
                 Range col1 = availableSourceColumnsRangeDict[pair.Name1()];
                 Range col2 = availableSourceColumnsRangeDict[pair.Name2()];
@@ -166,7 +154,7 @@ namespace DECS_Excel_Add_Ins
         /// </summary>
 
         private void EnableRunWhenReady()
-        
+
         {
             if (initializing)
             {
@@ -416,7 +404,7 @@ namespace DECS_Excel_Add_Ins
                 }
             }
 
-            disableCallbacks = false;            
+            disableCallbacks = false;
             EnableRunWhenReady();
         }
 
@@ -713,6 +701,11 @@ namespace DECS_Excel_Add_Ins
                 DateRangeColumns colObj = selectedDateRangeColumnsDict[key];
                 colObj.UpdateDates(rowOffset);
             }
+        }
+
+        private void helpButton_Click(object sender, EventArgs e)
+        {
+            System.Diagnostics.Process.Start("https://github.com/DBMI/DECS-Office-AddIns/blob/main/DECS%20Excel%20Add-Ins/help%20files/MergeRows/MergeRows.md");
         }
     }
 }
