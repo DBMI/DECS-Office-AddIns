@@ -22,41 +22,13 @@ Creates custom buttons in Microsoft Excel that allow user to:
 * Plot comparisons between multiple timeseries.
 * [Merge rows](./help%20files/MergeRows/MergeRows.md) across dates.
 * Extract the payload from a message.
-* Scan `Notes` fields for keywords, creating new columns.
+* [Scan `Notes` fields](./help%20files/SearchNotes/SearchNotes.md) for keywords, creating new columns.
 * Merge notes from one sheet into another according to some index column (like CSN).
 * Convert patient satisfaction survey data into SQL format.
 * Lookup Social Vulnerability Index ([SVI](https://www.atsdr.cdc.gov/placeandhealth/svi/index.html)) from address or zip code.
 * Extend the existing monthly research hours report to the new month.
 
 ## Operation
-### Excel: Extract data from notes
-In cases where we want to extract data from free-text columns, we can use the `Notes` tools to define & run extraction rules.
-#### Cleaning
-We start in the `Cleaning` tab, defining cleaning rules to:
-* fix misspellings
-* enforce standard naming
-
-These rules are run *before* the data extraction rules.
-
-![image info](./pictures/cleaning_rules.png)
-#### Date formats
-Using the `DateFormat` tab, we can select which date format we want for output columns.
-
-![image info](./pictures/date_formats.png)
-#### Extraction rules
-The `Extract` tab lets us define the Regular Expressions that extract data from free text.
-
-![image info](./pictures/extraction_rules.png)
-
-Starting with these free-text notes:
-
-![image info](./pictures/notes_raw.png)
-
-Here's an example of the extracted data:
-
-![image info](./pictures/notes_results.png)
-
-Notice how the original dates--in multiple formats--were automatically converted to a standard date format before extraction.
 
 ### Excel: Merge notes from different sheets
 In complex data sets, we may have extracted data in pieces and now need to merge results from one sheet into another. However, the index value (like **C**ontact **S**erial **N**umber) may be present on more than one row, or may be missing. And in the case of data extracted from notes, there may be different values extracted from different patient visits.
