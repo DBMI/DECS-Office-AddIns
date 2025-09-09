@@ -40,6 +40,7 @@
             this.groupBox1 = new System.Windows.Forms.GroupBox();
             this.dateColumnsListBox = new System.Windows.Forms.ListBox();
             this.groupBox4 = new System.Windows.Forms.GroupBox();
+            this.helpButton = new System.Windows.Forms.Button();
             this.groupBox3.SuspendLayout();
             this.groupBox2.SuspendLayout();
             this.groupBox1.SuspendLayout();
@@ -172,12 +173,27 @@
             this.groupBox4.TabStop = false;
             this.groupBox4.Text = "Info Columns (like insurer, address)";
             // 
+            // helpButton
+            // 
+            this.helpButton.BackColor = System.Drawing.Color.White;
+            this.helpButton.BackgroundImage = global::DECS_Excel_Add_Ins.Properties.Resources.help_small;
+            this.helpButton.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Center;
+            this.helpButton.FlatAppearance.BorderColor = System.Drawing.Color.White;
+            this.helpButton.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.helpButton.Location = new System.Drawing.Point(863, 494);
+            this.helpButton.Name = "helpButton";
+            this.helpButton.Size = new System.Drawing.Size(50, 50);
+            this.helpButton.TabIndex = 15;
+            this.helpButton.UseVisualStyleBackColor = false;
+            this.helpButton.Click += new System.EventHandler(this.helpButton_Click);
+            // 
             // MergeRowsForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.Color.White;
             this.ClientSize = new System.Drawing.Size(945, 556);
+            this.Controls.Add(this.helpButton);
             this.Controls.Add(this.groupBox4);
             this.Controls.Add(this.groupBox1);
             this.Controls.Add(this.groupBox3);
@@ -209,5 +225,6 @@
         private System.Windows.Forms.ListBox dateColumnsListBox;
         private System.Windows.Forms.ListBox patientDefinitionColumnsListBox;
         private System.Windows.Forms.GroupBox groupBox4;
+        private System.Windows.Forms.Button helpButton;
     }
 }
