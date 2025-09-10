@@ -25,9 +25,5 @@ Creates custom buttons in Microsoft Excel that allow user to:
 * [Scan `Notes` fields](./help%20files/SearchNotes/SearchNotes.md) for keywords, creating new columns.
 * [Merge notes](./help%20files/MergeNotes/MergeNotes.md) from one sheet into another according to some index column (like CSN).
 * Convert patient satisfaction survey data into SQL format.
-* Lookup Social Vulnerability Index ([SVI](https://www.atsdr.cdc.gov/placeandhealth/svi/index.html)) from address or zip code.
+* [Lookup Social Vulnerability Index](./help%20files/SVI/SVI.md) ([SVI](https://www.atsdr.cdc.gov/placeandhealth/svi/index.html)) from address or zip code.
 * Extend the existing monthly research hours report to the new month.
-
-## Operation
-
-## Algorithm Description
