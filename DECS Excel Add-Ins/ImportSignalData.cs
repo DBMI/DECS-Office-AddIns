@@ -324,7 +324,6 @@ namespace DECS_Excel_Add_Ins
         {
             foreach (string metricName in metricNames)
             {
-                application.StatusBar = "Building sheet: Signal " + metricName;
                 Worksheet newSheet = Utilities.CreateNewNamedSheet("Signal " + metricName);
                 InitializeSheet(newSheet, metricName);
                 Range r = newSheet.Cells[1, 1];
@@ -345,6 +344,9 @@ namespace DECS_Excel_Add_Ins
                     r.Offset[rowOffset, 8].Value2 = datum.Denominator;
                     r.Offset[rowOffset, 9].Value2 = datum.Value;
                     rowOffset++;
+
+                    application.StatusBar = "Building sheet: Signal " + metricName + " " +
+                        rowOffset.ToString() + "/" + dataThisMetric.Count;
                 }
             }
         }
