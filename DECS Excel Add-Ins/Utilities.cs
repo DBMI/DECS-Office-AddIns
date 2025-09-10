@@ -26,6 +26,7 @@ namespace DECS_Excel_Add_Ins
     {
         DesiredNameStartsWithMatch,
         Exact,
+        LastNameOnly,
         Levenshtein,
         MatchStartsWithDesiredName,
         UserSelected
@@ -634,11 +635,11 @@ namespace DECS_Excel_Add_Ins
                 int levenshteinDistance = lev.DistanceFrom(thisName);
                 double relativeDistance = levenshteinDistance / wordLength;
 
-                if (thisName.StartsWith(desiredName))
+                if (thisName.StartsWith(desiredName, StringComparison.InvariantCultureIgnoreCase))
                 {
                     return new NameMatch(bestMatch: thisName, matchType: TypeOfMatch.MatchStartsWithDesiredName);
                 }
-                else if (desiredName.StartsWith(thisName))
+                else if (desiredName.StartsWith(thisName, StringComparison.InvariantCultureIgnoreCase))
                 {
                     return new NameMatch(bestMatch: thisName, matchType: TypeOfMatch.DesiredNameStartsWithMatch);
                 }
@@ -1312,6 +1313,32 @@ namespace DECS_Excel_Add_Ins
 
                 textBox.MouseHover += new System.EventHandler(mouseHover);
             }
+        }
+
+        /// <summary>
+        /// See if names in Last, First format at least match in last names.
+        /// </summary>
+        /// <param name="names">List<string>/string>.</param>
+        /// <param name="desiredName">string</param>
+        /// <returns>List<string></returns>
+        internal static List<string> MightMatch(List<string> names, string desiredName)
+        {
+            List<string> possibleMatches = new List<string>();
+
+            string[] pieces = desiredName.Split(',');
+            string desiredLastName = pieces[0];
+
+            foreach (string thisName in names)
+            {
+                string[] thesePieces = thisName.Split(',');
+
+                if (string.Compare(desiredLastName, thesePieces[0], StringComparison.OrdinalIgnoreCase) == 0)
+                {
+                    possibleMatches.Add(thisName);
+                }
+            }
+
+            return possibleMatches;
         }
 
         // How many non-empty strings are present in the list?

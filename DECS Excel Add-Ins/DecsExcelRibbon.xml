@@ -152,7 +152,7 @@
 							onAction="OnSearchNotes"
 							screentip="Search Notes"
 							size="large"
-							supertip="Search notes using existing config file." />
+							supertip="Search for keywords within notes." />
 					<button id="setupButton"
 							getImage="notesConfigButton_GetImage"
 							label="Setup Config"

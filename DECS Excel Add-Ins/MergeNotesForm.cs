@@ -1,16 +1,11 @@
 ﻿using Microsoft.Office.Interop.Excel;
 using System;
 using System.Collections.Generic;
-using System.ComponentModel;
 using System.Data;
-using System.Drawing;
 using System.Linq;
-using System.Text;
 using System.Threading;
-using System.Threading.Tasks;
 using System.Web.UI.WebControls;
 using System.Windows.Forms;
-using static System.Net.Mime.MediaTypeNames;
 
 namespace DECS_Excel_Add_Ins
 {
@@ -48,7 +43,7 @@ namespace DECS_Excel_Add_Ins
             int mostValuesPresent = 0;
             DateTime mostRecentDate = DateTime.MinValue;
 
-            foreach(Range row in rows)
+            foreach (Range row in rows)
             {
                 List<string> values = DataValues(row);
                 int numNonEmpties = Utilities.NumElementsPresent(values);
@@ -95,7 +90,7 @@ namespace DECS_Excel_Add_Ins
         {
             List<string> data = new List<string>();
 
-            foreach(string sourceColumnName in selectedSourceColumns)
+            foreach (string sourceColumnName in selectedSourceColumns)
             {
                 string thisValue = DataValue(sourceRow, sourceColumnName);
                 data.Add(thisValue);
@@ -176,7 +171,7 @@ namespace DECS_Excel_Add_Ins
                 return;
             }
 
-            runButton.Enabled = 
+            runButton.Enabled =
                     selectedSourceColumns.Count > 0 &&
                     !string.IsNullOrEmpty(selectedDateColumn) &&
                     !string.IsNullOrEmpty(selectedIndexColumn) &&
@@ -471,7 +466,7 @@ namespace DECS_Excel_Add_Ins
             Microsoft.Office.Interop.Excel.Application application = Globals.ThisAddIn.Application;
             int valueIndex = 0;
             int numIndices = sourceIndices.Count;
-            
+
             // For each SOURCE index value:
             foreach (KeyValuePair<string, List<Range>> entry in sourceIndices)
             {
@@ -491,9 +486,9 @@ namespace DECS_Excel_Add_Ins
                             targetRowRanges = targetIndices[entry.Key];
                         }
                         // Then this index value from the source sheet isn't present in the target sheet.
-                        catch (System.Collections.Generic.KeyNotFoundException) 
-                        { 
-                            continue; 
+                        catch (System.Collections.Generic.KeyNotFoundException)
+                        {
+                            continue;
                         }
 
                         // Find the column in the TARGET sheet.
@@ -502,10 +497,10 @@ namespace DECS_Excel_Add_Ins
                         Range targetValueRange;
 
                         // Find the intersection(s).
-                        foreach(Range tgtRow in targetRowRanges)
+                        foreach (Range tgtRow in targetRowRanges)
                         {
                             targetValueRange = Utilities.ThisRowThisColumn(rowRange: tgtRow, columnRange: targetColumnRange);
-                            
+
                             // Insert the value from the best row into the TARGET sheet.
                             targetValueRange.Value2 = thisValue;
                         }
@@ -598,7 +593,7 @@ namespace DECS_Excel_Add_Ins
                     InsertIntoListBox(indexColumnListBox, thisColumn);
                 }
             }
-                
+
             EnableRunWhenReady();
         }
 
@@ -639,6 +634,11 @@ namespace DECS_Excel_Add_Ins
 
             System.Windows.Forms.ListBox listBox = sender as System.Windows.Forms.ListBox;
             selectedTargetSheetName = listBox.SelectedItem.ToString();
+        }
+
+        private void helpButton_Click(object sender, EventArgs e)
+        {
+            System.Diagnostics.Process.Start("https://github.com/DBMI/DECS-Office-AddIns/blob/main/DECS%20Excel%20Add-Ins/help%20files/MergeNotes/MergeNotes.md");
         }
     }
 }
