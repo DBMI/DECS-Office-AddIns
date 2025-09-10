@@ -284,7 +284,11 @@ namespace DECS_Excel_Add_Ins
                 }
                 catch (System.FormatException)
                 {
-                    // Probably trying to convert the name "Date" to a Double in order to create DateTime object.
+                    // Try converting directly to DateTime.
+                    if (DateTime.TryParse(cellContents, out DateTime result))
+                    {
+                        convertedContents = result;
+                    }
                 }
             }
 

@@ -27,3 +27,5 @@ Here's an example of the extracted data:
 ![image info](./notes_results.png)
 
 Notice how the original dates--in multiple formats--were automatically converted to a standard date format before extraction.
+
+[BACK](../../README.md)
