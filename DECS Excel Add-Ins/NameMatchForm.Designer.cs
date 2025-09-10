@@ -35,6 +35,7 @@
             this.namesListBox = new System.Windows.Forms.ListBox();
             this.okButton = new System.Windows.Forms.Button();
             this.cancelButton = new System.Windows.Forms.Button();
+            this.quitButton = new System.Windows.Forms.Button();
             this.SuspendLayout();
             // 
             // label1
@@ -74,37 +75,52 @@
             this.namesListBox.ItemHeight = 20;
             this.namesListBox.Location = new System.Drawing.Point(72, 169);
             this.namesListBox.Name = "namesListBox";
+            this.namesListBox.SelectionMode = System.Windows.Forms.SelectionMode.MultiExtended;
             this.namesListBox.Size = new System.Drawing.Size(258, 184);
             this.namesListBox.TabIndex = 3;
+            this.namesListBox.SelectedIndexChanged += new System.EventHandler(this.namesListBox_SelectedIndexChanged);
             // 
             // okButton
             // 
             this.okButton.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.okButton.Location = new System.Drawing.Point(72, 379);
             this.okButton.Name = "okButton";
-            this.okButton.Size = new System.Drawing.Size(93, 35);
+            this.okButton.Size = new System.Drawing.Size(116, 35);
             this.okButton.TabIndex = 4;
-            this.okButton.Text = "OK";
+            this.okButton.Text = "Match";
             this.okButton.UseVisualStyleBackColor = true;
             this.okButton.Click += new System.EventHandler(this.okButton_Click);
             // 
             // cancelButton
             // 
             this.cancelButton.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.cancelButton.Location = new System.Drawing.Point(237, 379);
+            this.cancelButton.Location = new System.Drawing.Point(214, 379);
             this.cancelButton.Name = "cancelButton";
-            this.cancelButton.Size = new System.Drawing.Size(93, 35);
+            this.cancelButton.Size = new System.Drawing.Size(116, 35);
             this.cancelButton.TabIndex = 5;
-            this.cancelButton.Text = "Cancel";
+            this.cancelButton.Text = "Not a Match";
             this.cancelButton.UseVisualStyleBackColor = true;
             this.cancelButton.Click += new System.EventHandler(this.cancelButton_Click);
+            // 
+            // quitButton
+            // 
+            this.quitButton.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.quitButton.ForeColor = System.Drawing.Color.Red;
+            this.quitButton.Location = new System.Drawing.Point(161, 436);
+            this.quitButton.Name = "quitButton";
+            this.quitButton.Size = new System.Drawing.Size(75, 35);
+            this.quitButton.TabIndex = 6;
+            this.quitButton.Text = "Quit";
+            this.quitButton.UseVisualStyleBackColor = true;
+            this.quitButton.Click += new System.EventHandler(this.quitButton_Click);
             // 
             // NameMatchForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.Color.White;
-            this.ClientSize = new System.Drawing.Size(443, 450);
+            this.ClientSize = new System.Drawing.Size(413, 487);
+            this.Controls.Add(this.quitButton);
             this.Controls.Add(this.cancelButton);
             this.Controls.Add(this.okButton);
             this.Controls.Add(this.namesListBox);
@@ -129,5 +145,6 @@
         private System.Windows.Forms.ListBox namesListBox;
         private System.Windows.Forms.Button okButton;
         private System.Windows.Forms.Button cancelButton;
+        private System.Windows.Forms.Button quitButton;
     }
 }

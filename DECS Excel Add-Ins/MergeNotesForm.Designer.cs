@@ -44,6 +44,7 @@
             this.indexColumnListBox = new System.Windows.Forms.ListBox();
             this.runButton = new System.Windows.Forms.Button();
             this.quitButton = new System.Windows.Forms.Button();
+            this.helpButton = new System.Windows.Forms.Button();
             this.groupBox1.SuspendLayout();
             this.groupBox5.SuspendLayout();
             this.groupBox3.SuspendLayout();
@@ -219,12 +220,27 @@
             this.quitButton.UseVisualStyleBackColor = false;
             this.quitButton.Click += new System.EventHandler(this.QuitButton_Click);
             // 
+            // helpButton
+            // 
+            this.helpButton.BackColor = System.Drawing.Color.White;
+            this.helpButton.BackgroundImage = global::DECS_Excel_Add_Ins.Properties.Resources.help_small;
+            this.helpButton.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Center;
+            this.helpButton.FlatAppearance.BorderColor = System.Drawing.Color.White;
+            this.helpButton.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.helpButton.Location = new System.Drawing.Point(865, 467);
+            this.helpButton.Name = "helpButton";
+            this.helpButton.Size = new System.Drawing.Size(50, 50);
+            this.helpButton.TabIndex = 16;
+            this.helpButton.UseVisualStyleBackColor = false;
+            this.helpButton.Click += new System.EventHandler(this.helpButton_Click);
+            // 
             // MergeNotesForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.Color.White;
             this.ClientSize = new System.Drawing.Size(945, 556);
+            this.Controls.Add(this.helpButton);
             this.Controls.Add(this.quitButton);
             this.Controls.Add(this.runButton);
             this.Controls.Add(this.groupBox7);
@@ -263,5 +279,6 @@
         private System.Windows.Forms.Button quitButton;
         private System.Windows.Forms.GroupBox groupBox5;
         private System.Windows.Forms.ListBox dateColumnListBox;
+        private System.Windows.Forms.Button helpButton;
     }
 }

@@ -10,24 +10,30 @@ namespace DECS_Excel_Add_Ins
     internal class PhysicianMatcher
     {
         private Dictionary<string, string> recordIds;
+        private List<string> sourceNames;
+        private bool quit = false;
 
         internal PhysicianMatcher()
         {
             recordIds = new Dictionary<string, string>();
         }
 
-        private string AskUserToMatch(string desiredName)
+        private string AskUserToMatch(string desiredName, List<string> possibleMatches = null)
         {
             string selectedName = string.Empty;
-            List<string> possibleNames = recordIds.Keys.ToList();
 
-            using (NameMatchForm form = new NameMatchForm(desiredName, possibleNames))
+            using (NameMatchForm form = new NameMatchForm(desiredName, sourceNames, possibleMatches))
             {
                 var result = form.ShowDialog();
 
                 if (result == DialogResult.OK)
                 {
                     return form.selectedName;
+                }
+
+                if (result == DialogResult.Abort)
+                {
+                    quit = true;
                 }
             }
 
@@ -38,6 +44,7 @@ namespace DECS_Excel_Add_Ins
         {
             recordIds.Clear();
             int iRowOffset = 0;
+            sourceNames = new List<string>();
 
             while (true)
             {
@@ -52,6 +59,10 @@ namespace DECS_Excel_Add_Ins
                         {
                             string idString = idColumn.Offset[iRowOffset].Value2.ToString();
                             recordIds.Add(sourceName, idString);
+
+                            // Record the ORIGINAL list of names
+                            // (before we start adding matches from target list).
+                            sourceNames.Add(sourceName);
                         }
                         // If there's no ID, skip to next row.
                         catch (Microsoft.CSharp.RuntimeBinder.RuntimeBinderException)
@@ -168,22 +179,36 @@ namespace DECS_Excel_Add_Ins
                         }
                         else
                         {
-                            string userSelection = AskUserToMatch(thisName);
+                            // Here we don't want to compare against the ever-growing dictionary keys,
+                            // but against the original names associated with the record IDs.
+                            List<string> possibleMatches = Utilities.MightMatch(sourceNames, thisName);
 
-                            if (string.IsNullOrEmpty(userSelection))
+                            if (possibleMatches.Count > 0)
                             {
-                                // Put target name into dictionary so we STOP asking the user.
-                                recordIds[thisName] = string.Empty;
-                            }
-                            else
-                            {
-                                matchingNameColumn.Offset[iRowOffset].Value = userSelection;
-                                matchDetailsColumn[iRowOffset].Value = TypeOfMatch.UserSelected.ToString();
-                                idString = recordIds[userSelection];
-                                matchingIdColumn.Offset[iRowOffset].Value = idString;
+                                string userSelection = AskUserToMatch(desiredName: thisName,
+                                                                      possibleMatches: possibleMatches);
 
-                                // Put target name into dictionary so it's easier to find next time.
-                                recordIds[thisName] = idString;
+                                // If user has pressed Quit, stop asking.
+                                if (quit)
+                                {
+                                    break;
+                                }
+
+                                if (string.IsNullOrEmpty(userSelection))
+                                {
+                                    // Put target name into dictionary so we STOP asking the user.
+                                    recordIds[thisName] = string.Empty;
+                                }
+                                else
+                                {
+                                    matchingNameColumn.Offset[iRowOffset].Value = userSelection;
+                                    matchDetailsColumn[iRowOffset].Value = TypeOfMatch.UserSelected.ToString();
+                                    idString = recordIds[userSelection];
+                                    matchingIdColumn.Offset[iRowOffset].Value = idString;
+
+                                    // Put target name into dictionary so it's easier to find next time.
+                                    recordIds[thisName] = idString;
+                                }
                             }
                         }
                     }
@@ -208,7 +233,11 @@ namespace DECS_Excel_Add_Ins
                     Range targetColumn = form.targetColumn;
 
                     FindOrCreateTranslationTable(sourceColumn, idColumn, targetColumn);
-                    InsertIdWhereNamesMatch(targetColumn);
+
+                    if (!quit)
+                    {
+                        InsertIdWhereNamesMatch(targetColumn);
+                    }
                 }
             }
         }

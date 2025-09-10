@@ -15,6 +15,7 @@ Creates custom buttons in Microsoft Excel that allow user to:
 * Turn a list (of MRNs, ICD codes, etc.) into a SQL snippet that imports the column into a query.
 * Import Epic Signal data from `.json` file.
 * Break up a long spreadsheet into individual sheets, using the value of one column.
+* Match physicians on two separate sheets.
 * Process a physician oncall list into SQL code for import.
 * Search UCSD Blink for provider names using email addresses.
 * Turn text like "2-3 weeks" into a category like "routine/medium/high" [priority].
