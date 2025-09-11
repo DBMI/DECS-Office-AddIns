@@ -25,3 +25,5 @@ If a name on the `Target` sheet can't be automatically matched, a GUI pops up wi
 Users are encouraged to review the `Translation Table` sheet, edit it as necessary and re-run the app, which will then use those edited name assignments.
 
 ![image info](./translation_table.png)
+
+[BACK](../../README.md)
