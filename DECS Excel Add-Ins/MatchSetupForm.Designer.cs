@@ -43,6 +43,7 @@
             this.idColumnListBox = new System.Windows.Forms.ListBox();
             this.label7 = new System.Windows.Forms.Label();
             this.targetNameColumnListBox = new System.Windows.Forms.ListBox();
+            this.helpButton = new System.Windows.Forms.Button();
             this.SuspendLayout();
             // 
             // label1
@@ -199,12 +200,27 @@
             this.targetNameColumnListBox.TabIndex = 12;
             this.targetNameColumnListBox.SelectedIndexChanged += new System.EventHandler(this.EnableWhenReady);
             // 
+            // helpButton
+            // 
+            this.helpButton.BackColor = System.Drawing.Color.White;
+            this.helpButton.BackgroundImage = global::DECS_Excel_Add_Ins.Properties.Resources.help_small;
+            this.helpButton.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Center;
+            this.helpButton.FlatAppearance.BorderColor = System.Drawing.Color.White;
+            this.helpButton.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.helpButton.Location = new System.Drawing.Point(721, 347);
+            this.helpButton.Name = "helpButton";
+            this.helpButton.Size = new System.Drawing.Size(50, 50);
+            this.helpButton.TabIndex = 17;
+            this.helpButton.UseVisualStyleBackColor = false;
+            this.helpButton.Click += new System.EventHandler(this.helpButton_Click);
+            // 
             // MatchSetupForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.Color.White;
             this.ClientSize = new System.Drawing.Size(800, 450);
+            this.Controls.Add(this.helpButton);
             this.Controls.Add(this.label7);
             this.Controls.Add(this.targetNameColumnListBox);
             this.Controls.Add(this.label6);
@@ -243,5 +259,6 @@
         private System.Windows.Forms.ListBox idColumnListBox;
         private System.Windows.Forms.Label label7;
         private System.Windows.Forms.ListBox targetNameColumnListBox;
+        private System.Windows.Forms.Button helpButton;
     }
 }

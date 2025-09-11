@@ -866,13 +866,14 @@ namespace DECS_Excel_Add_Ins
             int lastUsedCol = Utilities.FindLastCol(sheet);
 
             // Search along row 1.
-            for (int col_index = 1; col_index <= lastUsedCol; col_index++)
+            for (int col_offset = 0; col_offset < lastUsedCol; col_offset++)
             {
                 string thisColumnName = string.Empty;
 
                 try
                 {
-                    thisColumnName = Convert.ToString(range.Value);
+                    thisColumnName = Convert.ToString(range.Offset[0, col_offset].Value);
+                    string test = Convert.ToString(range.Offset[0, col_offset].Value2);
                 }
                 // If there's nothing in this header, move to next column.
                 catch (Microsoft.CSharp.RuntimeBinder.RuntimeBinderException)
@@ -892,14 +893,11 @@ namespace DECS_Excel_Add_Ins
                 {
                     try
                     {
-                        columns.Add(thisColumnName, range);
+                        columns.Add(thisColumnName, range.Offset[0, col_offset]);
                     }
                     // If there's already a column by this name, skip this one.
                     catch (System.ArgumentException) { }
                 }
-
-                // Move over one column.
-                range = range.Offset[0, 1];
             }
 
             return columns;

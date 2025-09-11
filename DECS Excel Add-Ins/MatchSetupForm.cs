@@ -79,5 +79,11 @@ namespace DECS_Excel_Add_Ins
         {
             DialogResult = DialogResult.Cancel;
         }
+
+        private void helpButton_Click(object sender, System.EventArgs e)
+        {
+            System.Diagnostics.Process.Start("https://github.com/DBMI/DECS-Office-AddIns/blob/main/DECS%20Excel%20Add-Ins/help%20files/MatchPhysicians/MatchPhysicians.md");
+
+        }
     }
 }
