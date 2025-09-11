@@ -26,4 +26,9 @@ Users are encouraged to review the `Translation Table` sheet, edit it as necessa
 
 ![image info](./translation_table.png)
 
+Finally, the app inserts the linked Record IDs into the Signal data sheet:
+
+![image info](./data_sheet_matched.png)
+
+
 [BACK](../../README.md)
