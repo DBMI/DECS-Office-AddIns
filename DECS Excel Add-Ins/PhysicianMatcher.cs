@@ -180,7 +180,7 @@ namespace DECS_Excel_Add_Ins
                         else
                         {
                             // Here we don't want to compare against the ever-growing dictionary keys,
-                            // but against the original names associated with the record IDs.
+                            // but against the ORIGINAL names associated with the record IDs.
                             List<string> possibleMatches = Utilities.MightMatch(sourceNames, thisName);
 
                             if (possibleMatches.Count > 0)
@@ -202,7 +202,8 @@ namespace DECS_Excel_Add_Ins
                                 else
                                 {
                                     matchingNameColumn.Offset[iRowOffset].Value = userSelection;
-                                    matchDetailsColumn[iRowOffset].Value = TypeOfMatch.UserSelected.ToString();
+                                    // Don't understand why I need a one-row offset here.
+                                    matchDetailsColumn[iRowOffset + 1].Value = TypeOfMatch.UserSelected.ToString();
                                     idString = recordIds[userSelection];
                                     matchingIdColumn.Offset[iRowOffset].Value = idString;
 
