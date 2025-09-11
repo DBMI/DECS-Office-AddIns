@@ -15,8 +15,9 @@ Sometimes we want to combine information across several rows. For example, in th
 
 Selecting the `Merge Rows` button:
 
+
 <figure>
-<img src="unmerged_excel_file_with_arrow.png" style="width:6.14in;height:3.0in" />
+<img src="toolbar.png" style="width:6.14in;height:0.7in" />
 <figcaption><p>Figure 2. Selecting the <code>Merge Rows</code> button</p></figcaption>
 </figure>
 

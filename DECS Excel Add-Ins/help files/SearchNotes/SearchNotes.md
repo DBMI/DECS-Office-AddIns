@@ -1,6 +1,8 @@
 ## Extract data from notes
 In cases where we want to extract data from free-text columns, we can use the `Notes` tools to define & run extraction rules.
 
+![image info](./toolbar.png)
+
 #### Cleaning
 We start in the `Cleaning` tab, defining cleaning rules to:
 * fix misspellings
@@ -9,6 +11,7 @@ We start in the `Cleaning` tab, defining cleaning rules to:
 These rules are run *before* the data extraction rules.
 
 ![image info](./cleaning_rules.png)
+
 #### Date formats
 Using the `DateFormat` tab, we can select which date format we want for output columns.
 
