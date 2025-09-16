@@ -471,9 +471,9 @@ namespace DECS_Excel_Add_Ins
         internal static List<string> ExtractColumnUnique(Range column)
         {
             List<string> names = new List<string>();
-            int lastRow = Utilities.FindLastRow(column.Worksheet);
+            int rowOffset = 1;
 
-            for (int rowOffset = 1; rowOffset < lastRow; rowOffset++)
+            while (true)
             {
                 string cell_contents;
 
@@ -485,8 +485,17 @@ namespace DECS_Excel_Add_Ins
                     {
                         names.Add(cell_contents);
                     }
+
+                    rowOffset++;
                 }
-                catch (Microsoft.CSharp.RuntimeBinder.RuntimeBinderException) { }
+                catch (Microsoft.CSharp.RuntimeBinder.RuntimeBinderException)
+                {
+                    // keep going
+                }
+                catch (System.NullReferenceException)
+                {
+                    break;
+                }
             }
 
             names.Sort();
