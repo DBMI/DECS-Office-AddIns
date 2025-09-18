@@ -185,6 +185,16 @@ namespace DECS_Excel_Add_Ins
         }
 
         /// <summary>
+        /// Lets the @c DexsExcelRibbon.xml point to the image for the @c lookupNpi button.
+        /// </summary>
+        /// <param name="control">Reference to the IRibbonControl object.</param>
+        /// <returns>Bitmap</returns>
+        public Bitmap lookupNpiButton_GetImage(IRibbonControl control)
+        {
+            return Resources.NPI_Matching;
+        }
+
+        /// <summary>
         /// Lets the @c DexsExcelRibbon.xml point to the image for the @c MatchPhysiciansButton button.
         /// </summary>
         /// <param name="control">Reference to the IRibbonControl object.</param>
@@ -458,6 +468,18 @@ namespace DECS_Excel_Add_Ins
             Deidentifier deidentifier = new Deidentifier();
             Excel.Worksheet wksheet = (Excel.Worksheet)Globals.ThisAddIn.Application.ActiveSheet;
             deidentifier.HidePhysicianNames(wksheet);
+        }
+
+        /// <summary>
+        /// When @c lookupNpi button is pressed, instantiates a @c NpiLookup object & calls its @c Search method.
+        /// </summary>
+        /// <param name="control">Reference to the IRibbonControl object.</param>
+
+        public void OnLookupNpi(Office.IRibbonControl control)
+        {
+            NpiLookup npiLookup = new NpiLookup();
+            Excel.Worksheet wksheet = (Excel.Worksheet)Globals.ThisAddIn.Application.ActiveSheet;
+            npiLookup.Search(wksheet);
         }
 
         /// <summary>

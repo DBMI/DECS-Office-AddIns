@@ -1,15 +1,8 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Net.Http;
-using System.Net.Http.Headers;
-using System.Linq;
-using System.Security.Policy;
-using System.Text;
-using System.Threading.Tasks;
-using System.Web.Script.Serialization;
-using Microsoft.Office.Interop.Excel;
 using System.Net;
+using System.Net.Http;
+using System.Web.Script.Serialization;
+using C = DECS_Excel_Add_Ins.Census;
 
 namespace DECS_Excel_Add_Ins
 {
@@ -30,12 +23,12 @@ namespace DECS_Excel_Add_Ins
         /// Sends HTTP query containing address & converts response to a @c CensusData object.
         /// </summary>
         /// <param name="address">Address to query</param>
-        
-        internal CensusData Convert(string address)
+
+        internal C.CensusData Convert(string address)
         {
             ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12 | SecurityProtocolType.Tls11 | SecurityProtocolType.Tls;
 
-            CensusData data = new CensusData();
+            C.CensusData data = new C.CensusData();
             string addressEncoded = Uri.EscapeDataString(address.Replace(", ", ","));
             string url = URL + addressEncoded + SUFFIX;
 
@@ -57,7 +50,7 @@ namespace DECS_Excel_Add_Ins
 
                     var serializer = new JavaScriptSerializer();
                     serializer.MaxJsonLength = int.MaxValue;
-                    data = serializer.Deserialize<CensusData>(responseBody);
+                    data = serializer.Deserialize<C.CensusData>(responseBody);
                 }
             }
             catch (HttpRequestException e)

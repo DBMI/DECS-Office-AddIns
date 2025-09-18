@@ -1,8 +1,7 @@
 ﻿
 using Newtonsoft.Json;
-using System.Web.UI;
 
-namespace DECS_Excel_Add_Ins
+namespace DECS_Excel_Add_Ins.Census
 {
     /**
      * @brief Used to deserialize JSON returned from US Census Bureau geocoding service.

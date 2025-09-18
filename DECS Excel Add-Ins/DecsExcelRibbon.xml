@@ -101,6 +101,13 @@
 							screentip="Assign record # to physicians"
 							size="large"
 							supertip="Apply record numbers assigned in one sheet to another sheet." />
+					<button id="lookupNpiButton"
+							getImage="lookupNpiButton_GetImage"
+							label="Lookup NPI"
+							onAction="OnLookupNpi"
+							screentip="Lookup NPI"
+							size="large"
+							supertip="Lookup National Provider Identifier." />
 					<button id="onCallListButton"
 							getImage="onCallListButton_GetImage"
 							label="On-Call List"
