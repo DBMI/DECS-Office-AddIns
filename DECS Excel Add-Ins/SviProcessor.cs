@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Text.RegularExpressions;
 using Application = Microsoft.Office.Interop.Excel.Application;
+using C = DECS_Excel_Add_Ins.Census;
 
 namespace DECS_Excel_Add_Ins
 {
@@ -150,7 +151,7 @@ namespace DECS_Excel_Add_Ins
                         {
                             if (locationSource == LocationSource.Address)
                             {
-                                CensusData data = geocoder.Convert(location);
+                                C.CensusData data = geocoder.Convert(location);
                                 ulong fips = data.FIPS();
                                 censusColumn.Offset[rowOffset, 0].Value2 = fips;
                                 fipsList = new List<ulong>();
