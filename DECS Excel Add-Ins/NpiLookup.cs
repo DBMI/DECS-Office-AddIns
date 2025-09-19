@@ -25,6 +25,7 @@ namespace DECS_Excel_Add_Ins
 
     public class Basic
     {
+        public string organization_name { get; set; }
         public string first_name { get; set; }
         public string last_name { get; set; }
         public string middle_name { get; set; }
@@ -76,14 +77,33 @@ namespace DECS_Excel_Add_Ins
 
         public string Affiliation()
         {
-            List<string> affiliations = new List<string>();
-
-            foreach (Endpoint endpoint in endpoints)
+            if (string.IsNullOrEmpty(basic.organization_name))
             {
-                affiliations.Add(endpoint.affiliationName);
+                List<string> affiliations = new List<string>();
+
+                foreach (Endpoint endpoint in endpoints)
+                {
+                    affiliations.Add(endpoint.affiliationName);
+                }
+
+                return string.Join(",", affiliations);
+            }
+            else
+            {
+                return basic.organization_name;
+            }
+        }
+
+        public string IsOrganization()
+        {
+            string isOrg = "No";
+
+            if (!string.IsNullOrEmpty(basic.organization_name))
+            {
+                isOrg = "Yes";
             }
 
-            return string.Join(",", affiliations);
+            return isOrg;
         }
 
         public string Name()
@@ -154,7 +174,8 @@ namespace DECS_Excel_Add_Ins
             {
                 // Create columns for provider info.
                 Range providerNameRng = Utilities.InsertNewColumn(npiColumn, "Provider Name", InsertSide.Right);
-                Range providerSoleProprietorRng = Utilities.InsertNewColumn(providerNameRng, "Sole Proprietor", InsertSide.Right);
+                Range isOrganizationRng = Utilities.InsertNewColumn(providerNameRng, "Is Organization", InsertSide.Right);
+                Range providerSoleProprietorRng = Utilities.InsertNewColumn(isOrganizationRng, "Sole Proprietor", InsertSide.Right);
                 Range providerAffiliationRng = Utilities.InsertNewColumn(providerSoleProprietorRng, "Affiliation", InsertSide.Right);
 
                 int rowOffset = 1;
@@ -173,10 +194,11 @@ namespace DECS_Excel_Add_Ins
 
                             if (providerInfo.result_count > 0)
                             {
-                                providerNameRng.Offset[rowOffset, 0].Value = providerInfo.results[0].Name();
-                                providerSoleProprietorRng.Offset[rowOffset, 0].Value = providerInfo.results[0].SoleProprietor();
-                                string affiliation = providerInfo.results[0].Affiliation();
-                                providerAffiliationRng.Offset[rowOffset, 0].Value = affiliation;
+                                Result result = providerInfo.results[0];
+                                providerNameRng.Offset[rowOffset, 0].Value = result.Name();
+                                isOrganizationRng.Offset[rowOffset, 0].Value = result.IsOrganization();
+                                providerSoleProprietorRng.Offset[rowOffset, 0].Value = result.SoleProprietor();
+                                providerAffiliationRng.Offset[rowOffset, 0].Value = result.Affiliation();
                                 application.StatusBar = "Row: " + rowOffset.ToString() + "/" + lastRow.ToString();
                             }
                         }
