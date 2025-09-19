@@ -90,6 +90,11 @@ namespace DECS_Excel_Add_Ins
         {
             string name = string.Empty;
 
+            if (!string.IsNullOrEmpty(basic.last_name))
+            {
+                name += basic.last_name + ", ";
+            }
+
             if (!string.IsNullOrEmpty(basic.first_name))
             {
                 name = basic.first_name + " ";
@@ -98,11 +103,6 @@ namespace DECS_Excel_Add_Ins
             if (!string.IsNullOrEmpty(basic.middle_name))
             {
                 name += basic.middle_name + " ";
-            }
-
-            if (!string.IsNullOrEmpty(basic.last_name))
-            {
-                name += basic.last_name;
             }
 
             if (!string.IsNullOrEmpty(basic.credential))
