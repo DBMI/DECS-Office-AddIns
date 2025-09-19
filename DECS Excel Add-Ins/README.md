@@ -16,6 +16,7 @@ Creates custom buttons in Microsoft Excel that allow user to:
 * Import Epic Signal data from `.json` file.
 * Break up a long spreadsheet into individual sheets, using the value of one column.
 * [Match physicians](./help%20files/MatchPhysicians/MatchPhysicians.md) on two separate sheets.
+* Look up provider information from their National Provider Identifier ([NPI](https://www.cms.gov/priorities/key-initiatives/burden-reduction/administrative-simplification/unique-identifiers/npis)) number.
 * Process a physician oncall list into SQL code for import.
 * Search UCSD Blink for provider names using email addresses.
 * Turn text like "2-3 weeks" into a category like "routine/medium/high" [priority].
