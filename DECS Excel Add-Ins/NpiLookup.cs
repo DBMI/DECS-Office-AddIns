@@ -88,7 +88,29 @@ namespace DECS_Excel_Add_Ins
 
         public string Name()
         {
-            return basic.first_name + " " + basic.middle_name + " " + basic.last_name + ", " + basic.credential;
+            string name = string.Empty;
+
+            if (!string.IsNullOrEmpty(basic.first_name))
+            {
+                name = basic.first_name + " ";
+            }
+
+            if (!string.IsNullOrEmpty(basic.middle_name))
+            {
+                name += basic.middle_name + " ";
+            }
+
+            if (!string.IsNullOrEmpty(basic.last_name))
+            {
+                name += basic.last_name;
+            }
+
+            if (!string.IsNullOrEmpty(basic.credential))
+            {
+                name += ", " + basic.credential;
+            }
+
+            return name.Trim();
         }
 
         public string SoleProprietor()
@@ -136,17 +158,29 @@ namespace DECS_Excel_Add_Ins
                 Range providerAffiliationRng = Utilities.InsertNewColumn(providerSoleProprietorRng, "Affiliation", InsertSide.Right);
 
                 int rowOffset = 1;
+                int lastRow = Utilities.FindLastRow(worksheet);
 
                 while (true)
                 {
                     try
                     {
                         string npi = npiColumn.Offset[rowOffset, 0].Value.ToString();
-                        Root providerInfo = PingNPI(npi);
-                        providerNameRng.Offset[rowOffset, 0].Value = providerInfo.results[0].Name();
-                        providerSoleProprietorRng.Offset[rowOffset, 0].Value = providerInfo.results[0].SoleProprietor();
-                        string affiliation = providerInfo.results[0].Affiliation();
-                        providerAffiliationRng.Offset[rowOffset, 0].Value = affiliation;
+
+                        // "NULL" means we're still using this row. It's not actually null.
+                        if (!String.Equals(npi, "NULL"))
+                        {
+                            Root providerInfo = PingNPI(npi);
+
+                            if (providerInfo.result_count > 0)
+                            {
+                                providerNameRng.Offset[rowOffset, 0].Value = providerInfo.results[0].Name();
+                                providerSoleProprietorRng.Offset[rowOffset, 0].Value = providerInfo.results[0].SoleProprietor();
+                                string affiliation = providerInfo.results[0].Affiliation();
+                                providerAffiliationRng.Offset[rowOffset, 0].Value = affiliation;
+                                application.StatusBar = "Row: " + rowOffset.ToString() + "/" + lastRow.ToString();
+                            }
+                        }
+
                         rowOffset++;
                     }
                     catch (System.NullReferenceException)
@@ -157,8 +191,14 @@ namespace DECS_Excel_Add_Ins
                     {
                         break;
                     }
+                    catch (Exception e)
+                    {
+                        Console.WriteLine($"An unexpected error occurred: {e.Message}");
+                    }
                 }
             }
+
+            application.StatusBar = "Ready";
         }
 
         /// <summary>
