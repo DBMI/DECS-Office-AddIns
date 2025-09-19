@@ -97,7 +97,7 @@ namespace DECS_Excel_Add_Ins
 
             if (!string.IsNullOrEmpty(basic.first_name))
             {
-                name = basic.first_name + " ";
+                name += basic.first_name + " ";
             }
 
             if (!string.IsNullOrEmpty(basic.middle_name))
