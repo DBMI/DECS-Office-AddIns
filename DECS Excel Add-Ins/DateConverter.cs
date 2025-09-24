@@ -166,12 +166,18 @@ namespace DECS_Excel_Add_Ins
                 // If we can't read into a DateTime object, just skip it.
                 catch (Microsoft.CSharp.RuntimeBinder.RuntimeBinderException)
                 {
-                    // An occasional miss is ok, but three in a row & we've run outta data.
-                    numConsecutiveFailures++;
+                    // Is it really empty or does the cell contain string "NULL"?
+                    string contents = worksheet.Cells[rowNumber, selectedColumnRng.Column].Value;
 
-                    if (numConsecutiveFailures >= 3)
+                    if (!string.Equals(contents, "NULL"))
                     {
-                        break;
+                        // An occasional miss is ok, but three in a row & we've run outta data.
+                        numConsecutiveFailures++;
+
+                        if (numConsecutiveFailures >= 3)
+                        {
+                            break;
+                        }
                     }
                 }
             }
