@@ -30,12 +30,17 @@ namespace DECS_Excel_Add_Ins
         private Microsoft.Office.Interop.Excel.Application application;
         private bool cancel = false;
 
+        private const string dateOnlyFormat = @"dd/MM/yyyy";
         private const string dateOnlyPattern = @"\d{1,2}\/\d{1,2}\/\d{4}[\s\.](?!\d)";
         private Regex dateOnlyRegex;
+        private string dateTimeFormat = @"dd/MM/yyyy hh:mm tt";
         private const string dateTimePattern = @"\d{1,2}\/\d{1,2}\/\d{4}\s+\d{1,2}:\d{2}\s[AP]M";
         private Regex dateTimeRegex;
         private const string drNamePattern = @"Dr\.\s[A-Z]\w+,?\s*(?:[A-Z]\.\s*)?(?:[A-Z]\w+)?";
         private Regex drNameRegex;
+        private string isoFormat = @"yyyy-MM-ddTHH:mm:ss";
+        private const string isoPattern = @"\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}";
+        private Regex isoRegex;
         private const string monthDayOnlyPattern = @"\d{1,2}\/\d{1,2}(?![\/\d])";
         private Regex monthDayOnlyRegex;
         private const string monthSpelledOutPattern = @"\w{4,8}\s*\d{4}";
@@ -401,6 +406,7 @@ namespace DECS_Excel_Add_Ins
             // Instantiate reusable Regexes.
             dateOnlyRegex = new Regex(dateOnlyPattern);
             dateTimeRegex = new Regex(dateTimePattern);
+            isoRegex = new Regex(isoPattern);
             monthDayOnlyRegex = new Regex(monthDayOnlyPattern);
             monthSpelledOutRegex = new Regex(monthSpelledOutPattern);
 
@@ -420,18 +426,29 @@ namespace DECS_Excel_Add_Ins
                 for (int rowNumber = 2; rowNumber <= lastRow; rowNumber++)
                 {
                     target = (Range)worksheet.Cells[rowNumber, ditheredColumn.Column];
-                    sourceData = worksheet.Cells[rowNumber, selectedColumnRng.Column].Value;
 
-                    // Modify & stuff into target cell.
-                    if (!string.IsNullOrEmpty(sourceData))
+                    try
                     {
-                        sourceData = ProcessOneRule(sourceData, dateTimeRegex, TweakDateTime);
-                        sourceData = ProcessOneRule(sourceData, dateOnlyRegex, TweakDateOnly);
-                        sourceData = ProcessOneRule(sourceData, monthDayOnlyRegex, TweakMonthDay);
-                        sourceData = ProcessOneRule(sourceData, monthSpelledOutRegex, TweakMonthSpelledOut);
-                    }
+                        sourceData = worksheet.Cells[rowNumber, selectedColumnRng.Column].Value;
 
-                    target.Value = sourceData;
+                        // Modify & stuff into target cell.
+                        if (!string.IsNullOrEmpty(sourceData))
+                        {
+                            sourceData = ProcessOneRule(sourceData, dateTimeRegex, TweakDateTime);
+                            sourceData = ProcessOneRule(sourceData, dateOnlyRegex, TweakDateOnly);
+                            sourceData = ProcessOneRule(sourceData, isoRegex, TweakIsoDateTime);
+                            sourceData = ProcessOneRule(sourceData, monthDayOnlyRegex, TweakMonthDay);
+                            sourceData = ProcessOneRule(sourceData, monthSpelledOutRegex, TweakMonthSpelledOut);
+                        }
+
+                        target.Value = sourceData;
+                    }
+                    catch (Microsoft.CSharp.RuntimeBinder.RuntimeBinderException)
+                    {
+                        // It's ALREADY a DateTime object--no need to parse using RegEx.
+                        DateTime sourceDateTime = worksheet.Cells[rowNumber, selectedColumnRng.Column].Value;
+                        target.Value = TweakDateTime(sourceDateTime);
+                    }
                 }
             }
         }
@@ -560,6 +577,18 @@ namespace DECS_Excel_Add_Ins
             DateTime payload = DateTime.Parse(dateString.Trim());
             DateTime payloadTweaked = payload.AddDays(dayOffset) + deltaT;
             return payloadTweaked.ToString("M/d/yyyy h:mm tt");
+        }
+
+        private string TweakDateTime(DateTime dateTime)
+        {
+            DateTime payloadTweaked = dateTime.AddDays(dayOffset) + deltaT;
+            return payloadTweaked.ToString("M/d/yyyy h:mm tt");
+        }
+        private string TweakIsoDateTime(string dateString)
+        {
+            DateTime payload = DateTime.Parse(dateString.Trim());
+            DateTime payloadTweaked = payload.AddDays(dayOffset) + deltaT;
+            return payloadTweaked.ToString("yyyy-MM-ddTHH:mm:ss");
         }
 
         private string TweakMonthDay(string dateString)
