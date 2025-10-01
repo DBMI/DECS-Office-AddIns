@@ -45,7 +45,7 @@ namespace DECS_Excel_Add_Ins
         public DecsExcelRibbon() { }
 
         /// <summary>
-        /// Lets the @c DexsExcelRibbon.xml point to the image for the @c ImportList button.
+        /// Lets the @c DecsExcelRibbon.xml point to the image for the @c ImportList button.
         /// </summary>
         /// <param name="control">Reference to the IRibbonControl object.</param>
         /// <returns>Bitmap</returns>
@@ -55,7 +55,7 @@ namespace DECS_Excel_Add_Ins
         }
 
         /// <summary>
-        /// Lets the @c DexsExcelRibbon.xml point to the image for the @c ChopIntoTabsButton button.
+        /// Lets the @c DecsExcelRibbon.xml point to the image for the @c ChopIntoTabsButton button.
         /// </summary>
         /// <param name="control">Reference to the IRibbonControl object.</param>
         /// <returns>Bitmap</returns>
@@ -65,7 +65,7 @@ namespace DECS_Excel_Add_Ins
         }
 
         /// <summary>
-        /// Lets the @c DexsExcelRibbon.xml point to the image for the @c PlotComparisonButton button.
+        /// Lets the @c DecsExcelRibbon.xml point to the image for the @c PlotComparisonButton button.
         /// </summary>
         /// <param name="control">Reference to the IRibbonControl object.</param>
         /// <returns>Bitmap</returns>
@@ -75,7 +75,7 @@ namespace DECS_Excel_Add_Ins
         }
 
         /// <summary>
-        /// Lets the @c DexsExcelRibbon.xml point to the image for the @c CopyFormatting button.
+        /// Lets the @c DecsExcelRibbon.xml point to the image for the @c CopyFormatting button.
         /// </summary>
         /// <param name="control">Reference to the IRibbonControl object.</param>
         /// <returns>Bitmap</returns>
@@ -85,7 +85,7 @@ namespace DECS_Excel_Add_Ins
         }
 
         /// <summary>
-        /// Lets the @c DexsExcelRibbon.xml point to the image for the @c CountWords button.
+        /// Lets the @c DecsExcelRibbon.xml point to the image for the @c CountWords button.
         /// </summary>
         /// <param name="control">Reference to the IRibbonControl object.</param>
         /// <returns>Bitmap</returns>
@@ -95,7 +95,7 @@ namespace DECS_Excel_Add_Ins
         }
 
         /// <summary>
-        /// Lets the @c DexsExcelRibbon.xml point to the image for the @c ConvertDates button.
+        /// Lets the @c DecsExcelRibbon.xml point to the image for the @c ConvertDates button.
         /// </summary>
         /// <param name="control">Reference to the IRibbonControl object.</param>
         /// <returns>Bitmap</returns>
@@ -105,7 +105,7 @@ namespace DECS_Excel_Add_Ins
         }
 
         /// <summary>
-        /// Lets the @c DexsExcelRibbon.xml point to the image for the @c DateToText button.
+        /// Lets the @c DecsExcelRibbon.xml point to the image for the @c DateToText button.
         /// </summary>
         /// <param name="control">Reference to the IRibbonControl object.</param>
         /// <returns>Bitmap</returns>
@@ -115,7 +115,7 @@ namespace DECS_Excel_Add_Ins
         }
 
         /// <summary>
-        /// Lets the @c DexsExcelRibbon.xml point to the image for the @c Deidentify button.
+        /// Lets the @c DecsExcelRibbon.xml point to the image for the @c Deidentify button.
         /// </summary>
         /// <param name="control">Reference to the IRibbonControl object.</param>
         /// <returns>Bitmap</returns>
@@ -125,7 +125,7 @@ namespace DECS_Excel_Add_Ins
         }
 
         /// <summary>
-        /// Lets the @c DexsExcelRibbon.xml point to the image for the @c Extend Timecard button.
+        /// Lets the @c DecsExcelRibbon.xml point to the image for the @c Extend Timecard button.
         /// </summary>
         /// <param name="control">Reference to the IRibbonControl object.</param>
         /// <returns>Bitmap</returns>
@@ -135,7 +135,7 @@ namespace DECS_Excel_Add_Ins
         }
 
         /// <summary>
-        /// Lets the @c DexsExcelRibbon.xml point to the image for the @c ExtractMessage button.
+        /// Lets the @c DecsExcelRibbon.xml point to the image for the @c ExtractMessage button.
         /// </summary>
         /// <param name="control">Reference to the IRibbonControl object.</param>
         /// <returns>Bitmap</returns>
@@ -145,7 +145,7 @@ namespace DECS_Excel_Add_Ins
         }
 
         /// <summary>
-        /// Lets the @c DexsExcelRibbon.xml point to the image for the @c FormatResults button.
+        /// Lets the @c DecsExcelRibbon.xml point to the image for the @c FormatResults button.
         /// </summary>
         /// <param name="control">Reference to the IRibbonControl object.</param>
         /// <returns>Bitmap</returns>
@@ -155,7 +155,7 @@ namespace DECS_Excel_Add_Ins
         }
 
         /// <summary>
-        /// Lets the @c DexsExcelRibbon.xml point to the image for the @c HideDateTime button.
+        /// Lets the @c DecsExcelRibbon.xml point to the image for the @c HideDateTime button.
         /// </summary>
         /// <param name="control">Reference to the IRibbonControl object.</param>
         /// <returns>Bitmap</returns>
@@ -165,7 +165,7 @@ namespace DECS_Excel_Add_Ins
         }
 
         /// <summary>
-        /// Lets the @c DexsExcelRibbon.xml point to the image for the @c HidePhysicianNames button.
+        /// Lets the @c DecsExcelRibbon.xml point to the image for the @c HidePhysicianNames button.
         /// </summary>
         /// <param name="control">Reference to the IRibbonControl object.</param>
         /// <returns>Bitmap</returns>
@@ -175,7 +175,7 @@ namespace DECS_Excel_Add_Ins
         }
 
         /// <summary>
-        /// Lets the @c DexsExcelRibbon.xml point to the image for the @c importSurvey button.
+        /// Lets the @c DecsExcelRibbon.xml point to the image for the @c importSurvey button.
         /// </summary>
         /// <param name="control">Reference to the IRibbonControl object.</param>
         /// <returns>Bitmap</returns>
@@ -185,7 +185,7 @@ namespace DECS_Excel_Add_Ins
         }
 
         /// <summary>
-        /// Lets the @c DexsExcelRibbon.xml point to the image for the @c lookupNpi button.
+        /// Lets the @c DecsExcelRibbon.xml point to the image for the @c lookupNpi button.
         /// </summary>
         /// <param name="control">Reference to the IRibbonControl object.</param>
         /// <returns>Bitmap</returns>
@@ -195,7 +195,7 @@ namespace DECS_Excel_Add_Ins
         }
 
         /// <summary>
-        /// Lets the @c DexsExcelRibbon.xml point to the image for the @c MatchPhysiciansButton button.
+        /// Lets the @c DecsExcelRibbon.xml point to the image for the @c MatchPhysiciansButton button.
         /// </summary>
         /// <param name="control">Reference to the IRibbonControl object.</param>
         /// <returns>Bitmap</returns>
@@ -205,7 +205,17 @@ namespace DECS_Excel_Add_Ins
         }
 
         /// <summary>
-        /// Lets the @c DexsExcelRibbon.xml point to the image for the @c MergeRows button.
+        /// Lets the @c DecsExcelRibbon.xml point to the image for the @c MatchTextButton button.
+        /// </summary>
+        /// <param name="control">Reference to the IRibbonControl object.</param>
+        /// <returns>Bitmap</returns>
+        public Bitmap matchTextButton_GetImage(IRibbonControl control)
+        {
+            return Resources.match_pieces;
+        }
+
+        /// <summary>
+        /// Lets the @c DecsExcelRibbon.xml point to the image for the @c MergeRows button.
         /// </summary>
         /// <param name="control">Reference to the IRibbonControl object.</param>
         /// <returns>Bitmap</returns>
@@ -215,7 +225,7 @@ namespace DECS_Excel_Add_Ins
         }
 
         /// <summary>
-        /// Lets the @c DexsExcelRibbon.xml point to the image for the @c MergeRows button.
+        /// Lets the @c DecsExcelRibbon.xml point to the image for the @c MergeRows button.
         /// </summary>
         /// <param name="control">Reference to the IRibbonControl object.</param>
         /// <returns>Bitmap</returns>
@@ -225,7 +235,7 @@ namespace DECS_Excel_Add_Ins
         }
 
         /// <summary>
-        /// Lets the @c DexsExcelRibbon.xml point to the image for the @c SetupConfig button.
+        /// Lets the @c DecsExcelRibbon.xml point to the image for the @c SetupConfig button.
         /// </summary>
         /// <param name="control">Reference to the IRibbonControl object.</param>
         /// <returns>Bitmap</returns>
@@ -235,7 +245,7 @@ namespace DECS_Excel_Add_Ins
         }
 
         /// <summary>
-        /// Lets the @c DexsExcelRibbon.xml point to the image for the @c SearchNotes button.
+        /// Lets the @c DecsExcelRibbon.xml point to the image for the @c SearchNotes button.
         /// </summary>
         /// <param name="control">Reference to the IRibbonControl object.</param>
         /// <returns>Bitmap</returns>
@@ -245,7 +255,7 @@ namespace DECS_Excel_Add_Ins
         }
 
         /// <summary>
-        /// Lets the @c DexsExcelRibbon.xml point to the image for the @c onCallList button.
+        /// Lets the @c DecsExcelRibbon.xml point to the image for the @c onCallList button.
         /// </summary>
         /// <param name="control">Reference to the IRibbonControl object.</param>
         /// <returns>Bitmap</returns>
@@ -255,7 +265,7 @@ namespace DECS_Excel_Add_Ins
         }
 
         /// <summary>
-        /// Lets the @c DexsExcelRibbon.xml point to the image for the @c SearchByEmail button.
+        /// Lets the @c DecsExcelRibbon.xml point to the image for the @c SearchByEmail button.
         /// </summary>
         /// <param name="control">Reference to the IRibbonControl object.</param>
         /// <returns>Bitmap</returns>
@@ -265,7 +275,7 @@ namespace DECS_Excel_Add_Ins
         }
 
         /// <summary>
-        /// Lets the @c DexsExcelRibbon.xml point to the image for the @c SignalImportButton button.
+        /// Lets the @c DecsExcelRibbon.xml point to the image for the @c SignalImportButton button.
         /// </summary>
         /// <param name="control">Reference to the IRibbonControl object.</param>
         /// <returns>Bitmap</returns>
@@ -275,7 +285,7 @@ namespace DECS_Excel_Add_Ins
         }
 
         /// <summary>
-        /// Lets the @c DexsExcelRibbon.xml point to the image for the @c SortTimes button.
+        /// Lets the @c DecsExcelRibbon.xml point to the image for the @c SortTimes button.
         /// </summary>
         /// <param name="control">Reference to the IRibbonControl object.</param>
         /// <returns>Bitmap</returns>
@@ -285,7 +295,7 @@ namespace DECS_Excel_Add_Ins
         }
 
         /// <summary>
-        /// Lets the @c DexsExcelRibbon.xml point to the image for the @c SortTimesSettings button.
+        /// Lets the @c DecsExcelRibbon.xml point to the image for the @c SortTimesSettings button.
         /// </summary>
         /// <param name="control">Reference to the IRibbonControl object.</param>
         /// <returns>Bitmap</returns>
@@ -295,7 +305,7 @@ namespace DECS_Excel_Add_Ins
         }
 
         /// <summary>
-        /// Lets the @c DexsExcelRibbon.xml point to the image for the @c Stripe button.
+        /// Lets the @c DecsExcelRibbon.xml point to the image for the @c Stripe button.
         /// </summary>
         /// <param name="control">Reference to the IRibbonControl object.</param>
         /// <returns>Bitmap</returns>
@@ -305,7 +315,7 @@ namespace DECS_Excel_Add_Ins
         }
 
         /// <summary>
-        /// Lets the @c DexsExcelRibbon.xml point to the image for the @c AddSvi button.
+        /// Lets the @c DecsExcelRibbon.xml point to the image for the @c AddSvi button.
         /// </summary>
         /// <param name="control">Reference to the IRibbonControl object.</param>
         /// <returns>Bitmap</returns>
@@ -491,6 +501,17 @@ namespace DECS_Excel_Add_Ins
         {
             PhysicianMatcher physicianMatcher = new PhysicianMatcher();
             physicianMatcher.Match();
+        }
+
+        /// <summary>
+        /// When @c matchText button is pressed, instantiates a @c MatchText object & calls its @c Match method.
+        /// </summary>
+        /// <param name="control">Reference to the IRibbonControl object.</param>
+
+        public void OnMatchText(Office.IRibbonControl control)
+        {
+            TextMatcher textMatcher = new TextMatcher();
+            textMatcher.Match();
         }
 
         /// <summary>

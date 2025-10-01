@@ -1,5 +1,5 @@
 # UCSD Office Add-Ins
-![Last Commit Date](./.github/badges/last-commit-badge.svg?dummy=8484744)
+![GitHub last commit](https://img.shields.io/github/last-commit/dbmi/DECS-Office-AddIns)
 
 [GitHub Pages site](https://dbmi.github.io/DECS-Office-AddIns/)
 
