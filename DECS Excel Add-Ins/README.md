@@ -22,7 +22,7 @@ Creates custom buttons in Microsoft Excel that allow user to:
 * Turn text like "2-3 weeks" into a category like "routine/medium/high" [priority].
 * Set thresholds for text parsing into priorities.
 * Plot comparisons between multiple timeseries.
-* Match text.
+* [Match text](./help%20files/MatchText/MatchText.md) in different columns.
 * [Merge rows](./help%20files/MergeRows/MergeRows.md) across dates.
 * Extract the payload from a message.
 * [Scan `Notes` fields](./help%20files/SearchNotes/SearchNotes.md) for keywords, creating new columns.
