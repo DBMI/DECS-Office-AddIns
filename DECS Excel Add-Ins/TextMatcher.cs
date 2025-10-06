@@ -80,6 +80,21 @@ namespace DECS_Excel_Add_Ins
             replyExtractor = new Regex(REPLY_PATTERN);
         }
 
+
+        private string FixMangledText(string redcapText)
+        {
+            string redcapTextRepaired;
+
+            // REDCap apparently injects an additional char before certain symbols.
+            // Fix that here or it will break matches.
+            redcapTextRepaired = redcapText.Replace(REDCap_MANGLED_COPYRIGHT, COPYRIGHT);
+            redcapTextRepaired = redcapTextRepaired.Replace(REDCap_MANGLED_DASH, UNICODE_DASH);
+            redcapTextRepaired = redcapTextRepaired.Replace(REDCap_MANGLED_LEFT_QUOTES, UNICODE_LEFT_QUOTES);
+            redcapTextRepaired = redcapTextRepaired.Replace(REDCap_MANGLED_RIGHT_QUOTES, UNICODE_RIGHT_QUOTES);
+
+            return redcapTextRepaired;
+        }
+
         private string GetREDCapID(string redcapIdFull)
         {
             string redcapID = string.Empty;
@@ -176,13 +191,7 @@ namespace DECS_Excel_Add_Ins
                     // These are the only lines with message text.
                     if (redcapText.StartsWith("<div class"))
                     {
-                        // REDCap apparently injects an additional char before the © symbol.
-                        // Fix that here or it will break matches.
-                        redcapText = redcapText.Replace(REDCap_MANGLED_COPYRIGHT, COPYRIGHT);
-                        redcapText = redcapText.Replace(REDCap_MANGLED_DASH, UNICODE_DASH);
-                        redcapText = redcapText.Replace(REDCap_MANGLED_LEFT_QUOTES, UNICODE_LEFT_QUOTES);
-                        redcapText = redcapText.Replace(REDCap_MANGLED_RIGHT_QUOTES, UNICODE_RIGHT_QUOTES);
-
+                        redcapText = FixMangledText(redcapText);
                         redcapID = GetREDCapID(redcapIdColumn.Offset[rowOffset, 0].Value);
 
                         // If we've already seen this one, skip it.

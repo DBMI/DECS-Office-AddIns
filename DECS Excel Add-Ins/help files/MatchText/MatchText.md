@@ -12,4 +12,7 @@ Because the patients' names had been redacted from the one column, there will no
 
 * Break up the redacted text at the `<Redacted>` marker, resulting in a `List<string>` object.
 * Convert any special characters that were injected into the text.
-* Test to see if each of the elements of the `List<string>` are present in the source text.
+* Test to see if *all* of the elements of the `List<string>` are present in the source text.
+
+
+[BACK](../../README.md)
