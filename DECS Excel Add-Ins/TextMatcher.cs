@@ -20,9 +20,17 @@ namespace DECS_Excel_Add_Ins
         private Range crossReferenceRow;
 
         private char ASCII_QUOTE = (char)39;
-        private string COPYRIGHT = @"©";
-        private string REDCap_COPYRIGHT = @"Â©";
         private char UNICODE_QUOTE = (char)8217;
+
+        private string COPYRIGHT = @"©";
+        private string REDCap_MANGLED_COPYRIGHT = @"Â©";
+        private string REDCap_MANGLED_DASH = @"â€""";
+        private string REDCap_MANGLED_LEFT_QUOTES = @"â€œ";
+        private string REDCap_MANGLED_RIGHT_QUOTES = @"â€";
+        private string UNICODE_DASH = "–";
+        private string UNICODE_LEFT_QUOTES = "“";
+        private string UNICODE_RIGHT_QUOTES = "”";
+
 
         private Regex chunkExtractor;
         private const string CHUNK_PATTERN = @"(\>[^\<\>]{3,}\<)+";
@@ -32,7 +40,7 @@ namespace DECS_Excel_Add_Ins
         private const string PROVIDER_PATTERN = @"Provider reply:<\/strong><br><br \/><span style=""font-weight: normal;"">(?<providerReply>.*)<\/span><\/p><\/div>";
         private const string REDACTED = "Redacted";
         private Regex replyExtractor;
-        private const string REPLY_PATTERN = @"(?<reply>(\d|\s|\w|,|\.|\<\d|(?<!\w)\>|\/|\(|\)|\[|\]|'|""|\?|!|:|;|\*|\-)*)";
+        private const string REPLY_PATTERN = @"(?<reply>(\d|\s|\w|,|\.|\<\d|(?<!\w)\>|\/|\(|\)|\[|\]|'|""|\?|!|:|;|\*|\-|©|“|”|–)*)";
 
         private List<string> redcapMessagesMatched;
 
@@ -170,12 +178,19 @@ namespace DECS_Excel_Add_Ins
                     {
                         // REDCap apparently injects an additional char before the © symbol.
                         // Fix that here or it will break matches.
-                        redcapText = redcapText.Replace(REDCap_COPYRIGHT, COPYRIGHT);
+                        redcapText = redcapText.Replace(REDCap_MANGLED_COPYRIGHT, COPYRIGHT);
+                        redcapText = redcapText.Replace(REDCap_MANGLED_DASH, UNICODE_DASH);
+                        redcapText = redcapText.Replace(REDCap_MANGLED_LEFT_QUOTES, UNICODE_LEFT_QUOTES);
+                        redcapText = redcapText.Replace(REDCap_MANGLED_RIGHT_QUOTES, UNICODE_RIGHT_QUOTES);
 
                         redcapID = GetREDCapID(redcapIdColumn.Offset[rowOffset, 0].Value);
 
                         // If we've already seen this one, skip it.
-                        if (!redcapMessagesMatched.Contains(redcapID))
+                        if (redcapMessagesMatched.Contains(redcapID))
+                        {
+                            application.StatusBar = "Skipping " + redcapID;
+                        }
+                        else
                         {
                             List<string> replyPieces = GetReplyPieces(redcapText);
                             MatchThisText(redcapID, replyPieces);
@@ -270,7 +285,7 @@ namespace DECS_Excel_Add_Ins
         {
             // Don't set ScrollRow to where we're writing now or the whole sheet will appear blank.
             // Scroll to a few rows back (but not < 1).
-            int topOfSheet = System.Math.Max(1, crossReferenceRow.Row - 20);
+            int topOfSheet = Math.Max(1, crossReferenceRow.Row - 20);
             application.ActiveWindow.ScrollRow = topOfSheet;
             application.StatusBar = "Processing row " + rowOffset.ToString() + "/" + numRows.ToString();
         }
