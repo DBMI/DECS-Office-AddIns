@@ -2,7 +2,6 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Runtime.Remoting.Messaging;
 using System.Text.RegularExpressions;
 using System.Windows.Forms;
 using Worksheet = Microsoft.Office.Interop.Excel.Worksheet;
@@ -20,16 +19,20 @@ namespace DECS_Excel_Add_Ins
 
         private Range crossReferenceRow;
 
+        private char ASCII_QUOTE = (char)39;
+        private string COPYRIGHT = @"©";
+        private string REDCap_COPYRIGHT = @"Â©";
+        private char UNICODE_QUOTE = (char)8217;
+
         private Regex chunkExtractor;
-        private const string chunkPattern = @"(\>[^\<\>]{3,}\<)+";
+        private const string CHUNK_PATTERN = @"(\>[^\<\>]{3,}\<)+";
         private Regex idExtractor;
-        private const string idPattern = @"(?:icr)*(?:nc)*(?:message)*(?<id>[\d\w]*)(?:message)*";
-        //private Regex idExtractorAlt;
-        //private const string idPatternAlt = @"nc(?<id>[\d\w]*)message";
+        private const string ID_PATTERN = @"(?:icr)*(?:nc)*(?:message)*(?<id>[\d\w]*)(?:message)*";
         private Regex providerExtractor;
-        private const string providerPattern = @"Provider reply:<\/strong><br><br \/><span style=""font-weight: normal;""(?<provider_reply>.*)";
+        private const string PROVIDER_PATTERN = @"Provider reply:<\/strong><br><br \/><span style=""font-weight: normal;"">(?<providerReply>.*)<\/span><\/p><\/div>";
+        private const string REDACTED = "Redacted";
         private Regex replyExtractor;
-        private const string replyPattern = @"\>(?<reply>(\d|\s|\w|,|\.|\<\d|(?<!\w)\>|\/|\(|\)|\[|\]|'|""|\?|!|:|\*|\-)*)";
+        private const string REPLY_PATTERN = @"(?<reply>(\d|\s|\w|,|\.|\<\d|(?<!\w)\>|\/|\(|\)|\[|\]|'|""|\?|!|:|;|\*|\-)*)";
 
         private List<string> redcapMessagesMatched;
 
@@ -44,11 +47,14 @@ namespace DECS_Excel_Add_Ins
             crossReferenceRow.Offset[0, 1].Value = "ART SPARK ID";
             crossReferenceRow.Offset[0, 1].ColumnWidth = 14;
 
-            crossReferenceRow.Offset[0, 2].Value = "REDCap Text";
-            crossReferenceRow.Offset[0, 2].ColumnWidth = 75;
+            crossReferenceRow.Offset[0, 2].Value = "# ART SPARK Msgs matched";
+            crossReferenceRow.Offset[0, 2].ColumnWidth = 14;
 
-            crossReferenceRow.Offset[0, 3].Value = "ART SPARK Text";
+            crossReferenceRow.Offset[0, 3].Value = "REDCap Text";
             crossReferenceRow.Offset[0, 3].ColumnWidth = 75;
+
+            crossReferenceRow.Offset[0, 4].Value = "ART SPARK Text";
+            crossReferenceRow.Offset[0, 4].ColumnWidth = 75;
 
             crossReferenceRow.Font.Bold = true;
 
@@ -60,11 +66,10 @@ namespace DECS_Excel_Add_Ins
 
         private void BuildRegex()
         {
-            chunkExtractor = new Regex(chunkPattern);
-            idExtractor = new Regex(idPattern);
-            //idExtractorAlt = new Regex(idPatternAlt);
-            providerExtractor = new Regex(providerPattern);
-            replyExtractor = new Regex(replyPattern);
+            chunkExtractor = new Regex(CHUNK_PATTERN);
+            idExtractor = new Regex(ID_PATTERN);
+            providerExtractor = new Regex(PROVIDER_PATTERN);
+            replyExtractor = new Regex(REPLY_PATTERN);
         }
 
         private string GetREDCapID(string redcapIdFull)
@@ -93,17 +98,17 @@ namespace DECS_Excel_Add_Ins
 
             if (providerMatch.Success)
             {
-                string provider_reply = providerMatch.Groups["provider_reply"].Value;
+                string providerReply = providerMatch.Groups["providerReply"].Value;
 
-                if (!string.IsNullOrEmpty(provider_reply))
+                if (!string.IsNullOrEmpty(providerReply))
                 {
-                    foreach (Match match in replyExtractor.Matches(provider_reply))
+                    foreach (Match match in replyExtractor.Matches(providerReply))
                     {
                         if (match.Success)
                         {
                             string piece = match.Groups["reply"].Value;
 
-                            if (!string.IsNullOrEmpty(piece))
+                            if (!string.IsNullOrEmpty(piece) && !string.Equals(piece, REDACTED))
                             {
                                 replyPieces.Add(piece);
                             }
@@ -163,6 +168,10 @@ namespace DECS_Excel_Add_Ins
                     // These are the only lines with message text.
                     if (redcapText.StartsWith("<div class"))
                     {
+                        // REDCap apparently injects an additional char before the © symbol.
+                        // Fix that here or it will break matches.
+                        redcapText = redcapText.Replace(REDCap_COPYRIGHT, COPYRIGHT);
+
                         redcapID = GetREDCapID(redcapIdColumn.Offset[rowOffset, 0].Value);
 
                         // If we've already seen this one, skip it.
@@ -195,29 +204,48 @@ namespace DECS_Excel_Add_Ins
                 int rowOffset = 0;
                 string artSparkID = string.Empty;
                 string artSparkText = string.Empty;
+                int numMatchesForThisREDCapMsg = 0;
+                List<string> artSparkIDsSeen = new List<string>();
 
                 // Find the given text in the ART SPARK column.
                 while (true)
                 {
                     rowOffset++;
+                    crossReferenceRow.Offset[0, 2].Value = numMatchesForThisREDCapMsg.ToString();
 
                     try
                     {
+                        // Even if no matches, show what we TRIED to match.
+                        crossReferenceRow.Value = redcapID;
+                        crossReferenceRow.Offset[0, 3].Value = string.Join(", ", replyPieces);
+
                         artSparkID = artSparkIdColumn.Offset[rowOffset, 0].Value.ToString();
+
+                        // If we've already tested this ART SPARK message, no need to test it again.
+                        if (artSparkIDsSeen.Contains(artSparkID))
+                        {
+                            continue;
+                        }
+
+                        artSparkIDsSeen.Add(artSparkID);
                         artSparkText = artSparkTextColumn.Offset[rowOffset, 0].Value;
+
+                        // Don't get confused by fancy UNICODE quotes (which apparently get translated in REDCap extraction.)
+                        artSparkText = artSparkText.Replace(UNICODE_QUOTE, ASCII_QUOTE);
 
                         // Are each of the reply pieces present in the original ART SPARK text?
                         if (replyPieces.All(piece => artSparkText.Contains(piece)))
                         {
+                            numMatchesForThisREDCapMsg++;
                             crossReferenceRow.Value = redcapID;
                             crossReferenceRow.Offset[0, 1].Value = artSparkID;
-                            crossReferenceRow.Offset[0, 2].Value = string.Join(", ", replyPieces);
-                            crossReferenceRow.Offset[0, 3].Value = artSparkText;
+                            crossReferenceRow.Offset[0, 2].Value = numMatchesForThisREDCapMsg.ToString();
+                            crossReferenceRow.Offset[0, 3].Value = string.Join(", ", replyPieces);
+                            crossReferenceRow.Offset[0, 4].Value = artSparkText;
                             crossReferenceRow = crossReferenceRow.Offset[1, 0];
 
                             // No need to match this one if we see it again.
                             redcapMessagesMatched.Add(redcapID);
-                            break;
                         }
                     }
                     catch (System.NullReferenceException)
@@ -226,9 +254,15 @@ namespace DECS_Excel_Add_Ins
                     }
                     catch (Microsoft.CSharp.RuntimeBinder.RuntimeBinderException)
                     {
+                        if (numMatchesForThisREDCapMsg == 0)
+                        {
+                            // Move to the next row.
+                            crossReferenceRow = crossReferenceRow.Offset[1, 0];
+                        }
+
                         break;
                     }
-                }
+                }               
             }
         }
 
