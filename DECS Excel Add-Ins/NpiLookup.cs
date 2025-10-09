@@ -94,6 +94,11 @@ namespace DECS_Excel_Add_Ins
             }
         }
 
+        public string EnumerationDate()
+        {
+            return basic.enumeration_date; 
+        }   
+        
         public string IsOrganization()
         {
             string isOrg = "No";
@@ -165,7 +170,7 @@ namespace DECS_Excel_Add_Ins
 
         internal void Search(Worksheet worksheet)
         {
-            Microsoft.Office.Interop.Excel.Application application = Globals.ThisAddIn.Application;
+            Application application = Globals.ThisAddIn.Application;
 
             // Any column selected?
             Range npiColumn = Utilities.GetSelectedCol(application);
@@ -176,7 +181,8 @@ namespace DECS_Excel_Add_Ins
                 Range providerNameRng = Utilities.InsertNewColumn(npiColumn, "Provider Name", InsertSide.Right);
                 Range isOrganizationRng = Utilities.InsertNewColumn(providerNameRng, "Is Organization", InsertSide.Right);
                 Range providerSoleProprietorRng = Utilities.InsertNewColumn(isOrganizationRng, "Sole Proprietor", InsertSide.Right);
-                Range providerAffiliationRng = Utilities.InsertNewColumn(providerSoleProprietorRng, "Affiliation", InsertSide.Right);
+                Range providerAffiliationRng = Utilities.InsertNewColumn(providerSoleProprietorRng, "Affiliation", InsertSide.Right); 
+                Range enuemerationDateRng = Utilities.InsertNewColumn(providerAffiliationRng, "Enumeration Date", InsertSide.Right);
 
                 int rowOffset = 1;
                 int lastRow = Utilities.FindLastRow(worksheet);
@@ -199,6 +205,7 @@ namespace DECS_Excel_Add_Ins
                                 isOrganizationRng.Offset[rowOffset, 0].Value = result.IsOrganization();
                                 providerSoleProprietorRng.Offset[rowOffset, 0].Value = result.SoleProprietor();
                                 providerAffiliationRng.Offset[rowOffset, 0].Value = result.Affiliation();
+                                enuemerationDateRng.Offset[rowOffset, 0].Value = result.EnumerationDate();
                                 application.StatusBar = "Row: " + rowOffset.ToString() + "/" + lastRow.ToString();
                             }
                         }
