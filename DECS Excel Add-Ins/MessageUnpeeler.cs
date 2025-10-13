@@ -9,6 +9,7 @@ namespace DECS_Excel_Add_Ins
     internal class MessageUnpeeler
     {
         private Microsoft.Office.Interop.Excel.Application application;
+        private readonly string[] DELIMITERS = { "----- ", "          ", "Subject:" };
         private int lastRow;
         private Range selectedColumnRng;
         private const string namePattern = @"From:(?<name>[\w,\s]+)\s+Sent:";
@@ -79,11 +80,12 @@ namespace DECS_Excel_Add_Ins
                 for (int rowNumber = 2; rowNumber <= lastRow; rowNumber++)
                 {
                     target = (Range)worksheet.Cells[rowNumber, ditheredColumn.Column];
-                    sourceData = worksheet.Cells[rowNumber, selectedColumnRng.Column].Value;
+                    sourceData = worksheet.Cells[rowNumber, selectedColumnRng.Column].Value.ToString();
 
-                    string[] lines = sourceData.Split(new string[] { "----- " }, StringSplitOptions.None);
+                    string[] lines = sourceData.Split(DELIMITERS, StringSplitOptions.None);
 
-                    // In case the message doesn't contain "-----", initialize with the raw message.
+                    // In case the message doesn't contain one of the delimiters,
+                    // initialize with the raw message.
                     targetData = sourceData;
 
                     foreach (string line in lines)
@@ -95,7 +97,7 @@ namespace DECS_Excel_Add_Ins
                             !line.Contains("Message") &&
                             !line.Contains("From:"))
                         {
-                            targetData = line;
+                            targetData = line.Trim();
                         }
                     }
 
