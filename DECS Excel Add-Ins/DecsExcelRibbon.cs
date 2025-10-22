@@ -45,6 +45,16 @@ namespace DECS_Excel_Add_Ins
         public DecsExcelRibbon() { }
 
         /// <summary>
+        /// Lets the @c DecsExcelRibbon.xml point to the image for the @c addRowsAcrossSheets button.
+        /// </summary>
+        /// <param name="control">Reference to the IRibbonControl object.</param>
+        /// <returns>Bitmap</returns>
+        public Bitmap addRowsAcrossSheets_GetImage(IRibbonControl control)
+        {
+            return Resources.combine_sheets;
+        }
+
+        /// <summary>
         /// Lets the @c DecsExcelRibbon.xml point to the image for the @c ImportList button.
         /// </summary>
         /// <param name="control">Reference to the IRibbonControl object.</param>
@@ -322,6 +332,17 @@ namespace DECS_Excel_Add_Ins
         public Bitmap sviButton_GetImage(IRibbonControl control)
         {
             return Resources.ENV_EPHT_social;
+        }
+
+        /// <summary>
+        /// When @c AddRowsAcrossSheets button is pressed, this method instantiates a @c RowAdder object & calls its @c Scan method.
+        /// </summary>
+        /// <param name="control">Reference to the IRibbonControl object.</param>
+
+        public void OnAddRowsAcrossSheets(Office.IRibbonControl control)
+        {
+            RowAdder rowAdder = new RowAdder();
+            rowAdder.Scan();
         }
 
         /// <summary>

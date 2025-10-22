@@ -186,6 +186,22 @@ namespace DECS_Excel_Add_Ins
         }
 
         /// <summary>
+        /// Finds all worksheets.
+        /// </summary>
+        /// <param name="workbook">Active Workbook.</param>
+
+        internal static List<Worksheet> CollectAllWorksheets(Workbook workbook)
+        {
+            List<Worksheet> sheets = new List<Worksheet>();
+
+            foreach (Worksheet sheet in workbook.Worksheets)
+            {
+                sheets.Add(sheet);
+            }
+
+            return sheets;
+        }
+        /// <summary>
         /// Combine multiple columns across one row.
         /// </summary>
         /// <param name="sheet">Worksheet</param>

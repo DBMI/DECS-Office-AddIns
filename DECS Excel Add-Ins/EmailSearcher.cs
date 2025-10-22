@@ -207,7 +207,7 @@ namespace DECS_Excel_Add_Ins
                     }
                 }
             }
-            catch (System.NullReferenceException) { }
+            catch (NullReferenceException) { }
 
             return result;
         }
