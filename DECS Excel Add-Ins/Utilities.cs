@@ -249,7 +249,7 @@ namespace DECS_Excel_Add_Ins
 
             string longestSubstring = columnNames[0];
 
-            for (int i = 1; i <= columnNames.Count; i++)
+            for (int i = 1; i < columnNames.Count; i++)
             {
                 longestSubstring = FindLongestCommonSubstring(longestSubstring, columnNames[i]);
             }

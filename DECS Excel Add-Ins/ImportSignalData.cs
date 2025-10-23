@@ -7,6 +7,7 @@ using System.Text.Json;
 using System.Text.Json.Serialization;
 using System.Web.UI.WebControls;
 using System.Windows.Forms;
+using static System.Net.Mime.MediaTypeNames;
 using Application = Microsoft.Office.Interop.Excel.Application;
 
 
@@ -140,8 +141,7 @@ namespace DECS_Excel_Add_Ins
     {
         private Application application;
         private SignalNotesFormat format = SignalNotesFormat.OneBigSheet;
-
-        private List<string> metricNames;
+        private Dictionary<string, string> metricsToSheets;
 
         // Keep track of the sheet used for each physician AND what row we last used on that sheet.
         private Dictionary<string, PhysicianTable> tables;
@@ -175,6 +175,8 @@ namespace DECS_Excel_Add_Ins
 
         private void BuildSheets(Rootobject obj)
         {
+            application.StatusBar = "Sorting imported data.";
+
             // Sort the data objects by metricName, then physician name, then date.
             List<Datum> sortedData = obj.Data.OrderBy(x => x.Metric).
                                               ThenBy(y => y.ClinicianName).
@@ -269,7 +271,13 @@ namespace DECS_Excel_Add_Ins
                     var options = new JsonSerializerOptions();
                     options.Converters.Add(new CustomDateTimeConverter());
                     Rootobject obj = JsonSerializer.Deserialize<Rootobject>(json, options);
-                    metricNames = obj.MetricNames();
+
+                    // Do we use ALL the metrics or ask the user to select?
+                    List<string> selectedMetrics = SelectMetricsToUse(obj.MetricNames());
+
+                    // Get sheet names from (perhaps too long) metric names.
+                    // Build dictionaries to link metrics to sheets.
+                    SheetNamesFromMetrics(selectedMetrics);
                     BuildSheets(obj);
                 }
             }
@@ -322,9 +330,9 @@ namespace DECS_Excel_Add_Ins
 
         private void PutAllPhysiciansOnSameSheet(List<Datum> sortedData)
         {
-            foreach (string metricName in metricNames)
+            foreach (string metricName in metricsToSheets.Keys.ToList())
             {
-                Worksheet newSheet = Utilities.CreateNewNamedSheet("Signal " + metricName);
+                Worksheet newSheet = Utilities.CreateNewNamedSheet(metricsToSheets[metricName]);
                 InitializeSheet(newSheet, metricName);
                 Range r = newSheet.Cells[1, 1];
                 int rowOffset = 1;
@@ -343,10 +351,10 @@ namespace DECS_Excel_Add_Ins
                     r.Offset[rowOffset, 7].Value2 = datum.Numerator;
                     r.Offset[rowOffset, 8].Value2 = datum.Denominator;
                     r.Offset[rowOffset, 9].Value2 = datum.Value;
-                    rowOffset++;
 
-                    application.StatusBar = "Building sheet: Signal " + metricName + " " +
+                    application.StatusBar = "Building sheet for: " + metricName + " " +
                         rowOffset.ToString() + "/" + dataThisMetric.Count;
+                    rowOffset++;
                 }
             }
         }
@@ -362,6 +370,67 @@ namespace DECS_Excel_Add_Ins
                 r.Offset[table.Row(), 2].Value2 = datum.Denominator;
                 r.Offset[table.Row(), 3].Value2 = datum.Value;
                 table.IncrementRow();
+            }
+        }
+
+        // If only a few metrics, show them all. But if > 12 (just a guess), ask the user to down select.
+        private List<string> SelectMetricsToUse(List<string> metrics)
+        {
+            List<string> selectedMetrics = new List<string>();
+
+            foreach (string metric in metrics) 
+            {
+                selectedMetrics.Add(metric);
+            }
+
+            application.StatusBar = "Select metrics to extract.";
+
+            // Ask user to downselect.
+            if (metrics.Count > 12)
+            {
+                using (SelectMetricsForm form = new SelectMetricsForm(metrics))
+                {
+                    if (form.ShowDialog() == DialogResult.OK)
+                    {
+                        selectedMetrics.Clear();
+                        selectedMetrics = form.selectedMetrics;
+                    }
+                }
+            }
+
+            return selectedMetrics;
+        }
+
+        // If the metric names are all long, we can't just truncate to 31 characters
+        // and we'll do better by eliminating the common parts.
+        // BUT we'll need dictionaries to link them.
+        private void SheetNamesFromMetrics(List<string> metrics)
+        {
+            metricsToSheets = new Dictionary<string, string>();
+
+            // The default case: sheet names and metric names are the same.
+            foreach (string metric in metrics)
+            {
+                metricsToSheets.Add(metric, metric);
+            }
+
+            // We can just use the names provided if they're short enough to fit on the Sheet tab.
+            // (But don't bother if just ONE metric--removing the common part will ERASE the name.)
+            if (metrics.Count > 1 && metrics.Any(word => word.Length > 31))
+            {
+                List<string> usableNames = new List<string>();
+                string commonPart = Utilities.CommonElements(metrics);
+
+                if (!string.IsNullOrEmpty(commonPart))
+                {
+                    metricsToSheets.Clear();
+
+                    foreach (string metric in metrics)
+                    {
+                        string sheetName = metric.Replace(commonPart, "");
+                        metricsToSheets[metric] = sheetName;
+                    }
+                }
             }
         }
     }
