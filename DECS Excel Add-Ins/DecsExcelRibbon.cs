@@ -155,6 +155,16 @@ namespace DECS_Excel_Add_Ins
         }
 
         /// <summary>
+        /// Lets the @c DecsExcelRibbon.xml point to the image for the @c ExtractText button.
+        /// </summary>
+        /// <param name="control">Reference to the IRibbonControl object.</param>
+        /// <returns>Bitmap</returns>
+        public Bitmap extractTextButton_GetImage(IRibbonControl control)
+        {
+            return Resources.uncorker;
+        }
+
+        /// <summary>
         /// Lets the @c DecsExcelRibbon.xml point to the image for the @c FormatResults button.
         /// </summary>
         /// <param name="control">Reference to the IRibbonControl object.</param>
@@ -475,6 +485,18 @@ namespace DECS_Excel_Add_Ins
             MessageUnpeeler unpeeler = new MessageUnpeeler();
             Excel.Worksheet wksheet = (Excel.Worksheet)Globals.ThisAddIn.Application.ActiveSheet;
             unpeeler.Scan(wksheet);
+        }
+
+        /// <summary>
+        /// When @c ExtractMessage button is pressed, instantiates a @c MessageUnpeeler object & calls its @c Scan method.
+        /// </summary>
+        /// <param name="control">Reference to the IRibbonControl object.</param>
+
+        public void OnExtractText(Office.IRibbonControl control)
+        {
+            TextExtractor extractor = new TextExtractor();
+            Excel.Worksheet wksheet = (Excel.Worksheet)Globals.ThisAddIn.Application.ActiveSheet;
+            extractor.Extract(wksheet);
         }
 
         /// <summary>

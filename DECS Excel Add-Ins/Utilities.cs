@@ -185,6 +185,12 @@ namespace DECS_Excel_Add_Ins
             DetachEvents(textBox);
         }
 
+        internal static void ClearWorksheet(Worksheet sheet)
+        {
+            Excel.Range usedRange = sheet.UsedRange;
+            usedRange.Interior.Color = Constants.xlNone;
+        }
+
         /// <summary>
         /// Finds all worksheets.
         /// </summary>

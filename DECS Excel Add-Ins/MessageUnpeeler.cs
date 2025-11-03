@@ -3,9 +3,17 @@ using System;
 using System.Collections.Generic;
 using System.Text.RegularExpressions;
 using System.Windows.Forms;
+using Worksheet = Microsoft.Office.Interop.Excel.Worksheet;
 
 namespace DECS_Excel_Add_Ins
 {
+    public enum MessageDirection
+    {
+        FromPatient,
+        ToPatient,
+        None
+    }
+
     internal class MessageUnpeeler
     {
         private Microsoft.Office.Interop.Excel.Application application;
@@ -56,6 +64,38 @@ namespace DECS_Excel_Add_Ins
             return success;
         }
 
+        private MessageDirection ParseDirectionFromColumnName(string columnName)
+        {
+            MessageDirection messageDirection = MessageDirection.None;
+
+            if (!string.IsNullOrEmpty(columnName)) 
+            { 
+                if (columnName.ToLower().Contains("from patient"))
+                {
+                    messageDirection = MessageDirection.FromPatient;
+                }
+                else if (columnName.ToLower().Contains("to patient"))
+                {
+                    messageDirection = MessageDirection.ToPatient;
+                }
+                else
+                {
+                    // If we can't figure it out from the column name, ask user directly;
+                    using (MessageDirectionForm form = new MessageDirectionForm())
+                    {
+                        var result = form.ShowDialog();
+
+                        if (result == DialogResult.OK)
+                        {
+                            messageDirection = form.direction;
+                        }
+                    }
+                }
+            }
+
+            return messageDirection;
+        }
+
         internal void Scan(Worksheet worksheet)
         {
             lastRow = worksheet.UsedRange.Rows.Count;
@@ -66,6 +106,14 @@ namespace DECS_Excel_Add_Ins
             if (FindSelectedColumn(worksheet))
             {
                 string selectedColumnName = selectedColumnRng.Value.ToString();
+                MessageDirection messageDirection = ParseDirectionFromColumnName(selectedColumnName);
+                
+                // If we can't decipher the message direction, quit.
+                if (messageDirection == MessageDirection.None)
+                {
+                    return;
+                }
+
                 string newColumnName = selectedColumnName + " (Extracted)";
 
                 // Make room for new column.
@@ -90,14 +138,25 @@ namespace DECS_Excel_Add_Ins
 
                     foreach (string line in lines)
                     {
-                        // Grab the -LAST- line that does not start with Message or From:
-                        // (Skip empty lines & ones that repeat MyChart boilerplate.)
-                        if (line.Trim().Length > 0 &&
-                            !line.Contains("MyChart Guidelines:") &&
-                            !line.Contains("Message") &&
-                            !line.Contains("From:"))
+                        // Skip empty lines.
+                        if (line.Trim().Length > 0)
                         {
-                            targetData = line.Trim();
+                            // Find lines that do not contain Message or From:or MyChart boilerplate.
+                            if (!line.Contains("MyChart Guidelines:") &&
+                                !line.Contains("Message") &&
+                                !line.Contains("From:"))
+                            {
+                                targetData = line.Trim();
+
+                                // If message is TO the patient:
+                                // Grab the -FIRST- such line, so we're done.
+                                if (messageDirection == MessageDirection.ToPatient)
+                                {
+                                    break;
+                                }
+                                // If message is FROM the patient:
+                                // Grab the -LAST- such line, so keep parsing.
+                            }
                         }
                     }
 
