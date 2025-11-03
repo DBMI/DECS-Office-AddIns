@@ -143,13 +143,20 @@
 				</group>
 				<group id ="MergeGroup"
 					   label="Merge">
+					<button id="extractTextButton"
+							getImage="extractTextButton_GetImage"
+							label="Extract Text"
+							onAction="OnExtractText"
+							screentip="Extract text"
+							size="large"						
+							supertip="Extract text from REDCap HTML" />
 					<button id="matchTextButton"
 							getImage="matchTextButton_GetImage"
 							label="Match Text"
 							onAction="OnMatchText"
 							screentip="Match text"
-							size="large"						
-							supertip="Match text" />					
+							size="large"
+							supertip="Match text" />
 					<button id="mergeRowButton"
 							getImage="mergeRowsButton_GetImage"
 							label="Merge Rows"

@@ -10,7 +10,6 @@ namespace DECS_Excel_Add_Ins
     internal class Striper
     {
         private Microsoft.Office.Interop.Excel.Application application;
-        private int lastRowInSheet;
         private Range selectedColumnRng;
         private Dictionary<string, Block> sourceBlocks;
         private Worksheet thisWorksheet;
@@ -61,8 +60,10 @@ namespace DECS_Excel_Add_Ins
         internal void Run(Worksheet worksheet)
         {
             thisWorksheet = worksheet;
-            lastRowInSheet = worksheet.UsedRange.Rows.Count;
-
+            
+            // Remove all old shading.
+            Utilities.ClearWorksheet(worksheet);
+            
             if (FindSelectedCategory(worksheet))
             {
                 // Figure out the distinct category values & where they are.
