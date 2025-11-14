@@ -1013,7 +1013,7 @@ namespace DECS_Excel_Add_Ins
         /// </summary>
         /// <param name="application">Excel application</param>
         /// <returns>Range</returns>
-        internal static Range GetSelectedCol(Microsoft.Office.Interop.Excel.Application application)
+        internal static Range GetSelectedCol(Excel.Application application)
         {
             Range rng = (Range)application.Selection;
             Worksheet sheet = application.Selection.Worksheet;
@@ -1573,6 +1573,31 @@ namespace DECS_Excel_Add_Ins
             }
 
             MessageBox.Show("Saved in '" + newFilename + "'.");
+        }
+
+        /// <summary>
+        /// Scrolls the worksheet to desired row.
+        /// </summary>
+        /// <param name="worksheet">Active worksheet</param>
+        /// <param name="rowNumber">int</param>
+        internal static void ScrollToRow(Worksheet worksheet, int rowNumber)
+        {
+            Excel.Application application = Globals.ThisAddIn.Application;
+
+            try
+            {
+                // Don't try to scroll above row 1.
+                rowNumber = Math.Max(rowNumber, 1);
+
+                // Don't try to scroll past the end of the sheet.
+                rowNumber = Math.Min(rowNumber, worksheet.Rows.Count);
+
+                application.ActiveWindow.ScrollRow = rowNumber;
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine($"Error scrolling to row: {ex.Message}");
+            }
         }
 
         internal static void SortPageByColumn(Worksheet sheet, Range selectedColumnRng)

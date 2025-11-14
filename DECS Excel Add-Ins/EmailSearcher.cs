@@ -20,10 +20,8 @@ namespace DECS_Excel_Add_Ins
         private const string emailExtractor = @"(?<name>[^@]+)@";
         private string existingNamesFile = string.Empty;
         private Dictionary<string, string> existingNamesList;
+        private const int HALFWAY_DOWN_THE_SHEET = 12;
         private HtmlWeb web;
-        //private string result = null;
-        //private WebResponse response = null;
-        //private StreamReader reader = null;
         private Range providerEmailRng;
         private bool? useExistingNamesList = null;
 
@@ -518,6 +516,10 @@ namespace DECS_Excel_Add_Ins
         /// <param name="worksheet">Worksheet</param>
         internal void Search(Worksheet worksheet)
         {
+            // Show all the rows.
+            worksheet.ShowAllData();
+            worksheet.Rows.Hidden = false;
+
             int lastRowInSheet = worksheet.UsedRange.Rows.Count;
 
             if (FindSelectedCategory(worksheet))
@@ -533,7 +535,7 @@ namespace DECS_Excel_Add_Ins
                 {
                     string emailName = ExtractJustNameFromEmail(providerEmailRng.Offset[rowOffset]);
 
-                    // Were we able to parse "improvider" from "improvider@health.ucsd.edu"?
+                    // Were we able to parse "ima.provider" from "ima.provider@health.ucsd.edu"?
                     if (!string.IsNullOrEmpty(emailName))
                     {
                         // Ask the Blink server.
@@ -546,6 +548,7 @@ namespace DECS_Excel_Add_Ins
                         }
 
                         providerNameRng.Offset[rowOffset].Value = providerName;
+                        Utilities.ScrollToRow(worksheet, providerNameRng.Offset[rowOffset].Row - HALFWAY_DOWN_THE_SHEET);
                     }
                 }
             }
