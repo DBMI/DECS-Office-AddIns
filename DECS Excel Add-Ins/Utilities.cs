@@ -280,7 +280,7 @@ namespace DECS_Excel_Add_Ins
                     DateTime conv = DateTime.FromOADate(d);
                     convertedContents = conv.ToString("yyyy-MM-dd");
                 }
-                catch (System.FormatException)
+                catch (FormatException)
                 {
                     // Probably trying to convert the name "Date" to a Double in order to create DateTime object.
                 }
@@ -305,7 +305,7 @@ namespace DECS_Excel_Add_Ins
                     double d = double.Parse(cellContents);
                     convertedContents = DateTime.FromOADate(d);
                 }
-                catch (System.FormatException)
+                catch (FormatException)
                 {
                     // Try converting directly to DateTime.
                     if (DateTime.TryParse(cellContents, out DateTime result))
@@ -514,7 +514,7 @@ namespace DECS_Excel_Add_Ins
                 {
                     // keep going
                 }
-                catch (System.NullReferenceException)
+                catch (NullReferenceException)
                 {
                     break;
                 }

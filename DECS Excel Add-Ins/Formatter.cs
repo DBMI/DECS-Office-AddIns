@@ -1,16 +1,8 @@
 ﻿using Workbook = Microsoft.Office.Interop.Excel.Workbook;
 using Worksheet = Microsoft.Office.Interop.Excel.Worksheet;
 using Microsoft.Office.Interop.Excel;
-using Microsoft.Office.Tools.Excel;
 using System;
-using System.Collections.Generic;
 using System.Drawing;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows.Forms;
-using System.Windows.Forms.VisualStyles;
-using System.Reflection;
 
 namespace DECS_Excel_Add_Ins
 {
@@ -67,18 +59,50 @@ namespace DECS_Excel_Add_Ins
             {
                 Range targetCell = targetSheet.Cells[1, 1];
 
+                // 1) Copy each COLUMN's attributes.
+                for (int columnOffset = 0; columnOffset < lastColumn; columnOffset++)
+                {
+                    CopyColumnFormatting(sourceCell.Offset[1, columnOffset],
+                                         targetCell.Offset[1, columnOffset]);
+                }
+
                 // Copy header ROW attributes.
-                // 1) Header text style
+                // 2) Header text style
                 targetCell.EntireRow.Font.Bold = sourceCell.Font.Bold;
 
-                // 2) Font size
+                // 3) Font size
                 targetCell.EntireRow.Font.Size = sourceCell.Font.Size;
 
-                // Copy each COLUMN's attributes.
-                for (int columnOffset =  0; columnOffset < lastColumn; columnOffset++)
+                // 4) Centering
+                targetCell.EntireRow.HorizontalAlignment = sourceCell.HorizontalAlignment;
+                targetCell.EntireRow.VerticalAlignment = sourceCell.VerticalAlignment;
+
+                // 5) Borders
+                // Walk along the columns of the first row until there's no border specified.
+                XlLineStyle linestyle = (XlLineStyle) sourceCell.Borders[XlBordersIndex.xlEdgeBottom].LineStyle;
+                int colOffset = 0;
+
+                while (linestyle != XlLineStyle.xlLineStyleNone)
                 {
-                    CopyColumnFormatting(sourceCell.Offset[1, columnOffset], 
-                                         targetCell.Offset[1, columnOffset]);
+                    targetCell.Offset[0, colOffset].Borders[XlBordersIndex.xlEdgeBottom].Color = sourceCell.Offset[0, colOffset].Borders[XlBordersIndex.xlEdgeBottom].Color;
+                    targetCell.Offset[0, colOffset].Borders[XlBordersIndex.xlEdgeBottom].LineStyle = sourceCell.Offset[0, colOffset].Borders[XlBordersIndex.xlEdgeBottom].LineStyle;
+                    targetCell.Offset[0, colOffset].Borders[XlBordersIndex.xlEdgeBottom].Weight = sourceCell.Offset[0, colOffset].Borders[XlBordersIndex.xlEdgeBottom].Weight;
+
+                    colOffset++;
+
+                    // In case we run off the end of the page.
+                    try
+                    {
+                        linestyle = (XlLineStyle) sourceCell.Offset[0, colOffset].Borders[XlBordersIndex.xlEdgeBottom].LineStyle;
+                    }
+                    catch (Microsoft.CSharp.RuntimeBinder.RuntimeBinderException)
+                    {
+                        break;
+                    }
+                    catch (NullReferenceException)
+                    {
+                        break;
+                    }
                 }
 
                 targetSheet = targetSheet.Next;
@@ -102,6 +126,9 @@ namespace DECS_Excel_Add_Ins
             var numberFormat = sourceColumn.Columns.NumberFormat;
             targetColumn.EntireColumn.NumberFormat = numberFormat;
 
+            // 3) Centering
+            targetColumn.EntireColumn.HorizontalAlignment = sourceColumn.HorizontalAlignment;
+            targetColumn.EntireColumn.VerticalAlignment = sourceColumn.VerticalAlignment;
         }
 
         /// <summary>
