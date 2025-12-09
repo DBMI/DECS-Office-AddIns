@@ -1,8 +1,8 @@
 ## Physician Matching
 
-In one project, we needed to match physicians' data from [Epic Signal](https://signal.epic.com/?application=1&pageType=1&targetID=607286) with a list of physicians who had signed up as test users for a study. Since the names are not recorded in the same format, this app was developed to match the two lists & insert the ID numbers from the study sign up into the Signal data.
-
 ![image info](./toolbar.png)
+
+In one project, we needed to match physicians' data from [Epic Signal](https://signal.epic.com/?application=1&pageType=1&targetID=607286) with a list of physicians who had signed up as test users for a study. Since the names are not recorded in the same format, this app was developed to match the two lists & insert the ID numbers from the study sign up into the Signal data.
 
 The sign-up list looks like this (showing simulated data).
 

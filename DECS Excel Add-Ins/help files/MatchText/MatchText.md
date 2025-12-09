@@ -1,8 +1,8 @@
 ## Match Text
 
-This app finds the message in one column that was derived from the message in another column.  
-
 ![image info](./toolbar.png)
+
+This app finds the message in one column that was derived from the message in another column.  
 
 We begin by selecting the derived text columns (on the left) and original text columns (on the right).
 

@@ -1,4 +1,7 @@
 ## Merge Rows
+
+![image info](./toolbar.png)
+
 Sometimes we want to combine information across several rows. For example, in the file in Figure 1...
 
 <figure>
