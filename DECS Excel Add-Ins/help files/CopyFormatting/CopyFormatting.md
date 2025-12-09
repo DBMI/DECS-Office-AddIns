@@ -1,8 +1,8 @@
 ## Copy Formatting
 
-In a multi-sheet data set, once you have the first sheet just the way you like it, use this tool to copy the formatting across all the remaining sheets.
-
 ![image info](./toolbar.png) 
+
+In a multi-sheet data set, once you have the first sheet just the way you like it, use this tool to copy the formatting across all the remaining sheets.
 
 Suppose the first sheet looks like this:
 

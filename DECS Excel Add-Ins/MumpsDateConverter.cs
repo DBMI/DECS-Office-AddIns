@@ -1,13 +1,8 @@
-﻿using Workbook = Microsoft.Office.Interop.Excel.Workbook;
-using Worksheet = Microsoft.Office.Interop.Excel.Worksheet;
-using Microsoft.Office.Interop.Excel;
+﻿using Microsoft.Office.Interop.Excel;
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Microsoft.Office.Tools.Excel;
 using System.Globalization;
+using Worksheet = Microsoft.Office.Interop.Excel.Worksheet;
 
 namespace DECS_Excel_Add_Ins
 {
@@ -43,21 +38,34 @@ namespace DECS_Excel_Add_Ins
             string origName = origCol.Cells[1].Value2;
             Range newCol = Utilities.InsertNewColumn(range: origCol, 
                                                      newColumnName: origName + " converted");
-
-            Range allRows = Utilities.AllAvailableRows(sheet);
+            int rowOffset = 1;
 
             // Iterate along the rows.
-            foreach (Range row in allRows.Rows)
+            while (true)
             {
-                // The first row is a header.
-                if (row.Row > 1)
-                {
-                    Range origCell = origCol.Cells[row.Row];
-                    Range targetCell = newCol.Cells[row.Row];
+                rowOffset++;
 
-                    string formula = "=IFERROR(" + origCell.Address + "-21548, \"\")";
-                    targetCell.Formula = formula;
+                Range origCell = origCol.Cells[rowOffset];
+
+                // Break once we've found a blank entry.
+                try
+                {
+                    string contents = origCell.Value.ToString();
+
+                    if (string.IsNullOrEmpty(contents))
+                    {
+                        break;
+                    }
                 }
+                catch (Microsoft.CSharp.RuntimeBinder.RuntimeBinderException)
+                {
+                    break;
+                }
+
+                Range targetCell = newCol.Cells[rowOffset];
+
+                string formula = "=IFERROR(1 + ((" + origCell.Address + "- 1861833600)/86400), \"\")";
+                targetCell.Formula = formula;
             }
 
             newCol.EntireColumn.NumberFormat = CultureInfo.InvariantCulture.DateTimeFormat.ShortDatePattern;

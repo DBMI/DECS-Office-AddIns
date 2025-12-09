@@ -1,7 +1,8 @@
 ## Stripe by value
-This tool groups rows by the value of the selected column.
 
 ![image info](./toolbar.png)
+
+This tool groups rows by the value of the selected column.
 
 If the spreadsheet looks like this:
 

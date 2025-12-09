@@ -1,12 +1,12 @@
 ## Format Sheet
 
+![image info](./toolbar.png)
+
 This tool provides one-click formatting of the selected sheet:
 
 * Makes header row __bold__ and centered.
 * Attempts to auto-adjust column width to fit the data.
 * Grays out any `NULL` values.
-
-![image info](./toolbar.png)
 
 If the spreadsheet looks like this:
 

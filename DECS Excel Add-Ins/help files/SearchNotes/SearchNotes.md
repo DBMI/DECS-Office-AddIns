@@ -1,7 +1,8 @@
 ## Extract data from notes
-In cases where we want to extract data from free-text columns, we can use the `Notes` tools to define & run extraction rules.
 
 ![image info](./toolbar.png)
+
+In cases where we want to extract data from free-text columns, we can use the `Notes` tools to define & run extraction rules.
 
 #### Cleaning
 We start in the `Cleaning` tab, defining cleaning rules to:

@@ -1238,7 +1238,7 @@ namespace DECS_Excel_Add_Ins
                 newRange = range.Offset[0, 1];
             }
 
-            newRange.Value2 = newColumnName;
+            newRange.Cells[1].Value2 = newColumnName;
             return newRange;
         }
 
