@@ -10,8 +10,8 @@ Creates custom buttons in Microsoft Excel that allow user to:
 * [Highlight blocks of similar data](./help%20files/StripeByValue/StripeByValue.md)
 * [Count words & characters](./help%20files/CountWords/CountWords.md)
 * Generate unique, [scrambled identifiers](./help%20files/Deidentifier/Deidentifier.md) from patient or user data.
-* Dither dates/times to deidentify patients.
-* Replace physicians names with randomized code number.
+* [Dither dates/times](./help%20files/ObscureDateTime/ObscureDateTime.md) to deidentify patients.
+* [Replace physicians names](./help%20files/HideDrNames/HideDrNames.md) with randomized code number.
 * Turn a list (of MRNs, ICD codes, etc.) into a SQL snippet that imports the column into a query.
 * Import Epic Signal data from `.json` file.
 * Break up a long spreadsheet into individual sheets, using the value of one column.
