@@ -12,7 +12,7 @@ Creates custom buttons in Microsoft Excel that allow user to:
 * Generate unique, [scrambled identifiers](./help%20files/Deidentifier/Deidentifier.md) from patient or user data.
 * [Dither dates/times](./help%20files/ObscureDateTime/ObscureDateTime.md) to deidentify patients.
 * [Replace physicians names](./help%20files/HideDrNames/HideDrNames.md) with randomized code number.
-* Turn a list (of MRNs, ICD codes, etc.) into a SQL snippet that imports the column into a query.
+* [Turn a list](./help%20files/ImportList/ImportList.md) (of MRNs, ICD codes, etc.) into a SQL snippet that imports the column into a query.
 * Import Epic Signal data from `.json` file.
 * Break up a long spreadsheet into individual sheets, using the value of one column.
 * [Match physicians](./help%20files/MatchPhysicians/MatchPhysicians.md) on two separate sheets.

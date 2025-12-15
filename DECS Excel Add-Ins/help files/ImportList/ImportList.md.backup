@@ -1,0 +1,30 @@
+## Import List
+
+![image info](./toolbar.png)
+
+This tool converts a list of data (MRNs, ICD codes, names, emails, etc.) into a `.sql` file that can be easily imported into a SQL query. Starting with a data spreadsheet:
+
+![image info](./sample_data.png)
+
+...just select the desired columns and hit the `Import List` button. The tool will ask  you if you want everything in one file or---for very large data sets---multiple files.
+
+![image info](./how_many_files.png)
+
+The output file:
+
+![image info](./output.png)
+
+...can then be imported into your main SQL code using this snippet:
+
+		DROP TABLE IF EXISTS #PATIENT_LIST;
+		CREATE TABLE #PATIENT_LIST
+			(
+				MRN VARCHAR(5),
+				DATE_OF_PROCEDURE DATETIME
+			)
+		:setvar path "<path to data folder>"
+		:r $(path)\mrns_list.sql
+		
+
+
+
