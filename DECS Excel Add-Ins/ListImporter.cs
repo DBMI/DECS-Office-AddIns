@@ -153,8 +153,16 @@ namespace DECS_Excel_Add_Ins
                             break;
                     }
 
-                    // Put quotes here because we DON'T want to wrap Null in quotes.
-                    cellContents = QUOTE + cellContents + QUOTE;
+                    // Is the payload empty?
+                    if (string.IsNullOrEmpty(cellContents))
+                    {
+                        cellContents = "NULL";
+                    }
+                    else
+                    {
+                        // Put quotes here because we DON'T want to wrap Null in quotes.
+                        cellContents = QUOTE + cellContents + QUOTE;
+                    }
                 }
                 catch (Microsoft.CSharp.RuntimeBinder.RuntimeBinderException)
                 {
@@ -427,38 +435,6 @@ namespace DECS_Excel_Add_Ins
                 writer.Close();
                 Process.Start(outputFilename);
             }
-
-            //WriteMainHeader(workbookFilename);
         }
-
-        /*
-        /// <summary>
-        /// Writes the part of the main SQL script that creates a temp table from the patient list file.
-        /// </summary>
-        /// <param name="filename">Name of output file</param>
-
-        private void WriteMainHeader(string filename)
-        {
-            // Build list of variables & types like "PAT_ID varchar, PROCEDURE_DATE date"
-            List<string> variableNamesAndTypes = new List<string>();
-
-            foreach (string varName in sqlVariableNames)
-            {
-                DataType dataType = NameToDataType(varName);
-                variableNamesAndTypes.Add(varName + " " + dataType.GetDescription());
-            }
-
-            (StreamWriter writer, string outputFilename) = Utilities.OpenOutput(
-                inputFilename: filename,
-                filetype: ".sql"
-            );
-
-            writer.Write(MAIN_TABLE_CREATE + string.Join(", \n", variableNamesAndTypes) + ")\r\n");
-            string justTheFilenameAndExt = Path.GetFileName(outputFilename);
-            writer.Write(MAIN_TABLE_USE + justTheFilenameAndExt + "\r\n");
-            writer.Close();
-            Process.Start(outputFilename);
-        }
-        */
     }
 }
