@@ -13,8 +13,8 @@ Creates custom buttons in Microsoft Excel that allow user to:
 * [Dither dates/times](./help%20files/ObscureDateTime/ObscureDateTime.md) to deidentify patients.
 * [Replace physicians names](./help%20files/HideDrNames/HideDrNames.md) with randomized code number.
 * [Turn a list](./help%20files/ImportList/ImportList.md) (of MRNs, ICD codes, etc.) into a SQL snippet that imports the column into a query.
-* Import Epic Signal data from `.json` file.
-* Break up a long spreadsheet into individual sheets, using the value of one column.
+* [Import Epic Signal data](./help%20files/ImportSignal/ImportSignal.md) from `.json` file.
+* [Break up a long spreadsheet](./help%20files/SeparateTabs/SeparateTabs.md) into individual sheets, using the value of one column.
 * [Match physicians](./help%20files/MatchPhysicians/MatchPhysicians.md) on two separate sheets.
 * Look up provider information from their National Provider Identifier ([NPI](https://www.cms.gov/priorities/key-initiatives/burden-reduction/administrative-simplification/unique-identifiers/npis)) number.
 * Process a physician oncall list into SQL code for import.

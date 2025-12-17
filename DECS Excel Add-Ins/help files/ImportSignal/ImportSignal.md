@@ -1,0 +1,25 @@
+## Import Signal
+
+![image info](./toolbar.png)
+
+This tool imports Epic® Signal `JSON` data into Excel. On the [Signal home page](https://signal.epic.com/?application=1&pageType=1&targetID=607286):
+
+![image info](./select_notes_and_letters.png)
+
+In this case, selecting `Notes & Letters` brings up this page:
+
+![image info](./select_time_in_notes.png)
+
+Further selecting `Time in Notes` takes us to where we can request a data download:
+
+![image info](./download_data.png)
+
+This will produce a large `.json` file:
+
+![image info](./json_image.png)
+
+Clicking on the `Import Signal Data` button will open a select file dialog---select the downloaded `.json` file & start the import, which creates a separate tab for each statistic reported in the file:
+
+![image info](./result.png)
+
+[BACK](../../README.md)
