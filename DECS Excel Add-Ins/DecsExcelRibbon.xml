@@ -164,6 +164,13 @@
 							screentip="Merge rows"
 							size="large"
 							supertip="Merge results" />
+					<button id="mergeFilesButton"
+							getImage="mergeFilesButton_GetImage"
+							label="Merge Files"
+							onAction="OnMergeFiles"
+							screentip="Merge files"
+							size="large"
+							supertip="Merge .csv files" />
 					<button id="addRowsAcrossSheetsButton"
 							getImage="addRowsAcrossSheets_GetImage"
 							label="Add Rows Across Sheets"
