@@ -235,6 +235,16 @@ namespace DECS_Excel_Add_Ins
         }
 
         /// <summary>
+        /// Lets the @c DecsExcelRibbon.xml point to the image for the @c MergeFiles button.
+        /// </summary>
+        /// <param name="control">Reference to the IRibbonControl object.</param>
+        /// <returns>Bitmap</returns>
+        public Bitmap mergeFilesButton_GetImage(IRibbonControl control)
+        {
+            return Resources.merge_files;
+        }
+
+        /// <summary>
         /// Lets the @c DecsExcelRibbon.xml point to the image for the @c MergeRows button.
         /// </summary>
         /// <param name="control">Reference to the IRibbonControl object.</param>
@@ -243,7 +253,6 @@ namespace DECS_Excel_Add_Ins
         {
             return Resources.merge_rows;
         }
-
         /// <summary>
         /// Lets the @c DecsExcelRibbon.xml point to the image for the @c MergeRows button.
         /// </summary>
@@ -349,7 +358,7 @@ namespace DECS_Excel_Add_Ins
         /// </summary>
         /// <param name="control">Reference to the IRibbonControl object.</param>
 
-        public void OnAddRowsAcrossSheets(Office.IRibbonControl control)
+        public void OnAddRowsAcrossSheets(IRibbonControl control)
         {
             RowAdder rowAdder = new RowAdder();
             rowAdder.Scan();
@@ -360,7 +369,7 @@ namespace DECS_Excel_Add_Ins
         /// </summary>
         /// <param name="control">Reference to the IRibbonControl object.</param>
 
-        public void OnAddSVI(Office.IRibbonControl control)
+        public void OnAddSVI(IRibbonControl control)
         {
             SviProcessor sviProcessor = new SviProcessor();
             Excel.Worksheet wksheet = (Excel.Worksheet)Globals.ThisAddIn.Application.ActiveSheet;
@@ -372,7 +381,7 @@ namespace DECS_Excel_Add_Ins
         /// </summary>
         /// <param name="control">Reference to the IRibbonControl object.</param>
 
-        public void OnBuildList(Office.IRibbonControl control)
+        public void OnBuildList(IRibbonControl control)
         {
             ListImporter importer = new ListImporter();
             Excel.Worksheet wksheet = (Excel.Worksheet)Globals.ThisAddIn.Application.ActiveSheet;
@@ -384,7 +393,7 @@ namespace DECS_Excel_Add_Ins
         /// </summary>
         /// <param name="control">Reference to the IRibbonControl object.</param>
 
-        public void OnChopList(Office.IRibbonControl control)
+        public void OnChopList(IRibbonControl control)
         {
             ListChopper chopper = new ListChopper();
             Excel.Worksheet wksheet = (Excel.Worksheet)Globals.ThisAddIn.Application.ActiveSheet;
@@ -396,7 +405,7 @@ namespace DECS_Excel_Add_Ins
         /// </summary>
         /// <param name="control">Reference to the IRibbonControl object.</param>
 
-        public void OnComparisonPlot(Office.IRibbonControl control)
+        public void OnComparisonPlot(IRibbonControl control)
         {
             ComparisonPlot plotter = new ComparisonPlot();
             Excel.Worksheet wksheet = (Excel.Worksheet)Globals.ThisAddIn.Application.ActiveSheet;
@@ -408,7 +417,7 @@ namespace DECS_Excel_Add_Ins
         /// </summary>
         /// <param name="control">Reference to the IRibbonControl object.</param>
 
-        public void OnConvertDates(Office.IRibbonControl control)
+        public void OnConvertDates(IRibbonControl control)
         {
             MumpsDateConverter converter = new MumpsDateConverter();
             Excel.Worksheet wksheet = (Excel.Worksheet)Globals.ThisAddIn.Application.ActiveSheet;
@@ -420,7 +429,7 @@ namespace DECS_Excel_Add_Ins
         /// </summary>
         /// <param name="control">Reference to the IRibbonControl object.</param>
 
-        public void OnCopyFormat(Office.IRibbonControl control)
+        public void OnCopyFormat(IRibbonControl control)
         {
             Formatter formatter = new Formatter();
             Excel.Worksheet wksheet = (Excel.Worksheet)Globals.ThisAddIn.Application.ActiveSheet;
@@ -432,7 +441,7 @@ namespace DECS_Excel_Add_Ins
         /// </summary>
         /// <param name="control">Reference to the IRibbonControl object.</param>
 
-        public void OnCountWords(Office.IRibbonControl control)
+        public void OnCountWords(IRibbonControl control)
         {
             WordCounter wordCounter = new WordCounter();
             Excel.Worksheet wksheet = (Excel.Worksheet)Globals.ThisAddIn.Application.ActiveSheet;
@@ -444,7 +453,7 @@ namespace DECS_Excel_Add_Ins
         /// </summary>
         /// <param name="control">Reference to the IRibbonControl object.</param>
 
-        public void OnDatesToText(Office.IRibbonControl control)
+        public void OnDatesToText(IRibbonControl control)
         {
             DateConverter converter = new DateConverter();
             Excel.Worksheet wksheet = (Excel.Worksheet)Globals.ThisAddIn.Application.ActiveSheet;
@@ -456,7 +465,7 @@ namespace DECS_Excel_Add_Ins
         /// </summary>
         /// <param name="control">Reference to the IRibbonControl object.</param>
 
-        public void OnDeidentify(Office.IRibbonControl control)
+        public void OnDeidentify(IRibbonControl control)
         {
             Deidentifier deidentifier = new Deidentifier();
             Excel.Worksheet wksheet = (Excel.Worksheet)Globals.ThisAddIn.Application.ActiveSheet;
@@ -468,7 +477,7 @@ namespace DECS_Excel_Add_Ins
         /// </summary>
         /// <param name="control">Reference to the IRibbonControl object.</param>
 
-        public void OnExtendTimecard(Office.IRibbonControl control)
+        public void OnExtendTimecard(IRibbonControl control)
         {
             Timecard timecard = new Timecard();
             Excel.Worksheet wksheet = (Excel.Worksheet)Globals.ThisAddIn.Application.ActiveSheet;
@@ -480,7 +489,7 @@ namespace DECS_Excel_Add_Ins
         /// </summary>
         /// <param name="control">Reference to the IRibbonControl object.</param>
 
-        public void OnExtractMessage(Office.IRibbonControl control)
+        public void OnExtractMessage(IRibbonControl control)
         {
             MessageUnpeeler unpeeler = new MessageUnpeeler();
             Excel.Worksheet wksheet = (Excel.Worksheet)Globals.ThisAddIn.Application.ActiveSheet;
@@ -492,7 +501,7 @@ namespace DECS_Excel_Add_Ins
         /// </summary>
         /// <param name="control">Reference to the IRibbonControl object.</param>
 
-        public void OnExtractText(Office.IRibbonControl control)
+        public void OnExtractText(IRibbonControl control)
         {
             TextExtractor extractor = new TextExtractor();
             Excel.Worksheet wksheet = (Excel.Worksheet)Globals.ThisAddIn.Application.ActiveSheet;
@@ -504,7 +513,7 @@ namespace DECS_Excel_Add_Ins
         /// </summary>
         /// <param name="control">Reference to the IRibbonControl object.</param>
 
-        public void OnFormat(Office.IRibbonControl control)
+        public void OnFormat(IRibbonControl control)
         {
             Formatter formatter = new Formatter();
             Excel.Worksheet wksheet = (Excel.Worksheet)Globals.ThisAddIn.Application.ActiveSheet;
@@ -516,7 +525,7 @@ namespace DECS_Excel_Add_Ins
         /// </summary>
         /// <param name="control">Reference to the IRibbonControl object.</param>
 
-        public void OnHidePhysicianNames(Office.IRibbonControl control)
+        public void OnHidePhysicianNames(IRibbonControl control)
         {
             Deidentifier deidentifier = new Deidentifier();
             Excel.Worksheet wksheet = (Excel.Worksheet)Globals.ThisAddIn.Application.ActiveSheet;
@@ -528,7 +537,7 @@ namespace DECS_Excel_Add_Ins
         /// </summary>
         /// <param name="control">Reference to the IRibbonControl object.</param>
 
-        public void OnLookupNpi(Office.IRibbonControl control)
+        public void OnLookupNpi(IRibbonControl control)
         {
             NpiLookup npiLookup = new NpiLookup();
             Excel.Worksheet wksheet = (Excel.Worksheet)Globals.ThisAddIn.Application.ActiveSheet;
@@ -540,7 +549,7 @@ namespace DECS_Excel_Add_Ins
         /// </summary>
         /// <param name="control">Reference to the IRibbonControl object.</param>
 
-        public void OnMatchPhysicians(Office.IRibbonControl control)
+        public void OnMatchPhysicians(IRibbonControl control)
         {
             PhysicianMatcher physicianMatcher = new PhysicianMatcher();
             physicianMatcher.Match();
@@ -551,7 +560,7 @@ namespace DECS_Excel_Add_Ins
         /// </summary>
         /// <param name="control">Reference to the IRibbonControl object.</param>
 
-        public void OnMatchText(Office.IRibbonControl control)
+        public void OnMatchText(IRibbonControl control)
         {
             TextMatcher textMatcher = new TextMatcher();
             textMatcher.Match();
@@ -562,7 +571,7 @@ namespace DECS_Excel_Add_Ins
         /// </summary>
         /// <param name="control">Reference to the IRibbonControl object.</param>
 
-        public void OnObscureDateTime(Office.IRibbonControl control)
+        public void OnObscureDateTime(IRibbonControl control)
         {
             Deidentifier deidentifier = new Deidentifier();
             Excel.Worksheet wksheet = (Excel.Worksheet)Globals.ThisAddIn.Application.ActiveSheet;
@@ -574,7 +583,7 @@ namespace DECS_Excel_Add_Ins
         /// </summary>
         /// <param name="control">Reference to the IRibbonControl object.</param>
 
-        public void OnImportSurvey(Office.IRibbonControl control)
+        public void OnImportSurvey(IRibbonControl control)
         {
             SurveyResults surveyProcessor = new SurveyResults();
             Excel.Worksheet wksheet = (Excel.Worksheet)Globals.ThisAddIn.Application.ActiveSheet;
@@ -582,11 +591,23 @@ namespace DECS_Excel_Add_Ins
         }
 
         /// <summary>
+        /// When @c MergeFiles button is pressed, this method instantiates a @c FileMerger object & calls its Merge method.
+        /// </summary>
+        /// <param name="control">Reference to the IRibbonControl object.</param>
+
+        public void OnMergeFiles(IRibbonControl control)
+        {
+            FileMerger merger = new FileMerger();
+            Excel.Worksheet wksheet = (Excel.Worksheet)Globals.ThisAddIn.Application.ActiveSheet;
+            merger.Merge(wksheet);
+        }
+
+        /// <summary>
         /// When @c MergeNotes button is pressed, this method instantiates a @c MergeNotesForm.
         /// </summary>
         /// <param name="control">Reference to the IRibbonControl object.</param>
 
-        public void OnMergeNotes(Office.IRibbonControl control)
+        public void OnMergeNotes(IRibbonControl control)
         {
             MergeNotesForm form = new MergeNotesForm();
             form.Visible = true;
@@ -597,7 +618,7 @@ namespace DECS_Excel_Add_Ins
         /// </summary>
         /// <param name="control">Reference to the IRibbonControl object.</param>
 
-        public void OnMergeRows(Office.IRibbonControl control)
+        public void OnMergeRows(IRibbonControl control)
         {
             MergeRowsForm form = new MergeRowsForm();
             form.Visible = true;
@@ -608,7 +629,7 @@ namespace DECS_Excel_Add_Ins
         /// </summary>
         /// <param name="control">Reference to the IRibbonControl object.</param>
 
-        public void OnProcessCallList(Office.IRibbonControl control)
+        public void OnProcessCallList(IRibbonControl control)
         {
             OnCallListProcessor onCallListProcessor = new OnCallListProcessor();
             Excel.Worksheet wksheet = (Excel.Worksheet)Globals.ThisAddIn.Application.ActiveSheet;
@@ -620,7 +641,7 @@ namespace DECS_Excel_Add_Ins
         /// </summary>
         /// <param name="control">Reference to the IRibbonControl object.</param>
 
-        public void OnSearchByEMail(Office.IRibbonControl control)
+        public void OnSearchByEMail(IRibbonControl control)
         {
             EmailSearcher emailSearcher = new EmailSearcher();
             Excel.Worksheet wksheet = (Excel.Worksheet)Globals.ThisAddIn.Application.ActiveSheet;
@@ -633,7 +654,7 @@ namespace DECS_Excel_Add_Ins
         /// </summary>
         /// <param name="control">Reference to the IRibbonControl object.</param>
 
-        public void OnSearchConfig(Office.IRibbonControl control)
+        public void OnSearchConfig(IRibbonControl control)
         {
             Excel.Worksheet wksheet = (Excel.Worksheet)Globals.ThisAddIn.Application.ActiveSheet;
             NotesParser parser = new NotesParser(
@@ -650,7 +671,7 @@ namespace DECS_Excel_Add_Ins
         /// </summary>
         /// <param name="control">Reference to the IRibbonControl object.</param>
 
-        public void OnSearchNotes(Office.IRibbonControl control)
+        public void OnSearchNotes(IRibbonControl control)
         {
             Excel.Worksheet wksheet = (Excel.Worksheet)Globals.ThisAddIn.Application.ActiveSheet;
             NotesParser parser = new NotesParser(_worksheet: wksheet);
@@ -662,7 +683,7 @@ namespace DECS_Excel_Add_Ins
         /// </summary>
         /// <param name="control">Reference to the IRibbonControl object.</param>
 
-        public void OnSignalImport(Office.IRibbonControl control)
+        public void OnSignalImport(IRibbonControl control)
         {
             ImportSignalData parser = new ImportSignalData();
             parser.Import();
@@ -673,7 +694,7 @@ namespace DECS_Excel_Add_Ins
         /// </summary>
         /// <param name="control">Reference to the IRibbonControl object.</param>
 
-        public void OnSortTimes(Office.IRibbonControl control)
+        public void OnSortTimes(IRibbonControl control)
         {
             TimeSorter timeSorter = new TimeSorter();
             Excel.Worksheet wksheet = (Excel.Worksheet)Globals.ThisAddIn.Application.ActiveSheet;
@@ -685,7 +706,7 @@ namespace DECS_Excel_Add_Ins
         /// </summary>
         /// <param name="control">Reference to the IRibbonControl object.</param>
 
-        public void OnSortTimesSettings(Office.IRibbonControl control)
+        public void OnSortTimesSettings(IRibbonControl control)
         {
             TimeSorterSettings setup = new TimeSorterSettings();
             setup.Set();
@@ -696,7 +717,7 @@ namespace DECS_Excel_Add_Ins
         /// </summary>
         /// <param name="control">Reference to the IRibbonControl object.</param>
 
-        public void OnStripe(Office.IRibbonControl control)
+        public void OnStripe(IRibbonControl control)
         {
             Striper striper = new Striper();
             Excel.Worksheet wksheet = (Excel.Worksheet)Globals.ThisAddIn.Application.ActiveSheet;
