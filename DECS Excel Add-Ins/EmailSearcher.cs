@@ -517,7 +517,14 @@ namespace DECS_Excel_Add_Ins
         internal void Search(Worksheet worksheet)
         {
             // Show all the rows.
-            worksheet.ShowAllData();
+            try
+            {
+                worksheet.ShowAllData();
+            }
+            // It's OK--just means there ARE no hidden data.
+            catch (System.Runtime.InteropServices.COMException)
+            { }
+
             worksheet.Rows.Hidden = false;
 
             int lastRowInSheet = worksheet.UsedRange.Rows.Count;

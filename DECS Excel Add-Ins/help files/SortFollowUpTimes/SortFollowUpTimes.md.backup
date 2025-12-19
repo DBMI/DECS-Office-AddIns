@@ -1,0 +1,19 @@
+## Sort Follow-up Times
+
+![image info](./toolbar.png)
+
+This tool is used to quantify free-text comments about when a patient needs to be seen for follow-up.
+
+In this example, the triaging physician may note the patient needs to be seen by a specific date or over a date range or using a phrase like "within 8 weeks" relative to the date on which the note was written.
+
+![image info](./source_data.png)
+
+The `Sort Follow-up Times` app parses these free-text comments and quantifies them into categories:
+
+* urgent: 0-2 weeks
+* moderate: 2-4 weeks
+* routine: 4+ weeks
+ 
+![image info](./results.png)
+
+[BACK](../../README.md)

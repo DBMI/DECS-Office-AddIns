@@ -1,0 +1,17 @@
+## Search by Email
+
+![image info](./toolbar.png)
+
+There have been projects in which physicians were identified only by their email addresses but we needed to lookup their names. The `SearchByEmail` button allows us to automatically look up each email address in the UCSD Blink tool:
+
+![image info](./Blink.png)
+
+Starting with the `Email` column in this spreadsheet, pressing the `Search by Email` button:
+
+![image info](./source_data.png)
+
+...adds a new column just to the right, containing the Provider Name (if found):
+
+![image info](./results.png)
+
+[BACK](../../README.md)

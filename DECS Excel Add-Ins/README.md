@@ -16,11 +16,11 @@ Creates custom buttons in Microsoft Excel that allow user to:
 * [Import Epic Signal data](./help%20files/ImportSignal/ImportSignal.md) from `.json` file.
 * [Break up a long spreadsheet](./help%20files/SeparateTabs/SeparateTabs.md) into individual sheets, using the value of one column.
 * [Match physicians](./help%20files/MatchPhysicians/MatchPhysicians.md) on two separate sheets.
-* Look up provider information from their National Provider Identifier ([NPI](https://www.cms.gov/priorities/key-initiatives/burden-reduction/administrative-simplification/unique-identifiers/npis)) number.
-* Process a physician oncall list into SQL code for import.
-* Search UCSD Blink for provider names using email addresses.
-* Turn text like "2-3 weeks" into a category like "routine/medium/high" [priority].
-* Set thresholds for text parsing into priorities.
+* [Look up provider information](./help%20files/LookupNPI/LookupNPI.md) from their National Provider Identifier ([NPI](https://www.cms.gov/priorities/key-initiatives/burden-reduction/administrative-simplification/unique-identifiers/npis)) number.
+* [Process a physician oncall list](./help%20files/OnCallList/OnCallList.md) into SQL code for import.
+* [Search UCSD Blink](./help%20files/SearchByEmail/SearchByEmail.md) for provider names using email addresses.
+* [Turn text like "2-3 weeks" into a category](./help%20files/SortFollowUpTimes/SortFollowUpTimes.md) like "routine/medium/high" [priority].
+* [Set thresholds](./help%20files/ChooseThresholds/ChooseThresholds.md) for text parsing into priorities.
 * Plot comparisons between multiple timeseries.
 * [Match text](./help%20files/MatchText/MatchText.md) in different columns.
 * [Merge rows](./help%20files/MergeRows/MergeRows.md) across dates.
