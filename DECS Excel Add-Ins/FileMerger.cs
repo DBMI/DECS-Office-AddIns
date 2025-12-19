@@ -1,36 +1,25 @@
 ﻿using Microsoft.Office.Interop.Excel;
-using Microsoft.Office.Tools.Excel;
-using Microsoft.VisualBasic;
-using Microsoft.VisualBasic.Devices;
 using System;
 using System.Collections.Generic;
-using System.ComponentModel;
-using System.ComponentModel.Design;
-using System.Diagnostics;
 using System.IO;
 using System.Linq;
-using System.Runtime.InteropServices;
-using System.Security.Policy;
-using System.Text;
-using System.Threading;
-using System.Threading.Tasks;
 using System.Windows.Forms;
-using static System.Windows.Forms.VisualStyles.VisualStyleElement.TextBox;
-using static System.Windows.Forms.VisualStyles.VisualStyleElement.ToolTip;
+using Application = Microsoft.Office.Interop.Excel.Application;
 
 namespace DECS_Excel_Add_Ins
 {
     internal class FileMerger
     {
+        private Application application;
         private Dictionary<string, int> columnIndices;
         private bool firstFile = true;
         private string folder = String.Empty;
         private Range target;
         private const int widthDateTimeColumn = 20;
         private const int widthIdColumn = 10;
-        private const int widthMetricNameColumn = 19;
+        private const int widthMetricNameColumn = 40;
         private const int widthMetricDescripColumn = 25;
-        private const int widthEncounterColumn = 11;
+        private const int widthEncounterColumn = 20;
 
         internal FileMerger()
         {
@@ -45,6 +34,7 @@ namespace DECS_Excel_Add_Ins
                 }
             }
 
+            application = Globals.ThisAddIn.Application;
             columnIndices = new Dictionary<string, int>();
         }
 
@@ -80,11 +70,14 @@ namespace DECS_Excel_Add_Ins
                 {
                     ReadFile(csvFile);
                 }
+
+                application.StatusBar = "Complete.";
             }
         }
 
         internal void ReadFile(string path)
         {
+            application.StatusBar = "Reading " + path + ".";
             // Read lines lazily.
             IEnumerable<string> lines = File.ReadLines(path);
             bool foundPayload = false;
