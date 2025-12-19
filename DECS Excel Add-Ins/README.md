@@ -3,15 +3,24 @@
 ![image info](./pictures/toolbar.png) 
 
 Creates custom buttons in Microsoft Excel that allow user to:
+
+### Format data
+
 * [Format a page](./help%20files/Format/Format.md) of results with bold & centered header, NULLs grayed out, etc.
 * [Copy the formatting](./help%20files/CopyFormatting/CopyFormatting.md) from one sheet onto the next sheet(s).
 * [Convert dates](./help%20files/ConvertMUMPS/ConvertMUMPS.md) from [MUMPS](https://en.wikipedia.org/wiki/MUMPS) to Excel standard.
 * [Convert dates to text format](./help%20files/DateToText/DateToText.md) for easier import into R.
 * [Highlight blocks of similar data](./help%20files/StripeByValue/StripeByValue.md)
 * [Count words & characters](./help%20files/CountWords/CountWords.md)
+
+### Deidentify data
+
 * Generate unique, [scrambled identifiers](./help%20files/Deidentifier/Deidentifier.md) from patient or user data.
 * [Dither dates/times](./help%20files/ObscureDateTime/ObscureDateTime.md) to deidentify patients.
 * [Replace physicians names](./help%20files/HideDrNames/HideDrNames.md) with randomized code number.
+
+### Process lists
+
 * [Turn a list](./help%20files/ImportList/ImportList.md) (of MRNs, ICD codes, etc.) into a SQL snippet that imports the column into a query.
 * [Import Epic Signal data](./help%20files/ImportSignal/ImportSignal.md) from `.json` file.
 * [Break up a long spreadsheet](./help%20files/SeparateTabs/SeparateTabs.md) into individual sheets, using the value of one column.
@@ -21,11 +30,28 @@ Creates custom buttons in Microsoft Excel that allow user to:
 * [Search UCSD Blink](./help%20files/SearchByEmail/SearchByEmail.md) for provider names using email addresses.
 * [Turn text like "2-3 weeks" into a category](./help%20files/SortFollowUpTimes/SortFollowUpTimes.md) like "routine/medium/high" priority.
 * [Set thresholds](./help%20files/ChooseThresholds/ChooseThresholds.md) for text parsing into priorities.
+
+### Merge data sources
+
 * [Extract text](./help%20files/ExtractText/ExtractText.md) from HTML package.
 * [Match text](./help%20files/MatchText/MatchText.md) in different columns.
 * [Merge rows](./help%20files/MergeRows/MergeRows.md) across dates.
+* Merge multiple query output files into one spreadsheet.
+
+### Search notes
+
 * [Scan `Notes` fields](./help%20files/SearchNotes/SearchNotes.md) for keywords, creating new columns.
 * [Merge notes](./help%20files/MergeNotes/MergeNotes.md) from one sheet into another according to some index column (like CSN).
+* Extract the payload message from a message thread.
+
+### Import Survey
+
 * Convert patient satisfaction survey data into SQL format.
+
+### Add SVI data
+
 * [Lookup Social Vulnerability Index](./help%20files/SVI/SVI.md) ([SVI](https://www.atsdr.cdc.gov/placeandhealth/svi/index.html)) from address or zip code.
+
+### Admin
+
 * Extend the existing monthly research hours report to the new month.
