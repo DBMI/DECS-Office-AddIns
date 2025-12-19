@@ -165,13 +165,6 @@
 							screentip="Merge files"
 							size="large"
 							supertip="Merge .csv files" />
-					<button id="addRowsAcrossSheetsButton"
-							getImage="addRowsAcrossSheets_GetImage"
-							label="Add Rows Across Sheets"
-							onAction="OnAddRowsAcrossSheets"
-							screentip="Add Rows Across Sheets"
-							size="large"
-							supertip="Add Rows Across Sheets" />
 				</group>
 				<group id="NotesGroup"
 					   label="Search Notes">
