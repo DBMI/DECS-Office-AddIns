@@ -134,12 +134,6 @@
 							onAction="OnSortTimesSettings"
 							size="large"
 							screentip="Choose Thresholds for Follow-up Times"/>
-					<button id="plotComparisonButton"
-							getImage="comparisonPlotButton_GetImage"
-							label="Plot Comparison"
-							onAction="OnComparisonPlot"
-							size="large"
-							screentip="Create Comparison Plot"/>
 				</group>
 				<group id ="MergeGroup"
 					   label="Merge">
