@@ -1,0 +1,12 @@
+## Extract Text
+
+![image info](./toolbar.png)
+
+This tool processes HTML data From a REDCap survey, peeling both the patient message and provider's reply out of the encapsulated HTML code.
+
+![image info](./html_messages.png)
+
+![image info](./results.png)
+
+
+[BACK](../../README.md)
