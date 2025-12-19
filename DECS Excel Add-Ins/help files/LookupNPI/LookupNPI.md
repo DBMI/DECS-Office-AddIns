@@ -1,0 +1,15 @@
+## Lookup NPI
+
+![image info](./toolbar.png)
+
+In one case, we had physician [National Provider Inventory (NPI)](https://www.cms.gov/priorities/key-initiatives/burden-reduction/administrative-simplification/unique-identifiers/npis) data and needed to get physician names and medical group affiliations. Using the `Lookup NPI` tool, we can turn NPI data:
+
+![image info](./source_data.png)
+
+...into names, affliations, etc.
+
+![image info](./results.png)
+
+The app calls the NPI [API](https://npiregistry.cms.hhs.gov/api-page) and parses the data returned.
+
+[BACK](../../README.md)
