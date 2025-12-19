@@ -19,12 +19,11 @@ Creates custom buttons in Microsoft Excel that allow user to:
 * [Look up provider information](./help%20files/LookupNPI/LookupNPI.md) from their National Provider Identifier ([NPI](https://www.cms.gov/priorities/key-initiatives/burden-reduction/administrative-simplification/unique-identifiers/npis)) number.
 * [Process a physician oncall list](./help%20files/OnCallList/OnCallList.md) into SQL code for import.
 * [Search UCSD Blink](./help%20files/SearchByEmail/SearchByEmail.md) for provider names using email addresses.
-* [Turn text like "2-3 weeks" into a category](./help%20files/SortFollowUpTimes/SortFollowUpTimes.md) like "routine/medium/high" [priority].
+* [Turn text like "2-3 weeks" into a category](./help%20files/SortFollowUpTimes/SortFollowUpTimes.md) like "routine/medium/high" priority.
 * [Set thresholds](./help%20files/ChooseThresholds/ChooseThresholds.md) for text parsing into priorities.
 * [Extract text](./help%20files/ExtractText/ExtractText.md) from HTML package.
 * [Match text](./help%20files/MatchText/MatchText.md) in different columns.
 * [Merge rows](./help%20files/MergeRows/MergeRows.md) across dates.
-* Extract the payload from a message.
 * [Scan `Notes` fields](./help%20files/SearchNotes/SearchNotes.md) for keywords, creating new columns.
 * [Merge notes](./help%20files/MergeNotes/MergeNotes.md) from one sheet into another according to some index column (like CSN).
 * Convert patient satisfaction survey data into SQL format.
