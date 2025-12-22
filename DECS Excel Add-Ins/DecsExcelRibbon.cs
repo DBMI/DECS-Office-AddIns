@@ -55,6 +55,16 @@ namespace DECS_Excel_Add_Ins
         }
 
         /// <summary>
+        /// Lets the @c DecsExcelRibbon.xml point to the image for the @c Bogus button.
+        /// </summary>
+        /// <param name="control">Reference to the IRibbonControl object.</param>
+        /// <returns>Bitmap</returns>
+        public Bitmap bogusButton_GetImage(IRibbonControl control)
+        {
+            return Resources.fake_person;
+        }
+
+        /// <summary>
         /// Lets the @c DecsExcelRibbon.xml point to the image for the @c ImportList button.
         /// </summary>
         /// <param name="control">Reference to the IRibbonControl object.</param>
@@ -374,6 +384,17 @@ namespace DECS_Excel_Add_Ins
             SviProcessor sviProcessor = new SviProcessor();
             Excel.Worksheet wksheet = (Excel.Worksheet)Globals.ThisAddIn.Application.ActiveSheet;
             sviProcessor.Scan(wksheet);
+        }
+
+        /// <summary>
+        /// When @c Bogus button is pressed, instantiates a @c ChooseNumBogusRecords object.
+        /// </summary>
+        /// <param name="control">Reference to the IRibbonControl object.</param>
+
+        public void OnBogus(IRibbonControl control)
+        {
+            ChooseNumBogusRecordsForm bogusForm = new ChooseNumBogusRecordsForm();
+            bogusForm.Visible = true;
         }
 
         /// <summary>

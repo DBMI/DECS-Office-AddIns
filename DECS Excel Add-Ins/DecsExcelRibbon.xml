@@ -71,6 +71,13 @@
 							screentip="Hide Physician Names"
 							size="large"
 							supertip="Convert Physician Names to Scrambled ID" />
+					<button id="bogus"
+							getImage="bogusButton_GetImage"
+							label="Generate Fakes"
+							onAction="OnBogus"
+							screentip="Generate fake people"
+							size="large"
+							supertip="Generate fake people for testing" />
 				</group>
 				<group id="ListGroup"
 					   label="Lists">
