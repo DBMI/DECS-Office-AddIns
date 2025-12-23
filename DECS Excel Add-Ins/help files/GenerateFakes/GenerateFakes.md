@@ -1,0 +1,22 @@
+## Generate fakes
+
+![image info](./toolbar.png)
+
+This app generates fake patient data for use in software testing.
+It uses the open-source [Bogus](https://github.com/bchavez/Bogus) library.
+
+Pressing the `Generate Fakes` button pops up a window asking how many records are desired:
+
+![image info](./how_many.png)
+
+Selecting the number and pressing `OK` produces a spreadsheet with the desired records:
+
+![image info](./results.png)
+
+Some limitations:
+
+* Zip codes aren't real and don't correspond to the chosen state.
+* The streets and city names aren't real.
+* MRNs aren't guaranteed to be unique.
+
+[BACK](../../README.md)
