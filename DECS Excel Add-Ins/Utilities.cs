@@ -98,6 +98,7 @@ namespace DECS_Excel_Add_Ins
                                         Replace(")", "").
                                         Replace("__", "_").
                                         Replace("__", "_").
+                                        Replace("_-_", "_").
                                         ToUpper();
             return niceColumnName;
         }
