@@ -169,7 +169,20 @@ namespace DECS_Excel_Add_Ins
                     // Is it really empty or does the cell contain string "NULL"?
                     string contents = worksheet.Cells[rowNumber, selectedColumnRng.Column].Value;
 
-                    if (!string.Equals(contents, "NULL"))
+                    try
+                    {
+                        if (!string.Equals(contents.ToUpper(), "NULL"))
+                        {
+                            // An occasional miss is ok, but three in a row & we've run outta data.
+                            numConsecutiveFailures++;
+
+                            if (numConsecutiveFailures >= 3)
+                            {
+                                break;
+                            }
+                        }
+                    }
+                    catch (NullReferenceException)
                     {
                         // An occasional miss is ok, but three in a row & we've run outta data.
                         numConsecutiveFailures++;

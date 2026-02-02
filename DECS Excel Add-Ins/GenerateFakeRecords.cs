@@ -1,6 +1,5 @@
 ﻿using Bogus;
 using Microsoft.Office.Interop.Excel;
-using Microsoft.VisualBasic.ApplicationServices;
 using System;
 using System.Collections.Generic;
 
@@ -14,7 +13,7 @@ namespace DECS_Excel_Add_Ins
         public string City { get; set; }
         public string State { get; set; }
         public string StateAbbreviation { get; set; }
-        public string ZipCode { get; set; }
+        //public string ZipCode { get; set; }
     }
     public class Patient
     {
@@ -146,15 +145,17 @@ namespace DECS_Excel_Add_Ins
                 .RuleFor(a => a.Street, f => f.Address.StreetName())
                 .RuleFor(a => a.StreetNumber, f => f.Address.BuildingNumber())
                 .RuleFor(a => a.City, f => f.Address.City())
-                .RuleFor(a => a.StateAbbreviation, f => f.Address.StateAbbr())
-                .RuleFor(a => a.ZipCode, f => f.Address.ZipCode()); // Ensures a zip code is generated
+                .RuleFor(a => a.StateAbbreviation, f => f.Address.StateAbbr());
+                //.RuleFor(a => a.ZipCode, f => f.Address.ZipCode()); // Ensures a zip code is generated
             
             var address = fakeAddresses.Generate();
             target.Offset[0, 1].Value = address.StreetNumber + " " + address.Street;
             target.Offset[0, 2].Value = address.City;
-            target.Offset[0, 3].Value = states[address.StateAbbreviation];
+            string fullStateName = states[address.StateAbbreviation];
+            target.Offset[0, 3].Value = fullStateName;
             target.Offset[0, 4].Value = address.StateAbbreviation;
-            target.Offset[0, 5].Value = address.ZipCode;
+            string randomZip = ZipCodeGenerator.GenerateBogusZipCodeByState(fullStateName);
+            target.Offset[0, 5].Value = randomZip.ToString();
             target.Offset[0, 6].Value = patient.DateOfBirth.Date;
             target.Offset[0, 7].Value = patient.Email;
             target.Offset[0, 8].Value = patient.MRN;
