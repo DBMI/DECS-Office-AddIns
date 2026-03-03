@@ -123,7 +123,7 @@ namespace DECS_Excel_Add_Ins
             }
 
             // 2) Populate the SVI dictionary from data file.
-            application.StatusBar = "Building SVI table.";
+            application.StatusBar = "Building SVI dictionary.";
             SviTable sviTable = new SviTable();
 
             if (sviTable.ready)
@@ -184,7 +184,7 @@ namespace DECS_Excel_Add_Ins
                         break;
                     }
 
-                    if (rowOffset % 100 == 0)
+                    if (rowOffset % 10 == 0)
                     {
                         application.StatusBar = "Processed " + rowOffset.ToString() + "/" + lastRowNumber.ToString() + " patients.";
                     }

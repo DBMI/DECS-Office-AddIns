@@ -1,13 +1,26 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
+using System.Diagnostics.Eventing.Reader;
 using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows.Forms;
 
 namespace DECS_Excel_Add_Ins
 {
+    public enum SviScope
+    {
+        [Description("California")]
+        California = 1,
+        [Description("USA")]
+        USA = 2,
+        [Description("Unknown")]
+        Unknown = 0,
+    }
+
     /**
      * @brief Holds both the raw score (from "SPL_THEMES" column) and fractional ranking ("RPL_THEMES").
      */
@@ -48,26 +61,39 @@ namespace DECS_Excel_Add_Ins
     internal class SviTable
     {
         private Dictionary<ulong, SviScore> sviTable;
+        private string filePattern;
+        private char fileSeparator;
+
         internal bool ready { get; } = false;
 
         // https://stackoverflow.com/a/28546547/18749636
         private static readonly log4net.ILog log = log4net.LogManager.GetLogger(
-            System.Reflection.MethodBase.GetCurrentMethod().DeclaringType
+            MethodBase.GetCurrentMethod().DeclaringType
         );
 
         internal SviTable()
         {
+            Microsoft.Office.Interop.Excel.Application application = Globals.ThisAddIn.Application;
+
             sviTable = new Dictionary<ulong, SviScore>();
 
             var assembly = Assembly.GetExecutingAssembly();
-            var resourceName = assembly.GetManifestResourceNames().Single(str => str.EndsWith("SVI_2020_US.csv"));
+
+            GetSviFileNameAndSeparator();
+
+            if (string.IsNullOrEmpty(filePattern))
+            {
+                return;
+            }
+
+            var resourceName = assembly.GetManifestResourceNames().Single(str => str.EndsWith(filePattern));
 
             using (StreamReader reader = new StreamReader(assembly.GetManifestResourceStream(resourceName)))
             {
                 string[] lines = reader.ReadToEnd().Split('\n');
 
                 // Find FIPS and RPL_THEMES in the first row.
-                string[] headers = lines[0].Split(',');
+                string[] headers = lines[0].Split(fileSeparator);
                 int FIPS_index = Array.IndexOf(headers, "FIPS");
 
                 if (FIPS_index < 0)
@@ -93,10 +119,12 @@ namespace DECS_Excel_Add_Ins
                 }
 
                 int maxIndex = Math.Max(FIPS_index, Math.Max(SPL_THEMES_index, RPL_THEMES_index));
+                int numLinesProcessed = 0;
+                int numLinesPresent = lines.Length;
 
                 foreach (string line in lines.Skip(1))
                 {
-                    string[] pieces = line.Split(',');
+                    string[] pieces = line.Split(fileSeparator);
 
                     if (pieces.Length > maxIndex)
                     {
@@ -106,10 +134,92 @@ namespace DECS_Excel_Add_Ins
                             sviTable.Add(fips, sviObj);
                         }
                     }
+
+                    numLinesProcessed++;
+
+                    if (numLinesProcessed % 100 == 0)
+                    {
+                        application.StatusBar = "Processed " + numLinesProcessed.ToString() + "/" + numLinesPresent.ToString() + " rows.";
+                    }
                 }
+
+                application.StatusBar = "Complete";
 
                 ready = sviTable.Count > 0;
             }
+        }
+
+        /// <summary>
+        /// Gets either the all-USA file or just the California data.
+        /// <summary>
+        /// <returns>string</returns>
+        private string GetSviFileName(SviScope desiredScope)
+        {
+            string filePattern = string.Empty;
+
+            switch (desiredScope)
+            {
+                case SviScope.California:
+                    filePattern = "California.csv";
+                    break;
+                case SviScope.USA:
+                    filePattern = "SVI_2020_US.csv";
+                    break;
+            }
+
+            return filePattern;
+        }
+
+        /// <summary>
+        /// Gets either "," or "\t" depending on whether we want
+        /// the all-USA file (comma-separated) or just the California data (tab-separated).
+        /// <summary>
+        /// <returns>string</returns>
+        private char GetSviFileSeparator(SviScope desiredScope)
+        {
+            char fileSeparator = '\0';
+
+            switch (desiredScope)
+            {
+                case SviScope.California:
+                    fileSeparator = '\t';
+                    break;
+                case SviScope.USA:
+                    fileSeparator = ',';
+                    break;
+            }
+
+            return fileSeparator;
+        }
+
+        /// <summary>
+        /// Sets the class properties depending on which data file we want.
+        /// <summary>
+        /// <returns>SviScope enum</returns>
+        private void GetSviFileNameAndSeparator()
+        {
+            SviScope desiredScope = GetUserPreference();
+            filePattern = GetSviFileName(desiredScope);
+            fileSeparator = GetSviFileSeparator(desiredScope);
+        }
+
+        /// <summary>
+        /// Asks the user if they want all-USA file or just California data.
+        /// <summary>
+        /// <returns>SviScope enum</returns>
+        private SviScope GetUserPreference()
+        {
+            using (UseCalforniaOrAllUsaForm form = new UseCalforniaOrAllUsaForm())
+            {
+                var result = form.ShowDialog();
+
+                if (result == DialogResult.OK)
+                {
+                    return form.scope;
+                }
+            }
+
+            return SviScope.Unknown;
         }
 
         /// <summary>
