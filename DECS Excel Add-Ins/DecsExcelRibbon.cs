@@ -1,4 +1,5 @@
 ﻿using DECS_Excel_Add_Ins.Properties;
+using LiveCharts.Configurations;
 using Microsoft.Office.Core;
 using System;
 using System.Drawing;
@@ -43,6 +44,16 @@ namespace DECS_Excel_Add_Ins
         private Office.IRibbonUI ribbon;
 
         public DecsExcelRibbon() { }
+
+        /// <summary>
+        /// Lets the @c DecsExcelRibbon.xml point to the image for the @c address button.
+        /// </summary>
+        /// <param name="control">Reference to the IRibbonControl object.</param>
+        /// <returns>Bitmap</returns>
+        public Bitmap addressButton_GetImage(IRibbonControl control)
+        {
+            return Resources.census;
+        }
 
         /// <summary>
         /// Lets the @c DecsExcelRibbon.xml point to the image for the @c addRowsAcrossSheets button.
@@ -222,6 +233,16 @@ namespace DECS_Excel_Add_Ins
         public Bitmap lookupNpiButton_GetImage(IRibbonControl control)
         {
             return Resources.NPI_Matching;
+        }
+
+        /// <summary>
+        /// Lets the @c DecsExcelRibbon.xml point to the image for the @c Map button.
+        /// </summary>
+        /// <param name="control">Reference to the IRibbonControl object.</param>
+        /// <returns>Bitmap</returns>
+        public Bitmap mapButton_GetImage(IRibbonControl control)
+        {
+            return Resources.heat_map;
         }
 
         /// <summary>
@@ -434,6 +455,18 @@ namespace DECS_Excel_Add_Ins
         }
 
         /// <summary>
+        /// When @c address button is pressed, this method instantiates a @c AddressToCensusTract object & calls its @c ConvertColumn method.
+        /// </summary>
+        /// <param name="control">Reference to the IRibbonControl object.</param>
+
+        public void OnConvertAddress(IRibbonControl control)
+        {
+            AddressToCensusTract converter = new AddressToCensusTract();
+            Excel.Worksheet wksheet = (Excel.Worksheet)Globals.ThisAddIn.Application.ActiveSheet;
+            converter.Convert(wksheet);
+        }
+
+        /// <summary>
         /// When @c ConvertDates button is pressed, this method instantiates a @c MumpsDateConverter object & calls its @c ConvertColumn method.
         /// </summary>
         /// <param name="control">Reference to the IRibbonControl object.</param>
@@ -563,6 +596,18 @@ namespace DECS_Excel_Add_Ins
             NpiLookup npiLookup = new NpiLookup();
             Excel.Worksheet wksheet = (Excel.Worksheet)Globals.ThisAddIn.Application.ActiveSheet;
             npiLookup.Search(wksheet);
+        }
+
+        /// <summary>
+        /// When @c mapData button is pressed, instantiates a @c Mapper object & calls its @c Map method.
+        /// </summary>
+        /// <param name="control">Reference to the IRibbonControl object.</param>
+
+        public void OnMapData(IRibbonControl control)
+        {
+            Mapper mapper = new Mapper();
+            Excel.Worksheet wksheet = (Excel.Worksheet)Globals.ThisAddIn.Application.ActiveSheet;
+        /// mapper.Map(wksheet);
         }
 
         /// <summary>
