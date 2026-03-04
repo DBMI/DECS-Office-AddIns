@@ -89,7 +89,7 @@ namespace DECS_Excel_Add_Ins
 
     internal class PhysicianTable
     {
-        private Microsoft.Office.Interop.Excel.Worksheet sheet;
+        private Worksheet sheet;
         private int row;
 
         internal PhysicianTable()
@@ -98,7 +98,7 @@ namespace DECS_Excel_Add_Ins
             this.row = 0;
         }
 
-        internal PhysicianTable(Microsoft.Office.Interop.Excel.Worksheet sheet, int row = 1)
+        internal PhysicianTable(Worksheet sheet, int row = 1)
         {
             this.sheet = sheet;
             this.row = row;
@@ -119,7 +119,7 @@ namespace DECS_Excel_Add_Ins
             row += delta;
         }
 
-        internal Microsoft.Office.Interop.Excel.Worksheet Sheet()
+        internal Worksheet Sheet()
         {
             return sheet;
         }

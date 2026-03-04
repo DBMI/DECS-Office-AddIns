@@ -2,23 +2,12 @@
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Text.RegularExpressions;
+using System.Windows.Forms;
 using Application = Microsoft.Office.Interop.Excel.Application;
 using C = DECS_Excel_Add_Ins.Census;
 
 namespace DECS_Excel_Add_Ins
 {
-    /**
-     * @brief Are we using full address or just the zip code?
-     */
-    internal enum LocationSource
-    {
-        [Description("Address")]
-        Address = 1,
-        [Description("Zip")]
-        Zip = 2,
-        [Description("Unknown")]
-        Unknown = 0,
-    }
 
     /**
      * @brief Main class for @c AddSVI tool.
@@ -26,6 +15,7 @@ namespace DECS_Excel_Add_Ins
     internal class SviProcessor
     {
         private Application application;
+        private const int HALFWAY_DOWN_THE_SHEET = 12;
 
         // https://stackoverflow.com/a/28546547/18749636
         private static readonly log4net.ILog log = log4net.LogManager.GetLogger(
@@ -41,10 +31,9 @@ namespace DECS_Excel_Add_Ins
         /// Finds either the user-selected column or (if none selected) column with name we expect.
         /// <summary>
         /// <param name="worksheet">Reference to the ActiveSheet.</param>
-        /// <param name="lastRowNumber">Number of last row containing data.</param>
         /// <param name="desiredName">Name of column we're looking for.</param>
         /// <returns>Range</returns>
-        private Range FindNamedColumn(Worksheet worksheet, int lastRowNumber, string desiredName)
+        private Range FindNamedColumn(Worksheet worksheet, string desiredName)
         {
             Regex desiredPattern = new Regex(desiredName.ToLower());
             Range selectedColumn = Utilities.GetSelectedCol(application);
@@ -92,34 +81,28 @@ namespace DECS_Excel_Add_Ins
 
         internal void Scan(Worksheet worksheet)
         {
-            // We'll use this in a lot of places, so let's just look it up once.
-            int lastRowNumber = Utilities.FindLastRow(worksheet);
-
-            // 1) Find the address column (or the zip column, as a fallback).
-            Range locationColumn = FindNamedColumn(worksheet, lastRowNumber, "address");
-            LocationSource locationSource = LocationSource.Unknown;
-            ZipCodeConverter zipCodeConverter = null;
-            Geocode geocoder = null;
+            // 1) Find the census tract column.
+            Range locationColumn = FindNamedColumn(worksheet, "Census FIPS");
 
             if (locationColumn == null)
-            {
-                locationColumn = FindNamedColumn(worksheet, lastRowNumber, "zip");
+            {                
+                // Then ask user to select one column.
+                List<string> columnNames = Utilities.GetColumnNames(worksheet);
 
-                if (locationColumn == null)
+                using (ChooseCategoryForm form = new ChooseCategoryForm(columnNames, MultiSelect: false))
                 {
-                    Utilities.WarnColumnNotFound("address or zip");
-                    return;
-                }
+                    var result = form.ShowDialog();
 
-                locationSource = LocationSource.Zip;
-                application.StatusBar = "Reading zip code table.";
-                zipCodeConverter = new ZipCodeConverter();
-            }
-            else
-            {
-                locationSource = LocationSource.Address;
-                application.StatusBar = "Creating census Geocoder object.";
-                geocoder = new Geocode();
+                    if (result == DialogResult.OK)
+                    {
+                        locationColumn = Utilities.TopOfNamedColumn(worksheet, form.selectedColumns[0]);
+                    }
+                    else if (result == DialogResult.Cancel)
+                    {
+                        // Then we're done here.
+                        return;
+                    }
+                }
             }
 
             // 2) Populate the SVI dictionary from data file.
@@ -131,17 +114,12 @@ namespace DECS_Excel_Add_Ins
                 // Build output columns.
                 Range sviRankColumn = Utilities.InsertNewColumn(range: locationColumn, newColumnName: "SVI rank", side: InsertSide.Right);
                 Range sviScoreColumn = Utilities.InsertNewColumn(range: locationColumn, newColumnName: "SVI score", side: InsertSide.Right);
-                Range censusColumn = null;
-
-                if (locationSource == LocationSource.Address)
-                {
-                    censusColumn = Utilities.InsertNewColumn(range: locationColumn, newColumnName: "Census FIPS", side: InsertSide.Right);
-                }
 
                 List<ulong> fipsList;
+                int rowOffset = 1;
 
-                // 3) Convert each address or zip to census tract FIPS number, then lookup SVI.
-                for (int rowOffset = 1; rowOffset <= lastRowNumber; rowOffset++)
+                // 3) Convert each census tract FIPS number to SVI.
+                while (true)
                 {
                     try
                     {
@@ -149,21 +127,14 @@ namespace DECS_Excel_Add_Ins
 
                         if (!string.IsNullOrEmpty(location))
                         {
-                            if (locationSource == LocationSource.Address)
+                            fipsList = new List<ulong>();
+
+                            if (ulong.TryParse(location, out ulong fips))
                             {
-                                C.CensusData data = geocoder.Convert(location);
-                                ulong fips = data.FIPS();
-                                censusColumn.Offset[rowOffset, 0].Value2 = fips;
-                                fipsList = new List<ulong>();
                                 fipsList.Add(fips);
-                            }
-                            else
-                            {
-                                fipsList = zipCodeConverter.Convert(location);
                             }
 
                             // Don't display nonsense numbers (represented by -1).
-
                             double rawScore = sviTable.raw(fipsList);
 
                             if (rawScore >= 0)
@@ -184,9 +155,12 @@ namespace DECS_Excel_Add_Ins
                         break;
                     }
 
+                    rowOffset++;
+                    Utilities.ScrollToRow(worksheet, locationColumn.Offset[rowOffset].Row - HALFWAY_DOWN_THE_SHEET);
+
                     if (rowOffset % 10 == 0)
                     {
-                        application.StatusBar = "Processed " + rowOffset.ToString() + "/" + lastRowNumber.ToString() + " patients.";
+                        application.StatusBar = "Processed " + rowOffset.ToString() + " locations.";
                     }
                 }
 
