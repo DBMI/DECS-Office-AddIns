@@ -1,12 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel;
-using System.Diagnostics.Eventing.Reader;
 using System.IO;
 using System.Linq;
 using System.Reflection;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 
 namespace DECS_Excel_Add_Ins
@@ -163,7 +160,7 @@ namespace DECS_Excel_Add_Ins
                     filePattern = "California.csv";
                     break;
                 case SviScope.USA:
-                    filePattern = "SVI_2020_US.csv";
+                    filePattern = "SVI_2022_US.csv";
                     break;
             }
 
@@ -171,7 +168,7 @@ namespace DECS_Excel_Add_Ins
         }
 
         /// <summary>
-        /// Gets either "," or "\t" depending on whether we want
+        /// Gets file separator for
         /// the all-USA file (comma-separated) or just the California data (tab-separated).
         /// <summary>
         /// <returns>string</returns>
@@ -182,7 +179,7 @@ namespace DECS_Excel_Add_Ins
             switch (desiredScope)
             {
                 case SviScope.California:
-                    fileSeparator = '\t';
+                    fileSeparator = ',';
                     break;
                 case SviScope.USA:
                     fileSeparator = ',';

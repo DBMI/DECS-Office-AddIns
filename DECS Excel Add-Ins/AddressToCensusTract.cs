@@ -1,13 +1,9 @@
-﻿using MathNet.Numerics.Statistics;
-using Microsoft.Office.Interop.Excel;
-using Microsoft.Office.Tools.Excel;
+﻿using Microsoft.Office.Interop.Excel;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
-using System.Text;
 using System.Text.RegularExpressions;
-using System.Threading.Tasks;
 using C = DECS_Excel_Add_Ins.Census;
 using Worksheet = Microsoft.Office.Interop.Excel.Worksheet;
 
@@ -29,6 +25,7 @@ namespace DECS_Excel_Add_Ins
     {
         private Application application;
         private const int HALFWAY_DOWN_THE_SHEET = 12;
+        private const string apartmentNumberPattern = @"\s*(Apt|Unit)\s*[\d\w]+,";
 
         // https://stackoverflow.com/a/28546547/18749636
         private static readonly log4net.ILog log = log4net.LogManager.GetLogger(
@@ -103,6 +100,7 @@ namespace DECS_Excel_Add_Ins
                 application.StatusBar = "Creating census Geocoder object.";
                 geocoder = new Geocode();
             }
+
             Range censusColumn = null;
 
             if (locationSource == LocationSource.Address)
@@ -129,6 +127,7 @@ namespace DECS_Excel_Add_Ins
                     {
                         if (locationSource == LocationSource.Address)
                         {
+                            location = Regex.Replace(location, apartmentNumberPattern, "");
                             C.CensusData data = geocoder.Convert(location);
                             ulong fips = data.FIPS();
                             censusColumn.Offset[rowOffset, 0].Value2 = fips;

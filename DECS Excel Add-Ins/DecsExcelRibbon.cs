@@ -206,6 +206,16 @@ namespace DECS_Excel_Add_Ins
         }
 
         /// <summary>
+        /// Lets the @c DecsExcelRibbon.xml point to the image for the @c HPI button.
+        /// </summary>
+        /// <param name="control">Reference to the IRibbonControl object.</param>
+        /// <returns>Bitmap</returns>
+        public Bitmap hpiButton_GetImage(IRibbonControl control)
+        {
+            return Resources.hpi;
+        }
+
+        /// <summary>
         /// Lets the @c DecsExcelRibbon.xml point to the image for the @c HidePhysicianNames button.
         /// </summary>
         /// <param name="control">Reference to the IRibbonControl object.</param>
@@ -382,6 +392,18 @@ namespace DECS_Excel_Add_Ins
         public Bitmap sviButton_GetImage(IRibbonControl control)
         {
             return Resources.ENV_EPHT_social;
+        }
+
+        /// <summary>
+        /// When @c AddHPI button is pressed, this method instantiates a @c HpiProcessor object & calls its @c Scan method.
+        /// </summary>
+        /// <param name="control">Reference to the IRibbonControl object.</param>
+
+        public void OnAddHPI(IRibbonControl control)
+        {
+            HpiProcessor hpiProcessor = new HpiProcessor();
+            Excel.Worksheet wksheet = (Excel.Worksheet)Globals.ThisAddIn.Application.ActiveSheet;
+            hpiProcessor.Scan(wksheet);
         }
 
         /// <summary>
@@ -607,7 +629,7 @@ namespace DECS_Excel_Add_Ins
         {
             Mapper mapper = new Mapper();
             Excel.Worksheet wksheet = (Excel.Worksheet)Globals.ThisAddIn.Application.ActiveSheet;
-        /// mapper.Map(wksheet);
+            mapper.Map(wksheet);
         }
 
         /// <summary>

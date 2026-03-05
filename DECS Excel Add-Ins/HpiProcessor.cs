@@ -1,25 +1,25 @@
-﻿using Microsoft.Office.Interop.Excel;
+﻿using MathNet.Numerics.Distributions;
+using Microsoft.Office.Interop.Excel;
+using System;
 using System.Collections.Generic;
+using System.Linq;
+using System.Text;
 using System.Text.RegularExpressions;
+using System.Threading.Tasks;
 using System.Windows.Forms;
 using Application = Microsoft.Office.Interop.Excel.Application;
 
 namespace DECS_Excel_Add_Ins
-{
-    /**
-     * @brief Main class for @c AddSVI tool.
+{    /**
+     * @brief Main class for @c AddHPI tool.
      */
-    internal class SviProcessor
+
+    internal class HpiProcessor
     {
         private Application application;
         private const int HALFWAY_DOWN_THE_SHEET = 12;
 
-        // https://stackoverflow.com/a/28546547/18749636
-        private static readonly log4net.ILog log = log4net.LogManager.GetLogger(
-            System.Reflection.MethodBase.GetCurrentMethod().DeclaringType
-        );
-
-        internal SviProcessor()
+        internal HpiProcessor()
         {
             application = Globals.ThisAddIn.Application;
         }
@@ -82,7 +82,7 @@ namespace DECS_Excel_Add_Ins
             Range locationColumn = FindNamedColumn(worksheet, "Census FIPS");
 
             if (locationColumn == null)
-            {                
+            {
                 // Then ask user to select one column.
                 List<string> columnNames = Utilities.GetColumnNames(worksheet);
 
@@ -102,21 +102,20 @@ namespace DECS_Excel_Add_Ins
                 }
             }
 
-            // 2) Populate the SVI dictionary from data file.
-            application.StatusBar = "Building SVI dictionary.";
-            SviTable sviTable = new SviTable();
+            // 2) Populate the HPI dictionary from data file.
+            application.StatusBar = "Building HPI dictionary.";
+            HpiTable hpiTable = new HpiTable();
 
-            if (sviTable.ready)
+            if (hpiTable.ready)
             {
                 // Build output columns.
-                Range sviRankColumn = Utilities.InsertNewColumn(range: locationColumn, newColumnName: "SVI rank", side: InsertSide.Right);
-                Range sviScoreColumn = Utilities.InsertNewColumn(range: locationColumn, newColumnName: "SVI score", side: InsertSide.Right);
+                Range hpiPercentileColumn = Utilities.InsertNewColumn(range: locationColumn, newColumnName: "HPI percentile", side: InsertSide.Right);
+                Range hpiScoreColumn = Utilities.InsertNewColumn(range: locationColumn, newColumnName: "HPI score", side: InsertSide.Right);
 
-                List<ulong> fipsList;
                 int rowOffset = 1;
                 int numConsecutiveFailures = 0;
 
-                // 3) Convert each census tract FIPS number to SVI.
+                // 3) Convert each census tract FIPS number to HPI.
                 while (true)
                 {
                     try
@@ -129,32 +128,29 @@ namespace DECS_Excel_Add_Ins
                         }
                         else
                         {
-                            fipsList = new List<ulong>();
-
                             if (ulong.TryParse(location, out ulong fips))
-                            {
-                                fipsList.Add(fips);
+                            {                            
+                                // Don't display nonsense numbers (represented by -1).
+                                double? rawScore = hpiTable.hpi(fips);
+
+                                if (rawScore.HasValue)
+                                {
+                                    hpiScoreColumn.Offset[rowOffset, 0].Value2 = rawScore.Value;
+                                }
+
+                                double? percentile = hpiTable.hpi_percentile(fips);
+
+                                if (percentile.HasValue)
+                                {
+                                    hpiPercentileColumn.Offset[rowOffset, 0].Value2 = percentile.Value;
+                                }
+
                                 // reset
                                 numConsecutiveFailures = 0;
                             }
                             else
                             {
                                 numConsecutiveFailures++;
-                            }
-
-                            // Don't display nonsense numbers (represented by -1).
-                            double rawScore = sviTable.raw(fipsList);
-
-                            if (rawScore >= 0)
-                            {
-                                sviScoreColumn.Offset[rowOffset, 0].Value2 = rawScore;
-                            }
-
-                            double rank = sviTable.rank(fipsList);
-
-                            if (rank >= 0)
-                            {
-                                sviRankColumn.Offset[rowOffset, 0].Value2 = rank;
                             }
                         }
                     }
