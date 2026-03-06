@@ -206,13 +206,16 @@ namespace DECS_Excel_Add_Ins
         /// <returns>SviScope enum</returns>
         private SviScope GetUserPreference()
         {
-            using (UseCalforniaOrAllUsaForm form = new UseCalforniaOrAllUsaForm())
+            using (ChooseAOrBForm form = new ChooseAOrBForm("Choose which SVI data set.", "California", "USA"))
             {
                 var result = form.ShowDialog();
 
                 if (result == DialogResult.OK)
                 {
-                    return form.scope;
+                    if (SviScope.TryParse(form.choice, out SviScope scope))
+                    {
+                        return scope;
+                    }
                 }
             }
 

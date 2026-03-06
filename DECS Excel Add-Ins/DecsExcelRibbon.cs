@@ -1,5 +1,4 @@
 ﻿using DECS_Excel_Add_Ins.Properties;
-using LiveCharts.Configurations;
 using Microsoft.Office.Core;
 using System;
 using System.Drawing;
