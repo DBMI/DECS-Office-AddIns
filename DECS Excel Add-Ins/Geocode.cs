@@ -1,7 +1,9 @@
-﻿using System;
+﻿using DocumentFormat.OpenXml.Drawing.Charts;
+using System;
 using System.Net;
 using System.Net.Http;
 using System.Web.Script.Serialization;
+using System.Windows.Forms;
 using C = DECS_Excel_Add_Ins.Census;
 
 namespace DECS_Excel_Add_Ins
@@ -12,12 +14,49 @@ namespace DECS_Excel_Add_Ins
     internal class Geocode
     {
         private const string URL = @"https://geocoding.geo.census.gov/geocoder/geographies/onelineaddress?address=";
-        private const string SUFFIX = @"&benchmark=2020&vintage=2020&format=json";
+        // Even if we want Census year 2010, still need to use the 2020 benchmark.
+        private const string SUFFIX_BENCHMARK = @"&benchmark=2020";
+        private const string SUFFIX_VINTAGE = @"&vintage=";
+        private const string SUFFIX_FORMAT = @"&format=json";
+        private string suffix;
+
 
         // https://stackoverflow.com/a/28546547/18749636
         private static readonly log4net.ILog log = log4net.LogManager.GetLogger(
             System.Reflection.MethodBase.GetCurrentMethod().DeclaringType
         );
+
+        internal Geocode()
+        {
+            BuildQuerySuffix();
+        }
+
+        private string AskCensusYear()
+        {
+            string year = string.Empty;
+
+            using (ChooseAOrBForm form = new ChooseAOrBForm("Choose Census data year.", "2010", "2020"))
+            {
+                var result = form.ShowDialog();
+
+                if (result == DialogResult.OK)
+                {
+                    year = form.choice;
+                }
+            }
+
+            return year;
+        }
+
+        private void BuildQuerySuffix()
+        {
+            string year = AskCensusYear();
+
+            if (!string.IsNullOrEmpty(year))
+            {
+                suffix = SUFFIX_BENCHMARK + SUFFIX_VINTAGE + year + SUFFIX_FORMAT;
+            }
+        }
 
         /// <summary>
         /// Sends HTTP query containing address & converts response to a @c CensusData object.
@@ -27,10 +66,10 @@ namespace DECS_Excel_Add_Ins
         internal C.CensusData Convert(string address)
         {
             ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12 | SecurityProtocolType.Tls11 | SecurityProtocolType.Tls;
-
             C.CensusData data = new C.CensusData();
+
             string addressEncoded = Uri.EscapeDataString(address.Replace(", ", ","));
-            string url = URL + addressEncoded + SUFFIX;
+            string url = URL + addressEncoded + suffix;
 
             HttpClient httpClient = new HttpClient();
             httpClient.Timeout = TimeSpan.FromMinutes(5);
