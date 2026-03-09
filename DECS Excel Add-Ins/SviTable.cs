@@ -60,6 +60,7 @@ namespace DECS_Excel_Add_Ins
         private Dictionary<ulong, SviScore> sviTable;
         private string filePattern;
         private char fileSeparator;
+        private string sviScope;
 
         internal bool ready { get; } = false;
 
@@ -68,7 +69,7 @@ namespace DECS_Excel_Add_Ins
             MethodBase.GetCurrentMethod().DeclaringType
         );
 
-        internal SviTable()
+        internal SviTable(string year)
         {
             Microsoft.Office.Interop.Excel.Application application = Globals.ThisAddIn.Application;
 
@@ -76,7 +77,8 @@ namespace DECS_Excel_Add_Ins
 
             var assembly = Assembly.GetExecutingAssembly();
 
-            GetSviFileNameAndSeparator();
+            // Do we want California-only SVI? Or all US?
+            GetSviFileNameAndSeparator(year);
 
             if (string.IsNullOrEmpty(filePattern))
             {
@@ -150,17 +152,48 @@ namespace DECS_Excel_Add_Ins
         /// Gets either the all-USA file or just the California data.
         /// <summary>
         /// <returns>string</returns>
-        private string GetSviFileName(SviScope desiredScope)
+        private string GetSviFileName(SviScope desiredScope, string year)
         {
             string filePattern = string.Empty;
 
             switch (desiredScope)
             {
                 case SviScope.California:
-                    filePattern = "California.csv";
+                    sviScope = "California";
+
+                    switch (year)
+                    {
+                        case "2010":
+                            filePattern = "California_2020.csv";
+                            break;
+
+                        case "2020":
+                            filePattern = "California_2022.csv";
+                            break;
+
+                        default:
+                            throw new ArgumentOutOfRangeException(year, "Expected either 2010 or 2020.");
+                    }
+
                     break;
+
                 case SviScope.USA:
-                    filePattern = "SVI_2022_US.csv";
+                    sviScope = "USA";
+
+                    switch (year)
+                    {
+                        case "2010":
+                            filePattern = "SVI_2020_US.csv";
+                            break;
+
+                        case "2020":
+                            filePattern = "SVI_2022_US.csv";
+                            break;
+
+                        default:
+                            throw new ArgumentOutOfRangeException(year, "Expected either 2010 or 2020.");
+                    }
+
                     break;
             }
 
@@ -172,14 +205,26 @@ namespace DECS_Excel_Add_Ins
         /// the all-USA file (comma-separated) or just the California data (tab-separated).
         /// <summary>
         /// <returns>string</returns>
-        private char GetSviFileSeparator(SviScope desiredScope)
+        private char GetSviFileSeparator(SviScope desiredScope, string year)
         {
             char fileSeparator = '\0';
 
             switch (desiredScope)
             {
                 case SviScope.California:
-                    fileSeparator = ',';
+
+                    switch (year)
+                    {
+                        case "2010":
+                            fileSeparator = ',';
+                            break;
+                        case "2020":
+                            fileSeparator = ',';
+                            break;
+                        default:
+                            throw new ArgumentOutOfRangeException(year, "Expected either 2010 or 2020.");
+                    }
+
                     break;
                 case SviScope.USA:
                     fileSeparator = ',';
@@ -193,11 +238,11 @@ namespace DECS_Excel_Add_Ins
         /// Sets the class properties depending on which data file we want.
         /// <summary>
         /// <returns>SviScope enum</returns>
-        private void GetSviFileNameAndSeparator()
+        private void GetSviFileNameAndSeparator(string year)
         {
             SviScope desiredScope = GetUserPreference();
-            filePattern = GetSviFileName(desiredScope);
-            fileSeparator = GetSviFileSeparator(desiredScope);
+            filePattern = GetSviFileName(desiredScope, year);
+            fileSeparator = GetSviFileSeparator(desiredScope, year);
         }
 
         /// <summary>
@@ -276,6 +321,11 @@ namespace DECS_Excel_Add_Ins
             }
 
             return -1.0;
+        }
+
+        internal string Scope()
+        {
+            return sviScope;
         }
     }
 }

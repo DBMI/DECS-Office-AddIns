@@ -1,4 +1,5 @@
-﻿using Microsoft.Office.Interop.Excel;
+﻿using DocumentFormat.OpenXml.Drawing.Spreadsheet;
+using Microsoft.Office.Interop.Excel;
 using System.Collections.Generic;
 using System.Text.RegularExpressions;
 using System.Windows.Forms;
@@ -102,15 +103,25 @@ namespace DECS_Excel_Add_Ins
                 }
             }
 
+            // Parse the Census tract year from the location column name.
+            string year = Utilities.ParseYearFromColumnName(locationColumn.Value2.ToString());
+
+            if (string.IsNullOrEmpty(year))
+            {
+                application.StatusBar = "Unable to parse year from " + locationColumn.Name;
+                return;
+            }
+
             // 2) Populate the SVI dictionary from data file.
             application.StatusBar = "Building SVI dictionary.";
-            SviTable sviTable = new SviTable();
+            SviTable sviTable = new SviTable(year);
 
             if (sviTable.ready)
             {
                 // Build output columns.
-                Range sviRankColumn = Utilities.InsertNewColumn(range: locationColumn, newColumnName: "SVI rank", side: InsertSide.Right);
-                Range sviScoreColumn = Utilities.InsertNewColumn(range: locationColumn, newColumnName: "SVI score", side: InsertSide.Right);
+                string basicColumnName = "SVI " + sviTable.Scope() + " " + year;
+                Range sviRankColumn = Utilities.InsertNewColumn(range: locationColumn, newColumnName: basicColumnName + " rank", side: InsertSide.Right);
+                Range sviScoreColumn = Utilities.InsertNewColumn(range: locationColumn, newColumnName: basicColumnName + " score", side: InsertSide.Right);
 
                 List<ulong> fipsList;
                 int rowOffset = 1;

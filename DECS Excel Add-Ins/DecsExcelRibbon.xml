@@ -227,13 +227,6 @@
 							screentip="Looks up Social Vulnerability Index"
 							size="large"
 							supertip="Looks up Social Vulnerability Index based on Census tract" />
-					<button id="map"
-							getImage="mapButton_GetImage"
-							label="Map data"
-							onAction="OnMapData"
-							screentip="Maps data vs. census tract"
-							size="large"
-							supertip="Maps selected data vs. census tract" />
 				</group>
 				<group id ="SurveyGroup"
 					   label="Survey">

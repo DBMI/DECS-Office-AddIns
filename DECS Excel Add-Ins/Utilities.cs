@@ -1,4 +1,5 @@
-﻿using Microsoft.Office.Interop.Excel;
+﻿using DocumentFormat.OpenXml.Bibliography;
+using Microsoft.Office.Interop.Excel;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -1465,6 +1466,23 @@ namespace DECS_Excel_Add_Ins
             }
 
             return (writer: writer_obj, openedFilename: outputFilename);
+        }
+
+        /// <summary>Finds "2020" in a name like "Census FIPS (2020)".</summary>
+        /// <param name="columnName">string</param>
+        /// <param name="year">string</param>
+        internal static string ParseYearFromColumnName(string columnName)
+        {
+            string year = string.Empty;
+            Regex desiredPattern = new Regex(@"(?<year>\d{4})");
+            Match match = desiredPattern.Match(columnName.ToLower());
+
+            if (match.Success)
+            {
+                year = match.Groups["year"].Value;
+            }
+
+            return year;
         }
 
         /// <summary>Fills a ListBox object with a list.</summary>

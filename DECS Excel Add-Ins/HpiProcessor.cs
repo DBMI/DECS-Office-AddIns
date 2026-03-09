@@ -102,15 +102,25 @@ namespace DECS_Excel_Add_Ins
                 }
             }
 
+            // Parse the Census tract year from the location column name.
+            string year = Utilities.ParseYearFromColumnName(locationColumn.Value2.ToString());
+
+            if (string.IsNullOrEmpty(year))
+            {
+                application.StatusBar = "Unable to parse year from " + locationColumn.Name;
+                return;
+            }
+
             // 2) Populate the HPI dictionary from data file.
             application.StatusBar = "Building HPI dictionary.";
-            HpiTable hpiTable = new HpiTable();
+            HpiTable hpiTable = new HpiTable(year);
 
             if (hpiTable.ready)
             {
                 // Build output columns.
-                Range hpiPercentileColumn = Utilities.InsertNewColumn(range: locationColumn, newColumnName: "HPI percentile", side: InsertSide.Right);
-                Range hpiScoreColumn = Utilities.InsertNewColumn(range: locationColumn, newColumnName: "HPI score", side: InsertSide.Right);
+                string basicColumnName = "HPI " + year;
+                Range hpiPercentileColumn = Utilities.InsertNewColumn(range: locationColumn, newColumnName: basicColumnName + " percentile", side: InsertSide.Right);
+                Range hpiScoreColumn = Utilities.InsertNewColumn(range: locationColumn, newColumnName: basicColumnName + " score", side: InsertSide.Right);
 
                 int rowOffset = 1;
                 int numConsecutiveFailures = 0;
