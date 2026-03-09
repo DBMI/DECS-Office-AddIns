@@ -19,6 +19,7 @@ namespace DECS_Excel_Add_Ins
         private const string SUFFIX_VINTAGE = @"&vintage=";
         private const string SUFFIX_FORMAT = @"&format=json";
         private string suffix;
+        private string year = string.Empty;
 
 
         // https://stackoverflow.com/a/28546547/18749636
@@ -33,8 +34,6 @@ namespace DECS_Excel_Add_Ins
 
         private string AskCensusYear()
         {
-            string year = string.Empty;
-
             using (ChooseAOrBForm form = new ChooseAOrBForm("Choose Census data year.", "2010", "2020"))
             {
                 var result = form.ShowDialog();
@@ -98,6 +97,11 @@ namespace DECS_Excel_Add_Ins
             }
 
             return data;
+        }
+
+        internal string WhatYear()
+        {
+            return year;
         }
     }
 }

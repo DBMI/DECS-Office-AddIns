@@ -37,12 +37,12 @@ namespace DECS_Excel_Add_Ins
             application = Globals.ThisAddIn.Application;
         }
 
-        private void BuildHistogram(List<ulong> fipsList)
+        private void BuildHistogram(List<ulong> fipsList, string year)
         {
             // Create & set up histogram sheet.
-            Worksheet censusHistogramSheet = Utilities.CreateNewNamedSheet("Census Tract Histogram");
+            Worksheet censusHistogramSheet = Utilities.CreateNewNamedSheet("Census Tract (" + year + ") Histogram");
             Range target = (Range)censusHistogramSheet.Cells[1, 1];
-            target.Value = "Census tract number";
+            target.Value = "Census tract (" + year + ") number";
             target.Offset[0, 1].Value = "Number of occurrences";
 
             Dictionary<ulong, int> censusTractHistogram = new Dictionary<ulong, int>();
@@ -77,22 +77,12 @@ namespace DECS_Excel_Add_Ins
             // 1) Find the address column.
             Range locationColumn = FindNamedColumn(worksheet, "address");
             LocationSource locationSource = LocationSource.Unknown;
-            ZipCodeConverter zipCodeConverter = null;
             Geocode geocoder = null;
 
             if (locationColumn == null)
             {
-                locationColumn = FindNamedColumn(worksheet, "zip");
-
-                if (locationColumn == null)
-                {
-                    Utilities.WarnColumnNotFound("address or zip");
-                    return;
-                }
-
-                locationSource = LocationSource.Zip;
-                application.StatusBar = "Reading zip code table.";
-                zipCodeConverter = new ZipCodeConverter();
+                Utilities.WarnColumnNotFound("address");
+                return;
             }
             else
             {
@@ -105,7 +95,8 @@ namespace DECS_Excel_Add_Ins
 
             if (locationSource == LocationSource.Address)
             {
-                censusColumn = Utilities.InsertNewColumn(range: locationColumn, newColumnName: "Census FIPS", side: InsertSide.Right);
+                string columName = "Census FIPS (" + geocoder.WhatYear() + ")";
+                censusColumn = Utilities.InsertNewColumn(range: locationColumn, newColumnName: columName, side: InsertSide.Right);
             }
 
             int rowOffset = 1;
@@ -158,7 +149,7 @@ namespace DECS_Excel_Add_Ins
                 }
             }
 
-            BuildHistogram(fipsAll);
+            BuildHistogram(fipsAll, geocoder.WhatYear());
             application.StatusBar = "Complete";
         }
 

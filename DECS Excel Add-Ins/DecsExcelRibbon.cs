@@ -245,16 +245,6 @@ namespace DECS_Excel_Add_Ins
         }
 
         /// <summary>
-        /// Lets the @c DecsExcelRibbon.xml point to the image for the @c Map button.
-        /// </summary>
-        /// <param name="control">Reference to the IRibbonControl object.</param>
-        /// <returns>Bitmap</returns>
-        public Bitmap mapButton_GetImage(IRibbonControl control)
-        {
-            return Resources.heat_map;
-        }
-
-        /// <summary>
         /// Lets the @c DecsExcelRibbon.xml point to the image for the @c MatchPhysiciansButton button.
         /// </summary>
         /// <param name="control">Reference to the IRibbonControl object.</param>
@@ -617,18 +607,6 @@ namespace DECS_Excel_Add_Ins
             NpiLookup npiLookup = new NpiLookup();
             Excel.Worksheet wksheet = (Excel.Worksheet)Globals.ThisAddIn.Application.ActiveSheet;
             npiLookup.Search(wksheet);
-        }
-
-        /// <summary>
-        /// When @c mapData button is pressed, instantiates a @c Mapper object & calls its @c Map method.
-        /// </summary>
-        /// <param name="control">Reference to the IRibbonControl object.</param>
-
-        public void OnMapData(IRibbonControl control)
-        {
-            Mapper mapper = new Mapper();
-            Excel.Worksheet wksheet = (Excel.Worksheet)Globals.ThisAddIn.Application.ActiveSheet;
-            mapper.Map(wksheet);
         }
 
         /// <summary>

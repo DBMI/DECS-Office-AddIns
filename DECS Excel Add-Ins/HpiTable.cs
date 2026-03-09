@@ -200,11 +200,33 @@ namespace DECS_Excel_Add_Ins
 
         internal bool ready { get; } = false;
 
-        internal HpiTable()
+        /// <summary>
+        /// Gets file based on year
+        /// <summary>
+        /// <returns>string</returns>
+        private string GetHpiFileName(string year)
+        {
+            string filePattern = string.Empty;
+
+            switch (year)
+            {
+                case "2010":
+                    filePattern = "hpi_2010.csv";
+                    break;
+
+                default:
+                    throw new ArgumentOutOfRangeException(year, "Expected 2010.");
+            }
+
+            return filePattern;
+        }
+
+        internal HpiTable(string year)
         {
             hpiTable = new Dictionary<ulong, HpiModel>();
             var assembly = Assembly.GetExecutingAssembly();
-            var resourceName = assembly.GetManifestResourceNames().Single(str => str.EndsWith("data.hpi_3_complete_file.csv"));
+            string filePattern = GetHpiFileName(year);
+            var resourceName = assembly.GetManifestResourceNames().Single(str => str.EndsWith(filePattern));
 
             // https://joshclose.github.io/CsvHelper/getting-started/
             using (var reader = new StreamReader(assembly.GetManifestResourceStream(resourceName)))
