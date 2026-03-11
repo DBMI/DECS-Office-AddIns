@@ -80,7 +80,7 @@ namespace DECS_Excel_Add_Ins
         internal void Scan(Worksheet worksheet)
         {
             // 1) Find the census tract column.
-            Range locationColumn = FindNamedColumn(worksheet, "Census FIPS");
+            Range locationColumn = FindNamedColumn(worksheet, "FIPS");
 
             if (locationColumn == null)
             {                
