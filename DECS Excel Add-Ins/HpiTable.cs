@@ -248,7 +248,7 @@ namespace DECS_Excel_Add_Ins
         {
             try
             {
-                return hpiTable[fips].hpi.Value;
+                return hpiTable[fips].hpi;
             }
             catch (KeyNotFoundException)
             {
