@@ -43,7 +43,8 @@ namespace DECS_Excel_Add_Ins
             Worksheet censusHistogramSheet = Utilities.CreateNewNamedSheet("Census Tract (" + year + ") Histogram");
             Range target = (Range)censusHistogramSheet.Cells[1, 1];
             target.Value = "Census tract (" + year + ") number";
-            target.Offset[0, 1].Value = "Number of occurrences";
+            target.Offset[0, 1].Value = "GEOID";
+            target.Offset[0, 2].Value = "Number of occurrences";
 
             Dictionary<ulong, int> censusTractHistogram = new Dictionary<ulong, int>();
 
@@ -67,7 +68,9 @@ namespace DECS_Excel_Add_Ins
             foreach (var item in sortedItems)
             {
                 target.Offset[rowOffset, 0].Value = item.Key;
-                target.Offset[rowOffset, 1].Value = item.Value;
+                string cellAddress = target.Offset[rowOffset, 0].AddressLocal.ToString();
+                target.Offset[rowOffset, 1].Value = "=TEXT(" + cellAddress + ", \"00000000000\")";
+                target.Offset[rowOffset, 2].Value = item.Value;
                 rowOffset++;
             }
         }
