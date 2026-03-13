@@ -351,8 +351,12 @@ namespace DECS_Excel_Add_Ins
                     r.Offset[rowOffset, 8].Value2 = datum.Denominator;
                     r.Offset[rowOffset, 9].Value2 = datum.Value;
 
-                    application.StatusBar = "Building sheet for: " + metricName + " " +
+                    if (rowOffset % 100 == 0)
+                    {
+                        application.StatusBar = "Building sheet for: " + metricName + " " +
                         rowOffset.ToString() + "/" + dataThisMetric.Count;
+                    }
+
                     rowOffset++;
                 }
             }
