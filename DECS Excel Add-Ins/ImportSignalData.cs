@@ -389,7 +389,7 @@ namespace DECS_Excel_Add_Ins
             application.StatusBar = "Select metrics to extract.";
 
             // Ask user to downselect.
-            if (metrics.Count > 12)
+            if (metrics.Count > 1)
             {
                 using (SelectMetricsForm form = new SelectMetricsForm(metrics))
                 {

@@ -123,7 +123,6 @@ namespace DECS_Excel_Add_Ins
                 Range sviRankColumn = Utilities.InsertNewColumn(range: locationColumn, newColumnName: basicColumnName + " rank", side: InsertSide.Right);
                 Range sviScoreColumn = Utilities.InsertNewColumn(range: locationColumn, newColumnName: basicColumnName + " score", side: InsertSide.Right);
 
-                List<ulong> fipsList;
                 int rowOffset = 1;
                 int numConsecutiveFailures = 0;
 
@@ -140,32 +139,26 @@ namespace DECS_Excel_Add_Ins
                         }
                         else
                         {
-                            fipsList = new List<ulong>();
-
                             if (ulong.TryParse(location, out ulong fips))
                             {
-                                fipsList.Add(fips);
-                                // reset
-                                numConsecutiveFailures = 0;
+                                // Don't display nonsense numbers (represented by -1).
+                                double? rawScore = sviTable.raw(fips);
+
+                                if (rawScore.HasValue)
+                                {
+                                    sviScoreColumn.Offset[rowOffset, 0].Value2 = rawScore.Value;
+                                }
+
+                                double? rank = sviTable.rank(fips);
+
+                                if (rank.HasValue)
+                                {
+                                    sviRankColumn.Offset[rowOffset, 0].Value2 = rank.Value;
+                                }
                             }
                             else
                             {
                                 numConsecutiveFailures++;
-                            }
-
-                            // Don't display nonsense numbers (represented by -1).
-                            double rawScore = sviTable.raw(fipsList);
-
-                            if (rawScore >= 0)
-                            {
-                                sviScoreColumn.Offset[rowOffset, 0].Value2 = rawScore;
-                            }
-
-                            double rank = sviTable.rank(fipsList);
-
-                            if (rank >= 0)
-                            {
-                                sviRankColumn.Offset[rowOffset, 0].Value2 = rank;
                             }
                         }
                     }
@@ -174,7 +167,7 @@ namespace DECS_Excel_Add_Ins
                         break;
                     }
 
-                    // An occasional miss is ok, but three in a row & we've run outta data.
+                    // An occasional miss is ok, but three in a row means we've run outta data.
                     if (numConsecutiveFailures >= 3)
                     {
                         break;

@@ -363,9 +363,17 @@ namespace DECS_Excel_Add_Ins
         {
             int MAX_LENGTH = 31;
             Workbook workbook = (Excel.Workbook)Globals.ThisAddIn.Application.ActiveWorkbook;
+            Worksheet newSheet = null;
 
             // Create new sheet at the end.
-            Worksheet newSheet = workbook.Sheets.Add(After: workbook.Sheets[workbook.Sheets.Count]);
+            if (workbook.Sheets.Count > 0)
+            {
+                newSheet = workbook.Sheets.Add(After: workbook.Sheets[workbook.Sheets.Count]);
+            }
+            else
+            {
+                newSheet = workbook.Sheets.Add();
+            }
 
             // There's a 31-character limit.
             string cleanName = newName;
