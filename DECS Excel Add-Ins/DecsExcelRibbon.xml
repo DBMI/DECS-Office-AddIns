@@ -141,6 +141,12 @@
 							onAction="OnSortTimesSettings"
 							size="large"
 							screentip="Choose Thresholds for Follow-up Times"/>
+					<button id="histogramButton"
+							getImage="histogramButton_GetImage"
+							label="Histogram"
+							onAction="OnHistogram"
+							size="large"
+							screentip="Build Histogram"/>
 				</group>
 				<group id ="MergeGroup"
 					   label="Merge">

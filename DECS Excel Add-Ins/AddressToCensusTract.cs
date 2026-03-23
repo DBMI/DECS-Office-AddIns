@@ -37,44 +37,6 @@ namespace DECS_Excel_Add_Ins
             application = Globals.ThisAddIn.Application;
         }
 
-        private void BuildHistogram(List<ulong> fipsList, string year)
-        {
-            // Create & set up histogram sheet.
-            Worksheet censusHistogramSheet = Utilities.CreateNewNamedSheet("Census Tract (" + year + ") Histogram");
-            Range target = (Range)censusHistogramSheet.Cells[1, 1];
-            target.Value = "Census tract (" + year + ") number";
-            target.Offset[0, 1].Value = "GEOID";
-            target.Offset[0, 2].Value = "Number of occurrences";
-
-            Dictionary<ulong, int> censusTractHistogram = new Dictionary<ulong, int>();
-
-            foreach (ulong fips in fipsList)
-            {
-                if (censusTractHistogram.ContainsKey(fips))
-                {
-                    censusTractHistogram[fips]++;
-                }
-                else
-                {
-                    censusTractHistogram[fips] = 1;
-                }
-            }
-
-            // Sort by value descending, then by key ascending for tie-breaking.
-            var sortedItems = censusTractHistogram.OrderByDescending(pair => pair.Value)
-                                  .ThenBy(pair => pair.Key);
-            int rowOffset = 1;
-
-            foreach (var item in sortedItems)
-            {
-                target.Offset[rowOffset, 0].Value = item.Key;
-                string cellAddress = target.Offset[rowOffset, 0].AddressLocal.ToString();
-                target.Offset[rowOffset, 1].Value = "=TEXT(" + cellAddress + ", \"00000000000\")";
-                target.Offset[rowOffset, 2].Value = item.Value;
-                rowOffset++;
-            }
-        }
-
         internal void Convert(Worksheet worksheet)
         {
             // 1) Find the address column.
@@ -104,7 +66,6 @@ namespace DECS_Excel_Add_Ins
 
             int rowOffset = 1;
             int numConsecutiveFailures = 0;
-            List<ulong> fipsAll = new List<ulong>();
 
             // 2) Convert each address to census tract FIPS number.
             while (true)
@@ -125,7 +86,6 @@ namespace DECS_Excel_Add_Ins
                             C.CensusData data = geocoder.Convert(location);
                             ulong fips = data.FIPS();
                             censusColumn.Offset[rowOffset, 0].Value2 = fips;
-                            fipsAll.Add(fips);
 
                             // reset
                             numConsecutiveFailures = 0;
@@ -152,7 +112,6 @@ namespace DECS_Excel_Add_Ins
                 }
             }
 
-            BuildHistogram(fipsAll, geocoder.WhatYear());
             application.StatusBar = "Complete";
         }
 

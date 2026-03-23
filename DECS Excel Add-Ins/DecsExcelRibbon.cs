@@ -205,6 +205,16 @@ namespace DECS_Excel_Add_Ins
         }
 
         /// <summary>
+        /// Lets the @c DecsExcelRibbon.xml point to the image for the @c Histogram button.
+        /// </summary>
+        /// <param name="control">Reference to the IRibbonControl object.</param>
+        /// <returns>Bitmap</returns>
+        public Bitmap histogramButton_GetImage(IRibbonControl control)
+        {
+            return Resources.histogram;
+        }
+
+        /// <summary>
         /// Lets the @c DecsExcelRibbon.xml point to the image for the @c HPI button.
         /// </summary>
         /// <param name="control">Reference to the IRibbonControl object.</param>
@@ -595,6 +605,18 @@ namespace DECS_Excel_Add_Ins
             Deidentifier deidentifier = new Deidentifier();
             Excel.Worksheet wksheet = (Excel.Worksheet)Globals.ThisAddIn.Application.ActiveSheet;
             deidentifier.HidePhysicianNames(wksheet);
+        }
+
+        /// <summary>
+        /// When @c Histogram button is pressed, this method instantiates a @c HistogramBuilder object & calls its @c Build method.
+        /// </summary>
+        /// <param name="control">Reference to the IRibbonControl object.</param>
+
+        public void OnHistogram(IRibbonControl control)
+        {
+            HistogramBuilder histogramBuilder = new HistogramBuilder();
+            Excel.Worksheet wksheet = (Excel.Worksheet)Globals.ThisAddIn.Application.ActiveSheet;
+            histogramBuilder.Build(wksheet);
         }
 
         /// <summary>
