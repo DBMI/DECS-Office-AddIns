@@ -1,5 +1,4 @@
-﻿using DocumentFormat.OpenXml.Bibliography;
-using Microsoft.Office.Interop.Excel;
+﻿using Microsoft.Office.Interop.Excel;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -361,8 +360,7 @@ namespace DECS_Excel_Add_Ins
 
         public static Worksheet CreateNewNamedSheet(string newName)
         {
-            int MAX_LENGTH = 31;
-            Workbook workbook = (Excel.Workbook)Globals.ThisAddIn.Application.ActiveWorkbook;
+            Workbook workbook = Globals.ThisAddIn.Application.ActiveWorkbook;
             Worksheet newSheet = null;
 
             // Create new sheet at the end.
@@ -375,32 +373,19 @@ namespace DECS_Excel_Add_Ins
                 newSheet = workbook.Sheets.Add();
             }
 
-            // There's a 31-character limit.
-            string cleanName = newName;
-
-            if (newName.Length > MAX_LENGTH)
-                cleanName = newName.Substring(0, MAX_LENGTH);
-
-            newSheet.Name = cleanName;
-            return newSheet;
+            SafeNamer safeNamer = new SafeNamer(newSheet);
+            return safeNamer.AssignName(newName);
         }
 
         public static Worksheet CreateNewNamedSheet(Worksheet worksheet, string newName)
         {
-            int MAX_LENGTH = 31;
             Workbook workbook = worksheet.Parent;
 
             // Create new sheet at the end.
             Worksheet newSheet = workbook.Sheets.Add(After: workbook.Sheets[workbook.Sheets.Count]);
 
-            // There's a 31-character limit.
-            string cleanName = newName;
-
-            if (newName.Length > MAX_LENGTH)
-                cleanName = newName.Substring(0, MAX_LENGTH);
-
-            newSheet.Name = cleanName;
-            return newSheet;
+            SafeNamer safeNamer = new SafeNamer(newSheet);
+            return safeNamer.AssignName(newName);
         }
 
         /// <summary>
