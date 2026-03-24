@@ -25,6 +25,8 @@ namespace DECS_Excel_Add_Ins
     {
         private Application application;
         private const int HALFWAY_DOWN_THE_SHEET = 12;
+        private const int PAUSE_AFTER_THIS_MANY = 1000;
+        private const int PAUSE_MSEC = 60000;
         private const string apartmentNumberPattern = @"\s*(Apt|Unit)\s*[\d\w]+,";
 
         // https://stackoverflow.com/a/28546547/18749636
@@ -109,6 +111,12 @@ namespace DECS_Excel_Add_Ins
                 if (rowOffset % 10 == 0)
                 {
                     application.StatusBar = "Processed " + rowOffset.ToString() + " addresses.";
+                }
+
+                if (rowOffset % PAUSE_AFTER_THIS_MANY == 0)
+                {
+                    application.StatusBar = "Pausing...";
+                    System.Threading.Thread.Sleep(PAUSE_MSEC);
                 }
             }
 
